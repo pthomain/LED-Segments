@@ -1,31 +1,35 @@
 #include <FastLED.h>
+#include <effects.h>
 #include <leds.h>
-#include "MSGEQ7.h"
-
-#define RESET 8
-#define AUDIO_OUT 7
-#define STROBE 4
-#define MSGEQ7_INTERVAL ReadsPerSecond(10)
-#define MSGEQ7_SMOOTH 0 // Range: 0-255
-
-// Single MSGEQ7 IC, Smoothing enabled (75%)
-//CMSGEQ7<MSGEQ7_SMOOTH, RESET, STROBE, AUDIO_OUT> MSGEQ7;
 
 void setup() {
     Serial.begin(9600);
-    delay(1000);
-
+    delay(1500);
     initLeds();
-//  MSGEQ7.begin();
 }
 
 void loop() {
-//    bool newReading = MSGEQ7.read(MSGEQ7_INTERVAL);
-
-    // Led output
-//    if (newReading) {
-//        Serial.println(MSGEQ7.get(0)/5);
+//    CRGBPalette16 palette16;
+//    int delayMs = 2000;
+//
+//    EVERY_N_MILLISECONDS(delayMs) {
+//        palette16 = CRGBPalette16(
+//                CHSV(random8(), 255, random8(128, 255)),
+//                CHSV(random8(), 255, random8(128, 255)),
+//                CHSV(random8(), 192, random8(128, 255)),
+//                CHSV(random8(), 255, random8(128, 255))
+//        );
+//    };
+//
+//    EVERY_N_MILLISECONDS(delayMs)
+//    {
+//        applyEffect(
+//                Effect(
+//                        SCOPE_WHOLE,
+//                        LTR,
+//                        DIVISION_WHOLE,
+//                        palette16
+//                )
+//        );
 //    }
-    showRainbowSwipe();
-    // showNoisePalette();
 }

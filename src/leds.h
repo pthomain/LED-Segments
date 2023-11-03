@@ -1,78 +1,136 @@
 #pragma once
 
 #include <FastLED.h>
-#include <string> // for std::string
+#include <utils.h>
+#include <utility>
+#include <vector>
+#include <string>
+#include <utility>
+#include "transformations.h"
+#include "effects.h"
 
+#define IS_PROD true
 #define LED_PIN 9
-#define LED_TYPE WS2812B
-#define LED_BRIGHTNESS 6
-#define COLOR_ORDER GRB
 
-struct Cluster {
-    Cluster(uint8_t start, uint8_t end) {
-        this->start = start;
-        this->end = end;
+typedef enum {
+    SCOPE_LETTER = 0,
+    SCOPE_WORD = 1,
+    SCOPE_WHOLE = 2
+} Scope;
+
+class Display {
+private:
+    Cluster *letters;
+    Cluster *words;
+    Cluster *whole;
+    CRGB *allLeds;
+
+public:
+
+    Display(
+            Cluster *letters,
+            Cluster *words,
+            const int totalLeds,
+            const uint8_t brightness = 3
+    ) :
+            letters(letters),
+            words(words),
+            whole(new Cluster(new std::vector<Section>{Section(0, totalLeds - 1)})) {
+        printNumber("LEDs", totalLeds);
+
+        allLeds = new CRGB[totalLeds];
+
+        Serial.println("Init strip");
+        CFastLED::addLeds<WS2812B, LED_PIN, GRB>(allLeds, totalLeds);
+        setBrightness(brightness);
     }
 
-    uint8_t start;
-    uint8_t end;
+    static void setBrightness(uint8_t brightness) {
+        FastLED.setBrightness(brightness);
+    }
+
+    void render(Effect effect, Scope scope) {
+        printNumber("Effect", scope);
+
+        switch (scope) {
+            case SCOPE_LETTER:
+                letters->applyTransformation(effect, allLeds);
+                break;
+
+            case SCOPE_WORD:
+                words->applyTransformation(effect, allLeds);
+                break;
+
+            case SCOPE_WHOLE:
+                whole->applyTransformation(effect, allLeds);
+                break;
+        }
+        FastLED.show();
+    }
+
+    ~Display() {
+        delete[] allLeds;
+    }
 };
 
-const Cluster letters[] = {
-        Cluster(0, 15),
-        Cluster(16, 31),
-        Cluster(32, 47),
-        Cluster(48, 63),
-        Cluster(64, 79),
-        Cluster(80, 95),
-        Cluster(96, 111),
-        Cluster(112, 127),
-        Cluster(128, 143),
-        Cluster(144, 159),
-        Cluster(160, 175),
-        Cluster(176, 191),
-        Cluster(192, 207),
-        Cluster(208, 223),
-        Cluster(224, 239),
-        Cluster(240, 255)
-};
-
-const Cluster words[]{
-        Cluster(letters[0].start, letters[3].end),
-        Cluster(letters[4].start, letters[10].end),
-        Cluster(letters[11].start, letters[15].end),
-};
-
-const uint8_t NUM_LETTERS = sizeof(letters) / sizeof(Cluster);
-const uint8_t NUM_WORDS = sizeof(words) / sizeof(Cluster);
-
-const Cluster whole = Cluster(0, letters[NUM_LETTERS - 1].end);
-static const uint8_t NUM_LEDS = whole.end;
-
-CRGB *leds;
-
-void printNumber(char text[], uint8_t value) {
-    auto string = std::string(text);
-    string.append(": ");
-    string.append(std::to_string(value));
-    Serial.println(string.data());
-}
-
-void initLeds() {
-    Serial.println("Setup");
-    printNumber("Letters", NUM_LETTERS);
-    printNumber("Words", NUM_WORDS);
-    printNumber("LEDs", NUM_LEDS);
-
-    Serial.println("Init array");
-    CRGB rawleds[NUM_LEDS];
-    leds = CRGBSet(rawleds, NUM_LEDS);
-
-    Serial.println("Init strip");
-    FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
-    FastLED.setBrightness(LED_BRIGHTNESS);
-    set_max_power_in_volts_and_milliamps(5, 500);
-    FastLED.clear();
-
-    Serial.println("Init done");
+Display *initDisplay() {
+    if (IS_PROD) {
+        return new Display(
+                new Cluster(new std::vector<Section>(
+                        {
+                                std::make_pair(0, 12),
+                                std::make_pair(13, 25),
+                                std::make_pair(26, 41),
+                                std::make_pair(42, 56),
+                                std::make_pair(57, 74),
+                                std::make_pair(75, 82),
+                                std::make_pair(83, 93),
+                                std::make_pair(94, 104),
+                                std::make_pair(105, 117),
+                                std::make_pair(118, 135),
+                                std::make_pair(136, 143),
+                                std::make_pair(144, 161),
+                                std::make_pair(162, 177),
+                                std::make_pair(178, 190)
+                        })),
+                new Cluster(new std::vector<Section>(
+                        {
+                                std::make_pair(0, 74),
+                                std::make_pair(75, 82),
+                                std::make_pair(83, 135),
+                                std::make_pair(136, 143),
+                                std::make_pair(144, 190)
+                        })),
+                191
+        );
+    } else {
+        return new Display(
+                new Cluster(new std::vector<Section>(
+                        {
+                                std::make_pair(0, 15),
+                                std::make_pair(16, 31),
+                                std::make_pair(32, 47),
+                                std::make_pair(48, 63),
+                                std::make_pair(64, 79),
+                                std::make_pair(80, 95),
+                                std::make_pair(96, 111),
+                                std::make_pair(112, 127),
+                                std::make_pair(128, 143),
+                                std::make_pair(144, 159),
+                                std::make_pair(160, 175),
+                                std::make_pair(176, 191),
+                                std::make_pair(192, 207),
+                                std::make_pair(208, 223),
+                                std::make_pair(224, 239),
+                                std::make_pair(240, 255)
+                        })),
+                new Cluster(new std::vector<Section>(
+                        {
+                                std::make_pair(0, 63),
+                                std::make_pair(64, 175),
+                                std::make_pair(176, 255)
+                        })),
+                256
+        );
+    }
 }

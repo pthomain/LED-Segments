@@ -1,15 +1,13 @@
 #include <FastLED.h>
-#include <effects.h>
+#include "effects/hueeffect.h"
 #include <leds.h>
 
-#define FRAMES_PER_SECOND 30
-
-uint8_t lastEffect = -1;
-uint8_t effect = 0;
 Scope scope;
 Display *display;
+const HueEffect &effect = HueEffect(RainbowColors_p);
+int8_t currentScope = 0;
 
-void updateEffectIfChanged(const Effect &effect);
+void updateEffectIfChanged(Effect &effect);
 
 void setup() {
     Serial.begin(9600);
@@ -21,33 +19,23 @@ void setup() {
     FastLED.show();
 }
 
+
 void loop() {
-//    FastLED.delay(1000/FRAM
-//    ES_PER_SECOND);
+    EVERY_N_SECONDS(5) {
+        currentScope++;
 
+        if (currentScope % 3 == 0) {
+            scope = SCOPE_LETTER;
+        } else if (currentScope % 3 == 1) {
+            scope = SCOPE_WORD;
+        } else {
+            scope = SCOPE_WHOLE;
+        }
 
-    updateEffectIfChanged(Effect(RainbowColors_p));
-//    EVERY_N_MILLIS(5000) {
-//        effect += 1;
-//    }
-}
+        printNumber("Scope", scope);
+    };
 
-void updateEffectIfChanged(const Effect &effect2) {
-//    if (lastEffect != effect) {
-
-    EVERY_N_SECONDS(5) { effect++; };
-
-    if (effect % 3 == 0) {
-        scope = SCOPE_WHOLE;
-    } else if (effect % 3 == 1) {
-        scope = SCOPE_WORD;
-    } else {
-        scope = SCOPE_LETTER;
+    EVERY_N_MILLIS(32) {
+        display->render((Effect &) effect, scope);
     }
-
-    display->render(
-            effect2,scope
-    );
-//    lastEffect = effect;
-//    }
 }

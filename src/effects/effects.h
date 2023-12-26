@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include "FastLED.h"
 
 class Effect {
@@ -12,5 +13,9 @@ public:
     ) : palette(_palette) {
     }
 
-    virtual void nextFrame(CRGB *targetArray, int arraySize) = 0;
+    virtual void fillArray(
+            CRGB *targetArray,
+            int start,
+            int end
+    ) = 0;
 };

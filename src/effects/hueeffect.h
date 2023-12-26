@@ -10,12 +10,12 @@ private :
     // List of patterns to cycle through.  Each is defined as a separate function below.
 //    typedef void (*SimplePatternList[])(CRGB *targetArray, int arraySize);
 
-    uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
-    uint8_t gHue = 0; // rotating "base color" used by many of the patterns
+    int gCurrentPatternNumber = 0; // Index number of which pattern is current
+    int gHue = 0; // rotating "base color" used by many of the patterns
+
+    int position = 0;
 
     void nextPattern();
-
-    void rainbow(CRGB *targetArray, int arraySize);
 
     void rainbowWithGlitter(CRGB *targetArray, int arraySize);
 
@@ -29,10 +29,43 @@ private :
 
     void juggle(CRGB *targetArray, int arraySize);
 
+    void rainbow(
+            CRGB *targetArray,
+            int start,
+            int end
+    );
+
+    void rgbGradient(
+            CRGB *targetArray,
+            int start,
+            int end
+    );
+
+    void rgb(
+            CRGB *targetArray,
+            int start,
+            int end
+    );
+
+    void rgbw(
+            CRGB *targetArray,
+            int start,
+            int end
+    );
+
+    void pong(
+            CRGB *targetArray,
+            int arraySize
+    );
+
 //    SimplePatternList gPatterns = {rainbow, rainbowWithGlitter, confetti, sinelon, juggle, bpm};
 
 public:
     HueEffect(const CRGBPalette16 &palette) : Effect(palette) {}
 
-    void nextFrame(CRGB *targetArray, int arraySize) override;
+    void fillArray(
+            CRGB *targetArray,
+            int start,
+            int end
+    ) override;
 };

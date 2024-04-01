@@ -1,63 +1,52 @@
 #pragma once
 
+#ifndef CLUSTER_H
+#define CLUSTER_H
+
 #include <utility>
 #include <vector>
+#include <functional> // Include for std::function
 #include <FastLED.h>
 #include <effects/effects.h>
+#include <memory>
+#include "section.h"
 
-class Section {
-public:
-    int start;
-    int end;
-    int sectionSize;
-
-    Section(int start, int end)
-        : start(start), end(end), sectionSize(end - start) {
-    }
+const std::vector<std::pair<Scope, PixelUnit>> variations = {
+        {SCOPE_WHOLE,  UNIT_WORD},
+        {SCOPE_WHOLE,  UNIT_LETTER},
+        {SCOPE_WHOLE,  UNIT_PIXEL},
+        {SCOPE_WORD,   UNIT_LETTER},
+        {SCOPE_WORD,   UNIT_PIXEL},
+        {SCOPE_LETTER, UNIT_PIXEL}
 };
-
-class Pixel {
-public:
-    Section section;
-    CRGB colour;
-
-    Pixel(Section section, CRGB colour)
-        : section(section), colour(colour) {
-    }
-};
-
-typedef enum {
-    LTR = 0,
-    RTL = 1,
-} Direction;
-
-typedef enum {
-    MIRROR_CENTRE = 0,
-    MIRROR_EDGE = 1,
-    MIRROR_NONE = 2,
-} Mirror;
-
-typedef enum {
-    SCOPE_COLUMN = 0,
-    SCOPE_LETTER = 1,
-    SCOPE_WORD = 2,
-    SCOPE_WHOLE = 3
-} Scope;
 
 class Cluster {
 private:
-    Scope scope;
+    const Scope scope;
+
+    const std::vector<Section> scopeSections;
+    const std::vector<Section> emptySections = std::vector<Section>();
+
+    std::vector<std::pair<std::unique_ptr<Effect>, std::vector<Section>>> effectPerSectionPixels =
+            std::vector<std::pair<std::unique_ptr<Effect>, std::vector<Section>>>();
+
+    static std::vector<Section> intersectAllPixelsWithClusterScope(
+            const Section &clusterSection,
+            const std::vector<Section> &pixelSections
+    );
 
 public:
-    std::vector<Section>* sections;
-    std::vector<std::pair<CRGB *, Section>> sectionArrays;
 
-    Cluster(std::vector<Section>* sections, Scope scope);
+    const Section clusterSection;
 
-    void applyTransformation(
-        Effect& effect,
-        CRGB* targetArray,
-        int targetArraySize,
-        std::vector<Section>* pixelSections = nullptr
+    Cluster(std::vector<Section> sections, Scope scope);
+
+    void applyEffect(
+            const std::function<std::unique_ptr<Effect>(Section &)> &effectFactory,
+            const Cluster *allPixels = nullptr
     );
+
+    void render(CRGB *targetArray, CRGB *bufferArray);
 };
+
+#endif //CLUSTER_H

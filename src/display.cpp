@@ -22,52 +22,56 @@ Display::Display(
           )
     ),
     stripReversalSections(std::move(stripReversalSections)) {
-//    Serial.println(totalLeds);
 
     allLeds = new CRGB[totalLeds];
     bufferArray = new CRGB[totalLeds];
 
     CFastLED::addLeds<WS2812B, LED_PIN, GRB>(allLeds, totalLeds);
     FastLED.setBrightness(brightness);
-//    Serial.println("end const...");
 }
 
-void Display::applyEffect(
-        const std::function<std::unique_ptr<Effect>(Section &)> &effectFactory,
+void Display::changeEffect(
+        const std::function<std::unique_ptr<Effect>(Section &, Mirror)> &effectFactory,
         const Scope scope,
-        const PixelUnit pixelUnit
+        const PixelUnit pixelUnit,
+        const Mirror mirror
 ) {
-//    Serial.println("applyEffect...");
+    currentScope = scope;
+    const auto &string = "apply effect: " + scopeToString(scope) + " " + pixelUnitToString(pixelUnit);
+    Serial.println(string.c_str());
+
+    for (int i = 0; i < totalLeds; i++) {
+        allLeds[i] = CRGB::Black;
+        bufferArray[i] = CRGB::Black;
+    }
+
     switch (scope) {
         case SCOPE_LETTER:
-            letters.applyEffect(effectFactory);
+            letters.changeEffect(effectFactory, nullptr, mirror);
             break;
 
         case SCOPE_WORD:
             if (pixelUnit == UNIT_LETTER) {
-                words.applyEffect(effectFactory, &letters);
+                words.changeEffect(effectFactory, &letters, mirror);
             } else {
-                words.applyEffect(effectFactory);
+                words.changeEffect(effectFactory, nullptr, mirror);
             }
             break;
 
         case SCOPE_WHOLE:
             if (pixelUnit == UNIT_WORD) {
-                whole.applyEffect(effectFactory, &words);
+                whole.changeEffect(effectFactory, &words, mirror);
             } else if (pixelUnit == UNIT_LETTER) {
-                whole.applyEffect(effectFactory, &letters);
+                whole.changeEffect(effectFactory, &letters, mirror);
             } else {
-                whole.applyEffect(effectFactory);
+                whole.changeEffect(effectFactory, nullptr, mirror);
             }
             break;
     }
 }
 
-void Display::render(
-        Scope scope,
-        PixelUnit pixelUnit
-) {
-    switch (scope) {
+void Display::render() {
+    switch (currentScope) {
         case SCOPE_LETTER:
             letters.render(allLeds, bufferArray);
             break;
@@ -81,9 +85,7 @@ void Display::render(
             break;
     }
 
-//    if (pixelUnit == UNIT_PIXEL)
-        alignSections();
-
+    alignSections();
     FastLED.show();
 }
 
@@ -143,7 +145,6 @@ Display *initDisplay(int brightness) {
         stripReversalSection = std::vector<Section>({});
         actualBrightness = brightness == -1 ? 30 : brightness;
     } else {
-//        Serial.println("setup...");
         letters = std::vector<Section>(
                 {
                         Section(0, 15),
@@ -210,7 +211,6 @@ Display *initDisplay(int brightness) {
         actualBrightness = brightness == -1 ? 1 : brightness;
     }
 
-//    Serial.println("display...");
     return new Display(
             Cluster(letters, SCOPE_LETTER),
             Cluster(words, SCOPE_WORD),

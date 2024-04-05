@@ -7,70 +7,36 @@
 #include "utils.h"
 #include "section.h"
 
-class HueEffect : public Effect, public EffectFactory<HueEffect>  {
+class HueEffect : public Effect, public EffectFactory<HueEffect> {
 private :
-    // List of patterns to cycle through.  Each is defined as a separate function below.
-//    typedef void (*SimplePatternList[])(CRGB *targetArray, int arraySize);
-
-    int gCurrentPatternNumber = 0; // Index number of which pattern is current
-    int gHue = 0; // rotating "base color" used by many of the patterns
-
+    int hue = 0;
     int position = 0;
 
-    void nextPattern();
+    void rainbowWithGlitter(CRGB *targetArray);
 
-    void rainbowWithGlitter(CRGB* targetArray, int start, int end);
+    void addGlitter(CRGB *targetArray, fract8 chanceOfGlitter);
 
-    void addGlitter(CRGB* targetArray, int arraySize, fract8 chanceOfGlitter);
+    void confetti(CRGB *targetArray);
 
-    void confetti(CRGB* targetArray, int arraySize);
+    void sinelon(CRGB *targetArray);
 
-    void sinelon(CRGB* targetArray, int arraySize);
+    void bpm(CRGB *targetArray);
 
-    void bpm(CRGB* targetArray, int arraySize);
+    void juggle(CRGB *targetArray);
 
-    void juggle(CRGB* targetArray, int arraySize);
+    void rainbow(CRGB *targetArray);
 
-    void rainbow(
-        CRGB* targetArray,
-        int start,
-        int end
-    );
-
-    void rgbGradient(
-        CRGB* targetArray,
-        int start,
-        int end
-    );
-
-    void rgb(
-        CRGB* targetArray,
-        int start,
-        int end
-    );
-
-    void rgbw(
-        CRGB* targetArray,
-        int start,
-        int end
-    );
-
-    void pong(
-        CRGB* targetArray,
-        int arraySize
-    );
-
-    //    SimplePatternList gPatterns = {rainbow, rainbowWithGlitter, confetti, sinelon, juggle, bpm};
+    void rgbGradient(CRGB *targetArray);
 
 public:
 
-    explicit HueEffect(Section section) : Effect(section) {}
+    explicit HueEffect(Section section, Mirror mirror) : Effect(section, mirror) {}
 
     ~HueEffect() override = default;
 
     void fillArray(CRGB *targetArray) override;
 
-    static const std::function<std::unique_ptr<Effect>(Section)> factory; // Declaration within the class
+    static const std::function<std::unique_ptr<Effect>(Section, Mirror)> factory;
 };
 
 #endif //HUEEFFECT_H

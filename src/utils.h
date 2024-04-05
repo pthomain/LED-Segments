@@ -6,6 +6,7 @@
 #include <Arduino.h>
 #include <string>
 #include <memory>
+#include <FastLED.h>
 
 void printNumber(char text[], int value);
 
@@ -29,8 +30,18 @@ typedef enum {
     UNIT_WORD
 } PixelUnit;
 
+typedef enum {
+    MIRROR_NONE,
+    MIRROR_CENTRE,
+    MIRROR_EDGE
+} Mirror;
+
 std::string scopeToString(Scope scope);
 
 std::string pixelUnitToString(PixelUnit pixelUnit);
+
+std::string mirrorToString(Mirror mirror);
+
+std::string CRGBToHex(const CRGB &color);
 
 #endif //UTILS_H

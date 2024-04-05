@@ -8,45 +8,53 @@
 #include <memory>
 
 Scope scope;
-PixelUnit pixelUnit;
-int config = 5;
+Mirror mirror = MIRROR_EDGE;
+uint8_t currentEffect = 0;
 Display *display;
 
-void updateEffect();
+const std::vector<std::function<std::unique_ptr<Effect>(Section &, Mirror)>> effectFactories = {
+        PongEffect::factory,
+        HueEffect::factory
+};
+
+void changeEffect();
 
 void setup() {
     Serial.begin(9600);
     delay(2000);
 
-//    Serial.println("Starting...");
     set_max_power_in_volts_and_milliamps(5, 500);
     FastLED.clear();
-//    Serial.println("cleared...");
 
-    display = initDisplay(IS_PROD ? 10 : 30);
-//    Serial.println("inited...");
-    updateEffect();
+    display = initDisplay(IS_PROD ? 50 : 10);
+    changeEffect();
 }
 
 void loop() {
-    EVERY_N_SECONDS(5) {
-        config = (config + 1) % variations.size();
-        updateEffect();
+    EVERY_N_SECONDS(10) {
+        changeEffect();
     }
 
-    EVERY_N_MILLIS(50) {
-        display->render(
-                scope,
-                pixelUnit
-        );
+    EVERY_N_SECONDS(30) {
+        currentEffect = (currentEffect + 1) % effectFactories.size();
+    }
+
+    EVERY_N_MILLISECONDS(60) {
+        display->render();
     }
 }
 
-void updateEffect() {
-    scope = variations.at(config).first;
-    pixelUnit = variations.at(config).second;
-    const auto &string = "apply effect: " + scopeToString(scope) + " " + pixelUnitToString(pixelUnit);
-    Serial.println(string.c_str());
+void changeEffect() {
+    std::pair<Scope, PixelUnit> variation = variations.at(random8(variations.size() - 1));
+    scope = variation.first;
+    auto pixelUnit = variation.second;
+    mirror = mirrors.at(random8(mirrors.size() - 1));
+
+    std::string output = "Scope: " + scopeToString(scope)
+                         + ", PixelUnit: " + pixelUnitToString(pixelUnit)
+                         + ", Mirror: " + mirrorToString(mirror);
+    Serial.println(output.c_str());
+
     FastLED.clear();
-    display->applyEffect(PongEffect::factory, scope, pixelUnit);
+    display->changeEffect(effectFactories.at(currentEffect), scope, pixelUnit, mirror);
 }

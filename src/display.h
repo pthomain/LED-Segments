@@ -12,7 +12,7 @@
 #include "cluster.h"
 #include "effects/effects.h"
 
-#define IS_PROD false
+#define IS_PROD true
 #define LED_PIN 9
 
 class Display {
@@ -26,6 +26,8 @@ private:
     CRGB *allLeds;
     CRGB *bufferArray;
 
+    Scope currentScope = SCOPE_WHOLE;
+
     void alignSections();
 
 public:
@@ -37,16 +39,14 @@ public:
             const int brightness
     );
 
-    void applyEffect(
-            const std::function<std::unique_ptr<Effect>(Section &)> &effectFactory,
+    void changeEffect(
+            const std::function<std::unique_ptr<Effect>(Section &, Mirror)> &effectFactory,
             const Scope scope,
-            const PixelUnit pixelUnit
+            const PixelUnit pixelUnit,
+            const Mirror mirror
     );
 
-    void render(
-            const Scope scope,
-            const PixelUnit pixelUnit
-    );
+    void render();
 
     ~Display();
 };

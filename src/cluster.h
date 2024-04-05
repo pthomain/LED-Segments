@@ -20,6 +20,12 @@ const std::vector<std::pair<Scope, PixelUnit>> variations = {
         {SCOPE_LETTER, UNIT_PIXEL}
 };
 
+const std::vector<Mirror> mirrors = {
+        MIRROR_NONE,
+        MIRROR_CENTRE,
+        MIRROR_EDGE
+};
+
 class Cluster {
 private:
     const Scope scope;
@@ -41,9 +47,10 @@ public:
 
     Cluster(std::vector<Section> sections, Scope scope);
 
-    void applyEffect(
-            const std::function<std::unique_ptr<Effect>(Section &)> &effectFactory,
-            const Cluster *allPixels = nullptr
+    void changeEffect(
+            const std::function<std::unique_ptr<Effect>(Section &, Mirror)> &effectFactory,
+            const Cluster *pixelUnits,
+            const Mirror mirror
     );
 
     void render(CRGB *targetArray, CRGB *bufferArray);

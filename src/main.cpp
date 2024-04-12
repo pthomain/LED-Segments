@@ -1,21 +1,20 @@
 #include <FastLED.h>
 #include <utils.h>
 #include <display.h>
-#include <effects/effects.h>
+#include "effects/effect.h"
 #include <cluster.h>
-#include <effects/pongeffect.h>
-#include <effects/hueeffect.h>
 #include <memory>
+#include "effects/partyeffect.h"
+#include "effects/testeffect.h"
+#include "modifiers/pongmodifier.h"
 
-Scope scope;
-Mirror mirror = MIRROR_EDGE;
+Mirror mirror = MIRROR_NONE;
 uint8_t currentEffect = 0;
-Display *display;
+uint8_t currentModifier = 0;
+Display *display = nullptr;
 
-const std::vector<std::function<std::unique_ptr<Effect>(Section &, Mirror)>> effectFactories = {
-        PongEffect::factory,
-        HueEffect::factory
-};
+std::vector<std::function<Modifier *(const Section &, Mirror)>> modifierFactories;
+std::vector<std::function<Effect *(const Modifier *)>> effectFactories;
 
 void changeEffect();
 
@@ -26,6 +25,14 @@ void setup() {
     set_max_power_in_volts_and_milliamps(5, 500);
     FastLED.clear();
 
+    modifierFactories = {
+            PongModifier::factory
+    };
+
+    effectFactories = {
+            PartyEffect::factory
+    };
+
     display = initDisplay(IS_PROD ? 50 : 10);
     changeEffect();
 }
@@ -35,26 +42,26 @@ void loop() {
         changeEffect();
     }
 
-    EVERY_N_SECONDS(30) {
-        currentEffect = (currentEffect + 1) % effectFactories.size();
-    }
-
     EVERY_N_MILLISECONDS(60) {
         display->render();
     }
 }
 
+
 void changeEffect() {
+    currentEffect = (currentEffect + 1) % effectFactories.size();
+
     std::pair<Scope, PixelUnit> variation = variations.at(random8(variations.size() - 1));
-    scope = variation.first;
+    auto scope = variation.first;
     auto pixelUnit = variation.second;
-    mirror = mirrors.at(random8(mirrors.size() - 1));
 
-    std::string output = "Scope: " + scopeToString(scope)
-                         + ", PixelUnit: " + pixelUnitToString(pixelUnit)
-                         + ", Mirror: " + mirrorToString(mirror);
-    Serial.println(output.c_str());
+    currentModifier = random8(mirrors.size() - 1);
 
-    FastLED.clear();
-    display->changeEffect(effectFactories.at(currentEffect), scope, pixelUnit, mirror);
+    display->changeEffect(
+            effectFactories.at(currentEffect),
+            modifierFactories.at(currentModifier),
+            scope,
+            pixelUnit,
+            mirror
+    );
 }

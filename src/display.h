@@ -10,9 +10,9 @@
 #include <string>
 #include <utility>
 #include "cluster.h"
-#include "effects/effects.h"
+#include "effects/effect.h"
 
-#define IS_PROD true
+#define IS_PROD false
 #define LED_PIN 9
 
 class Display {
@@ -40,7 +40,8 @@ public:
     );
 
     void changeEffect(
-            const std::function<std::unique_ptr<Effect>(Section &, Mirror)> &effectFactory,
+            const std::function<Effect *(const Modifier *)> &effectFactory,
+            const std::function<Modifier *(const Section &, const Mirror)> &modifierFactory,
             const Scope scope,
             const PixelUnit pixelUnit,
             const Mirror mirror

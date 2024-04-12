@@ -9,9 +9,7 @@ public:
     int end;
     int sectionSize;
 
-    Section(int start, int end)
-            : start(start), end(end), sectionSize(end - start + 1) {
-    }
+    Section(int start, int end): start(start), end(end), sectionSize(end - start + 1) {}
 };
 
 #endif //SECTION_H

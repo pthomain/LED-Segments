@@ -7,6 +7,7 @@
 #include "FastLED.h"
 #include "section.h"
 #include "utils.h"
+#include "modifiers/modifier.h"
 #include <memory>
 
 class Effect {
@@ -14,15 +15,11 @@ class Effect {
 protected:
     int arraySize;
 
-public:
-    const Section section;
-    const Mirror mirror;
+public :
+    const Modifier *modifier;
 
-    explicit Effect(
-            const Section &section,
-            const Mirror mirror
-    ) : section(section), mirror(mirror) {
-        arraySize = section.end - section.start + 1;
+    explicit Effect(const Modifier *modifier) : modifier(modifier) {
+        arraySize = modifier->section.end - modifier->section.start + 1;
     };
 
     virtual ~Effect() = default; // Virtual destructor
@@ -33,8 +30,8 @@ public:
 template<typename T>
 class EffectFactory {
 public:
-    std::unique_ptr<Effect> createEffect(const Section &section, const Mirror mirror) {
-        return std::make_unique<T>(section, mirror);
+    Effect *createEffect(const Modifier *modifier) {
+        return new T(modifier);
     }
 };
 

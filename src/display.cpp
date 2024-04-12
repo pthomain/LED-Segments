@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 #include "cluster.h"
-#include "effects/effects.h"
+#include "effects/effect.h"
 #include "display.h"
 
 Display::Display(
@@ -31,40 +31,41 @@ Display::Display(
 }
 
 void Display::changeEffect(
-        const std::function<std::unique_ptr<Effect>(Section &, Mirror)> &effectFactory,
+        const std::function<Effect *(const Modifier *)> &effectFactory,
+        const std::function<Modifier *(const Section &, const Mirror)> &modifierFactory,
         const Scope scope,
         const PixelUnit pixelUnit,
         const Mirror mirror
 ) {
     currentScope = scope;
-    const auto &string = "apply effect: " + scopeToString(scope) + " " + pixelUnitToString(pixelUnit);
-    Serial.println(string.c_str());
 
     for (int i = 0; i < totalLeds; i++) {
         allLeds[i] = CRGB::Black;
         bufferArray[i] = CRGB::Black;
     }
 
+    FastLED.clear();
+
     switch (scope) {
         case SCOPE_LETTER:
-            letters.changeEffect(effectFactory, nullptr, mirror);
+            letters.changeEffect(effectFactory, modifierFactory, nullptr, mirror);
             break;
 
         case SCOPE_WORD:
             if (pixelUnit == UNIT_LETTER) {
-                words.changeEffect(effectFactory, &letters, mirror);
+                words.changeEffect(effectFactory, modifierFactory, &letters, mirror);
             } else {
-                words.changeEffect(effectFactory, nullptr, mirror);
+                words.changeEffect(effectFactory, modifierFactory, nullptr, mirror);
             }
             break;
 
         case SCOPE_WHOLE:
             if (pixelUnit == UNIT_WORD) {
-                whole.changeEffect(effectFactory, &words, mirror);
+                whole.changeEffect(effectFactory, modifierFactory, &words, mirror);
             } else if (pixelUnit == UNIT_LETTER) {
-                whole.changeEffect(effectFactory, &letters, mirror);
+                whole.changeEffect(effectFactory, modifierFactory, &letters, mirror);
             } else {
-                whole.changeEffect(effectFactory, nullptr, mirror);
+                whole.changeEffect(effectFactory, modifierFactory, nullptr, mirror);
             }
             break;
     }

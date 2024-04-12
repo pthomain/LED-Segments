@@ -7,7 +7,7 @@
 #include <vector>
 #include <functional> // Include for std::function
 #include <FastLED.h>
-#include <effects/effects.h>
+#include "effects/effect.h"
 #include <memory>
 #include "section.h"
 
@@ -33,8 +33,8 @@ private:
     const std::vector<Section> scopeSections;
     const std::vector<Section> emptySections = std::vector<Section>();
 
-    std::vector<std::pair<std::unique_ptr<Effect>, std::vector<Section>>> effectPerSectionPixels =
-            std::vector<std::pair<std::unique_ptr<Effect>, std::vector<Section>>>();
+    std::vector<std::pair<Effect *, std::vector<Section>>> effectPerSectionPixels =
+            std::vector<std::pair<Effect *, std::vector<Section>>>();
 
     static std::vector<Section> intersectAllPixelsWithClusterScope(
             const Section &clusterSection,
@@ -48,7 +48,8 @@ public:
     Cluster(std::vector<Section> sections, Scope scope);
 
     void changeEffect(
-            const std::function<std::unique_ptr<Effect>(Section &, Mirror)> &effectFactory,
+            const std::function<Effect *(const Modifier *)> &effectFactory,
+            const std::function<Modifier *(const Section &, const Mirror)> &modifierFactory,
             const Cluster *pixelUnits,
             const Mirror mirror
     );

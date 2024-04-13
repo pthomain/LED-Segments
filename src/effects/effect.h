@@ -7,7 +7,6 @@
 #include "FastLED.h"
 #include "section.h"
 #include "utils.h"
-#include "modifiers/modifier.h"
 #include <memory>
 
 class Effect {
@@ -16,13 +15,18 @@ protected:
     int arraySize;
 
 public :
-    const Modifier *modifier;
 
-    explicit Effect(const Modifier *modifier) : modifier(modifier) {
-        arraySize = modifier->section.end - modifier->section.start + 1;
+    const Section section;
+    const Mirror mirror;
+
+    explicit Effect(
+            const Section &section,
+            const Mirror mirror
+    ) : section(section), mirror(mirror) {
+        arraySize = section.end - section.start + 1;
     };
 
-    virtual ~Effect() = default; // Virtual destructor
+    ~Effect() = default;
 
     virtual void fillArray(CRGB *targetArray) = 0;
 };
@@ -30,8 +34,8 @@ public :
 template<typename T>
 class EffectFactory {
 public:
-    Effect *createEffect(const Modifier *modifier) {
-        return new T(modifier);
+    Effect *createEffect(const Section &section, const Mirror mirror) {
+        return new T(section, mirror);
     }
 };
 

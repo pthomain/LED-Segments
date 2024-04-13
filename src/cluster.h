@@ -11,6 +11,8 @@
 #include <memory>
 #include "section.h"
 
+class EffectConfig;
+
 const std::vector<std::pair<Scope, PixelUnit>> variations = {
         {SCOPE_WHOLE,  UNIT_WORD},
         {SCOPE_WHOLE,  UNIT_LETTER},
@@ -36,9 +38,18 @@ private:
     std::vector<std::pair<Effect *, std::vector<Section>>> effectPerSectionPixels =
             std::vector<std::pair<Effect *, std::vector<Section>>>();
 
+    std::vector<std::pair<Effect *, std::vector<Section>>> modifierPerSectionPixels =
+            std::vector<std::pair<Effect *, std::vector<Section>>>();
+
     static std::vector<Section> intersectAllPixelsWithClusterScope(
             const Section &clusterSection,
             const std::vector<Section> &pixelSections
+    );
+
+    void render(
+            CRGB *targetArray,
+            CRGB *bufferArray,
+            std::vector<std::pair<Effect *, std::vector<Section>>> &effectMap
     );
 
 public:
@@ -47,11 +58,8 @@ public:
 
     Cluster(std::vector<Section> sections, Scope scope);
 
-    void changeEffect(
-            const std::function<Effect *(const Modifier *)> &effectFactory,
-            const std::function<Modifier *(const Section &, const Mirror)> &modifierFactory,
-            const Cluster *pixelUnits,
-            const Mirror mirror
+    void applyEffect(
+            const EffectConfig *effectConfig
     );
 
     void render(CRGB *targetArray, CRGB *bufferArray);

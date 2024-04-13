@@ -6,13 +6,16 @@
 class PartyEffect : public Effect, public EffectFactory<PartyEffect> {
 
 public:
-    explicit PartyEffect(const Modifier *modifier) : Effect(modifier) {}
+    explicit PartyEffect(
+            const Section &section,
+            const Mirror mirror
+    ) : Effect(section, mirror) {}
 
-    ~PartyEffect() override = default;
+    ~PartyEffect() = default;
 
     void fillArray(CRGB *targetArray) override;
 
-    static const std::function<Effect *(const Modifier *)> factory;
+    static std::function<Effect *(const Section &, const Mirror mirror)> factory;
 };
 
 #endif //LED_MATRIX_DLH_PARTYEFFECT_H

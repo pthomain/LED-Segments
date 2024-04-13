@@ -5,6 +5,7 @@
 #include "cluster.h"
 #include "effects/effect.h"
 #include "display.h"
+#include "config/effectconfig.h"
 
 Display::Display(
         Cluster letters,
@@ -30,42 +31,52 @@ Display::Display(
     FastLED.setBrightness(brightness);
 }
 
-void Display::changeEffect(
-        const std::function<Effect *(const Modifier *)> &effectFactory,
-        const std::function<Modifier *(const Section &, const Mirror)> &modifierFactory,
+void Display::applyEffect(
+        const std::function<Effect *(const Section &, const Mirror)> &effectFactory,
         const Scope scope,
         const PixelUnit pixelUnit,
-        const Mirror mirror
+        const Mirror mirror,
+        const boolean isModifier
 ) {
     currentScope = scope;
-
-    for (int i = 0; i < totalLeds; i++) {
-        allLeds[i] = CRGB::Black;
-        bufferArray[i] = CRGB::Black;
-    }
-
-    FastLED.clear();
+    std::string output = scopeToString(scope)
+                         + "\t" + pixelUnitToString(pixelUnit)
+                         + "\t" + mirrorToString(mirror);
+    Serial.println(output.c_str());
 
     switch (scope) {
-        case SCOPE_LETTER:
-            letters.changeEffect(effectFactory, modifierFactory, nullptr, mirror);
+        case SCOPE_LETTER: {
+            auto *config = new EffectConfig(effectFactory, nullptr, mirror, isModifier);
+            letters.applyEffect(config);
+            delete config;
+        }
             break;
 
         case SCOPE_WORD:
             if (pixelUnit == UNIT_LETTER) {
-                words.changeEffect(effectFactory, modifierFactory, &letters, mirror);
+                auto *config = new EffectConfig(effectFactory, &letters, mirror, isModifier);
+                words.applyEffect(config);
+                delete config;
             } else {
-                words.changeEffect(effectFactory, modifierFactory, nullptr, mirror);
+                auto *config = new EffectConfig(effectFactory, nullptr, mirror, isModifier);
+                words.applyEffect(config);
+                delete config;
             }
             break;
 
         case SCOPE_WHOLE:
             if (pixelUnit == UNIT_WORD) {
-                whole.changeEffect(effectFactory, modifierFactory, &words, mirror);
+                auto *config = new EffectConfig(effectFactory, &words, mirror, isModifier);
+                whole.applyEffect(config);
+                delete config;
             } else if (pixelUnit == UNIT_LETTER) {
-                whole.changeEffect(effectFactory, modifierFactory, &letters, mirror);
+                auto *config = new EffectConfig(effectFactory, &letters, mirror, isModifier);
+                whole.applyEffect(config);
+                delete config;
             } else {
-                whole.changeEffect(effectFactory, modifierFactory, nullptr, mirror);
+                auto *config = new EffectConfig(effectFactory, nullptr, mirror, isModifier);
+                whole.applyEffect(config);
+                delete config;
             }
             break;
     }

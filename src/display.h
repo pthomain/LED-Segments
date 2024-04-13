@@ -39,12 +39,12 @@ public:
             const int brightness
     );
 
-    void changeEffect(
-            const std::function<Effect *(const Modifier *)> &effectFactory,
-            const std::function<Modifier *(const Section &, const Mirror)> &modifierFactory,
+    void applyEffect(
+            const std::function<Effect *(const Section &, const Mirror)> &effectFactory,
             const Scope scope,
             const PixelUnit pixelUnit,
-            const Mirror mirror
+            const Mirror mirror,
+            const boolean isModifier
     );
 
     void render();

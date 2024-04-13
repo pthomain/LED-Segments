@@ -2,6 +2,7 @@
 #define LED_MATRIX_DLH_PONGMODIFIER_H
 
 #include "effects/effect.h"
+#include "modifiers/modifier.h"
 
 class PongModifier : public Modifier, public ModifierFactory<PongModifier> {
 
@@ -15,11 +16,18 @@ public:
             const Mirror mirror
     ) : Modifier(section, mirror) {}
 
-    ~PongModifier() override = default;
+    ~PongModifier() = default;
 
-    void setAlphaArray() override;
+    void fillAlphaArray() override;
 
-    static const std::function<Modifier *(const Section &, const Mirror)> factory;
+    static std::function<Effect *(const Section &, const Mirror)> factory;
+
+    void fillArray(CRGB *targetArray) override {
+        fillAlphaArray();
+        for (int i = 0; i < arraySize; ++i) {
+            targetArray[i] = alphaArray[i] > 0 ? targetArray[i] : CRGB::Black;
+        }
+    }
 };
 
 #endif //LED_MATRIX_DLH_PONGMODIFIER_H

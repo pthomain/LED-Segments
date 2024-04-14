@@ -25,7 +25,8 @@ Display::Display(
     stripReversalSections(std::move(stripReversalSections)) {
 
     allLeds = new CRGB[totalLeds];
-    bufferArray = new CRGB[totalLeds];
+    effectBufferArray = new CRGB[totalLeds];
+    modifierBufferArray = new CRGB[totalLeds];
 
     CFastLED::addLeds<WS2812B, LED_PIN, GRB>(allLeds, totalLeds);
     FastLED.setBrightness(brightness);
@@ -39,7 +40,7 @@ void Display::applyEffect(
         const boolean isModifier
 ) {
     currentScope = scope;
-    std::string output = scopeToString(scope)
+    std::string output = (isModifier ? "MODIFIER\t" : "EFFECT\t\t") + scopeToString(scope)
                          + "\t" + pixelUnitToString(pixelUnit)
                          + "\t" + mirrorToString(mirror);
     Serial.println(output.c_str());
@@ -85,15 +86,15 @@ void Display::applyEffect(
 void Display::render() {
     switch (currentScope) {
         case SCOPE_LETTER:
-            letters.render(allLeds, bufferArray);
+            letters.render(allLeds, effectBufferArray, modifierBufferArray);
             break;
 
         case SCOPE_WORD:
-            words.render(allLeds, bufferArray);
+            words.render(allLeds, effectBufferArray, modifierBufferArray);
             break;
 
         case SCOPE_WHOLE:
-            whole.render(allLeds, bufferArray);
+            whole.render(allLeds, effectBufferArray, modifierBufferArray);
             break;
     }
 
@@ -118,7 +119,8 @@ void Display::alignSections() {
 
 Display::~Display() {
     delete[] allLeds;
-    delete[] bufferArray;
+    delete[] effectBufferArray;
+    delete[] modifierBufferArray;
 }
 
 Display *initDisplay(int brightness) {
@@ -183,6 +185,13 @@ Display *initDisplay(int brightness) {
                         Section(64, 175),
                         Section(176, 255)
                 });
+
+//        words = std::vector<Section>(
+//                {
+//                        Section(0, 15),
+//                        Section(16, 175),
+//                        Section(176, 255)
+//                });
 
         stripReversalSection = std::vector<Section>(
                 {

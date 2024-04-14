@@ -9,7 +9,6 @@
 #include "modifiers/pongmodifier.h"
 
 Display *display = nullptr;
-int currentEffect = 0;
 
 std::vector<std::function<Effect *(const Section &, Mirror)>> effectFactories;
 std::vector<std::function<Effect *(const Section &, Mirror)>> modifierFactories;
@@ -40,20 +39,21 @@ void loop() {
         changeEffect();
     }
 
-    EVERY_N_MILLISECONDS(60) {
+    EVERY_N_MILLISECONDS(500) {
         display->render();
+        Serial.println("");
     }
 }
 
 void changeEffect() {
-    currentEffect = (currentEffect + 1) % effectFactories.size();
-
+    int currentEffect = random8(effectFactories.size() - 1);
+    int currentModifier = random8(modifierFactories.size() - 1);
+//
     std::pair<Scope, PixelUnit> variation = variations.at(random8(variations.size() - 1));
     auto scope = variation.first;
     auto pixelUnit = variation.second;
 
     Mirror mirror = mirrors.at(random8(mirrors.size() - 1));
-    int currentModifier = random8(modifierFactories.size() - 1);
 
     display->applyEffect(
             effectFactories.at(currentEffect),
@@ -64,7 +64,7 @@ void changeEffect() {
     );
 
     display->applyEffect(
-            modifierFactories.at(currentEffect),
+            modifierFactories.at(currentModifier),
             scope,
             pixelUnit,
             mirror,

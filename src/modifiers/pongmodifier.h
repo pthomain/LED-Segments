@@ -21,13 +21,6 @@ public:
     void fillAlphaArray() override;
 
     static std::function<Effect *(const Section &, const Mirror)> factory;
-
-    void fillArray(CRGB *targetArray) override {
-        fillAlphaArray();
-        for (int i = 0; i < arraySize; ++i) {
-            targetArray[i] = alphaArray[i] > 0 ? targetArray[i] : CRGB::Black;
-        }
-    }
 };
 
 #endif //LED_MATRIX_DLH_PONGMODIFIER_H

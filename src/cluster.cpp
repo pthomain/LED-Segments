@@ -24,44 +24,32 @@ void Cluster::applyEffect(
     //If pixelUnits is not null, we need to subdivide each section into virtual pixels corresponding to
     //the intersection of the subsections in pixelUnits and the current section
 
-//    if (!effectConfig->isModifier) {
-//        for (const auto &item: effectPerSectionPixels) {
-//            delete item.first;
-//        }
-//        for (const auto &item: modifierPerSectionPixels) {
-//            delete item.first;
-//        }
-//
-//        effectPerSectionPixels.clear();
-//        modifierPerSectionPixels.clear();
-//    }
-
     auto &effectMap = effectConfig->isModifier ? modifierPerSectionPixels : effectPerSectionPixels;
+
+    for (const auto &item: effectMap) {
+        delete item.first;
+    }
+    effectMap.clear();
 
     for (const auto &scopeSection: scopeSections) {
         if (effectConfig->pixelUnits == nullptr) {
             //If pixelUnits is null, we don't need to apply a mirror
-
-            if (scope == SCOPE_WHOLE) {
-                Effect *effect = effectConfig->effectFactory(scopeSection, MIRROR_NONE);
-                effectMap.emplace_back(effect, emptySections);
-            } else {
-                for (auto section: scopeSections) {
-                    Effect *effect = effectConfig->effectFactory(section, MIRROR_NONE);
-                    effectMap.emplace_back(effect, emptySections);
-                }
-            }
+            Effect *effect = effectConfig->effectFactory(scopeSection, MIRROR_NONE);
+            effectMap.emplace_back(effect, emptySections);
         } else {
             auto intersectedSections = intersectAllPixelsWithClusterScope(
                     scopeSection,
                     effectConfig->pixelUnits->scopeSections
             );
 
+            //TODO: pre-index all sizes for all configs
+
             int intersectedSize = intersectedSections.size();
             int size = effectConfig->mirror == MIRROR_NONE
                        ? intersectedSize
                        : intersectedSize % 2 == 0 ? intersectedSize / 2 : (intersectedSize + 1) / 2;
 
+            //TODO delete this: memory leak
             Section pixelSection = Section(0, size - 1);
 
             Effect *effect = effectConfig->effectFactory(pixelSection, effectConfig->mirror);
@@ -85,61 +73,83 @@ std::vector<Section> Cluster::intersectAllPixelsWithClusterScope(
     return intersectedSections;
 }
 
-void Cluster::render(CRGB *targetArray, CRGB *bufferArray) {
-    render(targetArray, bufferArray, effectPerSectionPixels);
-
-    if (!modifierPerSectionPixels.empty()) {
-        render(targetArray, bufferArray, modifierPerSectionPixels);
-    }
-}
-
 void Cluster::render(
         CRGB *targetArray,
-        CRGB *bufferArray,
-        std::vector<std::pair<Effect *, std::vector<Section>>> &effectMap
+        CRGB *effectBufferArray,
+        CRGB *modifierBufferArray
 ) {
-    for (auto &effectPair: effectMap) {
+    for (int x = 0; x < effectPerSectionPixels.size(); x++) {
+        auto effectPair = effectPerSectionPixels.at(x);
         auto &effect = effectPair.first;
-        auto &pixelSections = effectPair.second;
-        auto section = effect->section;
-        auto mirror = effect->mirror;
+        auto &effectPixelSections = effectPair.second;
 
-        if (pixelSections.empty()) {
+        auto modifierPair = modifierPerSectionPixels.empty() ? nullptr : &modifierPerSectionPixels.at(x);
+        auto modifier = modifierPair == nullptr ? nullptr : modifierPair->first;
+        auto modifierPixelSections = modifierPair == nullptr ? emptySections : modifierPair->second;
+
+        if (effectPixelSections.empty()) {
             if (scope == SCOPE_WHOLE) {
                 effect->fillArray(targetArray);
+                if (modifier != nullptr) modifier->fillArray(targetArray);
             } else {
-                effect->fillArray(bufferArray);
-                for (int i = 0; i < section.sectionSize; i++) {
-                    targetArray[section.start + i] = bufferArray[i];
+                effect->fillArray(effectBufferArray);
+                if (modifier != nullptr) {
+                    for (int i = 0; i < effect->section.sectionSize; i++) {
+                        modifierBufferArray[i] = effectBufferArray[i];
+                    }
+                    modifier->fillArray(modifierBufferArray);
+                }
+                for (int i = 0; i < effect->section.sectionSize; i++) {
+                    targetArray[effect->section.start + i] = (modifier == nullptr) ? effectBufferArray[i]
+                                                                                   : modifierBufferArray[i];
                 }
             }
         } else {
-            effect->fillArray(bufferArray);
+            effect->fillArray(effectBufferArray);
+            if (modifier != nullptr) {
+                for (int i = 0; i < effect->section.sectionSize; i++) {
+                    modifierBufferArray[i] = effectBufferArray[i];
+                }
+                modifier->fillArray(modifierBufferArray);
+            }
 
-            if (mirror == MIRROR_EDGE) {
-                int centre = section.sectionSize % 2 == 0
-                             ? section.sectionSize / 2
-                             : (section.sectionSize + 1) / 2;
+            if (effect->mirror == MIRROR_EDGE) {
+                int centre = effect->section.sectionSize % 2 == 0
+                             ? effect->section.sectionSize / 2
+                             : (effect->section.sectionSize + 1) / 2;
 
                 for (int i = 0; i < centre; i++) {
                     int right = centre + i;
                     int left = centre - 1 - i;
 
-                    CRGB temp = bufferArray[right];
-                    bufferArray[right] = bufferArray[left];
-                    bufferArray[left] = temp;
+                    if (modifier != nullptr) {
+                        CRGB temp = modifierBufferArray[right];
+                        modifierBufferArray[right] = modifierBufferArray[left];
+                        modifierBufferArray[left] = temp;
+                    } else {
+                        CRGB temp = effectBufferArray[right];
+                        effectBufferArray[right] = effectBufferArray[left];
+                        effectBufferArray[left] = temp;
+                    }
                 }
             }
 
-            if (mirror != MIRROR_NONE) {
-                for (int i = 0; i < section.sectionSize; i++) {
-                    bufferArray[section.sectionSize + i] = bufferArray[section.end - i];
+            if (effect->mirror != MIRROR_NONE) {
+                for (int i = 0; i < effect->section.sectionSize; i++) {
+                    effectBufferArray[effect->section.sectionSize + i] = effectBufferArray[effect->section.end - i];
+                }
+                if (modifier != nullptr) {
+                    for (int i = 0; i < effect->section.sectionSize; i++) {
+                        modifierBufferArray[effect->section.sectionSize + i] = modifierBufferArray[effect->section.end -i];
+                    }
                 }
             }
-            for (int i = 0; i < pixelSections.size(); i++) {
-                auto pixelSection = pixelSections.at(i);
+
+            for (int i = 0; i < effectPixelSections.size(); i++) {
+                auto pixelSection = effectPixelSections.at(i);
                 for (int j = pixelSection.start; j <= pixelSection.end; j++) {
-                    targetArray[j] = bufferArray[i];
+                    targetArray[j] = (modifier == nullptr) ? effectBufferArray[i]
+                                                           : modifierBufferArray[i];
                 }
             }
         }

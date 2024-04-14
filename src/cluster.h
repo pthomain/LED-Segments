@@ -46,12 +46,6 @@ private:
             const std::vector<Section> &pixelSections
     );
 
-    void render(
-            CRGB *targetArray,
-            CRGB *bufferArray,
-            std::vector<std::pair<Effect *, std::vector<Section>>> &effectMap
-    );
-
 public:
 
     const Section clusterSection;
@@ -62,7 +56,11 @@ public:
             const EffectConfig *effectConfig
     );
 
-    void render(CRGB *targetArray, CRGB *bufferArray);
+    void render(
+            CRGB *targetArray,
+            CRGB *effectBufferArray,
+            CRGB *modifierBufferArray
+    );
 };
 
 #endif //CLUSTER_H

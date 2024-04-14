@@ -29,6 +29,13 @@ public:
     };
 
     ~Modifier() = default;
+
+    void fillArray(CRGB *targetArray) override {
+        fillAlphaArray();
+        for (int i = 0; i < arraySize; ++i) {
+            if (alphaArray[i] == 0)targetArray[i] = CRGB::Black;
+        }
+    }
 };
 
 template<typename T>

@@ -24,7 +24,8 @@ private:
     const std::vector<Section> stripReversalSections;
 
     CRGB *allLeds;
-    CRGB *bufferArray;
+    CRGB *effectBufferArray;
+    CRGB *modifierBufferArray;
 
     Scope currentScope = SCOPE_WHOLE;
 

@@ -8,7 +8,14 @@
 #include "effects/partyeffect.h"
 #include "modifiers/pongmodifier.h"
 
+#define CHANCE_OF_MODIFIER 5
+#define CHANCE_OF_MIRROR 5
+
 Display *display = nullptr;
+auto scope = SCOPE_WHOLE;
+
+auto effectPixelUnit = UNIT_LETTER;
+auto modifierPixelUnit = UNIT_LETTER;
 
 std::vector<std::function<Effect *(const Section &, Mirror)>> effectFactories;
 std::vector<std::function<Effect *(const Section &, Mirror)>> modifierFactories;
@@ -39,35 +46,43 @@ void loop() {
         changeEffect();
     }
 
-    EVERY_N_MILLISECONDS(500) {
+    EVERY_N_MILLISECONDS(80) {
         display->render();
-        Serial.println("");
     }
 }
 
 void changeEffect() {
-    int currentEffect = random8(effectFactories.size() - 1);
-    int currentModifier = random8(modifierFactories.size() - 1);
+//    std::pair<Scope, PixelUnit> variation = variations.at(random8(variations.size() - 1));
+//     modifierScope = variation.first;
+//     modifierPixelUnit = variation.second;
 //
-    std::pair<Scope, PixelUnit> variation = variations.at(random8(variations.size() - 1));
-    auto scope = variation.first;
-    auto pixelUnit = variation.second;
+    bool useModifier = random8(CHANCE_OF_MODIFIER) == 0;
+    if (!useModifier) display->clearModifier(scope);
 
-    Mirror mirror = mirrors.at(random8(mirrors.size() - 1));
+    Mirror mirror;
 
-    display->applyEffect(
-            effectFactories.at(currentEffect),
+//    if (random8(CHANCE_OF_MIRROR) == 0) {
+//        mirror = mirrors.at(1 + random8(mirrors.size() - 2));
+//    } else {
+        mirror = MIRROR_NONE;
+//    }
+
+    //TODO fade effects https://github.com/atuline/FastLED-Demos/blob/master/aanimations/aanimations.ino
+    display->applyEffectOrModifier(
+            effectFactories.at(random8(effectFactories.size() - 1)),
             scope,
-            pixelUnit,
+            effectPixelUnit,
             mirror,
             false
     );
 
-    display->applyEffect(
-            modifierFactories.at(currentModifier),
-            scope,
-            pixelUnit,
-            mirror,
-            true
-    );
+    if (useModifier&&false) {
+        display->applyEffectOrModifier(
+                modifierFactories.at(random8(modifierFactories.size() - 1)),
+                scope,
+                modifierPixelUnit,
+                mirror,
+                true
+        );
+    }
 }

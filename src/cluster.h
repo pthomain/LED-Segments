@@ -46,15 +46,19 @@ private:
             const std::vector<Section> &pixelSections
     );
 
+    void clearEffectOrModifier(std::vector<std::pair<Effect *, std::vector<Section>>> &effectMap);
+
 public:
 
     const Section clusterSection;
 
     Cluster(std::vector<Section> sections, Scope scope);
 
-    void applyEffect(
+    void applyConfig(
             const EffectConfig *effectConfig
     );
+
+    void clearModifier();
 
     void render(
             CRGB *targetArray,

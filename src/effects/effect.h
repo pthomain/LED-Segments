@@ -26,7 +26,7 @@ public :
         arraySize = section.end - section.start + 1;
     };
 
-    ~Effect() = default;
+    virtual ~Effect() = default;
 
     virtual void fillArray(CRGB *targetArray) = 0;
 };

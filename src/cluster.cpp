@@ -16,7 +16,7 @@ Cluster::Cluster(std::vector<Section> sections, Scope scope)
                   )
           ) {}
 
-void Cluster::applyEffect(
+void Cluster::applyConfig(
         const EffectConfig *effectConfig
 ) {
     //The effect applies to each section of the cluster repeatedly
@@ -25,11 +25,7 @@ void Cluster::applyEffect(
     //the intersection of the subsections in pixelUnits and the current section
 
     auto &effectMap = effectConfig->isModifier ? modifierPerSectionPixels : effectPerSectionPixels;
-
-    for (const auto &item: effectMap) {
-        delete item.first;
-    }
-    effectMap.clear();
+    clearEffectOrModifier(effectMap);
 
     for (const auto &scopeSection: scopeSections) {
         if (effectConfig->pixelUnits == nullptr) {
@@ -42,14 +38,11 @@ void Cluster::applyEffect(
                     effectConfig->pixelUnits->scopeSections
             );
 
-            //TODO: pre-index all sizes for all configs
-
             int intersectedSize = intersectedSections.size();
             int size = effectConfig->mirror == MIRROR_NONE
                        ? intersectedSize
                        : intersectedSize % 2 == 0 ? intersectedSize / 2 : (intersectedSize + 1) / 2;
 
-            //TODO delete this: memory leak
             Section pixelSection = Section(0, size - 1);
 
             Effect *effect = effectConfig->effectFactory(pixelSection, effectConfig->mirror);
@@ -140,7 +133,8 @@ void Cluster::render(
                 }
                 if (modifier != nullptr) {
                     for (int i = 0; i < effect->section.sectionSize; i++) {
-                        modifierBufferArray[effect->section.sectionSize + i] = modifierBufferArray[effect->section.end -i];
+                        modifierBufferArray[effect->section.sectionSize + i] = modifierBufferArray[effect->section.end -
+                                                                                                   i];
                     }
                 }
             }
@@ -154,4 +148,17 @@ void Cluster::render(
             }
         }
     }
+}
+
+void Cluster::clearModifier() {
+    FastLED.clear();
+    clearEffectOrModifier(effectPerSectionPixels);
+    clearEffectOrModifier(modifierPerSectionPixels);
+}
+
+void Cluster::clearEffectOrModifier(std::vector<std::pair<Effect *, std::vector<Section>>> &effectMap) {
+    for (const auto &item: effectMap) {
+        delete item.first;
+    }
+    effectMap.clear();
 }

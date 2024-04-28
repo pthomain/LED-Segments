@@ -32,7 +32,7 @@ Display::Display(
     FastLED.setBrightness(brightness);
 }
 
-void Display::applyEffect(
+void Display::applyEffectOrModifier(
         const std::function<Effect *(const Section &, const Mirror)> &effectFactory,
         const Scope scope,
         const PixelUnit pixelUnit,
@@ -48,7 +48,7 @@ void Display::applyEffect(
     switch (scope) {
         case SCOPE_LETTER: {
             auto *config = new EffectConfig(effectFactory, nullptr, mirror, isModifier);
-            letters.applyEffect(config);
+            letters.applyConfig(config);
             delete config;
         }
             break;
@@ -56,11 +56,11 @@ void Display::applyEffect(
         case SCOPE_WORD:
             if (pixelUnit == UNIT_LETTER) {
                 auto *config = new EffectConfig(effectFactory, &letters, mirror, isModifier);
-                words.applyEffect(config);
+                words.applyConfig(config);
                 delete config;
             } else {
                 auto *config = new EffectConfig(effectFactory, nullptr, mirror, isModifier);
-                words.applyEffect(config);
+                words.applyConfig(config);
                 delete config;
             }
             break;
@@ -68,17 +68,31 @@ void Display::applyEffect(
         case SCOPE_WHOLE:
             if (pixelUnit == UNIT_WORD) {
                 auto *config = new EffectConfig(effectFactory, &words, mirror, isModifier);
-                whole.applyEffect(config);
+                whole.applyConfig(config);
                 delete config;
             } else if (pixelUnit == UNIT_LETTER) {
                 auto *config = new EffectConfig(effectFactory, &letters, mirror, isModifier);
-                whole.applyEffect(config);
+                whole.applyConfig(config);
                 delete config;
             } else {
                 auto *config = new EffectConfig(effectFactory, nullptr, mirror, isModifier);
-                whole.applyEffect(config);
+                whole.applyConfig(config);
                 delete config;
             }
+            break;
+    }
+}
+
+void Display::clearModifier(const Scope scope) {
+    switch (scope) {
+        case SCOPE_LETTER:
+            letters.clearModifier();
+            break;
+        case SCOPE_WORD:
+            words.clearModifier();
+            break;
+        case SCOPE_WHOLE:
+            whole.clearModifier();
             break;
     }
 }
@@ -185,13 +199,6 @@ Display *initDisplay(int brightness) {
                         Section(64, 175),
                         Section(176, 255)
                 });
-
-//        words = std::vector<Section>(
-//                {
-//                        Section(0, 15),
-//                        Section(16, 175),
-//                        Section(176, 255)
-//                });
 
         stripReversalSection = std::vector<Section>(
                 {

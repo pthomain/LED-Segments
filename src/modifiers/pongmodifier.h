@@ -16,7 +16,7 @@ public:
             const Mirror mirror
     ) : Modifier(section, mirror) {}
 
-    ~PongModifier() = default;
+    ~PongModifier() override = default;
 
     void fillAlphaArray() override;
 

@@ -3,6 +3,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+#define FASTLED_USE_PROGMEM 1
+
 #include <FastLED.h>
 #include <utils.h>
 #include <utility>
@@ -40,13 +42,15 @@ public:
             const int brightness
     );
 
-    void applyEffect(
+    void applyEffectOrModifier(
             const std::function<Effect *(const Section &, const Mirror)> &effectFactory,
             const Scope scope,
             const PixelUnit pixelUnit,
             const Mirror mirror,
             const boolean isModifier
     );
+
+    void clearModifier(const Scope scope);
 
     void render();
 

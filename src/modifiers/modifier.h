@@ -28,12 +28,12 @@ public:
         alphaArray = new uint8_t[arraySize];
     };
 
-    ~Modifier() = default;
+    virtual  ~Modifier() = default;
 
     void fillArray(CRGB *targetArray) override {
         fillAlphaArray();
         for (int i = 0; i < arraySize; ++i) {
-            if (alphaArray[i] == 0)targetArray[i] = CRGB::Black;
+            targetArray[i].nscale8(alphaArray[i]);
         }
     }
 };

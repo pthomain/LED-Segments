@@ -10,6 +10,8 @@ std::function<Effect *(const Section &, const Mirror)> PongModifier::factory = [
 };
 
 void PongModifier::fillAlphaArray() {
+//    fadeToBlackBy(alphaArray, arraySize, 127);
+
     for (int i = 0; i < arraySize; ++i) {
         alphaArray[i] = i == position ? 255 : 0;
     }

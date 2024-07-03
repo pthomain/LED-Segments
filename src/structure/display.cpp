@@ -1,5 +1,5 @@
-#include <FastLED.h>
-#include <utils.h>
+#include "FastLED.h"
+#include "utils/utils.h"
 #include <utility>
 #include <vector>
 #include "cluster.h"
@@ -22,101 +22,70 @@ Display::Display(
                   SCOPE_WHOLE
           )
     ),
-    stripReversalSections(std::move(stripReversalSections)) {
+    stripReversalSections(std::move(stripReversalSections)),
+    allLeds(new CRGB[totalLeds]),
+    fader(allLeds, totalLeds) {
+    delay(2000);
 
-    allLeds = new CRGB[totalLeds];
-    effectBufferArray = new CRGB[totalLeds];
-    modifierBufferArray = new CRGB[totalLeds];
-
+    set_max_power_in_volts_and_milliamps(5, 500);
     CFastLED::addLeds<WS2812B, LED_PIN, GRB>(allLeds, totalLeds);
     FastLED.setBrightness(brightness);
+    FastLED.clear(true);
+    FastLED.show();
 }
 
-void Display::applyEffectOrModifier(
+void Display::applyEffect(
+        const uint16_t transitionDurationInFrames,
         const std::function<Effect *(const Section &, const Mirror)> &effectFactory,
+        const std::function<Effect *(const Section &, const Mirror)> *modifierFactory,
         const Scope scope,
         const PixelUnit pixelUnit,
-        const Mirror mirror,
-        const boolean isModifier
+        const Mirror mirror
 ) {
-    currentScope = scope;
-    std::string output = (isModifier ? "MODIFIER\t" : "EFFECT\t\t") + scopeToString(scope)
+    std::string output = scopeToString(scope)
                          + "\t" + pixelUnitToString(pixelUnit)
                          + "\t" + mirrorToString(mirror);
     Serial.println(output.c_str());
 
-    switch (scope) {
-        case SCOPE_LETTER: {
-            auto *config = new EffectConfig(effectFactory, nullptr, mirror, isModifier);
-            letters.applyConfig(config);
-            delete config;
-        }
-            break;
+    Cluster *pixelUnits = nullptr;
+    Cluster *sectionCluster = nullptr;
 
-        case SCOPE_WORD:
-            if (pixelUnit == UNIT_LETTER) {
-                auto *config = new EffectConfig(effectFactory, &letters, mirror, isModifier);
-                words.applyConfig(config);
-                delete config;
-            } else {
-                auto *config = new EffectConfig(effectFactory, nullptr, mirror, isModifier);
-                words.applyConfig(config);
-                delete config;
-            }
-            break;
-
-        case SCOPE_WHOLE:
-            if (pixelUnit == UNIT_WORD) {
-                auto *config = new EffectConfig(effectFactory, &words, mirror, isModifier);
-                whole.applyConfig(config);
-                delete config;
-            } else if (pixelUnit == UNIT_LETTER) {
-                auto *config = new EffectConfig(effectFactory, &letters, mirror, isModifier);
-                whole.applyConfig(config);
-                delete config;
-            } else {
-                auto *config = new EffectConfig(effectFactory, nullptr, mirror, isModifier);
-                whole.applyConfig(config);
-                delete config;
-            }
-            break;
-    }
-}
-
-void Display::clearModifier(const Scope scope) {
     switch (scope) {
         case SCOPE_LETTER:
-            letters.clearModifier();
+            sectionCluster = &letters;
             break;
         case SCOPE_WORD:
-            words.clearModifier();
+            sectionCluster = &words;
+            if (pixelUnit == UNIT_LETTER) pixelUnits = &letters;
             break;
         case SCOPE_WHOLE:
-            whole.clearModifier();
+            sectionCluster = &whole;
+            if (pixelUnit == UNIT_LETTER)
+                pixelUnits = &letters;
+            else if (pixelUnit == UNIT_WORD)
+                pixelUnits = &words;
             break;
     }
+
+    fader.applyConfig(
+            new EffectConfig(
+                    *sectionCluster,
+                    effectFactory,
+                    modifierFactory,
+                    pixelUnits,
+                    mirror
+            ),
+            transitionDurationInFrames
+    );
 }
 
 void Display::render() {
-    switch (currentScope) {
-        case SCOPE_LETTER:
-            letters.render(allLeds, effectBufferArray, modifierBufferArray);
-            break;
-
-        case SCOPE_WORD:
-            words.render(allLeds, effectBufferArray, modifierBufferArray);
-            break;
-
-        case SCOPE_WHOLE:
-            whole.render(allLeds, effectBufferArray, modifierBufferArray);
-            break;
-    }
-
+    fader.render();
     alignSections();
     FastLED.show();
 }
 
-void Display::alignSections() {
+void Display::alignSections() const {
     for (int i = 1; i < stripReversalSections.size(); i += 2) {
         auto section = stripReversalSections.at(i);
         int mid = (section.end - section.start) / 2;
@@ -129,12 +98,6 @@ void Display::alignSections() {
             allLeds[section.end - j] = left;
         }
     }
-}
-
-Display::~Display() {
-    delete[] allLeds;
-    delete[] effectBufferArray;
-    delete[] modifierBufferArray;
 }
 
 Display *initDisplay(int brightness) {
@@ -236,7 +199,7 @@ Display *initDisplay(int brightness) {
                         Section(248, 255)
                 });
 
-        actualBrightness = brightness == -1 ? 1 : brightness;
+        actualBrightness = brightness == -1 ? 10 : brightness;
     }
 
     return new Display(

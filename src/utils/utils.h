@@ -6,7 +6,7 @@
 #include <Arduino.h>
 #include <string>
 #include <memory>
-#include <FastLED.h>
+#include "FastLED.h"
 
 void printNumber(char text[], int value);
 

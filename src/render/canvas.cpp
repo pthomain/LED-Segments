@@ -1,59 +1,66 @@
-#include "cluster.h"
-#include "utils.h"
+#include "canvas.h"
+#include "utils/utils.h"
 #include <utility>
 #include <vector>
-#include <FastLED.h>
 #include "effects/effect.h"
 #include "config/effectconfig.h"
 
-Cluster::Cluster(std::vector<Section> sections, Scope scope)
-        : scope(scope),
-          scopeSections(std::move(sections)),
-          clusterSection(
-                  Section(
-                          scopeSections.at(0).start,
-                          scopeSections.at(scopeSections.size() - 1).end
-                  )
-          ) {}
-
-void Cluster::applyConfig(
-        const EffectConfig *effectConfig
+void Canvas::applyConfig(
+    EffectConfig *effectConfig
 ) {
     //The effect applies to each section of the cluster repeatedly
     //The effect applies to a number of pixels in the section
     //If pixelUnits is not null, we need to subdivide each section into virtual pixels corresponding to
     //the intersection of the subsections in pixelUnits and the current section
+    delete currentEffectConfig;
+    currentEffectConfig = effectConfig;
 
-    auto &effectMap = effectConfig->isModifier ? modifierPerSectionPixels : effectPerSectionPixels;
-    clearEffectOrModifier(effectMap);
+    clearEffectOrModifier(effectPerSectionPixels);
+    clearEffectOrModifier(modifierPerSectionPixels);
 
-    for (const auto &scopeSection: scopeSections) {
-        if (effectConfig->pixelUnits == nullptr) {
+    if (effectConfig != nullptr) {
+        applyEffectOrModifier(effectPerSectionPixels, effectConfig->effectFactory);
+        if (effectConfig->modifierFactory != nullptr) {
+            applyEffectOrModifier(modifierPerSectionPixels, *effectConfig->modifierFactory);
+        }
+    }
+}
+
+void Canvas::applyEffectOrModifier(
+    std::vector<std::pair<Effect *, std::vector<Section> > > &effectMap,
+    const std::function<Effect *(const Section &, const Mirror)> &effectFactory
+) const {
+    if (currentEffectConfig == nullptr) return;
+
+    for (const auto &scopeSection: currentEffectConfig->cluster.scopeSections) {
+        if (currentEffectConfig->pixelUnits == nullptr) {
             //If pixelUnits is null, we don't need to apply a mirror
-            Effect *effect = effectConfig->effectFactory(scopeSection, MIRROR_NONE);
+            Effect *effect = effectFactory(scopeSection, MIRROR_NONE);
             effectMap.emplace_back(effect, emptySections);
         } else {
             auto intersectedSections = intersectAllPixelsWithClusterScope(
-                    scopeSection,
-                    effectConfig->pixelUnits->scopeSections
+                scopeSection,
+                currentEffectConfig->pixelUnits->scopeSections
             );
 
             int intersectedSize = intersectedSections.size();
-            int size = effectConfig->mirror == MIRROR_NONE
-                       ? intersectedSize
-                       : intersectedSize % 2 == 0 ? intersectedSize / 2 : (intersectedSize + 1) / 2;
+            int size = currentEffectConfig->mirror == MIRROR_NONE
+                           ? intersectedSize
+                           : intersectedSize % 2 == 0
+                                 ? intersectedSize / 2
+                                 : (intersectedSize + 1) / 2;
 
             Section pixelSection = Section(0, size - 1);
 
-            Effect *effect = effectConfig->effectFactory(pixelSection, effectConfig->mirror);
+            Effect *effect = effectFactory(pixelSection, currentEffectConfig->mirror);
             effectMap.emplace_back(effect, intersectedSections);
         }
     }
 }
 
-std::vector<Section> Cluster::intersectAllPixelsWithClusterScope(
-        const Section &clusterSection,
-        const std::vector<Section> &pixelSections
+std::vector<Section> Canvas::intersectAllPixelsWithClusterScope(
+    const Section &clusterSection,
+    const std::vector<Section> &pixelSections
 ) {
     std::vector<Section> intersectedSections = std::vector<Section>();
 
@@ -66,11 +73,9 @@ std::vector<Section> Cluster::intersectAllPixelsWithClusterScope(
     return intersectedSections;
 }
 
-void Cluster::render(
-        CRGB *targetArray,
-        CRGB *effectBufferArray,
-        CRGB *modifierBufferArray
-) {
+void Canvas::render(CRGB *outputArray) const {
+    if (currentEffectConfig == nullptr) return;
+
     for (int x = 0; x < effectPerSectionPixels.size(); x++) {
         auto effectPair = effectPerSectionPixels.at(x);
         auto &effect = effectPair.first;
@@ -81,9 +86,9 @@ void Cluster::render(
         auto modifierPixelSections = modifierPair == nullptr ? emptySections : modifierPair->second;
 
         if (effectPixelSections.empty()) {
-            if (scope == SCOPE_WHOLE) {
-                effect->fillArray(targetArray);
-                if (modifier != nullptr) modifier->fillArray(targetArray);
+            if (currentEffectConfig->cluster.scope == SCOPE_WHOLE) {
+                effect->fillArray(outputArray);
+                if (modifier != nullptr) modifier->fillArray(outputArray);
             } else {
                 effect->fillArray(effectBufferArray);
                 if (modifier != nullptr) {
@@ -93,8 +98,9 @@ void Cluster::render(
                     modifier->fillArray(modifierBufferArray);
                 }
                 for (int i = 0; i < effect->section.sectionSize; i++) {
-                    targetArray[effect->section.start + i] = (modifier == nullptr) ? effectBufferArray[i]
-                                                                                   : modifierBufferArray[i];
+                    outputArray[effect->section.start + i] = (modifier == nullptr)
+                                                                 ? effectBufferArray[i]
+                                                                 : modifierBufferArray[i];
                 }
             }
         } else {
@@ -108,8 +114,8 @@ void Cluster::render(
 
             if (effect->mirror == MIRROR_EDGE) {
                 int centre = effect->section.sectionSize % 2 == 0
-                             ? effect->section.sectionSize / 2
-                             : (effect->section.sectionSize + 1) / 2;
+                                 ? effect->section.sectionSize / 2
+                                 : (effect->section.sectionSize + 1) / 2;
 
                 for (int i = 0; i < centre; i++) {
                     int right = centre + i;
@@ -133,8 +139,8 @@ void Cluster::render(
                 }
                 if (modifier != nullptr) {
                     for (int i = 0; i < effect->section.sectionSize; i++) {
-                        modifierBufferArray[effect->section.sectionSize + i] = modifierBufferArray[effect->section.end -
-                                                                                                   i];
+                        modifierBufferArray[effect->section.sectionSize + i] = modifierBufferArray[
+                            effect->section.end - i];
                     }
                 }
             }
@@ -142,21 +148,14 @@ void Cluster::render(
             for (int i = 0; i < effectPixelSections.size(); i++) {
                 auto pixelSection = effectPixelSections.at(i);
                 for (int j = pixelSection.start; j <= pixelSection.end; j++) {
-                    targetArray[j] = (modifier == nullptr) ? effectBufferArray[i]
-                                                           : modifierBufferArray[i];
+                    outputArray[j] = (modifier == nullptr) ? effectBufferArray[i] : modifierBufferArray[i];
                 }
             }
         }
     }
 }
 
-void Cluster::clearModifier() {
-    FastLED.clear();
-    clearEffectOrModifier(effectPerSectionPixels);
-    clearEffectOrModifier(modifierPerSectionPixels);
-}
-
-void Cluster::clearEffectOrModifier(std::vector<std::pair<Effect *, std::vector<Section>>> &effectMap) {
+void Canvas::clearEffectOrModifier(std::vector<std::pair<Effect *, std::vector<Section> > > &effectMap) {
     for (const auto &item: effectMap) {
         delete item.first;
     }

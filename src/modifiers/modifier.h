@@ -5,8 +5,8 @@
 
 #include <functional>
 #include "FastLED.h"
-#include "section.h"
-#include "utils.h"
+#include "structure/section.h"
+#include "utils/utils.h"
 #include "effects/effect.h"
 #include <memory>
 
@@ -28,7 +28,9 @@ public:
         alphaArray = new uint8_t[arraySize];
     };
 
-    virtual  ~Modifier() = default;
+    ~Modifier() override {
+        delete[] alphaArray;
+    }
 
     void fillArray(CRGB *targetArray) override {
         fillAlphaArray();
@@ -41,7 +43,7 @@ public:
 template<typename T>
 class ModifierFactory {
 public:
-    Effect *createModifier(const Section &section, const Mirror mirror) {
+    static Effect *createModifier(const Section &section, const Mirror mirror) {
         return new T(section, mirror);
     }
 };

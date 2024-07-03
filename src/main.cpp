@@ -1,36 +1,45 @@
 #include <FastLED.h>
-#include <utils.h>
-#include <display.h>
+#include "utils/utils.h"
+#include "structure/display.h"
 #include "effects/effect.h"
 #include "modifiers/modifier.h"
-#include <cluster.h>
+#include "structure/cluster.h"
 #include <memory>
 #include "effects/partyeffect.h"
 #include "modifiers/pongmodifier.h"
+#include "effects/greeneffect.h"
+#include "effects/redeffect.h"
 
-#define CHANCE_OF_MODIFIER 5
-#define CHANCE_OF_MIRROR 5
+#define CHANCE_OF_MODIFIER 0
+#define CHANCE_OF_MIRROR 3
+#define TRANSITION_DURATION_IN_MILLIS 1000
+#define FPS 30
+#define REFRESH_RATE_IN_MILLIS (1000 / FPS)
+#define EFFECT_DURATION_IN_SECONDS 10
+
+#define TRANSITION_DURATION_IN_MILLIS 1000
+#define TRANSITION_DURATION_IN_FRAMES TRANSITION_DURATION_IN_MILLIS / REFRESH_RATE_IN_MILLIS
 
 Display *display = nullptr;
 auto scope = SCOPE_WHOLE;
+auto pixelUnit = UNIT_LETTER;
+Mirror mirror = MIRROR_NONE;
+uint8_t variationIndex = 0;
 
-auto effectPixelUnit = UNIT_LETTER;
-auto modifierPixelUnit = UNIT_LETTER;
+std::function<Effect *(const Section &, const Mirror)> *modifierFactory = nullptr;
 
-std::vector<std::function<Effect *(const Section &, Mirror)>> effectFactories;
-std::vector<std::function<Effect *(const Section &, Mirror)>> modifierFactories;
+std::vector<std::function<Effect *(const Section &, Mirror)> > effectFactories;
+std::vector<std::function<Effect *(const Section &, Mirror)> > modifierFactories;
 
 void changeEffect();
 
 void setup() {
     Serial.begin(9600);
-    delay(2000);
-
-    set_max_power_in_volts_and_milliamps(5, 500);
-    FastLED.clear();
 
     effectFactories = {
-            PartyEffect::factory
+            PartyEffect::factory,
+            GreenEffect::factory,
+            RedEffect::factory
     };
 
     modifierFactories = {
@@ -42,47 +51,37 @@ void setup() {
 }
 
 void loop() {
-    EVERY_N_SECONDS(10) {
+    EVERY_N_SECONDS(EFFECT_DURATION_IN_SECONDS) {
         changeEffect();
     }
 
-    EVERY_N_MILLISECONDS(80) {
+    EVERY_N_MILLISECONDS(REFRESH_RATE_IN_MILLIS) {
         display->render();
     }
 }
 
 void changeEffect() {
-//    std::pair<Scope, PixelUnit> variation = variations.at(random8(variations.size() - 1));
-//     modifierScope = variation.first;
-//     modifierPixelUnit = variation.second;
-//
-    bool useModifier = random8(CHANCE_OF_MODIFIER) == 0;
-    if (!useModifier) display->clearModifier(scope);
+    std::pair<Scope, PixelUnit> variation = variations.at(variationIndex);//random8(variations.size() - 1));
+    scope = variation.first;
+    pixelUnit = variation.second;
 
-    Mirror mirror;
+    variationIndex = (variationIndex + 1) % variations.size();
 
-//    if (random8(CHANCE_OF_MIRROR) == 0) {
-//        mirror = mirrors.at(1 + random8(mirrors.size() - 2));
-//    } else {
-        mirror = MIRROR_NONE;
-//    }
-
-    //TODO fade effects https://github.com/atuline/FastLED-Demos/blob/master/aanimations/aanimations.ino
-    display->applyEffectOrModifier(
-            effectFactories.at(random8(effectFactories.size() - 1)),
-            scope,
-            effectPixelUnit,
-            mirror,
-            false
-    );
-
-    if (useModifier&&false) {
-        display->applyEffectOrModifier(
-                modifierFactories.at(random8(modifierFactories.size() - 1)),
-                scope,
-                modifierPixelUnit,
-                mirror,
-                true
-        );
+    mirror = MIRROR_NONE;
+    if (random8(CHANCE_OF_MIRROR) == 1) {
+        mirror = mirrors.at(1 + random8(mirrors.size() - 1)); // skip MIRROR_NONE
     }
+
+    modifierFactory = nullptr;
+    if (random8(CHANCE_OF_MODIFIER) == 1)
+        modifierFactory = &(modifierFactories.at(random8(modifierFactories.size() - 1)));
+
+    display->applyEffect(
+            TRANSITION_DURATION_IN_FRAMES,
+            effectFactories.at(random8(effectFactories.size() - 1)),
+            modifierFactory,
+            scope,
+            pixelUnit,
+            mirror
+    );
 }

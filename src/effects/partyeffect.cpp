@@ -1,6 +1,6 @@
 #include "partyeffect.h"
 
- std::function<Effect *(const Section &, const Mirror)> PartyEffect::factory = [](
+std::function<Effect *(const Section &, const Mirror)> PartyEffect::factory = [](
         const Section &section,
         const Mirror mirror
 ) -> Effect * {

@@ -5,14 +5,15 @@
 
 #define FASTLED_USE_PROGMEM 1
 
-#include <FastLED.h>
-#include <utils.h>
+#include "FastLED.h"
+#include "utils/utils.h"
 #include <utility>
 #include <vector>
 #include <string>
 #include <utility>
 #include "cluster.h"
 #include "effects/effect.h"
+#include "render/fader.h"
 
 #define IS_PROD false
 #define LED_PIN 9
@@ -26,15 +27,11 @@ private:
     const std::vector<Section> stripReversalSections;
 
     CRGB *allLeds;
-    CRGB *effectBufferArray;
-    CRGB *modifierBufferArray;
+    Fader fader;
 
-    Scope currentScope = SCOPE_WHOLE;
-
-    void alignSections();
+    void alignSections() const;
 
 public:
-
     Display(
             Cluster letters,
             Cluster words,
@@ -42,19 +39,20 @@ public:
             const int brightness
     );
 
-    void applyEffectOrModifier(
+    void applyEffect(
+            const uint16_t transitionDurationInFrames,
             const std::function<Effect *(const Section &, const Mirror)> &effectFactory,
+            const std::function<Effect *(const Section &, const Mirror)> *modifierFactory,
             const Scope scope,
             const PixelUnit pixelUnit,
-            const Mirror mirror,
-            const boolean isModifier
+            const Mirror mirror
     );
-
-    void clearModifier(const Scope scope);
 
     void render();
 
-    ~Display();
+    ~Display() {
+        delete[] allLeds;
+    }
 };
 
 Display *initDisplay(const int brightness = -1);

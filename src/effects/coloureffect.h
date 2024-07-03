@@ -6,10 +6,10 @@
 #include "colorutils.h"
 
 static const std::vector<CRGBPalette16> palettes = std::vector<CRGBPalette16>{
-        PartyColors_p,
-        ForestColors_p,
-        CloudColors_p,
-        OceanColors_p
+    PartyColors_p,
+    ForestColors_p,
+    CloudColors_p,
+    OceanColors_p
 };
 
 class PartyEffect : public Effect, public EffectFactory<PartyEffect> {
@@ -20,11 +20,11 @@ private:
 
 public:
     explicit PartyEffect(
-            const Section &section,
-            const Mirror mirror
+        const Section &section,
+        const Mirror mirror
     ) : Effect(section, mirror) {
         palette = palettes[paletteIndex]; //random8(0, palettes.size())];
-        paletteIndex = (paletteIndex + 1) % palettes.size();
+        paletteIndex = paletteIndex + 1;// % palettes.size();
     }
 
     ~PartyEffect() override = default;

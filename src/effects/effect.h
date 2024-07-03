@@ -5,8 +5,8 @@
 
 #include <functional>
 #include "FastLED.h"
-#include "section.h"
-#include "utils.h"
+#include "structure/section.h"
+#include "utils/utils.h"
 #include <memory>
 
 class Effect {
@@ -34,7 +34,7 @@ public :
 template<typename T>
 class EffectFactory {
 public:
-    Effect *createEffect(const Section &section, const Mirror mirror) {
+    static Effect *createEffect(const Section &section, const Mirror mirror) {
         return new T(section, mirror);
     }
 };

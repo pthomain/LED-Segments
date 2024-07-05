@@ -14,6 +14,7 @@
 #include "cluster.h"
 #include "effects/effect.h"
 #include "render/fader.h"
+#include "config/variation.h"
 
 #define IS_PROD false
 #define LED_PIN 9
@@ -39,13 +40,9 @@ public:
             const int brightness
     );
 
-    void applyEffect(
+    void pickNewEffect(
             const uint16_t transitionDurationInFrames,
-            const std::function<Effect *(const Section &, const Mirror)> &effectFactory,
-            const std::function<Effect *(const Section &, const Mirror)> *modifierFactory,
-            const Scope scope,
-            const PixelUnit pixelUnit,
-            const Mirror mirror
+            const std::vector<std::pair<std::function<Effect *(const Section &, Mirror)>, Variation>>& effectFactories
     );
 
     void render();

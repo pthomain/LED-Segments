@@ -4,6 +4,7 @@
 #include <vector>
 #include "effect.h"
 #include "colorutils.h"
+#include "config/variation.h"
 
 class RedEffect : public Effect, public EffectFactory<RedEffect> {
 private:
@@ -20,6 +21,7 @@ public:
     void fillArray(CRGB *targetArray) override;
 
     static std::function<Effect *(const Section &, const Mirror mirror)> factory;
+    static Variation variation;
 };
 
 #endif //LED_MATRIX_DLH_REDEFFECT_H

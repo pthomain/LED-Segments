@@ -1,4 +1,6 @@
 #include "redeffect.h"
+#include "config/variation.h"
+#include "modifiers/pongmodifier.h"
 
 std::function<Effect *(const Section &, const Mirror)> RedEffect::factory = [](
         const Section &section,
@@ -12,3 +14,12 @@ void RedEffect::fillArray(CRGB *targetArray) {
         targetArray[i] = CRGB::Red;
     }
 };
+
+Variation RedEffect::variation = Variation(
+        ALL_SCOPES,
+        ALL_MIRRORS,
+        {
+                nullptr,
+                &PongModifier::factory
+        }
+);

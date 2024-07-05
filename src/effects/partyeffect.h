@@ -4,6 +4,7 @@
 #include <vector>
 #include "effect.h"
 #include "colorutils.h"
+#include "config/variation.h"
 
 static const std::vector<CRGBPalette16> palettes = std::vector<CRGBPalette16>{
         PartyColors_p,
@@ -15,7 +16,6 @@ static const std::vector<CRGBPalette16> palettes = std::vector<CRGBPalette16>{
 class PartyEffect : public Effect, public EffectFactory<PartyEffect> {
 private:
     CRGBPalette16 palette;
-
     uint8_t paletteIndex = 0;
 
 public:
@@ -32,6 +32,7 @@ public:
     void fillArray(CRGB *targetArray) override;
 
     static std::function<Effect *(const Section &, const Mirror mirror)> factory;
+    static Variation variation;
 };
 
 #endif //LED_MATRIX_DLH_PARTYEFFECT_H

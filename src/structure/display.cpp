@@ -34,32 +34,54 @@ Display::Display(
     FastLED.show();
 }
 
-void Display::applyEffect(
+void Display::pickNewEffect(
         const uint16_t transitionDurationInFrames,
-        const std::function<Effect *(const Section &, const Mirror)> &effectFactory,
-        const std::function<Effect *(const Section &, const Mirror)> *modifierFactory,
-        const Scope scope,
-        const PixelUnit pixelUnit,
-        const Mirror mirror
+        const std::vector<std::pair<std::function<Effect *(const Section &, Mirror)>, Variation>> &effectFactories
 ) {
-    std::string output = scopeToString(scope)
-                         + "\t" + pixelUnitToString(pixelUnit)
-                         + "\t" + mirrorToString(mirror);
-    Serial.println(output.c_str());
+    const auto &effectFactoryPair = effectFactories.at(random8(effectFactories.size()));
+    const auto &effectFactory = effectFactoryPair.first;
+    const Variation &variation = effectFactoryPair.second;
+
+    auto scope = SCOPE_WHOLE;
+    auto pixelUnit = UNIT_PIXEL;
+
+    const auto &scopeAndUnits = variation.scopeAndUnits;
+    const auto &scopeAndUnit = scopeAndUnits.at(random8(scopeAndUnits.size()));
+    scope = scopeAndUnit.first;
+    pixelUnit = scopeAndUnit.second;
+
+    const auto &mirrors = variation.mirrors;
+    const auto mirror = mirrors.at(random8(mirrors.size()));
+
+    std::function<Effect *(const Section &, Mirror)> *modifierFactory = nullptr;
+
+    const auto &modifierFactories = variation.modifierFactories;
+
+    //TODO slow modifier speed and take mirror into account
+    bool hasModifier = !(
+            (scope == SCOPE_WHOLE && pixelUnit == UNIT_PIXEL) //too small
+            || (scope == SCOPE_WORD && pixelUnit == UNIT_PIXEL) //too small
+            || (scope == SCOPE_WHOLE && pixelUnit == UNIT_WORD) //too big
+            || (scope == SCOPE_WORD && pixelUnit == UNIT_LETTER) //too big
+    );
+
+    if (hasModifier && !modifierFactories.empty()) {
+        modifierFactory = modifierFactories.at(random8(modifierFactories.size()));
+    }
 
     Cluster *pixelUnits = nullptr;
-    Cluster *sectionCluster = nullptr;
+    Cluster *scopeCluster = nullptr;
 
     switch (scope) {
         case SCOPE_LETTER:
-            sectionCluster = &letters;
+            scopeCluster = &letters;
             break;
         case SCOPE_WORD:
-            sectionCluster = &words;
+            scopeCluster = &words;
             if (pixelUnit == UNIT_LETTER) pixelUnits = &letters;
             break;
         case SCOPE_WHOLE:
-            sectionCluster = &whole;
+            scopeCluster = &whole;
             if (pixelUnit == UNIT_LETTER)
                 pixelUnits = &letters;
             else if (pixelUnit == UNIT_WORD)
@@ -67,9 +89,14 @@ void Display::applyEffect(
             break;
     }
 
+    std::string output = scopeToString(scope)
+                         + "\t" + pixelUnitToString(pixelUnit)
+                         + "\t" + mirrorToString(mirror);
+    Serial.println(output.c_str());
+
     fader.applyConfig(
             new EffectConfig(
-                    *sectionCluster,
+                    *scopeCluster,
                     effectFactory,
                     modifierFactory,
                     pixelUnits,

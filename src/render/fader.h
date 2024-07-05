@@ -26,6 +26,10 @@ public :
                                                        totalLeds(totalLeds) {
         firstCanvasOutputArray = new CRGB[totalLeds];
         secondCanvasOutputArray = new CRGB[totalLeds];
+
+        for (int i = 0; i < totalLeds; i++) {
+            secondCanvasOutputArray[i] = CRGB::Black;
+        }
     };
 
     ~Fader() {

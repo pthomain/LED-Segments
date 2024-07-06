@@ -13,6 +13,8 @@ class Canvas {
     CRGB *modifierBufferArray = nullptr;
     EffectConfig *currentEffectConfig = nullptr;
 
+    uint8_t seed = 0;
+
     const std::vector<Section> emptySections = std::vector<Section>();
 
     std::vector<std::pair<Effect *, std::vector<Section>>> effectPerSectionPixels =
@@ -30,7 +32,7 @@ class Canvas {
 
     void applyEffectOrModifier(
         std::vector<std::pair<Effect *, std::vector<Section>>> &effectMap,
-        const std::function<Effect *(const Section &, const Mirror)> &effectFactory
+        const std::function<Effect *(const Section &, const Mirror, uint8_t)> &effectFactory
     ) const;
 
 public :
@@ -50,3 +52,4 @@ public :
 };
 
 #endif //LED_MATRIX_DLH_CANVAS_H
+

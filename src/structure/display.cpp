@@ -36,7 +36,7 @@ Display::Display(
 
 void Display::pickNewEffect(
         const uint16_t transitionDurationInFrames,
-        const std::vector<std::pair<std::function<Effect *(const Section &, Mirror)>, Variation>> &effectFactories
+        const std::vector<std::pair<std::function<Effect *(const Section &, Mirror, uint8_t)>, Variation>> &effectFactories
 ) {
     const auto &effectFactoryPair = effectFactories.at(random8(effectFactories.size()));
     const auto &effectFactory = effectFactoryPair.first;
@@ -53,7 +53,7 @@ void Display::pickNewEffect(
     const auto &mirrors = variation.mirrors;
     const auto mirror = mirrors.at(random8(mirrors.size()));
 
-    std::function<Effect *(const Section &, Mirror)> *modifierFactory = nullptr;
+    std::function<Effect *(const Section &, Mirror, uint8_t)> *modifierFactory = nullptr;
 
     const auto &modifierFactories = variation.modifierFactories;
 

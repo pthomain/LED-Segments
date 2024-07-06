@@ -9,15 +9,15 @@
 class EffectConfig {
 public:
     const Cluster &scopeCluster;
-    const std::function<Effect *(const Section &, const Mirror)> &effectFactory;
-    const std::function<Effect *(const Section &, const Mirror)> *modifierFactory;
+    const std::function<Effect *(const Section &, const Mirror, uint8_t)> &effectFactory;
+    const std::function<Effect *(const Section &, const Mirror, uint8_t)> *modifierFactory;
     const Cluster *pixelUnits;
     const Mirror mirror;
 
     EffectConfig(
         const Cluster &scopeCluster,
-        const std::function<Effect *(const Section &, const Mirror)> &effectFactory,
-        const std::function<Effect *(const Section &, const Mirror)> *modifierFactory,
+        const std::function<Effect *(const Section &, const Mirror, uint8_t)> &effectFactory,
+        const std::function<Effect *(const Section &, const Mirror, uint8_t)> *modifierFactory,
         const Cluster *pixelUnits,
         const Mirror mirror
     ) : scopeCluster(scopeCluster),

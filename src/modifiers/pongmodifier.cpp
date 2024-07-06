@@ -2,18 +2,20 @@
 #include "modifier.h"
 #include "pongmodifier.h"
 
-std::function<Effect *(const Section &, const Mirror)> PongModifier::factory = [](
+std::function<Effect *(const Section &, const Mirror, uint8_t)> PongModifier::factory = [](
         const Section &section,
-        const Mirror mirror
+        const Mirror mirror,
+        uint8_t seed
 ) -> Effect * {
-    return new PongModifier(section, mirror);
+    return new PongModifier(section, mirror, seed);
 };
 
 void PongModifier::fillAlphaArray() {
-//    fadeToBlackBy(alphaArray, arraySize, 127);
+    auto offPixel = 0;
+    if (seed % 2 == 0)offPixel = 32;
 
     for (int i = 0; i < arraySize; ++i) {
-        alphaArray[i] = i == position ? 255 : 0;
+        alphaArray[i] = i == position ? 255 : offPixel;
     }
 
     isReversed ? --position : ++position;

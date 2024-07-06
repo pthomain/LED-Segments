@@ -22,8 +22,9 @@ public:
 
     explicit Modifier(
             const Section &section,
-            const Mirror mirror
-    ) : Effect(section, mirror) {
+            const Mirror mirror,
+            uint8_t seed
+    ) : Effect(section, mirror, seed) {
         arraySize = Effect::arraySize;
         alphaArray = new uint8_t[arraySize];
     };
@@ -32,7 +33,7 @@ public:
         delete[] alphaArray;
     }
 
-    void fillArray(CRGB *targetArray) override {
+    void fillArrayInternal(CRGB *targetArray) override {
         fillAlphaArray();
         for (int i = 0; i < arraySize; ++i) {
             targetArray[i].nscale8(alphaArray[i]);
@@ -43,8 +44,8 @@ public:
 template<typename T>
 class ModifierFactory {
 public:
-    static Effect *createModifier(const Section &section, const Mirror mirror) {
-        return new T(section, mirror);
+    static Effect *createModifier(const Section &section, const Mirror mirror, uint8_t seed) {
+        return new T(section, mirror, seed);
     }
 };
 

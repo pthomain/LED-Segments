@@ -3,35 +3,34 @@
 
 #include <vector>
 #include "effect.h"
+#include "utils/utils.h"
 #include "colorutils.h"
 #include "config/variation.h"
-
-static const std::vector<CRGBPalette16> palettes = std::vector<CRGBPalette16>{
-        PartyColors_p,
-        ForestColors_p,
-        CloudColors_p,
-        OceanColors_p
-};
 
 class PartyEffect : public Effect, public EffectFactory<PartyEffect> {
 private:
     CRGBPalette16 palette;
-    uint8_t paletteIndex = 0;
+    uint8_t paletteIndex;
+    uint8_t primeA;
+    uint8_t primeB;
 
 public:
     explicit PartyEffect(
             const Section &section,
-            const Mirror mirror
-    ) : Effect(section, mirror) {
-        palette = palettes[paletteIndex]; //random8(0, palettes.size())];
-        paletteIndex = (paletteIndex + 1) % palettes.size();
+            const Mirror mirror,
+            const uint8_t seed
+    ) : Effect(section, mirror, seed) {
+        palette = PALETTES[seed % PALETTES.size()];
+        paletteIndex = (paletteIndex + 1) % PALETTES.size();
+        primeA = PRIMES.at(random8(PRIMES.size()));
+        primeB = PRIMES.at(random8(PRIMES.size()));
     }
 
     ~PartyEffect() override = default;
 
-    void fillArray(CRGB *targetArray) override;
+    void fillArrayInternal(CRGB *targetArray) override;
 
-    static std::function<Effect *(const Section &, const Mirror mirror)> factory;
+    static std::function<Effect *(const Section &, const Mirror mirror, uint8_t)> factory;
     static Variation variation;
 };
 

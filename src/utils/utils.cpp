@@ -1,6 +1,7 @@
 #include "utils.h"
 #include <cstdio>
 #include <string>
+#include <vector>
 #include "FastLED.h"
 
 void printNumber(char text[], int value) {

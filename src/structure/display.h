@@ -42,7 +42,7 @@ public:
 
     void pickNewEffect(
             const uint16_t transitionDurationInFrames,
-            const std::vector<std::pair<std::function<Effect *(const Section &, Mirror)>, Variation>>& effectFactories
+            const std::vector<std::pair<std::function<Effect *(const Section &, Mirror, uint8_t)>, Variation>>& effectFactories
     );
 
     void render();

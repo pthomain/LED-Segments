@@ -11,6 +11,8 @@ void Canvas::applyConfig(
     delete currentEffectConfig;
     currentEffectConfig = effectConfig;
 
+    seed++;
+
     clearEffectOrModifier(effectPerSectionPixels);
     clearEffectOrModifier(modifierPerSectionPixels);
 
@@ -22,7 +24,7 @@ void Canvas::applyConfig(
 
 void Canvas::applyEffectOrModifier(
         std::vector<std::pair<Effect *, std::vector<Section>>> &effectMap,
-        const std::function<Effect *(const Section &, const Mirror)> &effectFactory
+        const std::function<Effect *(const Section &, const Mirror, uint8_t)> &effectFactory
 ) const {
     if (currentEffectConfig == nullptr) return;
 
@@ -33,7 +35,7 @@ void Canvas::applyEffectOrModifier(
     for (const auto &scopeSection: currentEffectConfig->scopeCluster.scopeSections) {
         if (currentEffectConfig->pixelUnits == nullptr) {
             //If pixelUnits is null, we don't need to apply a mirror
-            Effect *effect = effectFactory(scopeSection, MIRROR_NONE);
+            Effect *effect = effectFactory(scopeSection, MIRROR_NONE, seed);
             effectMap.emplace_back(effect, emptySections);
         } else {
             auto intersectedSections = intersectAllPixelsWithClusterScope(
@@ -50,7 +52,7 @@ void Canvas::applyEffectOrModifier(
 
             Section pixelSection = Section(0, size - 1);
 
-            Effect *effect = effectFactory(pixelSection, currentEffectConfig->mirror);
+            Effect *effect = effectFactory(pixelSection, currentEffectConfig->mirror, seed);
             effectMap.emplace_back(effect, intersectedSections);
         }
     }

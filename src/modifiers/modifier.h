@@ -8,23 +8,20 @@
 #include "structure/section.h"
 #include "utils/utils.h"
 #include "effects/effect.h"
+#include "config/effectcontext.h"
 #include <memory>
 
 class Modifier : public Effect {
 
 protected:
-    int arraySize;
+    uint16_t arraySize;
     uint8_t *alphaArray;
 
     virtual void fillAlphaArray() = 0;
 
 public:
 
-    explicit Modifier(
-            const Section &section,
-            const Mirror mirror,
-            uint8_t seed
-    ) : Effect(section, mirror, seed) {
+    explicit Modifier(const EffectContext &effectContext) : Effect(effectContext) {
         arraySize = Effect::arraySize;
         alphaArray = new uint8_t[arraySize];
     };
@@ -44,8 +41,8 @@ public:
 template<typename T>
 class ModifierFactory {
 public:
-    static Effect *createModifier(const Section &section, const Mirror mirror, uint8_t seed) {
-        return new T(section, mirror, seed);
+    static Effect *createModifier(const EffectContext &effectContext) {
+        return new T(effectContext);
     }
 };
 

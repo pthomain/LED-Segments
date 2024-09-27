@@ -3,16 +3,15 @@
 #ifndef EFFECTS_H
 #define EFFECTS_H
 
-#include <functional>
 #include "FastLED.h"
 #include "structure/section.h"
 #include "utils/utils.h"
-#include <memory>
+#include "config/effectcontext.h"
 
 class Effect {
 
 protected:
-    int arraySize;
+    uint arraySize;
     int iteration = 0;
     CRGBPalette16 palette;
 
@@ -20,26 +19,27 @@ protected:
     uint8_t scale = 20;
     uint8_t speed = 0;
 
-    const uint8_t seed;
+    const EffectContext effectContext;
 
 public :
 
-    const Section section;
+    const Section &section;
     const Mirror mirror;
 
     explicit Effect(
-            const Section &section,
-            const Mirror mirror,
-            const uint8_t seed
-    ) : section(section), mirror(mirror), seed(seed) {
+            const EffectContext &effectContext
+    ) : effectContext(effectContext),
+        section(effectContext.section),
+        mirror(effectContext.mirror) {
+
         arraySize = section.end - section.start + 1;
-        palette = PALETTES[seed % PALETTES.size()];
+        palette = PALETTES[effectContext.seed % PALETTES.size()];
 
         start = random8(arraySize);
         scale = 5 * PRIMES[random8(10)];
         speed = min(1, 3 * PRIMES[random8(10)]);
 
-        if (seed % 2 == 0) {
+        if (true || effectContext.seed % 2 == 0) {
             iteration += speed;
         } else {
             iteration -= speed;
@@ -59,8 +59,8 @@ public :
 template<typename T>
 class EffectFactory {
 public:
-    static Effect *createEffect(const Section &section, const Mirror mirror, uint8_t seed) {
-        return new T(section, mirror, seed);
+    static Effect *createEffect(const EffectContext &effectContext) {
+        return new T(effectContext);
     }
 };
 

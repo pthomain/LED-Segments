@@ -3,21 +3,22 @@
 
 #include <functional> // Include for std::function
 #include "effects/effect.h"
+#include "config/effectcontext.h"
 #include "modifiers/modifier.h"
 #include "structure/cluster.h"
 
 class EffectConfig {
 public:
     const Cluster &scopeCluster;
-    const std::function<Effect *(const Section &, const Mirror, uint8_t)> &effectFactory;
-    const std::function<Effect *(const Section &, const Mirror, uint8_t)> *modifierFactory;
+    const std::function<Effect *(const EffectContext &effectContext)> &effectFactory;
+    const std::function<Effect *(const EffectContext &effectContext)> *modifierFactory;
     const Cluster *pixelUnits;
     const Mirror mirror;
 
     EffectConfig(
         const Cluster &scopeCluster,
-        const std::function<Effect *(const Section &, const Mirror, uint8_t)> &effectFactory,
-        const std::function<Effect *(const Section &, const Mirror, uint8_t)> *modifierFactory,
+        const std::function<Effect *(const EffectContext &effectContext)> &effectFactory,
+        const std::function<Effect *(const EffectContext &effectContext)> *modifierFactory,
         const Cluster *pixelUnits,
         const Mirror mirror
     ) : scopeCluster(scopeCluster),

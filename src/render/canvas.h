@@ -14,6 +14,7 @@ class Canvas {
     EffectConfig *currentEffectConfig = nullptr;
 
     uint8_t seed = 0;
+    uint16_t effectIteration = 0;
 
     const std::vector<Section> emptySections = std::vector<Section>();
 
@@ -32,13 +33,13 @@ class Canvas {
 
     void applyEffectOrModifier(
         std::vector<std::pair<Effect *, std::vector<Section>>> &effectMap,
-        const std::function<Effect *(const Section &, const Mirror, uint8_t)> &effectFactory
+            const std::function<Effect *(const EffectContext &effectContext)> &effectFactory
     ) const;
 
 public :
     void applyConfig(EffectConfig *effectConfig);
 
-    explicit Canvas(const int totalLeds) {
+    explicit Canvas(const uint16_t totalLeds) {
         effectBufferArray = new CRGB[totalLeds];
         modifierBufferArray = new CRGB[totalLeds];
     };

@@ -11,18 +11,13 @@ protected:
     uint8_t noiseSpeed = random8(5, 10);
 
 public:
-    explicit NoiseEffect(
-            const Section &section,
-            const Mirror mirror,
-            const uint8_t seed
-    ) : Effect(section, mirror, seed) {
-    }
+    explicit NoiseEffect(const EffectContext &effectContext) : Effect(effectContext) {}
 
     ~NoiseEffect() override = default;
 
     void fillArrayInternal(CRGB *targetArray) override;
 
-    static std::function<Effect *(const Section &, const Mirror mirror, uint8_t)> factory;
+    static std::function<Effect *(const EffectContext &effectContext)> factory;
     static Variation variation;
 };
 

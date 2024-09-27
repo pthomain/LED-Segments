@@ -15,12 +15,8 @@ private:
     uint8_t primeB;
 
 public:
-    explicit PartyEffect(
-            const Section &section,
-            const Mirror mirror,
-            const uint8_t seed
-    ) : Effect(section, mirror, seed) {
-        palette = PALETTES[seed % PALETTES.size()];
+    explicit PartyEffect(const EffectContext &effectContext) : Effect(effectContext) {
+        palette = PALETTES[effectContext.seed % PALETTES.size()];
         paletteIndex = (paletteIndex + 1) % PALETTES.size();
         primeA = PRIMES.at(random8(PRIMES.size()));
         primeB = PRIMES.at(random8(PRIMES.size()));
@@ -30,7 +26,7 @@ public:
 
     void fillArrayInternal(CRGB *targetArray) override;
 
-    static std::function<Effect *(const Section &, const Mirror mirror, uint8_t)> factory;
+    static std::function<Effect *(const EffectContext &effectContext)> factory;
     static Variation variation;
 };
 

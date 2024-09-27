@@ -1,10 +1,16 @@
 #include "fader.h"
 #include "render/canvas.h"
 
+#define DISABLE_FADING false
+
 void Fader::applyConfig(
         EffectConfig *effectConfig,
         const uint16_t transitionDurationInFrames
 ) {
+    if (DISABLE_FADING) {
+        firstCanvas.applyConfig(effectConfig);
+        return;
+    }
     crossFadeMax = transitionDurationInFrames;
     crossFadeStep = transitionDurationInFrames;
 
@@ -16,6 +22,11 @@ void Fader::applyConfig(
 }
 
 void Fader::render() {
+    if (DISABLE_FADING) {
+        firstCanvas.render(outputArray);
+        return;
+    }
+
     if (crossFadeStep == 0) {
         if (isFirstCanvasRendering) {
             firstCanvas.render(firstCanvasOutputArray);

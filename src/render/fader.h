@@ -12,7 +12,6 @@ private:
 
     Canvas firstCanvas;
     Canvas secondCanvas;
-    uint8_t alpha = 0;
     int totalLeds;
 
     bool isFirstCanvasRendering = false;

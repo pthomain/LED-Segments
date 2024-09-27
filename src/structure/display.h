@@ -42,7 +42,7 @@ public:
 
     void pickNewEffect(
             const uint16_t transitionDurationInFrames,
-            const std::vector<std::pair<std::function<Effect *(const Section &, Mirror, uint8_t)>, Variation>>& effectFactories
+            const std::vector<std::pair<std::function<Effect *(const EffectContext &effectContext)>, Variation>>& effectFactories
     );
 
     void render();
@@ -52,6 +52,6 @@ public:
     }
 };
 
-Display *initDisplay(const int brightness = -1);
+Display *initDisplay(const uint8_t brightness = -1);
 
 #endif //DISPLAY_H

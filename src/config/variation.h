@@ -11,12 +11,12 @@ class Variation {
 public:
     std::vector<std::pair<Scope, PixelUnit>> scopeAndUnits;
     std::vector<Mirror> mirrors;
-    std::vector<std::function<Effect *(const Section &, Mirror, uint8_t)> *> modifierFactories;
+    std::vector<std::function<Effect *(const EffectContext &effectContext)> *> modifierFactories;
 
     explicit Variation(
             std::vector<std::pair<Scope, PixelUnit>> variations,
             std::vector<Mirror> mirror,
-            std::vector<std::function<Effect *(const Section &, Mirror, uint8_t)> *> modifierFactories
+            std::vector<std::function<Effect *(const EffectContext &effectContext)> *> modifierFactories
     ) : scopeAndUnits(std::move(std::move(variations))),
         mirrors(std::move(mirror)),
         modifierFactories(std::move(modifierFactories)) {};

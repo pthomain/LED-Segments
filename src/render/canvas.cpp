@@ -24,7 +24,7 @@ void Canvas::applyConfig(
 
 void Canvas::applyEffectOrModifier(
         std::vector<std::pair<Effect *, std::vector<Section>>> &effectMap,
-        const std::function<Effect *(const Section &, const Mirror, uint8_t)> &effectFactory
+        const std::function<Effect *(const EffectContext &effectContext)> &effectFactory
 ) const {
     if (currentEffectConfig == nullptr) return;
 
@@ -32,10 +32,25 @@ void Canvas::applyEffectOrModifier(
     //The effect applies to a number of pixels in the section
     //If pixelUnits is not null, we need to subdivide each section into virtual pixels corresponding to
     //the intersection of the subsections in pixelUnits and the current section
-    for (const auto &scopeSection: currentEffectConfig->scopeCluster.scopeSections) {
+
+    for (uint16_t scopeIndex = 0; scopeIndex < currentEffectConfig->scopeCluster.scopeSections.size(); scopeIndex++) {
+        auto &scopeSection = currentEffectConfig->scopeCluster.scopeSections.at(scopeIndex);
         if (currentEffectConfig->pixelUnits == nullptr) {
-            //If pixelUnits is null, we don't need to apply a mirror
-            Effect *effect = effectFactory(scopeSection, MIRROR_NONE, seed);
+            //If pixelUnits is null, we don't need to apply a mirror or look for intersected sections
+            Effect *effect = effectFactory(
+                    EffectContext(
+                            scopeSection,
+                            currentEffectConfig->scopeCluster.scope,
+                            SCOPE_WHOLE,
+                            MIRROR_NONE,
+                            currentEffectConfig->scopeCluster.scopeSections.size() - 1,
+                            0,
+                            scopeIndex,
+                            effectIteration,
+                            seed
+                    )
+            );
+
             effectMap.emplace_back(effect, emptySections);
         } else {
             auto intersectedSections = intersectAllPixelsWithClusterScope(
@@ -44,15 +59,28 @@ void Canvas::applyEffectOrModifier(
             );
 
             int intersectedSize = intersectedSections.size();
-            int size = currentEffectConfig->mirror == MIRROR_NONE
+            int sectionSize = currentEffectConfig->mirror == MIRROR_NONE
                        ? intersectedSize
                        : intersectedSize % 2 == 0
                          ? intersectedSize / 2
                          : (intersectedSize + 1) / 2;
 
-            Section pixelSection = Section(0, size - 1);
+            Section pixelSection = Section(0, sectionSize - 1);
 
-            Effect *effect = effectFactory(pixelSection, currentEffectConfig->mirror, seed);
+            Effect *effect = effectFactory(
+                    EffectContext(
+                            pixelSection,
+                            currentEffectConfig->scopeCluster.scope,
+                            currentEffectConfig->pixelUnits->scope,
+                            currentEffectConfig->mirror,
+                            currentEffectConfig->scopeCluster.scopeSections.size() - 1,
+                            intersectedSections.size() - 1,
+                            scopeIndex,
+                            effectIteration,
+                            seed
+                    )
+            );
+
             effectMap.emplace_back(effect, intersectedSections);
         }
     }

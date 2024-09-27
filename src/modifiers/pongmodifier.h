@@ -11,17 +11,13 @@ private:
     int position = 0;
 
 public:
-    explicit PongModifier(
-            const Section &section,
-            const Mirror mirror,
-            uint8_t seed
-    ) : Modifier(section, mirror, seed) {}
+    explicit PongModifier(const EffectContext &effectContext) : Modifier(effectContext) {}
 
     ~PongModifier() override = default;
 
     void fillAlphaArray() override;
 
-    static std::function<Effect *(const Section &, const Mirror, uint8_t)> factory;
+    static std::function<Effect *(const EffectContext &effectContext)> factory;
 };
 
 #endif //LED_MATRIX_DLH_PONGMODIFIER_H

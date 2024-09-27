@@ -36,7 +36,8 @@ Display::Display(
 
 void Display::pickNewEffect(
         const uint16_t transitionDurationInFrames,
-        const std::vector<std::pair<std::function<Effect *(const Section &, Mirror, uint8_t)>, Variation>> &effectFactories
+        const std::vector<std::pair<std::function<Effect *(
+                const EffectContext &effectContext)>, Variation> > &effectFactories
 ) {
     const auto &effectFactoryPair = effectFactories.at(random8(effectFactories.size()));
     const auto &effectFactory = effectFactoryPair.first;
@@ -53,7 +54,7 @@ void Display::pickNewEffect(
     const auto &mirrors = variation.mirrors;
     const auto mirror = mirrors.at(random8(mirrors.size()));
 
-    std::function<Effect *(const Section &, Mirror, uint8_t)> *modifierFactory = nullptr;
+    std::function<Effect *(const EffectContext &effectContext)> *modifierFactory = nullptr;
 
     const auto &modifierFactories = variation.modifierFactories;
 
@@ -127,7 +128,7 @@ void Display::alignSections() const {
     }
 }
 
-Display *initDisplay(int brightness) {
+Display *initDisplay(uint8_t brightness) {
     std::vector<Section> letters;
     std::vector<Section> words;
     std::vector<Section> stripReversalSection;

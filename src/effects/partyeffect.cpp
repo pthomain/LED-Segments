@@ -14,7 +14,7 @@ void PartyEffect::fillArrayInternal(CRGB *targetArray) {
 
     int startIndex = (beatA + beatB) / 2;
 
-    if (effectContext.seed % 3 == 0) {
+    if (effectContext.effectIteration % 3 == 0) {
         startIndex = iteration; //just cycle linearly
     }
 
@@ -30,7 +30,10 @@ void PartyEffect::fillArrayInternal(CRGB *targetArray) {
 };
 
 Variation PartyEffect::variation = Variation(
-        {std::make_pair(SCOPE_WHOLE, UNIT_LETTER)},
+        {
+                std::make_pair(SCOPE_WORD, UNIT_LETTER),
+                std::make_pair(SCOPE_WHOLE, UNIT_WORD)
+        },
         {MIRROR_NONE},
-        {}
+        {&PongModifier::factory}
 );

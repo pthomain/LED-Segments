@@ -9,9 +9,9 @@
 #include "utils/seedgenerator.h"
 
 #define TRANSITION_DURATION_IN_MILLIS 1000
-#define FPS 30
+#define FPS 60
 #define REFRESH_RATE_IN_MILLIS (1000 / FPS)
-#define EFFECT_DURATION_IN_SECONDS 10
+#define EFFECT_DURATION_IN_SECONDS 3
 
 #define TRANSITION_DURATION_IN_MILLIS 1000
 #define TRANSITION_DURATION_IN_FRAMES TRANSITION_DURATION_IN_MILLIS / REFRESH_RATE_IN_MILLIS
@@ -27,10 +27,10 @@ void setup() {
 
     effectFactories = {
             std::make_pair(PartyEffect::factory, PartyEffect::variation),
-//            std::make_pair(NoiseEffect::factory, NoiseEffect::variation)
+            std::make_pair(NoiseEffect::factory, NoiseEffect::variation)
     };
 
-    display = initDisplay(IS_PROD ? 50 : 10);
+    display = initDisplay(IS_PROD ? 50 : 255);
     changeEffect();
 }
 

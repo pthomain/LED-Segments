@@ -10,10 +10,12 @@ std::function<Effect *(const EffectContext &effectContext)> SwipeEffect::factory
 
 void SwipeEffect::fillArrayInternal(CRGB *targetArray) {
 
+
+
 };
 
 Variation SwipeEffect::variation = Variation(
-        {std::make_pair(SCOPE_WHOLE, UNIT_LETTER)},
-        {MIRROR_NONE},
+        {ALL_SCOPES_WEIGHTED},
+        {ALL_MIRRORS_WEIGHTED},
         {}
 );

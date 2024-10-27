@@ -11,7 +11,7 @@ public:
     const uint8_t pixelUnitMax;
     const uint8_t scopeIndex;
     const uint16_t effectIteration;
-    const int seed;
+    const uint16_t effectFrameIndex;
 
     EffectContext(
             const Section &section,
@@ -22,7 +22,7 @@ public:
             const uint8_t pixelUnitMax,
             const uint8_t scopeIndex,
             const uint16_t effectIteration,
-            const int seed
+            const uint16_t effectFrameIndex
     ) : section(section),
         scope(scope),
         mirror(mirror),
@@ -30,7 +30,7 @@ public:
         pixelUnitMax(pixelUnitMax),
         scopeIndex(scopeIndex),
         effectIteration(effectIteration),
-        seed(seed) {
+        effectFrameIndex(effectFrameIndex) {
 
         switch (pixelUnitScope) {
             case SCOPE_WORD:

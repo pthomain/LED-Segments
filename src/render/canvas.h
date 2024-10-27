@@ -13,8 +13,8 @@ class Canvas {
     CRGB *modifierBufferArray = nullptr;
     EffectConfig *currentEffectConfig = nullptr;
 
-    uint8_t seed = 0;
     uint16_t effectIteration = 0;
+    uint16_t effectFrameIndex = 0;
 
     const std::vector<Section> emptySections = std::vector<Section>();
 
@@ -44,7 +44,7 @@ public :
         modifierBufferArray = new CRGB[totalLeds];
     };
 
-    void render(CRGB *outputArray) const;
+    void render(CRGB *outputArray);
 
     ~Canvas() {
         delete[] effectBufferArray;

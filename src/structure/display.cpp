@@ -2,6 +2,7 @@
 #include "utils/utils.h"
 #include <utility>
 #include <vector>
+#include <sstream>
 #include "cluster.h"
 #include "effects/effect.h"
 #include "display.h"
@@ -25,9 +26,9 @@ Display::Display(
     stripReversalSections(std::move(stripReversalSections)),
     allLeds(new CRGB[totalLeds]),
     fader(allLeds, totalLeds) {
-    delay(2000);
+    delay(1000);
 
-    set_max_power_in_volts_and_milliamps(5, 500);
+    set_max_power_in_volts_and_milliamps(5, 1500);
     CFastLED::addLeds<WS2812B, LED_PIN, GRB>(allLeds, totalLeds);
     FastLED.setBrightness(brightness);
     FastLED.clear(true);
@@ -66,8 +67,10 @@ void Display::pickNewEffect(
             || (scope == SCOPE_WORD && pixelUnit == UNIT_LETTER) //too big
     );
 
+    hasModifier = false;
+
     if (hasModifier && !modifierFactories.empty()) {
-        modifierFactory = modifierFactories.at(random8(modifierFactories.size()));
+        modifierFactory = modifierFactories.at(0);//random8(modifierFactories.size() - 1));
     }
 
     Cluster *pixelUnits = nullptr;
@@ -134,7 +137,31 @@ Display *initDisplay(uint8_t brightness) {
     std::vector<Section> stripReversalSection;
     int actualBrightness;
 
-    if (IS_PROD) {
+    if (IS_FIBONACCI) {
+        letters = std::vector<Section>();
+
+        for (int a = 0; a < 12; a++) {
+            int start = a * 27;
+            for (int i = start; i <= start + 14; i++) {
+                letters.emplace_back(i, i);
+            }
+            letters.emplace_back(start + 15, start + 16);
+            letters.emplace_back(start + 17, start + 18);
+            letters.emplace_back(start + 19, start + 20);
+            letters.emplace_back(start + 21, start + 23);
+            letters.emplace_back(start + 24, start + 26);
+        }
+
+        words = std::vector<Section>();
+
+        for (int i = 0; i < 12; i++) {
+            words.emplace_back(i * 27, (i * 27) + 26);
+        }
+
+        stripReversalSection = std::vector<Section>();
+
+        actualBrightness = brightness == -1 ? 10 : brightness;
+    } else if (IS_PROD) {
         letters = std::vector<Section>(
                 {
                         Section(0, 12),
@@ -181,14 +208,16 @@ Display *initDisplay(uint8_t brightness) {
                         Section(192, 207),
                         Section(208, 223),
                         Section(224, 239),
-                        Section(240, 255)
+                        Section(240, 255),
+                        Section(256, 335)
                 });
 
         words = std::vector<Section>(
                 {
                         Section(0, 63),
                         Section(64, 175),
-                        Section(176, 255)
+                        Section(176, 255),
+                        Section(256, 335)
                 });
 
         stripReversalSection = std::vector<Section>(

@@ -17,6 +17,8 @@
 #include "config/variation.h"
 
 #define IS_PROD false
+#define IS_FIBONACCI true
+
 #define LED_PIN 9
 
 class Display {

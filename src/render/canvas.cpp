@@ -11,7 +11,8 @@ void Canvas::applyConfig(
     delete currentEffectConfig;
     currentEffectConfig = effectConfig;
 
-    seed++;
+    effectIteration++;
+    effectFrameIndex = 0;
 
     clearEffectOrModifier(effectPerSectionPixels);
     clearEffectOrModifier(modifierPerSectionPixels);
@@ -47,7 +48,7 @@ void Canvas::applyEffectOrModifier(
                             0,
                             scopeIndex,
                             effectIteration,
-                            seed
+                            effectFrameIndex
                     )
             );
 
@@ -60,10 +61,10 @@ void Canvas::applyEffectOrModifier(
 
             int intersectedSize = intersectedSections.size();
             int sectionSize = currentEffectConfig->mirror == MIRROR_NONE
-                       ? intersectedSize
-                       : intersectedSize % 2 == 0
-                         ? intersectedSize / 2
-                         : (intersectedSize + 1) / 2;
+                              ? intersectedSize
+                              : intersectedSize % 2 == 0
+                                ? intersectedSize / 2
+                                : (intersectedSize + 1) / 2;
 
             Section pixelSection = Section(0, sectionSize - 1);
 
@@ -74,10 +75,10 @@ void Canvas::applyEffectOrModifier(
                             currentEffectConfig->pixelUnits->scope,
                             currentEffectConfig->mirror,
                             currentEffectConfig->scopeCluster.scopeSections.size() - 1,
-                            intersectedSections.size() - 1,
+                            intersectedSize - 1,
                             scopeIndex,
                             effectIteration,
-                            seed
+                            effectFrameIndex
                     )
             );
 
@@ -101,7 +102,7 @@ std::vector<Section> Canvas::intersectAllPixelsWithClusterScope(
     return intersectedSections;
 }
 
-void Canvas::render(CRGB *outputArray) const {
+void Canvas::render(CRGB *outputArray) {
     if (currentEffectConfig == nullptr) return;
 
     for (int x = 0; x < effectPerSectionPixels.size(); x++) {
@@ -120,13 +121,13 @@ void Canvas::render(CRGB *outputArray) const {
             } else {
                 effect->fillArray(effectBufferArray);
                 if (modifier != nullptr) {
-                    for (int i = 0; i < effect->section.sectionSize; i++) {
+                    for (int i = 0; i < effect->effectContext.section.sectionSize; i++) {
                         modifierBufferArray[i] = effectBufferArray[i];
                     }
                     modifier->fillArray(modifierBufferArray);
                 }
-                for (int i = 0; i < effect->section.sectionSize; i++) {
-                    outputArray[effect->section.start + i] = (modifier == nullptr)
+                for (int i = 0; i < effect->effectContext.section.sectionSize; i++) {
+                    outputArray[effect->effectContext.section.start + i] = (modifier == nullptr)
                                                              ? effectBufferArray[i]
                                                              : modifierBufferArray[i];
                 }
@@ -134,16 +135,16 @@ void Canvas::render(CRGB *outputArray) const {
         } else {
             effect->fillArray(effectBufferArray);
             if (modifier != nullptr) {
-                for (int i = 0; i < effect->section.sectionSize; i++) {
+                for (int i = 0; i < effect->effectContext.section.sectionSize; i++) {
                     modifierBufferArray[i] = effectBufferArray[i];
                 }
                 modifier->fillArray(modifierBufferArray);
             }
 
-            if (effect->mirror == MIRROR_EDGE) {
-                int centre = effect->section.sectionSize % 2 == 0
-                             ? effect->section.sectionSize / 2
-                             : (effect->section.sectionSize + 1) / 2;
+            if (effect->effectContext.mirror == MIRROR_EDGE) {
+                int centre = effect->effectContext.section.sectionSize % 2 == 0
+                             ? effect->effectContext.section.sectionSize / 2
+                             : (effect->effectContext.section.sectionSize + 1) / 2;
 
                 for (int i = 0; i < centre; i++) {
                     int right = centre + i;
@@ -161,14 +162,14 @@ void Canvas::render(CRGB *outputArray) const {
                 }
             }
 
-            if (effect->mirror != MIRROR_NONE) {
-                for (int i = 0; i < effect->section.sectionSize; i++) {
-                    effectBufferArray[effect->section.sectionSize + i] = effectBufferArray[effect->section.end - i];
+            if (effect->effectContext.mirror != MIRROR_NONE) {
+                for (int i = 0; i < effect->effectContext.section.sectionSize; i++) {
+                    effectBufferArray[effect->effectContext.section.sectionSize + i] = effectBufferArray[effect->effectContext.section.end - i];
                 }
                 if (modifier != nullptr) {
-                    for (int i = 0; i < effect->section.sectionSize; i++) {
-                        modifierBufferArray[effect->section.sectionSize + i] = modifierBufferArray[
-                                effect->section.end - i];
+                    for (int i = 0; i < effect->effectContext.section.sectionSize; i++) {
+                        modifierBufferArray[effect->effectContext.section.sectionSize + i] = modifierBufferArray[
+                                effect->effectContext.section.end - i];
                     }
                 }
             }
@@ -181,6 +182,8 @@ void Canvas::render(CRGB *outputArray) const {
             }
         }
     }
+
+    effectFrameIndex++;
 }
 
 void Canvas::clearEffectOrModifier(std::vector<std::pair<Effect *, std::vector<Section> > > &effectMap) {

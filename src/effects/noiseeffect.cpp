@@ -12,7 +12,7 @@ void NoiseEffect::fillArrayInternal(CRGB *targetArray) {
     for (uint16_t i = 0; i < arraySize; i++) {
         uint8_t noiseScale = beatsin8(10, 10, 30);
         uint8_t noise = inoise8(i * noiseScale, millis() / noiseSpeed);
-        bool usePalette = effectContext.seed % 2 == 0;
+        bool usePalette = effectContext.effectIteration % 2 == 0;
 
         if (usePalette) {
             uint16_t index = map(noise, 50, 190, 0, arraySize); //increase contrast
@@ -33,9 +33,11 @@ void NoiseEffect::fillArrayInternal(CRGB *targetArray) {
 };
 
 Variation NoiseEffect::variation = Variation(
-        {std::make_pair(SCOPE_WHOLE, UNIT_LETTER)},
+        {
+                std::make_pair(SCOPE_WORD, UNIT_LETTER),
+                std::make_pair(SCOPE_WHOLE, UNIT_WORD)
+        },
         {MIRROR_NONE},
-        {}
+        {&PongModifier::factory}
 );
-
 //TODO OctaveEffect: https://www.youtube.com/watch?v=7Dhh0IMSI4Q&ab_channel=ScottMarley

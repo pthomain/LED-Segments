@@ -19,27 +19,20 @@ protected:
     uint8_t scale = 20;
     uint8_t speed = 0;
 
-    const EffectContext effectContext;
-
 public :
-
-    const Section &section;
-    const Mirror mirror;
+    const EffectContext effectContext;
 
     explicit Effect(
             const EffectContext &effectContext
-    ) : effectContext(effectContext),
-        section(effectContext.section),
-        mirror(effectContext.mirror) {
-
-        arraySize = section.end - section.start + 1;
-        palette = PALETTES[effectContext.seed % PALETTES.size()];
+    ) : effectContext(effectContext) {
+        arraySize = effectContext.section.end - effectContext.section.start + 1;
+        palette = PALETTES[effectContext.effectIteration % PALETTES.size()];
 
         start = random8(arraySize);
         scale = 5 * PRIMES[random8(10)];
         speed = min(1, 3 * PRIMES[random8(10)]);
 
-        if (true || effectContext.seed % 2 == 0) {
+        if (true || effectContext.effectIteration % 2 == 0) {
             iteration += speed;
         } else {
             iteration -= speed;

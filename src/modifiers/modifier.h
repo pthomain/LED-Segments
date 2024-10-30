@@ -5,7 +5,7 @@
 
 #include <functional>
 #include "FastLED.h"
-#include "structure/section.h"
+#include "old_structure/section.h"
 #include "utils/utils.h"
 #include "effects/effect.h"
 #include "config/effectcontext.h"

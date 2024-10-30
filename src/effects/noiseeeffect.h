@@ -1,5 +1,5 @@
-#ifndef LED_MATRIX_DLH_NOISEEFFECT_H
-#define LED_MATRIX_DLH_NOISEEFFECT_H
+#ifndef LED_SEGMENTS_NOISEEFFECT_H
+#define LED_SEGMENTS_NOISEEFFECT_H
 
 #include <vector>
 #include "effect.h"
@@ -21,4 +21,4 @@ public:
     static Variation variation;
 };
 
-#endif //LED_MATRIX_DLH_NOISEEFFECT_H
+#endif //LED_SEGMENTS_NOISEEFFECT_H

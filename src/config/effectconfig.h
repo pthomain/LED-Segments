@@ -1,11 +1,11 @@
-#ifndef LED_MATRIX_DLH_EFFECTCONFIG_H
-#define LED_MATRIX_DLH_EFFECTCONFIG_H
+#ifndef LED_SEGMENTS_EFFECTCONFIG_H
+#define LED_SEGMENTS_EFFECTCONFIG_H
 
 #include <functional> // Include for std::function
 #include "effects/effect.h"
 #include "config/effectcontext.h"
 #include "modifiers/modifier.h"
-#include "structure/cluster.h"
+#include "old_structure/cluster.h"
 
 class EffectConfig {
 public:
@@ -29,4 +29,4 @@ public:
     };
 };
 
-#endif //LED_MATRIX_DLH_EFFECTCONFIG_H
+#endif //LED_SEGMENTS_EFFECTCONFIG_H

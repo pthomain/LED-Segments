@@ -1,5 +1,5 @@
-#ifndef LED_MATRIX_DLH_PARTYEFFECT_H
-#define LED_MATRIX_DLH_PARTYEFFECT_H
+#ifndef LED_SEGMENTS_PARTYEFFECT_H
+#define LED_SEGMENTS_PARTYEFFECT_H
 
 #include <vector>
 #include "effect.h"
@@ -26,4 +26,4 @@ public:
     static Variation variation;
 };
 
-#endif //LED_MATRIX_DLH_PARTYEFFECT_H
+#endif //LED_SEGMENTS_PARTYEFFECT_H

@@ -1,5 +1,5 @@
-#ifndef LED_MATRIX_DLH_FADER_H
-#define LED_MATRIX_DLH_FADER_H
+#ifndef LED_SEGMENTS_FADER_H
+#define LED_SEGMENTS_FADER_H
 
 #include "FastLED.h"
 #include "render/canvas.h"
@@ -44,4 +44,4 @@ public :
     void render();
 };
 
-#endif //LED_MATRIX_DLH_FADER_H
+#endif //LED_SEGMENTS_FADER_H

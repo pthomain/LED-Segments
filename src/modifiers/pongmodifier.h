@@ -1,5 +1,5 @@
-#ifndef LED_MATRIX_DLH_PONGMODIFIER_H
-#define LED_MATRIX_DLH_PONGMODIFIER_H
+#ifndef LED_SEGMENTS_PONGMODIFIER_H
+#define LED_SEGMENTS_PONGMODIFIER_H
 
 #include "effects/effect.h"
 #include "modifiers/modifier.h"
@@ -20,4 +20,4 @@ public:
     static std::function<Effect *(const EffectContext &effectContext)> factory;
 };
 
-#endif //LED_MATRIX_DLH_PONGMODIFIER_H
+#endif //LED_SEGMENTS_PONGMODIFIER_H

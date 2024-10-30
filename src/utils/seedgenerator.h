@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef LED_MATRIX_DLH_SEEDGENERATOR_H
-#define LED_MATRIX_DLH_SEEDGENERATOR_H
+#ifndef LED_SEGMENTS_SEEDGENERATOR_H
+#define LED_SEGMENTS_SEEDGENERATOR_H
 
 #include <cstdint>
 
@@ -24,4 +24,4 @@ void initSeed() {
     }
 }
 
-#endif //LED_MATRIX_DLH_SEEDGENERATOR_H
+#endif //LED_SEGMENTS_SEEDGENERATOR_H

@@ -1,5 +1,5 @@
-#ifndef LED_MATRIX_DLH_CANVAS_H
-#define LED_MATRIX_DLH_CANVAS_H
+#ifndef LED_SEGMENTS_CANVAS_H
+#define LED_SEGMENTS_CANVAS_H
 
 #include "FastLED.h"
 #include "utils/utils.h"
@@ -52,5 +52,5 @@ public :
     };
 };
 
-#endif //LED_MATRIX_DLH_CANVAS_H
+#endif //LED_SEGMENTS_CANVAS_H
 

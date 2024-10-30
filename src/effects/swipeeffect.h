@@ -1,5 +1,5 @@
-#ifndef LED_MATRIX_DLH_SWIPEEFFECT_H
-#define LED_MATRIX_DLH_SWIPEEFFECT_H
+#ifndef LED_SEGMENTS_SWIPEEFFECT_H
+#define LED_SEGMENTS_SWIPEEFFECT_H
 
 #include <vector>
 #include "effect.h"
@@ -22,4 +22,4 @@ public:
     static Variation variation;
 };
 
-#endif //LED_MATRIX_DLH_SWIPEEFFECT_H
+#endif //LED_SEGMENTS_SWIPEEFFECT_H

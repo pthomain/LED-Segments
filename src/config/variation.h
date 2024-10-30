@@ -1,11 +1,11 @@
-#ifndef LED_MATRIX_DLH_VARIATION_H
-#define LED_MATRIX_DLH_VARIATION_H
+#ifndef LED_SEGMENTS_VARIATION_H
+#define LED_SEGMENTS_VARIATION_H
 
 #include <functional> // Include for std::function
 #include <utility>
 #include "effects/effect.h"
 #include "modifiers/modifier.h"
-#include "structure/cluster.h"
+#include "old_structure/cluster.h"
 
 class Variation {
 public:
@@ -56,4 +56,4 @@ const std::vector<Mirror> ALL_MIRRORS_WEIGHTED = {
         MIRROR_EDGE,
 };
 
-#endif //LED_MATRIX_DLH_VARIATION_H
+#endif //LED_SEGMENTS_VARIATION_H

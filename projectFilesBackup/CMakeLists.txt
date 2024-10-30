@@ -11,7 +11,7 @@ set(CMAKE_C_COMPILER_WORKS 1)
 set(CMAKE_CXX_COMPILER_WORKS 1)
 set(CMAKE_CXX_STANDARD 17)
 
-project("LED_Matrix_DLH" C CXX)
+project("LED_SEGMENTS" C CXX)
 
 include(CMakeListsPrivate.txt)
 
@@ -32,3 +32,4 @@ add_custom_target(
 )
 
 add_executable(Z_DUMMY_TARGET ${SRC_LIST})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti")

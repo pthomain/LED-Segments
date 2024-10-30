@@ -1,8 +1,7 @@
 #include <FastLED.h>
 #include "utils/utils.h"
-#include "structure/display.h"
+#include "old_structure/display.h"
 #include "effects/effect.h"
-#include "structure/cluster.h"
 #include <memory>
 #include "effects/partyeffect.h"
 #include "effects/noiseeeffect.h"

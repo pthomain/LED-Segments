@@ -4,7 +4,7 @@
 #define EFFECTS_H
 
 #include "FastLED.h"
-#include "structure/section.h"
+#include "old_structure/section.h"
 #include "utils/utils.h"
 #include "config/effectcontext.h"
 

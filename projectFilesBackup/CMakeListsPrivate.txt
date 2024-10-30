@@ -15,7 +15,7 @@ set(CLION_SVD_FILE_PATH "$ENV{HOME}/.platformio/platforms/atmelsam/misc/svd/ATSA
 
 SET(CMAKE_C_COMPILER "$ENV{HOME}/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc")
 SET(CMAKE_CXX_COMPILER "$ENV{HOME}/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-g++")
-SET(CMAKE_CXX_FLAGS "-fno-rtti -fno-exceptions -std=gnu++11 -fno-threadsafe-statics -Os -ffunction-sections -fdata-sections -Wall -mcpu=cortex-m0plus -mthumb -nostdlib --param max-inline-insns-single=500 -Wno-expansion-to-defined")
+SET(CMAKE_CXX_FLAGS "-frtti -fexceptions -std=gnu++11 -fno-threadsafe-statics -Os -ffunction-sections -fdata-sections -Wall -mcpu=cortex-m0plus -mthumb -nostdlib --param max-inline-insns-single=500 -Wno-expansion-to-defined")
 SET(CMAKE_C_FLAGS "-std=gnu11 -Os -ffunction-sections -fdata-sections -Wall -mcpu=cortex-m0plus -mthumb -nostdlib --param max-inline-insns-single=500 -Wno-expansion-to-defined")
 
 SET(CMAKE_C_STANDARD 11)

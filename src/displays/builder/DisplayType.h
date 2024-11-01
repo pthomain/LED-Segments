@@ -1,0 +1,10 @@
+#ifndef LED_SEGMENTS_DISPLAYTYPE_H
+#define LED_SEGMENTS_DISPLAYTYPE_H
+
+enum DisplayType {
+    FIBONACCI,
+    DLH,
+    TEST
+};
+
+#endif //LED_SEGMENTS_DISPLAYTYPE_H

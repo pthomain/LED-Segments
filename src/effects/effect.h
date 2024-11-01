@@ -3,10 +3,8 @@
 #ifndef EFFECTS_H
 #define EFFECTS_H
 
-#include "FastLED.h"
-#include "old_structure/section.h"
 #include "utils/utils.h"
-#include "config/effectcontext.h"
+#include "effectcontext.h"
 
 class Effect {
 
@@ -14,25 +12,23 @@ protected:
     uint arraySize;
     int iteration = 0;
     CRGBPalette16 palette;
+    EffectContext effectContext;
 
     uint8_t start = 0;
     uint8_t scale = 20;
     uint8_t speed = 0;
 
 public :
-    const EffectContext effectContext;
 
-    explicit Effect(
-            const EffectContext &effectContext
-    ) : effectContext(effectContext) {
-        arraySize = effectContext.section.end - effectContext.section.start + 1;
-        palette = PALETTES[effectContext.effectIteration % PALETTES.size()];
+    explicit Effect(EffectContext effectContext) : effectContext(effectContext) {
+        arraySize = effectContext.arraySize();
+        palette = PALETTES[effectContext.iteration() % PALETTES.size()];
 
         start = random8(arraySize);
         scale = 5 * PRIMES[random8(10)];
         speed = min(1, 3 * PRIMES[random8(10)]);
 
-        if (true || effectContext.effectIteration % 2 == 0) {
+        if (true || effectContext.iteration() % 2 == 0) {
             iteration += speed;
         } else {
             iteration -= speed;

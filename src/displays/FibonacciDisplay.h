@@ -5,7 +5,7 @@
 #include <vector>
 #include "displays/display/display.h"
 
-static Display *fibonacciDisplay() {
+static Display *createDisplay() {
     std::vector<Segment *> layouts;
 
     // Straight Fibonacci curve

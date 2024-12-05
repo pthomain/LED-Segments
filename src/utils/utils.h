@@ -13,7 +13,7 @@ void printNumber(char text[], int value);
 
 std::string CRGBToHex(const CRGB &color);
 
-static const std::vector<CRGBPalette16> PALETTES = std::vector<CRGBPalette16>{
+static const std::vector<CRGBPalette16> PALETTES PROGMEM = std::vector<CRGBPalette16>{
         PartyColors_p,
         PartyColors_p,
         PartyColors_p,
@@ -28,5 +28,7 @@ static const std::vector<uint8_t> PRIMES = std::vector<uint8_t>{
         151, 157, 163, 167, 173, 179, 181, 191, 193, 197,
         199, 211, 223, 227, 229, 233, 239, 241, 251
 };
+
+int freeMemory();
 
 #endif //UTILS_H

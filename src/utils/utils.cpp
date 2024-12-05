@@ -16,3 +16,9 @@ std::string CRGBToHex(const CRGB& color) {
     sprintf(hexColor, "%02X%02X%02X", color.r, color.g, color.b);
     return std::string(hexColor);
 }
+
+extern "C" char* sbrk(int i);
+int freeMemory() {
+    char stack_dummy = 0;
+    return &stack_dummy - sbrk(0);
+}

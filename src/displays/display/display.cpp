@@ -5,21 +5,25 @@
 #include "effects/effect.h"
 #include "effects/mirror/mirror.h"
 #include "display.h"
+#include "config.h"
+#include "utils/utils.h"
 
 Display::Display(uint16_t totalLeds, std::vector<Segment *> layouts) :
         layouts(std::move(layouts)),
         totalLeds(totalLeds),
         allLeds(new CRGB[totalLeds]),
         fader(allLeds, totalLeds) {
-    CFastLED::addLeds<WS2812B, 9, GRB>(allLeds, totalLeds);
+    CFastLED::addLeds<WS2812B, LED_PIN, GRB>(allLeds, totalLeds);
     FastLED.clear(true);
     FastLED.show();
+    Serial.println("Display constructor complete");
 }
 
 void Display::changeEffects(
         const uint16_t transitionDurationInFrames,
         const std::vector<std::function<Effect *(const EffectContext &effectContext)>> &effectFactories
 ) {
+    Serial.println("Change effects");
     const auto &effectFactory = effectFactories.at(random8(effectFactories.size()));
     auto effectsAndPixels = std::vector<std::pair<Effect *, std::vector<Pixel *>>>();
 
@@ -59,6 +63,7 @@ void Display::changeEffects(
 }
 
 void Display::render() {
+    Serial.println("Render");
     fader.render();
     FastLED.show();
 }

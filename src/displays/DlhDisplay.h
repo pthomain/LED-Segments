@@ -5,8 +5,8 @@
 
 Segment *createLetter(uint16_t start, uint16_t end);
 
-Display *dlhDisplay() {
-    std::vector<Segment *> layouts;
+Display *createDisplay() {
+    std::vector<Segment *> PROGMEM layouts;
 
     auto d = createLetter(0, 12);
     auto a = createLetter(13, 25);

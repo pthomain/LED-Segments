@@ -5,9 +5,12 @@
 #include <cstdint>
 #include <vector>
 
-static Display *testDisplay() {
+static Display *createDisplay() {
     auto rows = std::vector<Pixel *>();
 
+    printNumber("before", freeMemory());
+
+    //TODO running out of memory here with 256 pixels
     for (int i = 0; i < 32; i++) {
         auto row = std::vector<Pixel *>();
         for (int j = 0; j < 8; j++) {
@@ -16,6 +19,8 @@ static Display *testDisplay() {
         }
         rows.push_back(new Segment(row));
     }
+
+    printNumber("after", freeMemory());
 
     Segment *root = new Segment(std::vector<Pixel *>(rows));
 

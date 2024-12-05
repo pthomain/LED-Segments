@@ -4,7 +4,6 @@
 #include "effects/effect.h"
 #include "effects/party/partyeffect.h"
 #include "utils/seedgenerator.h"
-#include "displays/builder/DisplayBuilder.h"
 #include "displays/display/display.h"
 
 Display *display = nullptr;
@@ -14,17 +13,16 @@ void changeEffect();
 
 void setup() {
     Serial.begin(9600);
+    delay(2000);
     initSeed();
-
-    set_max_power_in_volts_and_milliamps(5, 1500);
-    FastLED.setBrightness(30);
 
     effectFactories = {
             PartyEffect::factory,
 //            NoiseEffect::factory
     };
 
-    display = DisplayBuilder().build(TEST);
+    display = createDisplay();
+    Serial.println("Setup complete");
     changeEffect();
 }
 
@@ -45,6 +43,8 @@ void changeEffect() {
     //TODO add chase with trail modifier, like ping pong but with a trail
     //TODO for each modifier, allow for highlight (75% brightness for other pixels based on seed%2)
     addEntropy();
+    Serial.println("Change effect");
+
     display->changeEffects(
             TRANSITION_DURATION_IN_FRAMES,
             effectFactories

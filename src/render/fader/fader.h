@@ -23,12 +23,15 @@ public :
                                                        firstCanvas(totalLeds),
                                                        secondCanvas(totalLeds),
                                                        totalLeds(totalLeds) {
+        Serial.println("Fader constructor");
         firstCanvasOutputArray = new CRGB[totalLeds];
         secondCanvasOutputArray = new CRGB[totalLeds];
 
         for (int i = 0; i < totalLeds; i++) {
             secondCanvasOutputArray[i] = CRGB::Black;
         }
+
+        Serial.println("Fader constructor complete");
     };
 
     ~Fader() {

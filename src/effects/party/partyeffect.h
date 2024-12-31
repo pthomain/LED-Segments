@@ -7,7 +7,7 @@
 #include "utils/utils.h"
 #include "colorutils.h"
 
-class PartyEffect : public Effect, public EffectFactory<PartyEffect> {
+class PartyEffect : public Effect, public Effect::Factory<PartyEffect> {
 private:
     uint8_t primeA;
     uint8_t primeB;
@@ -18,11 +18,9 @@ public:
         primeB = PRIMES.at(random8(PRIMES.size()));
     }
 
-    ~PartyEffect() override = default;
+    void fillArray(CRGB *effectArray, uint16_t effectArraySize) override;
 
-    void fillArrayInternal(CRGB *targetArray) override;
-
-    static std::function<Effect *(const EffectContext &effectContext)> factory;
+    static EffectFactory factory;
 };
 
 #endif //LED_SEGMENTS_PARTYEFFECT_H

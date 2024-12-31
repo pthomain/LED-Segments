@@ -1,0 +1,8 @@
+#ifndef LED_SEGMENTS_DISPLAYBUILDER_H
+#define LED_SEGMENTS_DISPLAYBUILDER_H
+
+class DisplayBuilder {
+
+};
+
+#endif //LED_SEGMENTS_DISPLAYBUILDER_H

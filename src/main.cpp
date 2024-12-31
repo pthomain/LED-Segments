@@ -1,20 +1,19 @@
 #include <FastLED.h>
 #include "config.h"
-#include "utils/utils.h"
 #include "effects/effect.h"
 #include "effects/party/partyeffect.h"
 #include "utils/seedgenerator.h"
-#include "displays/display/display.h"
+#include "structure/display.h"
 
 Display *display = nullptr;
-std::vector<std::function<Effect *(const EffectContext &effectContext)>> effectFactories;
+std::vector<EffectFactory> effectFactories;
 
 void changeEffect();
 
 void setup() {
     Serial.begin(9600);
+    addEntropy();
     delay(2000);
-    initSeed();
 
     effectFactories = {
             PartyEffect::factory,
@@ -22,13 +21,17 @@ void setup() {
     };
 
     display = createDisplay();
-    Serial.println("Setup complete");
     changeEffect();
+    Serial.println("Setup complete");
 }
 
 void loop() {
     EVERY_N_SECONDS(EFFECT_DURATION_IN_SECONDS) {
         changeEffect();
+    }
+
+    EVERY_N_SECONDS(ENTROPY_UPDATE_IN_SECONDS) {
+        addEntropy();
     }
 
     EVERY_N_MILLISECONDS(REFRESH_RATE_IN_MILLIS) {
@@ -42,11 +45,6 @@ void changeEffect() {
     //TODO add word dwell modifier, dwell on each word for a while
     //TODO add chase with trail modifier, like ping pong but with a trail
     //TODO for each modifier, allow for highlight (75% brightness for other pixels based on seed%2)
-    addEntropy();
     Serial.println("Change effect");
-
-    display->changeEffects(
-            TRANSITION_DURATION_IN_FRAMES,
-            effectFactories
-    );
+    display->changeEffect(effectFactories);
 }

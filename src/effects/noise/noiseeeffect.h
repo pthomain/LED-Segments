@@ -6,18 +6,16 @@
 #include "effects/effect.h"
 #include "colorutils.h"
 
-class NoiseEffect : public Effect, public EffectFactory<NoiseEffect> {
+class NoiseEffect : public Effect, public Effect::Factory<NoiseEffect> {
 protected:
     uint8_t noiseSpeed = random8(5, 10);
 
 public:
     explicit NoiseEffect(const EffectContext &effectContext) : Effect(effectContext) {}
 
-    ~NoiseEffect() override = default;
+    void fillArray(CRGB *effectArray, uint16_t effectArraySize) override;
 
-    void fillArrayInternal(CRGB *targetArray) override;
-
-    static std::function<Effect *(const EffectContext &effectContext)> factory;
+    static EffectFactory factory;
 };
 
 #endif //LED_SEGMENTS_NOISEEFFECT_H

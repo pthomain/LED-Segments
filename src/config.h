@@ -9,6 +9,7 @@
 #define FPS 60
 #define REFRESH_RATE_IN_MILLIS (1000 / FPS)
 #define EFFECT_DURATION_IN_SECONDS 3
+#define ENTROPY_UPDATE_IN_SECONDS 5
 
 #define TRANSITION_DURATION_IN_MILLIS 1000
 #define TRANSITION_DURATION_IN_FRAMES TRANSITION_DURATION_IN_MILLIS / REFRESH_RATE_IN_MILLIS
@@ -21,11 +22,11 @@
 #define DISPLAY_TYPE DISPLAY_TYPE_TEST
 
 #if DISPLAY_TYPE == DISPLAY_TYPE_FIBONACCI
-#include "displays/FibonacciDisplay.h"
+#include "display/impl/FibonacciDisplay.h"
 #elif DISPLAY_TYPE == DISPLAY_TYPE_DLH
-#include "displays/DlhDisplay.h"
+#include "display/impl/DlhDisplay.h"
 #else
-#include "displays/TestDisplay.h"
+#include "display/impl/TestDisplay.h"
 #endif
 
 #endif //LED_SEGMENTS_CONFIG_H

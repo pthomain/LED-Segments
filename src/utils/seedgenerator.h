@@ -17,11 +17,4 @@ void addEntropy() {
     random16_add_entropy(entropy);
 }
 
-void initSeed() {
-    for (int i = 0; i < 4; i++) {
-        addEntropy();
-        delay(30); // Short delay to allow for more variation in readings
-    }
-}
-
 #endif //LED_SEGMENTS_SEEDGENERATOR_H

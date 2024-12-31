@@ -1,12 +1,12 @@
 #include "partyeffect.h"
 
-std::function<Effect *(const EffectContext &effectContext)> PartyEffect::factory = [](
+EffectFactory PartyEffect::factory = [](
         const EffectContext &effectContext
-) -> Effect * {
-    return new PartyEffect(effectContext);
+) -> std::shared_ptr<Effect> {
+    return std::make_shared<PartyEffect>(effectContext);
 };
 
-void PartyEffect::fillArrayInternal(CRGB *targetArray) {
+void PartyEffect::fillArray(CRGB *effectArray, uint16_t effectArraySize) {
 //    uint16_t beatA = beatsin16(11, 0, 255);
 //    uint16_t beatB = beatsin16(37, 0, 255);
 //
@@ -26,14 +26,13 @@ void PartyEffect::fillArrayInternal(CRGB *targetArray) {
 //            LINEARBLEND
 //    );
 
-    for (int i = 0; i < arraySize; i++) {
+    for (int i = 0; i < effectArraySize; i++) {
         if (i % 3 == 0) {
-            targetArray[i] = CRGB::Red;
+            effectArray[i] = CRGB::Red;
         } else if (i % 3 == 1) {
-            targetArray[i] = CRGB::Green;
+            effectArray[i] = CRGB::Green;
         } else {
-            targetArray[i] = CRGB::Blue;
+            effectArray[i] = CRGB::Blue;
         }
     }
-
 };

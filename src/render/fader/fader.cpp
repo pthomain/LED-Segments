@@ -1,64 +1,48 @@
 #include "fader.h"
-#include "render/canvas/canvas.h"
 #include "config.h"
+#include "BitArray.h"
+#include "effects/effect.h"
+#include "render/simplerenderer/simplerenderer.h"
 
-void Fader::applyEffects(
-        const std::vector<std::pair<Effect *, std::vector<Pixel *>>>& effectsAndPixels,
-        const uint16_t transitionDurationInFrames
+Fader::Fader(const uint16_t effectArraySize) :
+        Renderer(effectArraySize),
+        firstRenderer(new SimpleRenderer(effectArraySize)),
+        secondRenderer(new SimpleRenderer(effectArraySize)) {
+    blendingArray = new CRGB[effectArraySize];
+};
+
+void Fader::changeEffect(
+        std::shared_ptr<Effect> effect,
+        const std::vector<Segment *> &layout
 ) {
-    if (DISABLE_FADING) {
-        firstCanvas.applyEffects(effectsAndPixels);
-        return;
-    }
-    crossFadeMax = transitionDurationInFrames;
-    crossFadeStep = transitionDurationInFrames;
+    crossFadeMax = TRANSITION_DURATION_IN_FRAMES;
+    crossFadeStep = TRANSITION_DURATION_IN_FRAMES;
 
-    if (isFirstCanvasRendering) {
-        secondCanvas.applyEffects(effectsAndPixels);
-    } else {
-        firstCanvas.applyEffects(effectsAndPixels);
-    }
+    if (isFirstEffectRendering) secondRenderer->changeEffect(effect, layout);
+    else firstRenderer->changeEffect(effect, layout);
 }
 
-void Fader::render() {
-    if (DISABLE_FADING) {
-        firstCanvas.render(outputArray);
+void Fader::render(CRGB *outputArray) {
+    if (crossFadeStep == 0) {
+        if (isFirstEffectRendering) firstRenderer->render(outputArray);
+        else secondRenderer->render(outputArray);
         return;
     }
 
-    if (crossFadeStep == 0) {
-        if (isFirstCanvasRendering) {
-            firstCanvas.render(firstCanvasOutputArray);
-            for (int i = 0; i < totalLeds; i++) {
-                outputArray[i] = firstCanvasOutputArray[i];
-            }
-        } else {
-            secondCanvas.render(secondCanvasOutputArray);
-            for (int i = 0; i < totalLeds; i++) {
-                outputArray[i] = secondCanvasOutputArray[i];
-            }
-        }
-    } else {
-        firstCanvas.render(firstCanvasOutputArray);
-        secondCanvas.render(secondCanvasOutputArray);
+    firstRenderer->render(outputArray);
+    secondRenderer->render(blendingArray);
 
-        fract8 overlay = ((float) (1 + crossFadeMax - crossFadeStep) / crossFadeMax) * 255;
+    fract8 overlay = (fract8) ((1 + crossFadeMax - crossFadeStep) / crossFadeMax) * 255;
+    if (!isFirstEffectRendering) overlay = 255 - overlay;
 
-        if (!isFirstCanvasRendering) {
-            overlay = 255 - overlay;
-        }
-
-        for (int i = 0; i < totalLeds; i++) {
-            outputArray[i] = blend(
-                    firstCanvasOutputArray[i],
-                    secondCanvasOutputArray[i],
-                    overlay
-            );
-        }
-        crossFadeStep--;
-
-        if (crossFadeStep == 0) {
-            isFirstCanvasRendering = !isFirstCanvasRendering;
-        }
+    for (int i = 0; i < effectArraySize; i++) {
+        outputArray[i] = blend(
+                outputArray[i],
+                blendingArray[i],
+                overlay
+        );
     }
+    crossFadeStep--;
+
+    if (crossFadeStep == 0) isFirstEffectRendering = !isFirstEffectRendering;
 }

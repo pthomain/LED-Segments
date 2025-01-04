@@ -7,20 +7,20 @@
 class EffectContext {
 
 public:
-    const CRGBPalette16 palette;
+
+    const uint16_t layoutIndex;
     const Mirror mirror;
-    const uint16_t position;
-    const uint16_t iteration;
+    const uint16_t effectIndex;
+    const CRGBPalette16 palette;
 
     EffectContext(
+            const uint16_t layoutIndex,
             const Mirror mirror,
-            const uint16_t position,
-            const uint16_t iteration
-    ) : mirror(mirror),
-        position(position),
-        iteration(iteration),
-        palette(PALETTES[iteration % PALETTES.size()]) {
-    }
+            const uint16_t effectIndex
+    ) : layoutIndex(layoutIndex),
+        mirror(mirror),
+        effectIndex(effectIndex),
+        palette(PALETTES[random8(PALETTES.size())]) {}
 
 };
 

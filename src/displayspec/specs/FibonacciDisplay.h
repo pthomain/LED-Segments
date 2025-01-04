@@ -6,8 +6,8 @@
 #include "structure/display.h"
 
 static Display *createDisplay() {
-    std::vector<Segment *> layouts;
-
+//    std::vector<Segment *> layouts;
+//
 //    // Straight Fibonacci curve
 //    auto straightCurveSegments = std::vector<Pixel *>();
 //
@@ -73,7 +73,7 @@ static Display *createDisplay() {
 //
 //    // Concentric segments
 
-    return new Display(324, layouts);
+    return nullptr;// new Display(324, layouts);
 }
 
 #endif //LED_SEGMENTS_FIBONACCIDISPLAY_H

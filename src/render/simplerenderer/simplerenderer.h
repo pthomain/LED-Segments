@@ -7,19 +7,15 @@ class SimpleRenderer : public Renderer {
 
 private:
     CRGB *effectArray;
-    std::shared_ptr<Effect> currentEffect;
-    std::vector<Segment *> layout;
+    Effect *currentEffect;
 
 public :
 
     explicit SimpleRenderer(const uint16_t effectArraySize);
 
-    void changeEffect(
-            std::shared_ptr<Effect> effect,
-            const std::vector<Segment *> &layout
-    ) override;
+    void changeEffect(Effect *effect) override;
 
-    void render(CRGB *outputArray) override;
+    void render(DisplaySpec *displaySpec, CRGB *outputArray) override;
 
 };
 

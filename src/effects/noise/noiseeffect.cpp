@@ -3,16 +3,16 @@
 
 EffectFactory NoiseEffect::factory = [](
         const EffectContext &effectContext
-) -> std::shared_ptr<Effect> {
-    return std::make_shared<NoiseEffect>(effectContext);
+) -> Effect * {
+    return new NoiseEffect(effectContext);
 };
 
 void NoiseEffect::fillArray(CRGB *effectArray, uint16_t effectArraySize) {
     for (uint16_t i = 0; i < effectArraySize; i++) {
         uint8_t noiseScale = beatsin8(10, 10, 30);
         uint8_t noise = inoise8(i * noiseScale, millis() / noiseSpeed);
-        bool usePalette = effectContext.iteration % 2 == 0;
-
+//        bool usePalette = effectContext.iteration % 2 == 0;
+        bool usePalette = true;
         if (usePalette) {
             uint16_t index = map(noise, 50, 190, 0, effectArraySize); //increase contrast
             fill_palette(

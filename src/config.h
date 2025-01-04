@@ -15,18 +15,4 @@
 #define TRANSITION_DURATION_IN_FRAMES TRANSITION_DURATION_IN_MILLIS / REFRESH_RATE_IN_MILLIS
 #define DISABLE_FADING true
 
-#define DISPLAY_TYPE_TEST 1
-#define DISPLAY_TYPE_FIBONACCI 2
-#define DISPLAY_TYPE_DLH 3
-
-#define DISPLAY_TYPE DISPLAY_TYPE_TEST
-
-#if DISPLAY_TYPE == DISPLAY_TYPE_FIBONACCI
-#include "display/impl/FibonacciDisplay.h"
-#elif DISPLAY_TYPE == DISPLAY_TYPE_DLH
-#include "display/impl/DlhDisplay.h"
-#else
-#include "display/impl/TestDisplay.h"
-#endif
-
 #endif //LED_SEGMENTS_CONFIG_H

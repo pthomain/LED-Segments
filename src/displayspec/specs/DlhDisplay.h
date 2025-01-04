@@ -6,8 +6,8 @@
 //Segment *createLetter(uint16_t start, uint16_t end);
 
 Display *createDisplay() {
-    std::vector<Segment *> layouts;
-
+//    std::vector<Segment *> layouts;
+//
 //    auto d = createLetter(0, 12);
 //    auto a = createLetter(13, 25);
 //    auto n = createLetter(26, 41);
@@ -47,7 +47,7 @@ Display *createDisplay() {
 //
 //    layouts.emplace_back(root);
 
-    return new Display(190, layouts);
+    return nullptr; //new Display(190, layouts);
 }
 
 //Segment *createLetter(uint16_t start, uint16_t end) {

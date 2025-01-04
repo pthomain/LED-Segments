@@ -4,8 +4,11 @@
 #include "effects/party/partyeffect.h"
 #include "utils/seedgenerator.h"
 #include "structure/display.h"
+#include "displayspec/specs/TestSpec.h"
+#include "effects/noise/noiseeeffect.h"
 
-Display *display = nullptr;
+DisplaySpec *spec = (DisplaySpec *) new TestSpec();
+Display display = Display(spec);
 std::vector<EffectFactory> effectFactories;
 
 void changeEffect();
@@ -17,12 +20,11 @@ void setup() {
 
     effectFactories = {
             PartyEffect::factory,
-//            NoiseEffect::factory
+            NoiseEffect::factory
+
     };
 
-    display = createDisplay();
     changeEffect();
-    Serial.println("Setup complete");
 }
 
 void loop() {
@@ -35,7 +37,7 @@ void loop() {
     }
 
     EVERY_N_MILLISECONDS(REFRESH_RATE_IN_MILLIS) {
-        display->render();
+        display.render();
     }
 }
 
@@ -45,6 +47,5 @@ void changeEffect() {
     //TODO add word dwell modifier, dwell on each word for a while
     //TODO add chase with trail modifier, like ping pong but with a trail
     //TODO for each modifier, allow for highlight (75% brightness for other pixels based on seed%2)
-    Serial.println("Change effect");
-    display->changeEffect(effectFactories);
+    display.changeEffect(effectFactories);
 }

@@ -3,27 +3,22 @@
 
 #include "FastLED.h"
 #include <cstdint>
-#include "vector"
-#include <functional>
 #include "effects/effect.h"
-#include "segment.h"
-#include "render/fader/fader.h"
-#include "render/simplerenderer/simplerenderer.h"
+#include "displayspec/displayspec.h"
+#include "render/renderer.h"
 
 class Display {
 
+private:
+
+    DisplaySpec *displaySpec;
     CRGB *outputArray;
     CRGB *effectArray;
-
-    std::vector<std::vector<Segment *>> layouts;
     Renderer *renderer;
 
 public:
 
-    explicit Display(
-            uint16_t totalLeds,
-            std::vector<std::vector<Segment *>> layouts
-    );
+    explicit Display(DisplaySpec *displaySpec);
 
     void changeEffect(
             const std::vector<EffectFactory> &effectFactories

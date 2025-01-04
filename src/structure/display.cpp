@@ -1,23 +1,26 @@
 #include "display.h"
+#include "config.h"
+#include "displayspec/specs/TestSpec.h"
+#include "render/simplerenderer/simplerenderer.h"
+#include "render/fader/fader.h"
 
-Display::Display(
-        uint16_t totalLeds,
-        std::vector<std::vector<Segment *>> layouts
-) : outputArray(new CRGB[totalLeds]),
-    layouts(std::move(layouts)) {
-    CFastLED::addLeds<WS2812B, LED_PIN, GRB>(outputArray, totalLeds);
+Display::Display(DisplaySpec *displaySpec)
+        : displaySpec(displaySpec),
+          outputArray(new CRGB[displaySpec->totalLeds]) {
+    CFastLED::addLeds<WS2812B, LED_PIN, GRB>(outputArray, displaySpec->totalLeds);
+    FastLED.setBrightness(10);
     FastLED.clear(true);
     FastLED.show();
 
-    // Create effect array with max length of any segment across all layouts
-    uint16_t effectArraySize = 0;
-    for (const auto &layout: layouts) {
-        for (const auto &segment: layout) {
-            effectArraySize = max(effectArraySize, segment->size);
+    uint16_t maxSegmentSize = 0;
+
+    for (uint8_t layoutIndex = 0; layoutIndex < displaySpec->nbLayouts; layoutIndex++) {
+        for (uint8_t segmentIndex = 0; segmentIndex < displaySpec->nbSegments(layoutIndex); segmentIndex++) {
+            maxSegmentSize = max(maxSegmentSize, displaySpec->segmentSize(layoutIndex, segmentIndex));
         }
     }
 
-    renderer = DISABLE_FADING ? (Renderer *) new SimpleRenderer(effectArraySize) : new Fader(effectArraySize);
+    renderer = DISABLE_FADING ? (Renderer *) new SimpleRenderer(maxSegmentSize) : new Fader(maxSegmentSize);
 }
 
 void Display::changeEffect(
@@ -25,24 +28,22 @@ void Display::changeEffect(
 ) {
     const auto effectIndex = random8(effectFactories.size());
     const auto &effectFactory = effectFactories.at(effectIndex);
-    const auto layoutIndex = random8(layouts.size());
-    const auto layout = layouts.at(layoutIndex);
+
+    const auto layoutIndex = random8(displaySpec->nbLayouts);
     const auto mirror = ALL_MIRRORS[random8(3)];
 
     const auto effect = effectFactory(
             EffectContext(
+                    layoutIndex,
                     MIRROR_NONE,
-                    effectIndex,
-                    0
+                    effectIndex
             )
     );
 
-    renderer->changeEffect(
-            effect,
-            layout
-    );
+    renderer->changeEffect(effect);
 }
 
 void Display::render() {
-    renderer->render(outputArray);
+    renderer->render(displaySpec, outputArray);
+    FastLED.show();
 }

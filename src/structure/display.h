@@ -11,24 +11,27 @@ class Display {
 
 private:
 
-    DisplaySpec *displaySpec;
+    std::shared_ptr<DisplaySpec> displaySpec;
+    const std::vector<EffectFactory> effectFactories;
     CRGB *outputArray;
     CRGB *effectArray;
     Renderer *renderer;
 
 public:
 
-    explicit Display(DisplaySpec *displaySpec);
-
-    void changeEffect(
-            const std::vector<EffectFactory> &effectFactories
+    explicit Display(
+            std::shared_ptr<DisplaySpec> displaySpec,
+            std::vector<EffectFactory> effectFactories
     );
+
+    void changeEffect();
 
     void render();
 
     ~Display() {
         delete[] outputArray;
         delete[] effectArray;
+        delete renderer;
     }
 };
 

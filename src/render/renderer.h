@@ -3,21 +3,27 @@
 
 #include "effects/effect.h"
 #include "displayspec/displayspec.h"
+#include "memory"
 
 class Renderer {
 
 protected:
 
+    std::shared_ptr<DisplaySpec> displaySpec;
     const uint16_t effectArraySize;
 
 public:
 
-    explicit Renderer(const uint16_t effectArraySize) :
-            effectArraySize(effectArraySize) {}
+    explicit Renderer(
+            std::shared_ptr<DisplaySpec> displaySpec,
+            const uint16_t effectArraySize
+    ) : displaySpec(displaySpec), effectArraySize(effectArraySize) {}
 
-    virtual void changeEffect(Effect* effect) = 0;
+    virtual void changeEffect(std::unique_ptr<Effect> effect) = 0;
 
-    virtual void render(DisplaySpec *displaySpec, CRGB *outputArray) = 0;
+    virtual void render(CRGB *outputArray) = 0;
+
+    virtual ~Renderer() = default;
 };
 
 

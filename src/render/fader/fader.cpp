@@ -2,44 +2,51 @@
 #include "config.h"
 #include "BitArray.h"
 #include "effects/effect.h"
+#include "displayspec/specs/TestSpec.h"
 #include "render/simplerenderer/simplerenderer.h"
 
-Fader::Fader(const uint16_t effectArraySize) :
-        Renderer(effectArraySize),
-        firstRenderer(new SimpleRenderer(effectArraySize)),
-        secondRenderer(new SimpleRenderer(effectArraySize)) {
-    blendingArray = new CRGB[effectArraySize];
+Fader::Fader(
+        std::shared_ptr<DisplaySpec> displaySpec,
+        const uint16_t effectArraySize
+) : Renderer(displaySpec, effectArraySize),
+    firstRenderer(new SimpleRenderer(displaySpec, effectArraySize)),
+    secondRenderer(new SimpleRenderer(displaySpec, effectArraySize)),
+    blendingArray(new CRGB[displaySpec->totalLeds]) {
+
+    for (uint16_t i = 0; i < displaySpec->totalLeds; i++) {
+        blendingArray[i] = CRGB::Black;
+    }
 };
 
-void Fader::changeEffect(Effect *effect) {
-    crossFadeMax = TRANSITION_DURATION_IN_FRAMES;
+void Fader::changeEffect(std::unique_ptr<Effect> effect) {
     crossFadeStep = TRANSITION_DURATION_IN_FRAMES;
 
-    if (isFirstEffectRendering) secondRenderer->changeEffect(effect);
-    else firstRenderer->changeEffect(effect);
+    if (isFirstEffectRendering) secondRenderer->changeEffect(std::move(effect));
+    else firstRenderer->changeEffect(std::move(effect));
+
+    isFirstEffectRendering = !isFirstEffectRendering;
 }
 
-void Fader::render(DisplaySpec *displaySpec, CRGB *outputArray) {
+void Fader::render(CRGB *outputArray) {
     if (crossFadeStep == 0) {
-        if (isFirstEffectRendering) firstRenderer->render(displaySpec, outputArray);
-        else secondRenderer->render(displaySpec, outputArray);
+        if (isFirstEffectRendering) firstRenderer->render(outputArray);
+        else secondRenderer->render(outputArray);
         return;
     }
 
-    firstRenderer->render(displaySpec, outputArray);
-    secondRenderer->render(displaySpec, blendingArray);
+    firstRenderer->render(outputArray);
+    secondRenderer->render(blendingArray);
 
-    fract8 overlay = (fract8) ((1 + crossFadeMax - crossFadeStep) / crossFadeMax) * 255;
-    if (!isFirstEffectRendering) overlay = 255 - overlay;
+    float percent = crossFadeStep / TRANSITION;
+    uint8_t overlay = 255 * (isFirstEffectRendering ? percent : 1 - percent);
 
-    for (int i = 0; i < effectArraySize; i++) {
+    for (int i = 0; i < displaySpec->totalLeds; i++) {
         outputArray[i] = blend(
                 outputArray[i],
                 blendingArray[i],
                 overlay
         );
     }
-    crossFadeStep--;
 
-    if (crossFadeStep == 0) isFirstEffectRendering = !isFirstEffectRendering;
+    crossFadeStep = max(0, crossFadeStep - 1);
 }

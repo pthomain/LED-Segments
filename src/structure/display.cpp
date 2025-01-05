@@ -4,9 +4,13 @@
 #include "render/simplerenderer/simplerenderer.h"
 #include "render/fader/fader.h"
 
-Display::Display(DisplaySpec *displaySpec)
-        : displaySpec(displaySpec),
-          outputArray(new CRGB[displaySpec->totalLeds]) {
+Display::Display(
+        std::shared_ptr<DisplaySpec> displaySpec,
+        std::vector<EffectFactory> effectFactories
+) : displaySpec(displaySpec),
+    effectFactories(std::move(effectFactories)),
+    outputArray(new CRGB[displaySpec->totalLeds]) {
+
     CFastLED::addLeds<WS2812B, LED_PIN, GRB>(outputArray, displaySpec->totalLeds);
     FastLED.setBrightness(10);
     FastLED.clear(true);
@@ -20,30 +24,28 @@ Display::Display(DisplaySpec *displaySpec)
         }
     }
 
-    renderer = DISABLE_FADING ? (Renderer *) new SimpleRenderer(maxSegmentSize) : new Fader(maxSegmentSize);
+    renderer = DISABLE_FADING
+               ? (Renderer *) new SimpleRenderer(displaySpec, maxSegmentSize)
+               : new Fader(displaySpec, maxSegmentSize);
 }
 
-void Display::changeEffect(
-        const std::vector<EffectFactory> &effectFactories
-) {
+void Display::changeEffect() {
     const auto effectIndex = random8(effectFactories.size());
     const auto &effectFactory = effectFactories.at(effectIndex);
 
     const auto layoutIndex = random8(displaySpec->nbLayouts);
     const auto mirror = ALL_MIRRORS[random8(3)];
 
-    const auto effect = effectFactory(
+    renderer->changeEffect(effectFactory(
             EffectContext(
                     layoutIndex,
                     MIRROR_NONE,
                     effectIndex
             )
-    );
-
-    renderer->changeEffect(effect);
+    ));
 }
 
 void Display::render() {
-    renderer->render(displaySpec, outputArray);
+    renderer->render(outputArray);
     FastLED.show();
 }

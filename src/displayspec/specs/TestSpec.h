@@ -13,15 +13,15 @@ private :
             const uint16_t pixelIndex,
             CRGB *outputArray,
             CRGB colour
-    );
+    ) const;
 
 public :
 
     explicit TestSpec() : DisplaySpec(256, 1) {}
 
-    uint16_t nbSegments(const uint16_t layoutIndex) override;
+    uint16_t nbSegments(const uint16_t layoutIndex) const override;
 
-    uint16_t segmentSize(const uint16_t layoutIndex, const uint16_t segmentIndex);
+    uint16_t segmentSize(const uint16_t layoutIndex, const uint16_t segmentIndex) const override;
 
     void setColour(
             const uint16_t layoutIndex,
@@ -29,7 +29,9 @@ public :
             const uint16_t pixelIndex,
             CRGB *outputArray,
             CRGB colour
-    ) override;
+    ) const override;
+
+    ~TestSpec() override = default;
 };
 
 #endif //LED_SEGMENTS_TESTSPEC_H

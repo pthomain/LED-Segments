@@ -6,26 +6,36 @@
 #include "effects/effect.h"
 #include "render/renderer.h"
 #include "displayspec/displayspec.h"
+#include "memory"
 
 class Fader : public Renderer {
 
 private:
+    constexpr static const float TRANSITION = (float) TRANSITION_DURATION_IN_FRAMES;
 
     Renderer *firstRenderer;
     Renderer *secondRenderer;
     CRGB *blendingArray;
 
     bool isFirstEffectRendering = false;
-    float crossFadeMax = 0;
     float crossFadeStep = 0;
 
 public :
 
-    explicit Fader(const uint16_t effectArraySize);
+    explicit Fader(
+            std::shared_ptr<DisplaySpec> displaySpec,
+            const uint16_t effectArraySize
+    );
 
-    void changeEffect(Effect *effect) override;
+    void changeEffect(std::unique_ptr<Effect> effect) override;
 
-    void render(DisplaySpec *displaySpec, CRGB *outputArray) override;
+    void render(CRGB *outputArray) override;
+
+    ~Fader() override {
+        delete[] blendingArray;
+        delete firstRenderer;
+        delete secondRenderer;
+    }
 };
 
 #endif //LED_SEGMENTS_FADER_H

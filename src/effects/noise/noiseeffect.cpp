@@ -1,10 +1,11 @@
 #include "noiseeeffect.h"
 #include <functional>
+#include <memory>
 
 EffectFactory NoiseEffect::factory = [](
         const EffectContext &effectContext
-) -> Effect * {
-    return new NoiseEffect(effectContext);
+) -> std::unique_ptr<Effect> {
+    return std::unique_ptr<Effect>(new NoiseEffect(effectContext));
 };
 
 void NoiseEffect::fillArray(CRGB *effectArray, uint16_t effectArraySize) {

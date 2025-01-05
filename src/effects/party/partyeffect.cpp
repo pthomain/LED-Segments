@@ -2,8 +2,8 @@
 
 EffectFactory PartyEffect::factory = [](
         const EffectContext &effectContext
-) -> Effect* {
-    return new PartyEffect(effectContext);
+) -> std::unique_ptr<Effect> {
+    return std::unique_ptr<Effect>(new PartyEffect(effectContext));
 };
 
 void PartyEffect::fillArray(CRGB *effectArray, uint16_t effectArraySize) {
@@ -25,6 +25,4 @@ void PartyEffect::fillArray(CRGB *effectArray, uint16_t effectArraySize) {
             255,
             LINEARBLEND
     );
-
-//    fill_palette(effectArray, effectArraySize, 0, scale, RainbowColors_p, 255, LINEARBLEND);
 };

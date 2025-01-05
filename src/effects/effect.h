@@ -3,18 +3,15 @@
 #ifndef EFFECTS_H
 #define EFFECTS_H
 
-#include "FastLED.h"
-#include "old_structure/section.h"
 #include "utils/utils.h"
-#include "config/effectcontext.h"
+#include "effectcontext.h"
+#include "functional"
+#include "memory"
 
 class Effect {
 
 protected:
-    uint arraySize;
     int iteration = 0;
-    CRGBPalette16 palette;
-
     uint8_t start = 0;
     uint8_t scale = 20;
     uint8_t speed = 0;
@@ -22,39 +19,25 @@ protected:
 public :
     const EffectContext effectContext;
 
-    explicit Effect(
-            const EffectContext &effectContext
-    ) : effectContext(effectContext) {
-        arraySize = effectContext.section.end - effectContext.section.start + 1;
-        palette = PALETTES[effectContext.effectIteration % PALETTES.size()];
-
-        start = random8(arraySize);
+    explicit Effect(const EffectContext effectContext) : effectContext(effectContext) {
         scale = 5 * PRIMES[random8(10)];
         speed = min(1, 3 * PRIMES[random8(10)]);
-
-        if (true || effectContext.effectIteration % 2 == 0) {
-            iteration += speed;
-        } else {
-            iteration -= speed;
-        }
     };
+
+    virtual void fillArray(CRGB *effectArray, uint16_t effectArraySize) = 0;
 
     virtual ~Effect() = default;
 
-    void fillArray(CRGB *targetArray) {
-        fillArrayInternal(targetArray);
-        iteration++;
-    }
+    template<typename T>
+    class Factory {
+    public:
+        static std::unique_ptr<Effect> createEffect(const EffectContext &effectContext) {
+            return std::unique_ptr<Effect>(new T(effectContext));
+        }
+    };
 
-    virtual void fillArrayInternal(CRGB *targetArray) = 0;
 };
 
-template<typename T>
-class EffectFactory {
-public:
-    static Effect *createEffect(const EffectContext &effectContext) {
-        return new T(effectContext);
-    }
-};
+using EffectFactory = std::function<std::unique_ptr<Effect>(const EffectContext &effectContext)>;
 
 #endif //EFFECTS_H

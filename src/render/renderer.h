@@ -10,14 +10,10 @@ class Renderer {
 protected:
 
     std::shared_ptr<DisplaySpec> displaySpec;
-    const uint16_t effectArraySize;
 
 public:
 
-    explicit Renderer(
-            std::shared_ptr<DisplaySpec> displaySpec,
-            const uint16_t effectArraySize
-    ) : displaySpec(displaySpec), effectArraySize(effectArraySize) {}
+    explicit Renderer(std::shared_ptr<DisplaySpec> displaySpec) : displaySpec(displaySpec) {}
 
     virtual void changeEffect(std::unique_ptr<Effect> effect) = 0;
 

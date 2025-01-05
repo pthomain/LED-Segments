@@ -17,7 +17,11 @@ private :
 
 public :
 
-    explicit TestSpec() : DisplaySpec(256, 1) {}
+    explicit TestSpec() : DisplaySpec() {}
+
+    uint16_t nbLeds() const override { return 256; }
+
+    uint16_t nbLayouts() const override { return 1; }
 
     uint16_t nbSegments(const uint16_t layoutIndex) const override;
 

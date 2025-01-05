@@ -22,10 +22,7 @@ private:
 
 public :
 
-    explicit Fader(
-            std::shared_ptr<DisplaySpec> displaySpec,
-            const uint16_t effectArraySize
-    );
+    explicit Fader(std::shared_ptr<DisplaySpec> displaySpec);
 
     void changeEffect(std::unique_ptr<Effect> effect) override;
 

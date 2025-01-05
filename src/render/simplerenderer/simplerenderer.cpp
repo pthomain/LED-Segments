@@ -1,24 +1,21 @@
 #include "simplerenderer.h"
 #include "displayspec/displayspec.h"
 
-SimpleRenderer::SimpleRenderer(const uint16_t effectArraySize) :
-        Renderer(effectArraySize),
-        effectArray(new CRGB[effectArraySize]) {
+SimpleRenderer::SimpleRenderer(
+        std::shared_ptr<DisplaySpec> displaySpec,
+        const uint16_t effectArraySize
+) : Renderer(displaySpec, effectArraySize),
+    effectArray(new CRGB[effectArraySize]) {
     for (uint16_t i = 0; i < effectArraySize; i++) {
         effectArray[i] = CRGB::Black;
     }
 }
 
-void SimpleRenderer::changeEffect(Effect *effect) {
-    if (currentEffect != nullptr) {
-        delete currentEffect;
-        currentEffect = nullptr;
-    }
-
-    currentEffect = effect;
+void SimpleRenderer::changeEffect(std::unique_ptr<Effect> effect) {
+    currentEffect = std::move(effect);
 }
 
-void SimpleRenderer::render(DisplaySpec *displaySpec, CRGB *outputArray) {
+void SimpleRenderer::render(CRGB *outputArray) {
     auto layoutIndex = currentEffect->effectContext.layoutIndex;
     for (uint8_t segmentIndex = 0; segmentIndex < displaySpec->nbSegments(layoutIndex); segmentIndex++) {
         uint16_t nbPixels = displaySpec->segmentSize(layoutIndex, segmentIndex);

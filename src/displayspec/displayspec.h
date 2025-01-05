@@ -16,9 +16,9 @@ public:
     ) : totalLeds(totalLeds),
         nbLayouts(nbLayouts) {}
 
-    virtual uint16_t nbSegments(const uint16_t layoutIndex) = 0;
+    virtual uint16_t nbSegments(const uint16_t layoutIndex) const = 0;
 
-    virtual uint16_t segmentSize(const uint16_t layoutIndex, const uint16_t segmentIndex) = 0;
+    virtual uint16_t segmentSize(const uint16_t layoutIndex, const uint16_t segmentIndex) const = 0;
 
     virtual void setColour(
             const uint16_t layoutIndex,
@@ -26,7 +26,9 @@ public:
             const uint16_t pixelIndex,
             CRGB *outputArray,
             CRGB colour
-    ) = 0;
+    ) const = 0;
+
+    virtual ~DisplaySpec() = default;
 };
 
 #endif //LED_SEGMENTS_DISPLAYSPEC_H

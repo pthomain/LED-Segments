@@ -6,6 +6,7 @@
 #include "utils/utils.h"
 #include "effectcontext.h"
 #include "functional"
+#include "memory"
 
 class Effect {
 
@@ -23,20 +24,20 @@ public :
         speed = min(1, 3 * PRIMES[random8(10)]);
     };
 
-    virtual ~Effect() = default;
-
     virtual void fillArray(CRGB *effectArray, uint16_t effectArraySize) = 0;
+
+    virtual ~Effect() = default;
 
     template<typename T>
     class Factory {
     public:
-        static Effect *createEffect(const EffectContext &effectContext) {
-            return new T(effectContext);
+        static std::unique_ptr<Effect> createEffect(const EffectContext &effectContext) {
+            return std::unique_ptr<Effect>(new T(effectContext));
         }
     };
 
 };
 
-using EffectFactory = std::function<Effect *(const EffectContext &effectContext)>;
+using EffectFactory = std::function<std::unique_ptr<Effect>(const EffectContext &effectContext)>;
 
 #endif //EFFECTS_H

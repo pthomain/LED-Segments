@@ -4,9 +4,10 @@
 #include "effects/party/partyeffect.h"
 #include "utils/seedgenerator.h"
 #include "structure/display.h"
-#include "displayspec/specs/TestSpec.h"
+#include "displayspec/specs/PhraseSpec.h"
 #include "effects/noise/noiseeeffect.h"
 #include "memory"
+#include "displayspec/specs/TestSpec.h"
 
 //TODO add stack modifier, each pixel stacks on the previous one + reverse
 //TODO add swipe effect, one colour slides over the previous one

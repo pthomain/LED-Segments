@@ -2,11 +2,10 @@
 #include "displayspec/displayspec.h"
 
 SimpleRenderer::SimpleRenderer(
-        std::shared_ptr<DisplaySpec> displaySpec,
-        const uint16_t effectArraySize
-) : Renderer(displaySpec, effectArraySize),
-    effectArray(new CRGB[effectArraySize]) {
-    for (uint16_t i = 0; i < effectArraySize; i++) {
+        std::shared_ptr<DisplaySpec> displaySpec
+) : Renderer(displaySpec),
+    effectArray(new CRGB[displaySpec->maxSegmentSize()]) {
+    for (uint16_t i = 0; i < displaySpec->maxSegmentSize(); i++) {
         effectArray[i] = CRGB::Black;
     }
 }

@@ -12,10 +12,7 @@ private:
 
 public :
 
-    explicit SimpleRenderer(
-            std::shared_ptr<DisplaySpec> displaySpec,
-            const uint16_t effectArraySize
-    );
+    explicit SimpleRenderer(std::shared_ptr<DisplaySpec> displaySpec);
 
     void changeEffect(std::unique_ptr<Effect> effect) override;
 

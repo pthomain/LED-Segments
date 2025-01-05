@@ -2,18 +2,16 @@
 #include "config.h"
 #include "BitArray.h"
 #include "effects/effect.h"
-#include "displayspec/specs/TestSpec.h"
 #include "render/simplerenderer/simplerenderer.h"
 
 Fader::Fader(
-        std::shared_ptr<DisplaySpec> displaySpec,
-        const uint16_t effectArraySize
-) : Renderer(displaySpec, effectArraySize),
-    firstRenderer(new SimpleRenderer(displaySpec, effectArraySize)),
-    secondRenderer(new SimpleRenderer(displaySpec, effectArraySize)),
-    blendingArray(new CRGB[displaySpec->totalLeds]) {
+        std::shared_ptr<DisplaySpec> displaySpec
+) : Renderer(displaySpec),
+    firstRenderer(new SimpleRenderer(displaySpec)),
+    secondRenderer(new SimpleRenderer(displaySpec)),
+    blendingArray(new CRGB[displaySpec->nbLeds()]) {
 
-    for (uint16_t i = 0; i < displaySpec->totalLeds; i++) {
+    for (uint16_t i = 0; i < displaySpec->nbLeds(); i++) {
         blendingArray[i] = CRGB::Black;
     }
 };
@@ -40,7 +38,7 @@ void Fader::render(CRGB *outputArray) {
     float percent = crossFadeStep / TRANSITION;
     uint8_t overlay = 255 * (isFirstEffectRendering ? percent : 1 - percent);
 
-    for (int i = 0; i < displaySpec->totalLeds; i++) {
+    for (int i = 0; i < displaySpec->nbLeds(); i++) {
         outputArray[i] = blend(
                 outputArray[i],
                 blendingArray[i],

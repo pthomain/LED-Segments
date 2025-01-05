@@ -12,10 +12,10 @@ class Display {
 private:
 
     std::shared_ptr<DisplaySpec> displaySpec;
+    std::unique_ptr<Renderer> renderer;
     const std::vector<EffectFactory> effectFactories;
     CRGB *outputArray;
     CRGB *effectArray;
-    Renderer *renderer;
 
 public:
 
@@ -31,7 +31,6 @@ public:
     ~Display() {
         delete[] outputArray;
         delete[] effectArray;
-        delete renderer;
     }
 };
 

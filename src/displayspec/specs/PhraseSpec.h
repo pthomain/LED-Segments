@@ -56,6 +56,8 @@ public :
 
     uint16_t nbLayouts() const override { return NB_LAYOUTS; }
 
+    String layoutName(uint16_t layoutIndex) const override;
+
     uint16_t nbSegments(const uint16_t layoutIndex) const override;
 
     uint16_t segmentSize(const uint16_t layoutIndex, const uint16_t segmentIndex) const override;

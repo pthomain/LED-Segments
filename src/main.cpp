@@ -7,7 +7,6 @@
 #include "displayspec/specs/PhraseSpec.h"
 #include "effects/noise/noiseeeffect.h"
 #include "memory"
-#include "displayspec/specs/TestSpec.h"
 
 //TODO add stack modifier, each pixel stacks on the previous one + reverse
 //TODO add swipe effect, one colour slides over the previous one
@@ -16,7 +15,7 @@
 //TODO for each modifier, allow for highlight (75% brightness for other pixels based on seed%2)
 const std::vector<EffectFactory> effectFactories = {
         PartyEffect::factory,
-        NoiseEffect::factory
+//        NoiseEffect::factory
 };
 
 Display *display;
@@ -26,7 +25,7 @@ void setup() {
     addEntropy();
     delay(2000);
 
-    display = new Display(std::make_shared<TestSpec>(), effectFactories);
+    display = new Display(std::make_shared<PhraseSpec>(), effectFactories);
     display->changeEffect();
 }
 

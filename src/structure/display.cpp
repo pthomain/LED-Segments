@@ -20,25 +20,29 @@ Display::Display(
     FastLED.show();
 }
 
+uint16_t layoutIndex  = 0;
+
 void Display::changeEffect() {
     const auto effectIndex = random8(effectFactories.size());
     const auto &effectFactory = effectFactories.at(effectIndex);
-    const auto layoutIndex = random8(displaySpec->nbLayouts());
+//    const auto layoutIndex = 5;//random8(displaySpec->nbLayouts());
     const auto mirror = ALL_MIRRORS[random8(3)];
 
     Serial.println(
             "Effect Index: " + String(effectIndex) +
-            ", Layout Index: " + String(layoutIndex) +
-            ", Mirror: " + String(mirror)
+            "\tLayout: " + String(displaySpec->layoutName(layoutIndex)) +
+            "\tMirror: " + String(mirror)
     );
 
     renderer->changeEffect(effectFactory(
             EffectContext(
                     layoutIndex,
-                    MIRROR_NONE,
+                    mirror,
                     effectIndex
             )
     ));
+
+    layoutIndex = (layoutIndex + 1) % displaySpec->nbLayouts();
 }
 
 void Display::render() {

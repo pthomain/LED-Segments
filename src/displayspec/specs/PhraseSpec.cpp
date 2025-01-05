@@ -84,8 +84,8 @@ void PhraseSpec::setColour(
             const std::function<std::array<uint16_t, 2>(uint16_t)> &getPixel
     ) {
         uint16_t containedPixelIndex = 0;
-        for (uint8_t pixelIndex = 0; pixelIndex <= pixelArraySize; pixelIndex++) {
-            auto pixel = getPixel(pixelIndex);
+        for (uint8_t i = 0; i <= pixelArraySize; i++) {
+            auto pixel = getPixel(i);
             if (pixel[0] >= segmentStart && pixel[1] <= segmentEnd) {
                 if (containedPixelIndex == pixelIndex) {
                     applyColourToRange(pixel[0], pixel[1]);
@@ -102,20 +102,18 @@ void PhraseSpec::setColour(
         return std::array<uint16_t, 2>{start, end};
     };
 
+    // TODO for LEDS_IN_X, handle row reversal
     switch (layoutIndex) {
         case LEDS_IN_ROWS:
             applyColourToLed(segmentIndex * LEDS_PER_ROW + pixelIndex);
-            Serial.println("LEDS_IN_ROWS");
             break;
 
         case LEDS_IN_LETTERS:
             applyColourToLed(LETTERS[segmentIndex][0] + pixelIndex);
-            Serial.println("LEDS_IN_LETTERS");
             break;
 
         case LEDS_IN_WORDS:
             applyColourToLed(WORDS[segmentIndex][0] + pixelIndex);
-            Serial.println("LEDS_IN_WORDS");
             break;
 
         case LEDS_IN_WHOLE:
@@ -126,7 +124,7 @@ void PhraseSpec::setColour(
             applyColourToPixel(
                     LETTERS[segmentIndex][0],
                     LETTERS[segmentIndex][1],
-                    NB_LETTERS,
+                    NB_ROWS,
                     rowSelector
             );
             break;
@@ -135,7 +133,7 @@ void PhraseSpec::setColour(
             applyColourToPixel(
                     WORDS[segmentIndex][0],
                     WORDS[segmentIndex][1],
-                    NB_WORDS,
+                    NB_ROWS,
                     rowSelector
             );
             break;
@@ -167,5 +165,32 @@ void PhraseSpec::setColour(
         case WORDS_IN_WHOLE:
             applyColourToRange(WORDS[pixelIndex][0], WORDS[pixelIndex][1]);
             break;
+    };
+}
+
+String PhraseSpec::layoutName(uint16_t layoutIndex) const {
+    switch (layoutIndex) {
+        case LEDS_IN_ROWS:
+            return "LEDS_IN_ROWS";
+        case LEDS_IN_LETTERS:
+            return "LEDS_IN_LETTERS";
+        case LEDS_IN_WORDS:
+            return "LEDS_IN_WORDS";
+        case LEDS_IN_WHOLE:
+            return "LEDS_IN_WHOLE";
+        case ROWS_IN_LETTERS:
+            return "ROWS_IN_LETTERS";
+        case ROWS_IN_WORDS:
+            return "ROWS_IN_WORDS";
+        case ROWS_IN_WHOLE:
+            return "ROWS_IN_WHOLE";
+        case LETTERS_IN_WORDS:
+            return "LETTERS_IN_WORDS";
+        case LETTERS_IN_WHOLE:
+            return "LETTERS_IN_WHOLE";
+        case WORDS_IN_WHOLE:
+            return "WORDS_IN_WHOLE";
+        default:
+            return "UNKNOWN";
     };
 }

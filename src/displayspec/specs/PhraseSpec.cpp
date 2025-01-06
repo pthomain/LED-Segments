@@ -68,12 +68,18 @@ void PhraseSpec::setColour(
         const CRGB colour
 ) const {
     auto applyColourToLed = [&](uint16_t ledIndex) {
-        outputArray[ledIndex] = colour;
+        uint16_t rowIndex = ledIndex / LEDS_PER_ROW;
+        if (hasSnakeRows && rowIndex % 2 == 1) {
+            auto rowStart = rowIndex * LEDS_PER_ROW;
+            auto rowEnd = rowStart + LEDS_PER_ROW - 1;
+            auto relativeIndex = ledIndex - rowStart;
+            outputArray[rowEnd - relativeIndex] = colour;
+        } else outputArray[ledIndex] = colour;
     };
 
     auto applyColourToRange = [&](uint16_t start, uint16_t end) {
         for (uint16_t i = start; i <= end; i++) {
-            applyColourToLed(i);
+            outputArray[i] = colour;
         }
     };
 
@@ -102,7 +108,6 @@ void PhraseSpec::setColour(
         return std::array<uint16_t, 2>{start, end};
     };
 
-    // TODO for LEDS_IN_X, handle row reversal
     switch (layoutIndex) {
         case LEDS_IN_ROWS:
             applyColourToLed(segmentIndex * LEDS_PER_ROW + pixelIndex);

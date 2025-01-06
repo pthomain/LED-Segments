@@ -9,23 +9,6 @@ static constexpr uint16_t LEDS_PER_ROW = 8;
 static constexpr uint16_t NB_ROWS = NB_LEDS / LEDS_PER_ROW;
 static constexpr uint16_t NB_LAYOUTS = 10;
 
-// Format is PIXELS_IN_SEGMENTS
-enum Layout {
-    LEDS_IN_ROWS,
-    LEDS_IN_LETTERS,
-    LEDS_IN_WORDS,
-    LEDS_IN_WHOLE,
-
-    ROWS_IN_LETTERS,
-    ROWS_IN_WORDS,
-    ROWS_IN_WHOLE,
-
-    LETTERS_IN_WORDS,
-    LETTERS_IN_WHOLE,
-
-    WORDS_IN_WHOLE
-};
-
 static constexpr uint16_t NB_LETTERS = 10;
 constexpr static const uint16_t LETTERS[10][2] = {
         {0,   23},
@@ -47,10 +30,32 @@ constexpr static const uint16_t WORDS[3][2] = {
         {232, 255}
 };
 
+
+// Format is PIXELS_IN_SEGMENTS
+enum Layout {
+    LEDS_IN_ROWS,
+    LEDS_IN_LETTERS,
+    LEDS_IN_WORDS,
+    LEDS_IN_WHOLE,
+
+    ROWS_IN_LETTERS,
+    ROWS_IN_WORDS,
+    ROWS_IN_WHOLE,
+
+    LETTERS_IN_WORDS,
+    LETTERS_IN_WHOLE,
+
+    WORDS_IN_WHOLE
+};
+
 class PhraseSpec : public DisplaySpec {
+private:
+
+    bool hasSnakeRows = false;
+
 public :
 
-    explicit PhraseSpec() : DisplaySpec() {}
+    explicit PhraseSpec(bool hasSnakeRows) : DisplaySpec(), hasSnakeRows(hasSnakeRows) {}
 
     uint16_t nbLeds() const override { return NB_LEDS; }
 

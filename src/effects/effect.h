@@ -19,7 +19,7 @@ protected:
 public :
     const EffectContext effectContext;
 
-    explicit Effect(const EffectContext effectContext) : effectContext(effectContext) {
+    explicit Effect(const EffectContext &effectContext) : effectContext(effectContext) {
         scale = 5 * PRIMES[random8(10)];
         speed = min(1, 3 * PRIMES[random8(10)]);
     };

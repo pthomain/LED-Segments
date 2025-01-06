@@ -9,11 +9,17 @@ class Renderer {
 
 protected:
 
-    std::shared_ptr<DisplaySpec> displaySpec;
+    const DisplaySpec &displaySpec;
+    const String name;
 
 public:
 
-    explicit Renderer(std::shared_ptr<DisplaySpec> displaySpec) : displaySpec(displaySpec) {}
+    explicit Renderer(
+            const DisplaySpec &displaySpec,
+            const String &name
+    ) : displaySpec(displaySpec), name(name) {}
+
+    virtual bool hasEffect() = 0;
 
     virtual void changeEffect(std::unique_ptr<Effect> effect) = 0;
 

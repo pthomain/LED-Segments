@@ -56,7 +56,7 @@ public :
 
     uint16_t nbLayouts() const override { return NB_LAYOUTS; }
 
-    String layoutName(uint16_t layoutIndex) const override;
+    String layoutName(const uint16_t layoutIndex) const override;
 
     uint16_t nbSegments(const uint16_t layoutIndex) const override;
 
@@ -67,7 +67,7 @@ public :
             const uint16_t end,
             const uint16_t pixelIndex,
             CRGB *outputArray,
-            CRGB colour
+            const CRGB colour
     ) const override;
 
     ~PhraseSpec() override = default;

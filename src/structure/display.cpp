@@ -4,23 +4,23 @@
 #include "render/fader/fader.h"
 
 Display::Display(
-        std::shared_ptr<DisplaySpec> displaySpec,
-        std::vector<EffectFactory> effectFactories
+        const DisplaySpec &displaySpec,
+        const std::vector<EffectFactory> effectFactories
 ) : displaySpec(displaySpec),
     renderer(DISABLE_FADING
-             ? std::unique_ptr<Renderer>(new SimpleRenderer(displaySpec))
-             : std::unique_ptr<Renderer>(new Fader(displaySpec))
+             ? std::unique_ptr<Renderer>(new SimpleRenderer(displaySpec, "simple"))
+             : std::unique_ptr<Renderer>(new Fader(displaySpec, "fader"))
     ),
     effectFactories(std::move(effectFactories)),
-    outputArray(new CRGB[displaySpec->nbLeds()]) {
+    outputArray(new CRGB[displaySpec.nbLeds()]) {
 
-    CFastLED::addLeds<WS2812B, LED_PIN, GRB>(outputArray, displaySpec->nbLeds());
+    CFastLED::addLeds<WS2812B, LED_PIN, GRB>(outputArray, displaySpec.nbLeds());
     FastLED.setBrightness(10);
     FastLED.clear(true);
     FastLED.show();
 }
 
-uint16_t layoutIndex  = 0;
+uint16_t layoutIndex = 0;
 
 void Display::changeEffect() {
     const auto effectIndex = random8(effectFactories.size());
@@ -29,9 +29,9 @@ void Display::changeEffect() {
     const auto mirror = ALL_MIRRORS[random8(3)];
 
     Serial.println(
-            "Effect Index: " + String(effectIndex) +
-            "\tLayout: " + String(displaySpec->layoutName(layoutIndex)) +
-            "\tMirror: " + String(mirror)
+            "Layout: " + String(displaySpec.layoutName(layoutIndex)) +
+            "\t\tEffect Index: " + String(effectIndex) +
+            "\t\tMirror: " + String(mirror)
     );
 
     renderer->changeEffect(effectFactory(
@@ -42,7 +42,7 @@ void Display::changeEffect() {
             )
     ));
 
-    layoutIndex = (layoutIndex + 1) % displaySpec->nbLayouts();
+    layoutIndex = (layoutIndex + 1) % displaySpec.nbLayouts();
 }
 
 void Display::render() {

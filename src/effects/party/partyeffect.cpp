@@ -14,21 +14,21 @@ void PartyEffect::fillArray(CRGB *effectArray, uint16_t effectArraySize) {
 //    if (effectContext.() % 3 == 0) {
 //        startIndex = iteration; //just cycle linearly
 //    }
-//
-//    fill_palette(
-//            effectArray,
-//            effectArraySize,
-//            startIndex,
-//            scale,
-//            effectContext.palette,
-//            255,
-//            LINEARBLEND
-//    );
 
-    fill_rainbow(
+    fill_palette(
             effectArray,
             effectArraySize,
-            0,
-            max(1, 255 / effectArraySize)
+            startIndex,
+            scale,
+            effectContext.palette,
+            255,
+            LINEARBLEND
     );
+
+//    fill_rainbow(
+//            effectArray,
+//            effectArraySize,
+//            0,
+//            max(1, 255 / effectArraySize)
+//    );
 };

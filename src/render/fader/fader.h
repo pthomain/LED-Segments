@@ -22,7 +22,12 @@ private:
 
 public :
 
-    explicit Fader(std::shared_ptr<DisplaySpec> displaySpec);
+    explicit Fader(
+            const DisplaySpec &displaySpec,
+            const String &name
+    );
+
+    bool hasEffect() override;
 
     void changeEffect(std::unique_ptr<Effect> effect) override;
 

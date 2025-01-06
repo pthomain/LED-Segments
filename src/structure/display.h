@@ -11,8 +11,8 @@ class Display {
 
 private:
 
-    std::shared_ptr<DisplaySpec> displaySpec;
-    std::unique_ptr<Renderer> renderer;
+    const DisplaySpec &displaySpec;
+    const std::unique_ptr<Renderer> renderer;
     const std::vector<EffectFactory> effectFactories;
     CRGB *outputArray;
     CRGB *effectArray;
@@ -20,8 +20,8 @@ private:
 public:
 
     explicit Display(
-            std::shared_ptr<DisplaySpec> displaySpec,
-            std::vector<EffectFactory> effectFactories
+            const DisplaySpec &displaySpec,
+            const std::vector<EffectFactory> effectFactories
     );
 
     void changeEffect();

@@ -46,7 +46,7 @@ uint16_t PhraseSpec::segmentSize(
         case ROWS_IN_WHOLE:
             return NB_ROWS;
 
-        case LETTERS_IN_WORDS:
+        case LETTERS_IN_WORDS: // TODO: double check this
             return segmentSize(LEDS_IN_WORDS, segmentIndex) / segmentSize(LEDS_IN_LETTERS, segmentIndex);
 
         case LETTERS_IN_WHOLE:
@@ -65,7 +65,7 @@ void PhraseSpec::setColour(
         const uint16_t segmentIndex,
         const uint16_t pixelIndex,
         CRGB *outputArray,
-        CRGB colour
+        const CRGB colour
 ) const {
     auto applyColourToLed = [&](uint16_t ledIndex) {
         outputArray[ledIndex] = colour;
@@ -168,7 +168,7 @@ void PhraseSpec::setColour(
     };
 }
 
-String PhraseSpec::layoutName(uint16_t layoutIndex) const {
+String PhraseSpec::layoutName(const uint16_t layoutIndex) const {
     switch (layoutIndex) {
         case LEDS_IN_ROWS:
             return "LEDS_IN_ROWS";

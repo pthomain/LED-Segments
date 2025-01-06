@@ -12,7 +12,12 @@ private:
 
 public :
 
-    explicit SimpleRenderer(std::shared_ptr<DisplaySpec> displaySpec);
+    explicit SimpleRenderer(
+            const DisplaySpec &displaySpec,
+            const String &name
+    );
+
+    bool hasEffect() override { return currentEffect != nullptr; }
 
     void changeEffect(std::unique_ptr<Effect> effect) override;
 

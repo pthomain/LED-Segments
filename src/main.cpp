@@ -13,6 +13,7 @@
 //TODO add word dwell modifier, dwell on each word for a while
 //TODO add chase with trail modifier, like ping pong but with a trail
 //TODO for each modifier, allow for highlight (75% brightness for other pixels based on seed%2)
+//TODO add a Composite effect that picks a different effect for each segment or the same effect but a different palette
 const std::vector<EffectFactory> effectFactories = {
         PartyEffect::factory,
 //        NoiseEffect::factory
@@ -25,7 +26,11 @@ void setup() {
     addEntropy();
     delay(2000);
 
-    display = new Display(std::make_shared<PhraseSpec>(), effectFactories);
+    //TODO move API files to lib folder
+    auto *phraseSpec = new PhraseSpec();
+    DisplaySpec &displaySpec = *phraseSpec;
+
+    display = new Display(displaySpec, effectFactories);
     display->changeEffect();
 }
 

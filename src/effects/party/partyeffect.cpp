@@ -24,11 +24,4 @@ void PartyEffect::fillArray(CRGB *effectArray, uint16_t effectArraySize) {
             255,
             LINEARBLEND
     );
-
-//    fill_rainbow(
-//            effectArray,
-//            effectArraySize,
-//            0,
-//            max(1, 255 / effectArraySize)
-//    );
 };

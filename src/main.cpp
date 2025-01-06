@@ -27,7 +27,7 @@ void setup() {
     delay(2000);
 
     //TODO move API files to lib folder
-    auto *phraseSpec = new PhraseSpec();
+    auto *phraseSpec = new PhraseSpec(true);
     DisplaySpec &displaySpec = *phraseSpec;
 
     display = new Display(displaySpec, effectFactories);

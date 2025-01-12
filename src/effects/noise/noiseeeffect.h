@@ -13,7 +13,11 @@ protected:
 public:
     explicit NoiseEffect(const EffectContext &effectContext) : Effect(effectContext) {}
 
-    void fillArray(CRGB *effectArray, uint16_t effectArraySize) override;
+    void fillArray(
+            CRGB *effectArray,
+            const uint16_t effectArraySize,
+            const uint16_t frameIndex
+    ) override;
 
     static EffectFactory factory;
 };

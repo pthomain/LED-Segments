@@ -8,7 +8,11 @@ EffectFactory NoiseEffect::factory = [](
     return std::unique_ptr<Effect>(new NoiseEffect(effectContext));
 };
 
-void NoiseEffect::fillArray(CRGB *effectArray, uint16_t effectArraySize) {
+void NoiseEffect::fillArray(
+        CRGB *effectArray,
+        const uint16_t effectArraySize,
+        const uint16_t frameIndex
+) {
     for (uint16_t i = 0; i < effectArraySize; i++) {
         uint8_t noiseScale = beatsin8(10, 10, 30);
         uint8_t noise = inoise8(i * noiseScale, millis() / noiseSpeed);

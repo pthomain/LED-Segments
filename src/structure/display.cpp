@@ -42,7 +42,7 @@ void Display::changeEffect() {
             )
     ));
 
-    layoutIndex = (layoutIndex + 1) % displaySpec.nbLayouts();
+    layoutIndex = (layoutIndex + 1) % 2;//displaySpec.nbLayouts();
 }
 
 void Display::render() {

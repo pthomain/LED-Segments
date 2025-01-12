@@ -13,6 +13,7 @@ SimpleRenderer::SimpleRenderer(
 
 void SimpleRenderer::changeEffect(std::unique_ptr<Effect> effect) {
     currentEffect = std::move(effect);
+    frameIndex = 0;
 }
 
 void SimpleRenderer::render(CRGB *outputArray) {
@@ -28,11 +29,20 @@ void SimpleRenderer::render(CRGB *outputArray) {
     for (uint8_t segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
         uint16_t nbPixels = displaySpec.segmentSize(layoutIndex, segmentIndex);
 
-        currentEffect->fillArray(effectArray, nbPixels);
+        currentEffect->fillArray(effectArray, nbPixels, frameIndex);
 
         for (uint16_t pixelIndex = 0; pixelIndex < nbPixels; pixelIndex++) {
             auto colour = effectArray[pixelIndex];
-            displaySpec.setColour(layoutIndex, segmentIndex, pixelIndex, outputArray, colour);
+            displaySpec.setColour(
+                    layoutIndex,
+                    segmentIndex,
+                    pixelIndex,
+                    frameIndex,
+                    outputArray,
+                    colour
+            );
         }
     }
+
+    frameIndex++;
 }

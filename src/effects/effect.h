@@ -24,7 +24,11 @@ public :
         speed = min(1, 3 * PRIMES[random8(10)]);
     };
 
-    virtual void fillArray(CRGB *effectArray, uint16_t effectArraySize) = 0;
+    virtual void fillArray(
+            CRGB *effectArray,
+            uint16_t effectArraySize,
+            uint16_t frameIndex
+    ) = 0;
 
     virtual ~Effect() = default;
 

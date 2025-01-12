@@ -18,7 +18,11 @@ public:
         primeB = PRIMES.at(random8(PRIMES.size()));
     }
 
-    void fillArray(CRGB *effectArray, uint16_t effectArraySize) override;
+    void fillArray(
+            CRGB *effectArray,
+            const uint16_t effectArraySize,
+            const uint16_t frameIndex
+    ) override;
 
     static EffectFactory factory;
 };

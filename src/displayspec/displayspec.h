@@ -41,6 +41,7 @@ public:
             const uint16_t layoutIndex,
             const uint16_t segmentIndex,
             const uint16_t pixelIndex,
+            const uint16_t frameIndex,
             CRGB *outputArray,
             const CRGB colour
     ) const = 0;

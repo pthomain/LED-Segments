@@ -4,6 +4,7 @@
 #define FASTLED_USE_PROGMEM 1
 #define IS_PROD false
 #define LED_PIN 9
+#define IS_TEST_PHRASE false
 
 #define FPS 60
 #define REFRESH_RATE_IN_MILLIS (1000 / FPS)

@@ -9,6 +9,7 @@ class SimpleRenderer : public Renderer {
 private:
     CRGB *effectArray;
     std::unique_ptr<Effect> currentEffect = nullptr;
+    uint16_t frameIndex = 0;
 
 public :
 

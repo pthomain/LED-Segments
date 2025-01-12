@@ -3,6 +3,7 @@
 
 #include "FastLED.h"
 #include "effects/mirror/mirror.h"
+#include "utils/utils.h"
 
 class EffectContext {
 

@@ -4,9 +4,9 @@
 #include "config.h"
 
 #if IS_TEST_PHRASE
-#include "TestPhraseConfig.h"
+#include "config/TestPhraseConfig.h"
 #else
-#include "DlhPhraseConfig.h"
+#include "config/DlhPhraseConfig.h"
 #endif
 
 #include "displayspec/displayspec.h"

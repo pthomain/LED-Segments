@@ -1,7 +1,7 @@
-#include "display.h"
+#include "display/display.h"
 #include "config.h"
-#include "render/simplerenderer/simplerenderer.h"
-#include "render/fader/fader.h"
+#include "render/simplerenderer.h"
+#include "render/fader.h"
 
 Display::Display(
         const DisplaySpec &displaySpec,

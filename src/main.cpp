@@ -2,10 +2,10 @@
 #include "config.h"
 #include "effects/party/partyeffect.h"
 #include "utils/seedgenerator.h"
-#include "structure/display.h"
+#include "display/display.h"
 #include "displayspec/specs/phrase/PhraseSpec.h"
 #include "effects/noise/noiseeeffect.h"
-#include "displayspec/specs/FibonacciSpec.h"
+#include "displayspec/specs/fibonacci/FibonacciSpec.h"
 
 //TODO add stack modifier, each pixel stacks on the previous one + reverse
 //TODO add swipe effect, one colour slides over the previous one

@@ -1,8 +1,7 @@
-#include "fader.h"
+#include "render/fader.h"
 #include "config.h"
-#include "BitArray.h"
-#include "effects/effect.h"
-#include "render/simplerenderer/simplerenderer.h"
+#include "effect/effect.h"
+#include "render//simplerenderer.h"
 
 Fader::Fader(
         const DisplaySpec &displaySpec,

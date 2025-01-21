@@ -2,7 +2,7 @@
 #define LED_SEGMENTS_EFFECTCONTEXT_H
 
 #include "FastLED.h"
-#include "effects/mirror/mirror.h"
+#include "effect/mirror.h"
 #include "utils/utils.h"
 
 class EffectContext {

@@ -4,9 +4,8 @@
 #define EFFECTS_H
 
 #include "utils/utils.h"
-#include "effectcontext.h"
+#include "effect/effectcontext.h"
 #include "functional"
-#include "memory"
 
 class Effect {
 
@@ -19,7 +18,7 @@ protected:
 public :
     const EffectContext effectContext;
 
-    explicit Effect(const EffectContext &effectContext) : effectContext(effectContext) {
+    explicit Effect(EffectContext effectContext) : effectContext(std::move(effectContext)) {
         scale = 5 * PRIMES[random8(10)];
         speed = min(1, 3 * PRIMES[random8(10)]);
     };

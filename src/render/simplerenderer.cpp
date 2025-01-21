@@ -1,4 +1,4 @@
-#include "simplerenderer.h"
+#include "render/simplerenderer.h"
 #include "displayspec/displayspec.h"
 
 SimpleRenderer::SimpleRenderer(

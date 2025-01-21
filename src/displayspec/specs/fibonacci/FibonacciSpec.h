@@ -2,25 +2,7 @@
 #define LED_SEGMENTS_FIBONACCIDISPLAY_H
 
 #include <cstdint>
-#include "displayspec/displaySpec.h"
-
-enum FibonacciLayout {
-    PIXEL_IN_SPIRAL,
-    SEGMENT_IN_SPIRAL,
-
-    PIXEL_IN_SPIRAL_INFLEXION_20,
-    PIXEL_IN_SPIRAL_INFLEXION_DYNAMIC,
-    PIXEL_IN_SPIRAL_INFLEXION_ODD_EVEN,
-    PIXEL_IN_SPIRAL_SYMMETRIC,
-
-    SEGMENT_IN_SPIRAL_INFLEXION_20,
-    SEGMENT_IN_SPIRAL_INFLEXION_DYNAMIC,
-    SEGMENT_IN_SPIRAL_INFLEXION_ODD_EVEN,
-    SEGMENT_IN_SPIRAL_SYMMETRIC,
-
-    SEGMENT_IN_CONCENTRIC,
-    PIXEL_IN_CONCENTRIC,
-};
+#include "displayspec/displayspec.h"
 
 class FibonacciSpec : public DisplaySpec {
 

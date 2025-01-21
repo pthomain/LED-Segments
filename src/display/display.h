@@ -2,26 +2,21 @@
 #define LED_SEGMENTS_DISPLAY_H
 
 #include "FastLED.h"
-#include <cstdint>
-#include "effects/effect.h"
+#include "effect/effect.h"
 #include "displayspec/displayspec.h"
 #include "render/renderer.h"
 
 class Display {
-
 private:
-
     const DisplaySpec &displaySpec;
     const std::unique_ptr<Renderer> renderer;
     const std::vector<EffectFactory> effectFactories;
     CRGB *outputArray;
-    CRGB *effectArray;
 
 public:
-
     explicit Display(
-            const DisplaySpec &displaySpec,
-            const std::vector<EffectFactory> effectFactories
+        const DisplaySpec &displaySpec,
+        const std::vector<EffectFactory> effectFactories
     );
 
     void changeEffect();
@@ -30,7 +25,6 @@ public:
 
     ~Display() {
         delete[] outputArray;
-        delete[] effectArray;
     }
 };
 

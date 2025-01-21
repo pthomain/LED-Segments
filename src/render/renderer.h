@@ -1,23 +1,21 @@
 #ifndef LED_SEGMENTS_RENDERER_H
 #define LED_SEGMENTS_RENDERER_H
 
-#include "effects/effect.h"
+#include "effect/effect.h"
 #include "displayspec/displayspec.h"
 #include "memory"
 
 class Renderer {
-
 protected:
-
     const DisplaySpec &displaySpec;
     const String name;
 
 public:
-
     explicit Renderer(
-            const DisplaySpec &displaySpec,
-            const String &name
-    ) : displaySpec(displaySpec), name(name) {}
+        const DisplaySpec &displaySpec,
+        const String &name
+    ) : displaySpec(displaySpec), name(name) {
+    }
 
     virtual bool hasEffect() = 0;
 

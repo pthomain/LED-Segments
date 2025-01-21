@@ -1,4 +1,4 @@
-#include "mirror.h"
+#include "effect/mirror.h"
 #include <string>
 
 std::string mirrorToString(Mirror mirror) {

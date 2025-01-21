@@ -3,7 +3,7 @@
 
 #include "FastLED.h"
 #include "config.h"
-#include "effects/effect.h"
+#include "effect/effect.h"
 #include "render/renderer.h"
 #include "displayspec/displayspec.h"
 #include "memory"

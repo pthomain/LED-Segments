@@ -2,65 +2,24 @@
 #include "FibonacciEnums.h"
 
 String FibonacciSpec::layoutName(const uint16_t layoutIndex) const {
-    switch (layoutIndex) {
-        case PIXEL_IN_SPIRAL:
-            return "PIXEL_IN_SPIRAL";
-        case SEGMENT_IN_SPIRAL:
-            return "SEGMENT_IN_SPIRAL";
-        case PIXEL_IN_SPIRAL_INFLEXION_20:
-            return "PIXEL_IN_SPIRAL_INFLEXION_20";
-        case SEGMENT_IN_SPIRAL_INFLEXION_20:
-            return "SEGMENT_IN_SPIRAL_INFLEXION_20";
-        case PIXEL_IN_SPIRAL_INFLEXION_DYNAMIC:
-            return "PIXEL_IN_SPIRAL_INFLEXION_DYNAMIC";
-        case SEGMENT_IN_SPIRAL_INFLEXION_DYNAMIC:
-            return "SEGMENT_IN_SPIRAL_INFLEXION_DYNAMIC";
-        case PIXEL_IN_SPIRAL_INFLEXION_ODD_EVEN:
-            return "PIXEL_IN_SPIRAL_INFLEXION_ODD_EVEN";
-        case SEGMENT_IN_SPIRAL_INFLEXION_ODD_EVEN:
-            return "SEGMENT_IN_SPIRAL_INFLEXION_ODD_EVEN";
-        case PIXEL_IN_SPIRAL_SYMMETRIC:
-            return "PIXEL_IN_SPIRAL_SYMMETRIC";
-        case SEGMENT_IN_SPIRAL_SYMMETRIC:
-            return "SEGMENT_IN_SPIRAL_SYMMETRIC";
-        case PIXEL_IN_CONCENTRIC:
-            return "PIXEL_IN_CONCENTRIC";
-        case SEGMENT_IN_CONCENTRIC:
-            return "SEGMENT_IN_CONCENTRIC";
-        default:
-            return "UNKNOWN";
-    }
+    return getLayoutName(layoutIndex);
 }
 
 uint16_t FibonacciSpec::nbSegments(const uint16_t layoutIndex) const {
-    return 1; //same effect applied to all segments, pixels are used as an optimisation (might change later)
+    //same effect applied to all segments, pixels are used as an optimisation
+    //since all segments have the same size (might change later)
+    return 1;
 }
 
 uint16_t FibonacciSpec::segmentSize(const uint16_t layoutIndex, const uint16_t segmentIndex) const {
-    switch (layoutIndex) {
-        case PIXEL_IN_SPIRAL:
-        case PIXEL_IN_SPIRAL_INFLEXION_20:
-        case PIXEL_IN_SPIRAL_INFLEXION_DYNAMIC:
-        case PIXEL_IN_SPIRAL_INFLEXION_ODD_EVEN:
-        case PIXEL_IN_SPIRAL_SYMMETRIC:
-            return PIXELS_IN_SPIRAL;
+    auto pixelUnit = getPixelUnit(layoutIndex);
+    auto alignment = getAlignment(layoutIndex);
 
-        case SEGMENT_IN_SPIRAL:
-        case SEGMENT_IN_SPIRAL_INFLEXION_20:
-        case SEGMENT_IN_SPIRAL_INFLEXION_DYNAMIC:
-        case SEGMENT_IN_SPIRAL_INFLEXION_ODD_EVEN:
-        case SEGMENT_IN_SPIRAL_SYMMETRIC:
-            return NB_SPIRAL_SEGMENTS;
-
-        case PIXEL_IN_CONCENTRIC:
-            return 10;
-
-        case SEGMENT_IN_CONCENTRIC:
-            return NB_CONCENTRIC_SEGMENTS;
+    if (alignment == SPIRAL) {
+        return pixelUnit == PIXEL ? PIXELS_IN_SPIRAL : NB_SPIRAL_SEGMENTS;
+    } else {
         //different effect per segment, otherwise the whole display would have a single colour
-
-        default:
-            return 0;
+        return pixelUnit == PIXEL ? 10 : NB_CONCENTRIC_SEGMENTS;
     }
 }
 
@@ -80,7 +39,7 @@ void FibonacciSpec::applyColourToPixel(
         outputArray[ledIndex] = colour;
     };
 
-    if (layoutIndex == PIXEL_IN_CONCENTRIC || layoutIndex == SEGMENT_IN_CONCENTRIC) {
+    if (getAlignment(layoutIndex) == CONCENTRIC) {
         if (isEvenSegment) {
             threshold_2_leds = 8;
             threshold_3_leds = 9;
@@ -118,7 +77,7 @@ void FibonacciSpec::applyColourToSpiralSegment(
     const CRGB colour
 ) const {
     //for each SEGMENT_IN_X, each pixel index represents a segment and the colour must be applied to the entire segment
-    for (uint16_t pixelIndex = 0; pixelIndex < 20; pixelIndex++) {
+    for (uint16_t pixelIndex = 0; pixelIndex < PIXELS_IN_SPIRAL; pixelIndex++) {
         applyColourToPixel(
             layoutIndex,
             segmentIndex,
@@ -138,7 +97,7 @@ void FibonacciSpec::applyColourToSpiralPixel(
     const CRGB colour
 ) const {
     //for each PIXEL_IN_X, the colour must be applied to the same pixel index for each segment
-    for (uint16_t segmentIndex = 0; segmentIndex < 12; segmentIndex++) {
+    for (uint16_t segmentIndex = 0; segmentIndex < NB_SPIRAL_SEGMENTS; segmentIndex++) {
         applyColourToPixel(
             layoutIndex,
             segmentIndex,
@@ -158,6 +117,21 @@ void FibonacciSpec::setColour(
     CRGB *outputArray,
     const CRGB colour
 ) const {
+    auto pixelUnit = getPixelUnit(layoutIndex);
+    auto alignment = getAlignment(layoutIndex);
+    auto inflexion = getInflexion(layoutIndex);
+    int8_t inflexionValue;
+
+    switch (inflexion) {
+        case INFLEXION_NONE: inflexionValue = -1;
+            break;
+        case INFLEXION_AT_20: inflexionValue = 20;
+            break;
+        case INFLEXION_DYNAMIC: inflexionValue = frameIndex % 27;
+            break;
+        default: inflexionValue = pixelIndex % 2 == 0 ? 1 : -1;
+    }
+
     auto applyColourToSpiralSegmentWithInflexion = [&](int8_t inflexionPoint) {
         applyColourToSpiralSegment(
             layoutIndex,
@@ -178,31 +152,11 @@ void FibonacciSpec::setColour(
         );
     };
 
-    switch (layoutIndex) {
-        case PIXEL_IN_SPIRAL:
-            applyColourToSpiralPixelWithInflexion(-1);
-            break;
-        case SEGMENT_IN_SPIRAL:
-            applyColourToSpiralSegmentWithInflexion(-1);
-            break;
-        case SEGMENT_IN_SPIRAL_INFLEXION_20:
-            applyColourToSpiralSegmentWithInflexion(20);
-            break;
-        case SEGMENT_IN_SPIRAL_INFLEXION_DYNAMIC:
-            applyColourToSpiralSegmentWithInflexion(frameIndex % 27);
-            break;
-        case SEGMENT_IN_SPIRAL_INFLEXION_ODD_EVEN:
-            //this only works if each segment has a different effect
-            applyColourToSpiralSegmentWithInflexion(pixelIndex % 2 == 0 ? 1 : -1);
-            break;
-        case SEGMENT_IN_SPIRAL_SYMMETRIC:
-            applyColourToSpiralSegmentWithInflexion(-1);
-            break;
-
-        case SEGMENT_IN_CONCENTRIC:
-            break;
-
-        case PIXEL_IN_CONCENTRIC:
-            break;
+    if (alignment == SPIRAL) {
+        if (pixelUnit == PIXEL) {
+            applyColourToSpiralPixelWithInflexion(inflexionValue);
+        } else {
+            applyColourToSpiralSegmentWithInflexion(inflexionValue);
+        }
     }
 }

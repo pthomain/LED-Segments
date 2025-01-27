@@ -13,6 +13,8 @@ void printNumber(char text[], int value);
 
 std::string CRGBToHex(const CRGB &color);
 
+uint16_t unsignedModulo(int index, uint16_t modulo);
+
 static const std::vector<CRGBPalette16> PALETTES PROGMEM = std::vector<CRGBPalette16>{
         PartyColors_p,
         PartyColors_p,

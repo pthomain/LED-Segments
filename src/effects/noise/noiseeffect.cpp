@@ -17,7 +17,7 @@ void NoiseEffect::fillArray(
         uint8_t noiseScale = beatsin8(10, 10, 30);
         uint8_t noise = inoise8(i * noiseScale, millis() / noiseSpeed);
 //        bool usePalette = effectContext.iteration % 2 == 0;
-        bool usePalette = true;
+        bool usePalette = false;
         if (usePalette) {
             uint16_t index = map(noise, 50, 190, 0, effectArraySize); //increase contrast
             fill_palette(

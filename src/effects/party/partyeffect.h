@@ -2,8 +2,7 @@
 #define LED_SEGMENTS_PARTYEFFECT_H
 
 #include <vector>
-#include "effect/effect.h"
-#include "utils/utils.h"
+#include "engine/effect/effect.h"
 
 class PartyEffect : public Effect, public Effect::Factory<PartyEffect> {
 private:

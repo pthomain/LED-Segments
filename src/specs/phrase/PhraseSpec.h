@@ -1,15 +1,15 @@
 #ifndef LED_SEGMENTS_PHRASESPEC_H
 #define LED_SEGMENTS_PHRASESPEC_H
 
-#include "config.h"
+#define IS_TEST_PHRASE false
 
 #if IS_TEST_PHRASE
 #include "config/TestPhraseConfig.h"
 #else
-#include "config/DlhPhraseConfig.h"
+#include "specs/phrase/config/DlhPhraseConfig.h"
 #endif
 
-#include "displayspec/displayspec.h"
+#include "engine/displayspec.h"
 #include "FastLED.h"
 
 // Format is PIXELS_IN_SEGMENTS

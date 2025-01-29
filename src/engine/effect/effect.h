@@ -3,8 +3,8 @@
 #ifndef EFFECTS_H
 #define EFFECTS_H
 
-#include "utils/utils.h"
-#include "effect/effectcontext.h"
+#include "engine/utils/utils.h"
+#include "effectcontext.h"
 #include "functional"
 
 class Effect {

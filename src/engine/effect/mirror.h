@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <string>
+#include "FastLED.h"
 
 typedef enum {
     MIRROR_NONE,
@@ -17,6 +18,11 @@ const std::vector<Mirror> ALL_MIRRORS = {
         MIRROR_CENTRE,
         MIRROR_EDGE,
 };
+
+
+uint16_t getMirrorSize(Mirror mirror, uint16_t effectArraySize);
+
+void applyMirror(Mirror mirror, CRGB *effectArray, uint16_t effectArraySize);
 
 std::string mirrorToString(Mirror mirror);
 

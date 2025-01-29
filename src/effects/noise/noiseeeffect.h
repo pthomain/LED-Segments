@@ -2,7 +2,7 @@
 #define LED_SEGMENTS_NOISEEFFECT_H
 
 #include <functional>
-#include "effect/effect.h"
+#include "engine/effect/effect.h"
 
 class NoiseEffect : public Effect, public Effect::Factory<NoiseEffect> {
 protected:

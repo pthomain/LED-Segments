@@ -2,21 +2,21 @@
 #define LED_SEGMENTS_FADER_H
 
 #include "FastLED.h"
-#include "config.h"
-#include "effect/effect.h"
-#include "render/renderer.h"
-#include "displayspec/displayspec.h"
+#include "engine/effect/effect.h"
+#include "engine/render/renderer.h"
+#include "engine/displayspec.h"
 #include "memory"
 
 class Fader : public Renderer {
 
 private:
-    constexpr static const float TRANSITION = (float) TRANSITION_DURATION_IN_FRAMES;
-
     Renderer *firstRenderer;
     Renderer *secondRenderer;
     CRGB *blendingArray;
 
+    const uint16_t refreshRateInMillis;
+    const uint16_t transitionDurationInMillis;
+    const uint16_t transitionDurationInFrames =  transitionDurationInMillis / refreshRateInMillis;
     bool isFirstEffectRendering = false;
     float crossFadeStep = 0;
 
@@ -24,7 +24,9 @@ public :
 
     explicit Fader(
             const DisplaySpec &displaySpec,
-            const String &name
+            const String &name,
+            const uint16_t refreshRateInMillis,
+            const uint16_t transitionDurationInMillis
     );
 
     bool hasEffect() override;

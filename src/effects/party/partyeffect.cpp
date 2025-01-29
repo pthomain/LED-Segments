@@ -27,13 +27,10 @@ void PartyEffect::fillArray(
             LINEARBLEND
     );
 
-//    for (int i = 0; i < effectArraySize; i++) {
-//        if (i % 3 == 0) {
-//            effectArray[i] = CRGB::Red;
-//        } else if (i % 3 == 1) {
-//            effectArray[i] = CRGB::Green;
-//        } else {
-//            effectArray[i] = CRGB::Blue;
-//        }
+//    if (frameIndex % 5 == 0) startIndex = ++startIndex % effectArraySize;
+//
+//    for (uint16_t index = 0; index < effectArraySize; index++) {
+//        effectArray[index] = index == startIndex ? CRGB::Red : 0;
 //    }
+//    fill_rainbow(effectArray, effectArraySize, 0, 255 / effectArraySize);
 };

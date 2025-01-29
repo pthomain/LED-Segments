@@ -1,8 +1,8 @@
 #ifndef LED_SEGMENTS_RENDERER_H
 #define LED_SEGMENTS_RENDERER_H
 
-#include "effect/effect.h"
-#include "displayspec/displayspec.h"
+#include "engine/effect/effect.h"
+#include "engine/displayspec.h"
 #include "memory"
 
 class Renderer {

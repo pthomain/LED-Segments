@@ -1,15 +1,18 @@
-#include "render/fader.h"
-#include "config.h"
-#include "effect/effect.h"
-#include "render//simplerenderer.h"
+#include "fader.h"
+#include "engine/effect/effect.h"
+#include "engine/render/simple/simplerenderer.h"
 
 Fader::Fader(
         const DisplaySpec &displaySpec,
-        const String &name
+        const String &name,
+        const uint16_t refreshRateInMillis,
+        const uint16_t transitionDurationInMillis
 ) : Renderer(displaySpec, name),
     firstRenderer(new SimpleRenderer(displaySpec, "first")),
     secondRenderer(new SimpleRenderer(displaySpec, "second")),
-    blendingArray(new CRGB[displaySpec.nbLeds()]) {
+    blendingArray(new CRGB[displaySpec.nbLeds()]),
+    refreshRateInMillis(refreshRateInMillis),
+    transitionDurationInMillis(transitionDurationInMillis) {
 
     for (uint16_t i = 0; i < displaySpec.nbLeds(); i++) {
         blendingArray[i] = CRGB::Black;
@@ -21,7 +24,7 @@ bool Fader::hasEffect() {
 }
 
 void Fader::changeEffect(std::unique_ptr<Effect> effect) {
-    crossFadeStep = TRANSITION_DURATION_IN_FRAMES;
+    crossFadeStep = transitionDurationInFrames;
 
     if (isFirstEffectRendering) secondRenderer->changeEffect(std::move(effect));
     else firstRenderer->changeEffect(std::move(effect));
@@ -39,7 +42,7 @@ void Fader::render(CRGB *outputArray) {
     if (secondRenderer->hasEffect()) {
         secondRenderer->render(blendingArray);
 
-        float percent = crossFadeStep / TRANSITION;
+        float percent = crossFadeStep / (float) transitionDurationInFrames;
         uint8_t overlay = 255 * (isFirstEffectRendering ? 1 - percent : percent);
 
         for (int i = 0; i < displaySpec.nbLeds(); i++) {

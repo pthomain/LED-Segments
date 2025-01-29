@@ -1,10 +1,8 @@
 #ifndef LED_SEGMENTS_NOISEEFFECT_H
 #define LED_SEGMENTS_NOISEEFFECT_H
 
-#include <vector>
 #include <functional>
-#include "effects/effect.h"
-#include "colorutils.h"
+#include "engine/effect/effect.h"
 
 class NoiseEffect : public Effect, public Effect::Factory<NoiseEffect> {
 protected:
@@ -13,7 +11,11 @@ protected:
 public:
     explicit NoiseEffect(const EffectContext &effectContext) : Effect(effectContext) {}
 
-    void fillArray(CRGB *effectArray, uint16_t effectArraySize) override;
+    void fillArray(
+            CRGB *effectArray,
+            const uint16_t effectArraySize,
+            const uint16_t frameIndex
+    ) override;
 
     static EffectFactory factory;
 };

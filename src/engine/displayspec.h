@@ -26,7 +26,7 @@ public:
 
     virtual uint16_t nbLayouts() const = 0;
 
-    virtual String layoutName(uint16_t layoutIndex) const = 0;
+    virtual String layoutName(const uint16_t layoutIndex) const = 0;
 
     virtual uint16_t maxSegmentSize() const final {
         if (_maxSegmentSize == 0) const_cast<DisplaySpec *>(this)->calculateMaxSegmentSize();
@@ -41,8 +41,9 @@ public:
             const uint16_t layoutIndex,
             const uint16_t segmentIndex,
             const uint16_t pixelIndex,
+            const uint16_t frameIndex,
             CRGB *outputArray,
-            CRGB colour
+            const CRGB colour
     ) const = 0;
 
     virtual ~DisplaySpec() = default;

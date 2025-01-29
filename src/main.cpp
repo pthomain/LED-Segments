@@ -1,44 +1,38 @@
-#include <FastLED.h>
-#include "config.h"
-#include "effects/effect.h"
 #include "effects/party/partyeffect.h"
-#include "utils/seedgenerator.h"
-#include "structure/display.h"
-#include "displayspec/specs/PhraseSpec.h"
+#include "engine/display/display.h"
+#include "specs/phrase/PhraseSpec.h"
 #include "effects/noise/noiseeeffect.h"
-#include "memory"
+#include "specs/fibonacci/FibonacciSpec.h"
 
 //TODO add stack modifier, each pixel stacks on the previous one + reverse
 //TODO add swipe effect, one colour slides over the previous one
 //TODO add word dwell modifier, dwell on each word for a while
 //TODO add chase with trail modifier, like ping pong but with a trail
 //TODO for each modifier, allow for highlight (75% brightness for other pixels based on seed%2)
-const std::vector<EffectFactory> effectFactories = {
-        PartyEffect::factory,
-//        NoiseEffect::factory
-};
+//TODO add a Composite effect that picks a different effect for each segment or the same effect but a different palette
+
+#define LED_PIN 9
+#define BRIGHTNESS 255
+#define EFFECT_DURATION_IN_SECONDS 3
 
 Display *display;
 
 void setup() {
     Serial.begin(9600);
-    addEntropy();
-    delay(2000);
+    delay(1000);
 
-    display = new Display(std::make_shared<PhraseSpec>(), effectFactories);
-    display->changeEffect();
+    auto *displaySpec = new FibonacciSpec();
+    display = Display::create<LED_PIN, GRB>(
+            *displaySpec,
+            {
+                    PartyEffect::factory,
+                    NoiseEffect::factory
+            },
+            BRIGHTNESS,
+            EFFECT_DURATION_IN_SECONDS
+    );
 }
 
 void loop() {
-    EVERY_N_SECONDS(EFFECT_DURATION_IN_SECONDS) {
-        display->changeEffect();
-    }
-
-    EVERY_N_SECONDS(ENTROPY_UPDATE_IN_SECONDS) {
-        addEntropy();
-    }
-
-    EVERY_N_MILLISECONDS(REFRESH_RATE_IN_MILLIS) {
-        display->render();
-    }
+    display->loop();
 }

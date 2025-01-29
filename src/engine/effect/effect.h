@@ -3,10 +3,9 @@
 #ifndef EFFECTS_H
 #define EFFECTS_H
 
-#include "utils/utils.h"
+#include "engine/utils/utils.h"
 #include "effectcontext.h"
 #include "functional"
-#include "memory"
 
 class Effect {
 
@@ -19,12 +18,16 @@ protected:
 public :
     const EffectContext effectContext;
 
-    explicit Effect(const EffectContext effectContext) : effectContext(effectContext) {
+    explicit Effect(EffectContext effectContext) : effectContext(std::move(effectContext)) {
         scale = 5 * PRIMES[random8(10)];
         speed = min(1, 3 * PRIMES[random8(10)]);
     };
 
-    virtual void fillArray(CRGB *effectArray, uint16_t effectArraySize) = 0;
+    virtual void fillArray(
+            CRGB *effectArray,
+            uint16_t effectArraySize,
+            uint16_t frameIndex
+    ) = 0;
 
     virtual ~Effect() = default;
 

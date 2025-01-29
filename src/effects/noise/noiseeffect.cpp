@@ -8,12 +8,16 @@ EffectFactory NoiseEffect::factory = [](
     return std::unique_ptr<Effect>(new NoiseEffect(effectContext));
 };
 
-void NoiseEffect::fillArray(CRGB *effectArray, uint16_t effectArraySize) {
+void NoiseEffect::fillArray(
+        CRGB *effectArray,
+        const uint16_t effectArraySize,
+        const uint16_t frameIndex
+) {
     for (uint16_t i = 0; i < effectArraySize; i++) {
         uint8_t noiseScale = beatsin8(10, 10, 30);
         uint8_t noise = inoise8(i * noiseScale, millis() / noiseSpeed);
 //        bool usePalette = effectContext.iteration % 2 == 0;
-        bool usePalette = true;
+        bool usePalette = false;
         if (usePalette) {
             uint16_t index = map(noise, 50, 190, 0, effectArraySize); //increase contrast
             fill_palette(

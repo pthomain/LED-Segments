@@ -14,22 +14,16 @@ public:
     const uint16_t layoutIndex;
     const CRGBPalette16 palette;
     const Mirror mirror;
-    const float interpolatedValue;
-    const uint16_t segmentSelectionModulo;
     const InterpolatorType interpolatorType;
 
     EffectContext(
             const uint16_t layoutIndex,
             const CRGBPalette16 &palette,
             const Mirror mirror,
-            const float interpolatedValue,
-            const uint16_t segmentSelectionModulo,
             const InterpolatorType interpolatorType
     ) : layoutIndex(layoutIndex),
         palette(palette),
         mirror(mirror),
-        interpolatedValue(interpolatedValue),
-        segmentSelectionModulo(segmentSelectionModulo),
         interpolatorType(interpolatorType) {}
 };
 

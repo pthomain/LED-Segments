@@ -9,14 +9,20 @@
 
 typedef enum {
     MIRROR_NONE,
+    MIRROR_REVERSE,
     MIRROR_CENTRE,
-    MIRROR_EDGE
+    MIRROR_EDGE,
+    MIRROR_REPEAT,
+    MIRROR_REPEAT_REVERSE
 } Mirror;
 
 const std::vector<Mirror> ALL_MIRRORS = {
         MIRROR_NONE,
+        MIRROR_REVERSE,
         MIRROR_CENTRE,
         MIRROR_EDGE,
+        MIRROR_REPEAT,
+        MIRROR_REPEAT_REVERSE
 };
 
 
@@ -24,6 +30,6 @@ uint16_t getMirrorSize(Mirror mirror, uint16_t effectArraySize);
 
 void applyMirror(Mirror mirror, CRGB *effectArray, uint16_t effectArraySize);
 
-std::string mirrorToString(Mirror mirror);
+String getMirrorName(Mirror mirror);
 
 #endif //LED_SEGMENTS_MIRROR_H

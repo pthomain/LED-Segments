@@ -27,6 +27,9 @@ private:
             const int16_t transitionDurationInMillis
     );
 
+    void changeEffect();
+    void render();
+
 public:
 
     template<int LED_PIN, EOrder RGB_ORDER>
@@ -36,7 +39,7 @@ public:
             const uint8_t brightness = 50,
             const uint8_t effectDurationsInSecs = 5,
             const uint8_t fps = 60,
-            const int16_t transitionDurationInMillis = 1000 //use < 1 to disable
+            const int16_t transitionDurationInMillis = 500 //use < 1 to disable
     ) {
         CRGB *outputArray = new CRGB[displaySpec.nbLeds()];
         CFastLED::addLeds<WS2812B, LED_PIN, RGB_ORDER>(outputArray, displaySpec.nbLeds());
@@ -50,10 +53,6 @@ public:
                 transitionDurationInMillis
         );
     }
-
-    void changeEffect();
-
-    void render();
 
     void loop();
 

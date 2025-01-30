@@ -38,14 +38,14 @@ Display::Display(
 uint16_t index = 0;
 
 void Display::changeEffect() {
-    const auto effectIndex = random8(effectFactories.size());
+    const auto effectIndex = 0;//random8(effectFactories.size());
     const auto &effectFactory = effectFactories.at(effectIndex);
-    const auto layoutIndex = random8(displaySpec.nbLayouts());
+    const auto layoutIndex = 0;//random8(displaySpec.nbLayouts());
     const auto mirror = ALL_MIRRORS[index];
 
     Serial.println(
-            "Layout: " + String(displaySpec.layoutName(layoutIndex)) +
-            "\t\tMirror: " + String(mirror)
+            "Layout: " + displaySpec.layoutName(layoutIndex) +
+            "\t\tMirror: " + getMirrorName(mirror)
     );
 
     renderer->changeEffect(effectFactory(
@@ -53,13 +53,11 @@ void Display::changeEffect() {
                     layoutIndex,
                     PALETTES[random8(PALETTES.size())],
                     mirror,
-                    0,
-                    0,
                     LINEAR
             )
     ));
 
-    index = ++index % 3;
+    index = ++index % ALL_MIRRORS.size();
 }
 
 void Display::render() {

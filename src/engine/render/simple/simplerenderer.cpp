@@ -31,16 +31,9 @@ void SimpleRenderer::render(CRGB *outputArray) {
     for (uint8_t segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
         uint16_t segmentSize = displaySpec.segmentSize(layoutIndex, segmentIndex);
 
-        //TODO this isn't compatible with the Fibonacci pixel optimisation
-        if (segmentIndex % context.segmentSelectionModulo != 0) {
-            for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
-                effectArray[pixelIndex] = 0;
-            }
-        } else {
-            uint16_t mirrorSize = getMirrorSize(context.mirror, segmentSize);
-            currentEffect->fillArray(effectArray, mirrorSize, frameIndex);
-            applyMirror(context.mirror, effectArray, segmentSize);
-        }
+        uint16_t mirrorSize = getMirrorSize(context.mirror, segmentSize);
+        currentEffect->fillArray(effectArray, mirrorSize, frameIndex);
+        applyMirror(context.mirror, effectArray, segmentSize);
 
         for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
             displaySpec.setColour(

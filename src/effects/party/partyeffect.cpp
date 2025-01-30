@@ -17,20 +17,20 @@ void PartyEffect::fillArray(
     uint16_t beatB = beatsin16(37, 0, 255);
 //    int startIndex = (beatA + beatB) / 2;
 
-    fill_palette(
-            effectArray,
-            effectArraySize,
-            startIndex++,
-            scale,
-            effectContext.palette,
-            255,
-            LINEARBLEND
-    );
+//    fill_palette(
+//            effectArray,
+//            effectArraySize,
+//            startIndex++,
+//            scale,
+//            effectContext.palette,
+//            255,
+//            LINEARBLEND
+//    );
 
 //    if (frameIndex % 5 == 0) startIndex = ++startIndex % effectArraySize;
 //
 //    for (uint16_t index = 0; index < effectArraySize; index++) {
 //        effectArray[index] = index == startIndex ? CRGB::Red : 0;
 //    }
-//    fill_rainbow(effectArray, effectArraySize, 0, 255 / effectArraySize);
+    fill_rainbow(effectArray, effectArraySize, 0, 255 / effectArraySize);
 };

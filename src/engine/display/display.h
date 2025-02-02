@@ -38,7 +38,7 @@ public:
             const std::vector<EffectFactory> effectFactories,
             const uint8_t brightness = 50,
             const uint8_t effectDurationsInSecs = 5,
-            const uint8_t fps = 60,
+            const uint8_t fps = 30,
             const int16_t transitionDurationInMillis = 500 //use < 1 to disable
     ) {
         CRGB *outputArray = new CRGB[displaySpec.nbLeds()];

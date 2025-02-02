@@ -28,6 +28,8 @@ public:
 
     virtual String layoutName(const uint16_t layoutIndex) const = 0;
 
+    virtual bool isCircular() const { return false; }
+
     virtual uint16_t maxSegmentSize() const final {
         if (_maxSegmentSize == 0) const_cast<DisplaySpec *>(this)->calculateMaxSegmentSize();
         return _maxSegmentSize;

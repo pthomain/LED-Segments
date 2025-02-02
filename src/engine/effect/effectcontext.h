@@ -11,17 +11,20 @@ class EffectContext {
 
 public:
 
+    const bool isDisplayCircular;
     const uint16_t layoutIndex;
     const CRGBPalette16 palette;
     const Mirror mirror;
     const InterpolatorType interpolatorType;
 
     EffectContext(
+            const bool isDisplayCircular,
             const uint16_t layoutIndex,
             const CRGBPalette16 &palette,
             const Mirror mirror,
             const InterpolatorType interpolatorType
-    ) : layoutIndex(layoutIndex),
+    ) : isDisplayCircular(isDisplayCircular),
+        layoutIndex(layoutIndex),
         palette(palette),
         mirror(mirror),
         interpolatorType(interpolatorType) {}

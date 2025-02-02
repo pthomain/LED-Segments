@@ -25,15 +25,27 @@ private:
             const CRGB colour
     ) const;
 
+    std::vector<uint8_t> variations;
+
+    std::pair<uint16_t, uint8_t> radialToSpiralIndex(const uint8_t segmentIndex, const uint8_t radialIndex) const;
+
+    uint8_t getLedOffset(const uint8_t pixelIndex) const;
+
+    uint8_t getLedPadding(const uint8_t pixelIndex) const;
+
 public :
 
-    explicit FibonacciSpec() : DisplaySpec() {}
+    explicit FibonacciSpec() : DisplaySpec() {
+        variations = computeVariations();
+    }
 
     uint16_t nbLeds() const override { return TOTAL_FIBONACCI_LEDS; }
 
-    uint16_t nbLayouts() const override { return VARIATIONS; }
+    uint16_t nbLayouts() const override { return variations.size(); }
 
     String layoutName(const uint16_t layoutIndex) const override;
+
+    bool isCircular() const override { return true; }
 
     uint16_t nbSegments(const uint16_t layoutIndex) const override;
 

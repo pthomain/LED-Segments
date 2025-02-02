@@ -26,7 +26,7 @@ void setup() {
             *displaySpec,
             {
                     PartyEffect::factory,
-                    NoiseEffect::factory
+//                    NoiseEffect::factory
             },
             BRIGHTNESS,
             EFFECT_DURATION_IN_SECONDS

@@ -14,3 +14,7 @@ uint16_t unsignedModulo(int index, uint16_t modulo) {
         return (modulo - (index * -1 % modulo)) % modulo;
     } else return index % modulo;
 }
+
+uint8_t increaseContrast(uint8_t noise) {
+    return map(noise, 50, 190, 0, 255);
+}

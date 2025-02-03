@@ -15,6 +15,8 @@ std::string CRGBToHex(const CRGB &color);
 
 uint16_t unsignedModulo(int index, uint16_t modulo);
 
+uint8_t increaseContrast(uint8_t noise);
+
 static const std::vector<CRGBPalette16> PALETTES PROGMEM = std::vector<CRGBPalette16>{
         PartyColors_p,
         PartyColors_p,

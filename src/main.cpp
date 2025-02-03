@@ -3,6 +3,8 @@
 #include "specs/phrase/PhraseSpec.h"
 #include "effects/noise/noiseeeffect.h"
 #include "specs/fibonacci/FibonacciSpec.h"
+#include "effects/rainbow/rainboweffect.h"
+#include "effects/travel/traveleffect.h"
 
 //TODO add stack modifier, each pixel stacks on the previous one + reverse
 //TODO add swipe effect, one colour slides over the previous one
@@ -13,7 +15,7 @@
 
 #define LED_PIN 9
 #define BRIGHTNESS 255
-#define EFFECT_DURATION_IN_SECONDS 3
+#define EFFECT_DURATION_IN_SECONDS 30
 
 Display *display;
 
@@ -25,11 +27,15 @@ void setup() {
     display = Display::create<LED_PIN, GRB>(
             *displaySpec,
             {
-                    PartyEffect::factory,
 //                    NoiseEffect::factory
+//                    PartyEffect::factory,
+                    RainbowEffect::factory,
+//                    TravelEffect::factory,
             },
             BRIGHTNESS,
-            EFFECT_DURATION_IN_SECONDS
+            EFFECT_DURATION_IN_SECONDS,
+            30,
+            0
     );
 }
 

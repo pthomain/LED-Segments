@@ -14,6 +14,12 @@ SimpleRenderer::SimpleRenderer(
 void SimpleRenderer::changeEffect(std::unique_ptr<Effect> effect) {
     currentEffect = std::move(effect);
     frameIndex = 0;
+
+    Serial.println(
+            "Layout: " + displaySpec.layoutName(currentEffect->effectContext.layoutIndex)
+          +  "\t\tEffect: " + currentEffect->name()
+           + "\t\tMirror: " + getMirrorName(currentEffect->effectContext.mirror)
+    );
 }
 
 void SimpleRenderer::render(CRGB *outputArray) {
@@ -25,8 +31,6 @@ void SimpleRenderer::render(CRGB *outputArray) {
     EffectContext context = currentEffect->effectContext;
     uint16_t layoutIndex = context.layoutIndex;
     uint16_t nbSegments = displaySpec.nbSegments(layoutIndex);
-
-    //TODO calculate interpolated value
 
     for (uint8_t segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
         uint16_t segmentSize = displaySpec.segmentSize(layoutIndex, segmentIndex);

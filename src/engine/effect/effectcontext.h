@@ -6,24 +6,27 @@
 #include "engine/utils/utils.h"
 #include "interpolator.h"
 
-class EffectContext {
-// Scenes handle mirrors, segment skipping, decorates the rendering, contain a single effect, contains an interpolator
+enum EffectCycle {
+    WRAP, //starts back from 0 after reaching 255
+    BOUNCE //changes direction after reaching 255
+};
 
+class EffectContext {
 public:
 
-    const bool isDisplayCircular;
+    const EffectCycle cycle;
     const uint16_t layoutIndex;
     const CRGBPalette16 palette;
     const Mirror mirror;
     const InterpolatorType interpolatorType;
 
     EffectContext(
-            const bool isDisplayCircular,
+            const EffectCycle cycle,
             const uint16_t layoutIndex,
             const CRGBPalette16 &palette,
             const Mirror mirror,
             const InterpolatorType interpolatorType
-    ) : isDisplayCircular(isDisplayCircular),
+    ) : cycle(cycle),
         layoutIndex(layoutIndex),
         palette(palette),
         mirror(mirror),

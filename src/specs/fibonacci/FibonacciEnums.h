@@ -14,7 +14,6 @@ const uint8_t PIXEL_UNIT_MASK = 0b00000001;
 const uint8_t DIRECTION_MASK = 0b00000010;
 const uint8_t ALIGNMENT_MASK = 0b00000100;
 const uint8_t INFLEXION_MASK = 0b00011000;
-const uint8_t SEGMENT_MODULO_MASK = 0b11100000;
 
 enum PixelUnit {
     PIXEL,
@@ -33,16 +32,7 @@ enum Alignment {
 
 enum Inflexion {
     INFLEXION_NONE,
-    INFLEXION_AT_20,
-};
-
-enum SegmentModulo {
-    MODULO_0,
-    MODULO_2,
-    MODULO_3,
-    MODULO_4,
-    MODULO_6,
-    MODULO_12
+    INFLEXION_AT_16,
 };
 
 static PixelUnit getPixelUnit(uint8_t layout) {
@@ -61,24 +51,18 @@ static Inflexion getInflexion(uint8_t layout) {
     return static_cast<Inflexion>((layout & INFLEXION_MASK) >> 3);
 }
 
-static SegmentModulo getSegmentModulo(uint8_t layout) {
-    return static_cast<SegmentModulo>((layout & SEGMENT_MODULO_MASK) >> 5);
-}
-
 static uint8_t getLayout(
         PixelUnit pixelUnit,
         Direction direction,
         Alignment alignment,
-        Inflexion inflexion,
-        SegmentModulo modulo
+        Inflexion inflexion
 ) {
     uint8_t pixelUnitValue = (pixelUnit == PIXEL ? 0 : 1);
     uint8_t directionValue = (direction == CLOCKWISE ? 0 : 1) << 1;
     uint8_t alignmentValue = (alignment == SPIRAL ? 0 : 1) << 2;
     uint8_t inflexionValue = static_cast<uint8_t>(inflexion) << 3;
-    uint8_t moduloValue = static_cast<uint8_t>(modulo) << 5;
 
-    return inflexionValue | alignmentValue | directionValue | pixelUnitValue | moduloValue;
+    return inflexionValue | alignmentValue | directionValue | pixelUnitValue;
 }
 
 static String getLayoutName(const uint16_t variation) {
@@ -86,37 +70,12 @@ static String getLayoutName(const uint16_t variation) {
     auto direction = getDirection(variation);
     auto alignment = getAlignment(variation);
     auto inflexion = getInflexion(variation);
-    auto modulo = getSegmentModulo(variation);
 
-    String inflexionName = inflexion == INFLEXION_AT_20 ? "INFLEXION_AT_20" : "";
-
-    String segmentModulo;
-
-    switch (modulo) {
-        case MODULO_0:
-        default:
-            segmentModulo = "MODULO_0";
-            break;
-        case MODULO_2:
-            segmentModulo = "MODULO_2";
-            break;
-        case MODULO_3:
-            segmentModulo = "MODULO_3";
-            break;
-        case MODULO_4:
-            segmentModulo = "MODULO_4";
-            break;
-        case MODULO_6:
-            segmentModulo = "MODULO_6";
-            break;
-        case MODULO_12:
-            segmentModulo = "MODULO_12";
-            break;
-    }
+    String inflexionName = inflexion == INFLEXION_AT_16 ? "_BENT" : "";
 
     return String(pixelUnit == PIXEL ? "PIXEL" : "SEGMENT")
-           + (alignment == SPIRAL ? (direction == CLOCKWISE ? "_CW_" : "_CCW_") + inflexionName : "_RADIAL")
-           + (pixelUnit == PIXEL ? "" : "_" + segmentModulo);
+           + (alignment == SPIRAL ? "_SPIRAL" + inflexionName : "_RADIAL")
+           + (direction == CLOCKWISE ? "_CW" : "_CCW");
 }
 
 static std::vector<uint8_t> computeVariations() {
@@ -126,40 +85,29 @@ static std::vector<uint8_t> computeVariations() {
             uint8_t pixelUnit,
             uint8_t direction,
             uint8_t alignment,
-            uint8_t inflexion,
-            uint8_t modulo
+            uint8_t inflexion
     ) {
         variations.push_back(getLayout(
                 static_cast<PixelUnit>(pixelUnit),
                 static_cast<Direction>(direction),
                 static_cast<Alignment>(alignment),
-                static_cast<Inflexion>(inflexion),
-                static_cast<SegmentModulo>(modulo)
+                static_cast<Inflexion>(inflexion)
         ));
-        Serial.println(String(variations.size()) + ": " + getLayoutName(variations.at(variations.size() - 1)));
+        unsigned int lastIndex = variations.size() - 1;
+        Serial.println(String(lastIndex) + ": " + getLayoutName(variations.at(lastIndex)));
     };
 
-    auto addVariationsWithModulo = [&](uint8_t pixelUnit, uint8_t modulo) {
-        for (uint8_t alignment = 0; alignment < 2; alignment++) {
-            if (alignment == RADIAL) {
-                //direction and inflexion don't apply to radial
-                addVariation(pixelUnit, CLOCKWISE, alignment, INFLEXION_NONE, modulo);
-            } else {
-                for (uint8_t inflexion = 0; inflexion < 2; inflexion++) {
-                    for (uint8_t direction = 0; direction < 2; direction++) {
-                        addVariation(pixelUnit, direction, alignment, inflexion, modulo);
-                    }
-                }
-            }
-        }
-    };
+    addVariation(PIXEL, CLOCKWISE, SPIRAL, INFLEXION_NONE);
 
-    for (uint8_t pixelUnit = 0; pixelUnit < 2; pixelUnit++) {
-        if (pixelUnit == PIXEL) {
-            addVariationsWithModulo(pixelUnit, MODULO_0);
+    for (uint8_t alignment = 0; alignment < 2; alignment++) {
+        if (alignment == RADIAL) {
+            //direction and inflexion don't apply to radial
+            addVariation(SEGMENT, CLOCKWISE, alignment, INFLEXION_NONE);
         } else {
-            for (uint8_t modulo = 0; modulo < 6; modulo++) {
-                addVariationsWithModulo(pixelUnit, modulo);
+            for (uint8_t direction = 0; direction < 2; direction++) {
+                for (uint8_t inflexion = 0; inflexion < 2; inflexion++) {
+                    addVariation(SEGMENT, direction, alignment, inflexion);
+                }
             }
         }
     }

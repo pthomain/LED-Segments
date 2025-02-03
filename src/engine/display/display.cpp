@@ -35,20 +35,19 @@ Display::Display(
     render();
 }
 
+uint8_t index = 0;
+
 void Display::changeEffect() {
     const auto effectIndex = random8(effectFactories.size());
     const auto &effectFactory = effectFactories.at(effectIndex);
-    const auto layoutIndex = random8(displaySpec.nbLayouts());
-    const auto mirror = ALL_MIRRORS[random8(ALL_MIRRORS.size())];
+    const auto layoutIndex = 2;//random8(displaySpec.nbLayouts());
+    const auto mirror = MIRROR_NONE;//ALL_MIRRORS[random8(ALL_MIRRORS.size())];
 
-    Serial.println(
-            "Layout: " + displaySpec.layoutName(layoutIndex) +
-            "\t\tMirror: " + getMirrorName(mirror)
-    );
+    index = (index + 1) % ALL_MIRRORS.size();
 
     renderer->changeEffect(effectFactory(
             EffectContext(
-                    displaySpec.isCircular(),
+                    displaySpec.isCircular() ? WRAP : BOUNCE,
                     layoutIndex,
                     PALETTES[random8(PALETTES.size())],
                     mirror,

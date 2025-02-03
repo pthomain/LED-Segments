@@ -27,7 +27,11 @@ private:
 
     std::vector<uint8_t> variations;
 
-    std::pair<uint16_t, uint8_t> radialToSpiralIndex(const uint8_t segmentIndex, const uint8_t radialIndex) const;
+    std::pair<uint16_t, uint8_t> radialToSpiralIndex(
+            const Direction direction,
+            const uint8_t segmentIndex,
+            const uint8_t radialIndex
+    ) const;
 
     uint8_t getLedOffset(const uint8_t pixelIndex) const;
 

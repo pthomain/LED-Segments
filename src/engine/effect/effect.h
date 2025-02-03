@@ -8,26 +8,32 @@
 #include "functional"
 
 class Effect {
+private:
+
+    void shiftArrayValues(CRGB *array, uint16_t arraySize, uint16_t shift);
 
 protected:
-    int iteration = 0;
     uint8_t start = 0;
-    uint8_t scale = 20;
-    uint8_t speed = 0;
+    int16_t speed = 0;//random8(5, 10);
 
 public :
     const EffectContext effectContext;
 
-    explicit Effect(EffectContext effectContext) : effectContext(std::move(effectContext)) {
-        scale = 5 * PRIMES[random8(10)];
-        speed = min(1, 3 * PRIMES[random8(10)]);
-    };
+    explicit Effect(EffectContext effectContext) : effectContext(std::move(effectContext)) {};
 
-    virtual void fillArray(
+    void fillArray(
+            CRGB *effectArray,
+            uint16_t effectArraySize,
+            uint16_t frameIndex
+    );
+
+    virtual void fillArrayInternal(
             CRGB *effectArray,
             uint16_t effectArraySize,
             uint16_t frameIndex
     ) = 0;
+
+    virtual String name() const = 0;
 
     virtual ~Effect() = default;
 

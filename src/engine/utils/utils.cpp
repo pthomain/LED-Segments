@@ -9,10 +9,8 @@ std::string CRGBToHex(const CRGB &color) {
     return std::string(hexColor);
 }
 
-uint16_t unsignedModulo(int index, uint16_t modulo) {
-    if (index < 0) {
-        return (modulo - (index * -1 % modulo)) % modulo;
-    } else return index % modulo;
+uint16_t unsignedModulo(int value, uint16_t modulo) {
+    return ((value % modulo) + modulo) % modulo;
 }
 
 uint8_t increaseContrast(uint8_t noise) {

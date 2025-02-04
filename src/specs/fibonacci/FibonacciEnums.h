@@ -32,7 +32,8 @@ enum Alignment {
 
 enum Inflexion {
     INFLEXION_NONE,
-    INFLEXION_AT_16,
+    STATIC_INFLEXION,
+    DYNAMIC_INFLEXION
 };
 
 static PixelUnit getPixelUnit(uint8_t layout) {
@@ -71,11 +72,11 @@ static String getLayoutName(const uint16_t variation) {
     auto alignment = getAlignment(variation);
     auto inflexion = getInflexion(variation);
 
-    String inflexionName = inflexion == INFLEXION_AT_16 ? "_BENT" : "";
+    String alignmentName = alignment == SPIRAL ? "_SPIRAL" : "_RADIAL";
+    String inflexionName = inflexion == STATIC_INFLEXION ? "_BENT" : "";
+    String directionName = pixelUnit == PIXEL || alignment == RADIAL ? "" : direction == CLOCKWISE ? "_CW" : "_CCW";
 
-    return String(pixelUnit == PIXEL ? "PIXEL" : "SEGMENT")
-           + (alignment == SPIRAL ? "_SPIRAL" + inflexionName : "_RADIAL")
-           + (direction == CLOCKWISE ? "_CW" : "_CCW");
+    return String(pixelUnit == PIXEL ? "PIXEL" : "SEGMENT") + alignmentName + inflexionName + directionName;
 }
 
 static std::vector<uint8_t> computeVariations() {
@@ -97,18 +98,16 @@ static std::vector<uint8_t> computeVariations() {
         Serial.println(String(lastIndex) + ": " + getLayoutName(variations.at(lastIndex)));
     };
 
+    //Spiral is very similar to radial for PIXEL, but has a smoother gradient so radial is omitted
+    //Direction also doesn't matter to PIXEL in this case
     addVariation(PIXEL, CLOCKWISE, SPIRAL, INFLEXION_NONE);
 
-    for (uint8_t alignment = 0; alignment < 2; alignment++) {
-        if (alignment == RADIAL) {
-            //direction and inflexion don't apply to radial
-            addVariation(SEGMENT, CLOCKWISE, alignment, INFLEXION_NONE);
-        } else {
-            for (uint8_t direction = 0; direction < 2; direction++) {
-                for (uint8_t inflexion = 0; inflexion < 2; inflexion++) {
-                    addVariation(SEGMENT, direction, alignment, inflexion);
-                }
-            }
+    //Direction and inflexion don't apply to SEGMENT radial
+    addVariation(SEGMENT, CLOCKWISE, RADIAL, INFLEXION_NONE);
+
+    for (uint8_t direction = 0; direction < 2; direction++) {
+        for (uint8_t inflexion = 0; inflexion < 2; inflexion++) {
+            addVariation(SEGMENT, direction, SPIRAL, inflexion);
         }
     }
 

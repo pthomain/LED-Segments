@@ -8,6 +8,7 @@
 class FibonacciSpec : public DisplaySpec {
 
 private:
+
     void applyColourToPixel(
             const uint16_t variation,
             const uint16_t segmentIndex,
@@ -28,7 +29,6 @@ private:
     std::vector<uint8_t> variations;
 
     std::pair<uint16_t, uint8_t> radialToSpiralIndex(
-            const Direction direction,
             const uint8_t segmentIndex,
             const uint8_t radialIndex
     ) const;

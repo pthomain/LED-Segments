@@ -15,7 +15,7 @@
 
 #define LED_PIN 9
 #define BRIGHTNESS 255
-#define EFFECT_DURATION_IN_SECONDS 30
+#define EFFECT_DURATION_IN_SECONDS 3
 
 Display *display;
 
@@ -27,8 +27,8 @@ void setup() {
     display = Display::create<LED_PIN, GRB>(
             *displaySpec,
             {
-//                    NoiseEffect::factory
-//                    PartyEffect::factory,
+                    NoiseEffect::factory,
+                    PartyEffect::factory,
                     RainbowEffect::factory,
 //                    TravelEffect::factory,
             },

@@ -40,8 +40,8 @@ uint8_t index = 0;
 void Display::changeEffect() {
     const auto effectIndex = random8(effectFactories.size());
     const auto &effectFactory = effectFactories.at(effectIndex);
-    const auto layoutIndex = 2;//random8(displaySpec.nbLayouts());
-    const auto mirror = MIRROR_NONE;//ALL_MIRRORS[random8(ALL_MIRRORS.size())];
+    const auto layoutIndex = 3;//random8(displaySpec.nbLayouts());
+    const auto mirror = ALL_MIRRORS[random8(ALL_MIRRORS.size())];
 
     index = (index + 1) % ALL_MIRRORS.size();
 

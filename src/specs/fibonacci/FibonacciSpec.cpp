@@ -14,7 +14,7 @@ uint16_t FibonacciSpec::nbSegments(const uint16_t layoutIndex) const {
     return 1;
 }
 
-uint16_t FibonacciSpec::segmentSize(const uint16_t layoutIndex, const uint16_t segmentIndex) const {
+uint16_t FibonacciSpec::nbPixels(const uint16_t layoutIndex, const uint16_t segmentIndex) const {
     auto variation = variations[layoutIndex];
     auto pixelUnit = getPixelUnit(variation);
     auto alignment = getAlignment(variation);
@@ -106,10 +106,13 @@ void FibonacciSpec::applyColourToPixel(
         auto ccwOffset = unsignedModulo(segmentIndex + pixelIndex - inflexionPoint, NB_SPIRAL_SEGMENTS);
 
         uint8_t directedSegmentIndex;
+        //TODO special case with no inflexion, at the moment simple spirals are reversed
+        //TODO check why travel is skipping every other segment
+
         if (pixelIndex > inflexionPoint) {
-            directedSegmentIndex = direction == CLOCKWISE ? ccwOffset : segmentIndex;
-        } else {
             directedSegmentIndex = direction == CLOCKWISE ? segmentIndex : ccwOffset;
+        } else {
+            directedSegmentIndex = direction == CLOCKWISE ? ccwOffset : segmentIndex;
         }
 
         spiralPixelIndex = pixelIndex;
@@ -162,8 +165,6 @@ void FibonacciSpec::applyColourToPixelUnit(
     }
 };
 
-int8_t _inflexionPoint = -1;
-
 void FibonacciSpec::setColour(
         const uint16_t layoutIndex,
         const uint16_t segmentIndex,
@@ -174,21 +175,25 @@ void FibonacciSpec::setColour(
 ) const {
     auto variation = variations[layoutIndex];
     auto inflexion = getInflexion(variation);
+    int8_t inflexionPoint;
 
     switch (inflexion) {
         case STATIC_INFLEXION:
-            _inflexionPoint = 15;
+            inflexionPoint = 15;
+            break;
+        case DYNAMIC_INFLEXION:
+            inflexionPoint = (frameIndex / 1) % NB_SPIRAL_PIXELS;
             break;
         case INFLEXION_NONE:
         default:
-            _inflexionPoint = -1;
+            inflexionPoint = -1;
             break;
     }
 
     applyColourToPixelUnit(
             variation,
             pixelIndex,//optimisation for spirals, each segment is considered a pixel
-            _inflexionPoint,
+            inflexionPoint,
             outputArray,
             colour
     );

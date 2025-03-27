@@ -14,8 +14,8 @@
 //TODO add a Composite effect that picks a different effect for each segment or the same effect but a different palette
 
 #define LED_PIN 9
-#define BRIGHTNESS 255
-#define EFFECT_DURATION_IN_SECONDS 3
+#define BRIGHTNESS 10
+#define EFFECT_DURATION_IN_SECONDS 5
 
 Display *display;
 
@@ -23,19 +23,19 @@ void setup() {
     Serial.begin(9600);
     delay(1000);
 
-    auto *displaySpec = new FibonacciSpec();
+    auto *displaySpec = new PhraseSpec();
     display = Display::create<LED_PIN, GRB>(
             *displaySpec,
             {
-                    NoiseEffect::factory,
-                    PartyEffect::factory,
+//                    NoiseEffect::factory,
+//                    PartyEffect::factory,
                     RainbowEffect::factory,
 //                    TravelEffect::factory,
             },
             BRIGHTNESS,
             EFFECT_DURATION_IN_SECONDS,
             30,
-            0
+            0 //TODO add back fading
     );
 }
 

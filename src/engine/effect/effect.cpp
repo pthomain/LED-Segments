@@ -38,5 +38,5 @@ void Effect::fillArray(
         }
     }
 
-    shiftArrayValues(effectArray, effectArraySize, start);
+//    shiftArrayValues(effectArray, effectArraySize, start);
 };

@@ -11,5 +11,6 @@ void RainbowEffect::fillArrayInternal(
         const uint16_t effectArraySize,
         const uint16_t frameIndex
 ) {
-    fill_rainbow(effectArray, effectArraySize, 0, 255 / effectArraySize);
+    uint8_t deltaHue = max(1, 255 / effectArraySize);
+    fill_rainbow(effectArray, effectArraySize, 0, deltaHue);
 };

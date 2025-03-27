@@ -1,7 +1,7 @@
 #ifndef LED_SEGMENTS_PHRASESPEC_H
 #define LED_SEGMENTS_PHRASESPEC_H
 
-#define IS_TEST_PHRASE false
+#define IS_TEST_PHRASE true
 
 #if IS_TEST_PHRASE
 #include "config/TestPhraseConfig.h"
@@ -15,13 +15,13 @@
 // Format is PIXELS_IN_SEGMENTS
 enum Layout {
     LEDS_IN_LETTERS,
-    LEDS_IN_WORDS,
-    LEDS_IN_WHOLE,
 
     LETTERS_IN_WORDS,
-    LETTERS_IN_WHOLE,
+    LEDS_IN_WORDS,
 
-    WORDS_IN_WHOLE
+    WORDS_IN_WHOLE,
+    LETTERS_IN_WHOLE,
+    LEDS_IN_WHOLE
 };
 static constexpr uint16_t NB_LAYOUTS = 6;
 
@@ -46,7 +46,7 @@ public :
 
     uint16_t nbSegments(const uint16_t layoutIndex) const override;
 
-    uint16_t segmentSize(const uint16_t layoutIndex, const uint16_t segmentIndex) const override;
+    uint16_t nbPixels(const uint16_t layoutIndex, const uint16_t segmentIndex) const override;
 
     void setColour(
             const uint16_t layoutIndex,

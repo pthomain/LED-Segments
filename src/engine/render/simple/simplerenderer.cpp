@@ -5,8 +5,8 @@ SimpleRenderer::SimpleRenderer(
         const DisplaySpec &displaySpec,
         const String &name
 ) : Renderer(displaySpec, name),
-    effectArray(new CRGB[displaySpec.maxSegmentSize()]) {
-    for (uint16_t i = 0; i < displaySpec.maxSegmentSize(); i++) {
+    effectArray(new CRGB[displaySpec.maxNbPixels()]) {
+    for (uint16_t i = 0; i < displaySpec.maxNbPixels(); i++) {
         effectArray[i] = CRGB::Black;
     }
 }
@@ -17,8 +17,8 @@ void SimpleRenderer::changeEffect(std::unique_ptr<Effect> effect) {
 
     Serial.println(
             "Layout: " + displaySpec.layoutName(currentEffect->effectContext.layoutIndex)
-          +  "\t\tEffect: " + currentEffect->name()
-           + "\t\tMirror: " + getMirrorName(currentEffect->effectContext.mirror)
+            + "\t\tEffect: " + currentEffect->name()
+            + "\t\tMirror: " + getMirrorName(currentEffect->effectContext.mirror)
     );
 }
 
@@ -33,13 +33,13 @@ void SimpleRenderer::render(CRGB *outputArray) {
     uint16_t nbSegments = displaySpec.nbSegments(layoutIndex);
 
     for (uint8_t segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
-        uint16_t segmentSize = displaySpec.segmentSize(layoutIndex, segmentIndex);
+        uint16_t nbPixels = displaySpec.nbPixels(layoutIndex, segmentIndex);
+        uint16_t mirrorSize = getMirrorSize(context.mirror, nbPixels);
 
-        uint16_t mirrorSize = getMirrorSize(context.mirror, segmentSize);
         currentEffect->fillArray(effectArray, mirrorSize, frameIndex);
-        applyMirror(context.mirror, effectArray, segmentSize);
+        applyMirror(context.mirror, effectArray, nbPixels);
 
-        for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
+        for (uint16_t pixelIndex = 0; pixelIndex < nbPixels; pixelIndex++) {
             displaySpec.setColour(
                     layoutIndex,
                     segmentIndex,

@@ -73,7 +73,21 @@ static String getLayoutName(const uint16_t variation) {
     auto inflexion = getInflexion(variation);
 
     String alignmentName = alignment == SPIRAL ? "_SPIRAL" : "_RADIAL";
-    String inflexionName = inflexion == STATIC_INFLEXION ? "_BENT" : "";
+    String inflexionName;
+
+    switch (inflexion) {
+        case STATIC_INFLEXION:
+            inflexionName = "_STAT_INF";
+            break;
+        case DYNAMIC_INFLEXION:
+            inflexionName = "_DYNA_INF";
+            break;
+        case INFLEXION_NONE:
+        default:
+            inflexionName = "";
+            break;
+    }
+
     String directionName = pixelUnit == PIXEL || alignment == RADIAL ? "" : direction == CLOCKWISE ? "_CW" : "_CCW";
 
     return String(pixelUnit == PIXEL ? "PIXEL" : "SEGMENT") + alignmentName + inflexionName + directionName;
@@ -106,7 +120,7 @@ static std::vector<uint8_t> computeVariations() {
     addVariation(SEGMENT, CLOCKWISE, RADIAL, INFLEXION_NONE);
 
     for (uint8_t direction = 0; direction < 2; direction++) {
-        for (uint8_t inflexion = 0; inflexion < 2; inflexion++) {
+        for (uint8_t inflexion = 0; inflexion < 3; inflexion++) {
             addVariation(SEGMENT, direction, SPIRAL, inflexion);
         }
     }

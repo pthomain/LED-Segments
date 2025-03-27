@@ -10,12 +10,12 @@ uint16_t PhraseSpec::nbSegments(const uint16_t layoutIndex) const {
         case LETTERS_IN_WORDS:
             return NB_WORDS;
 
-        default:   // LEDS_IN_WHOLE, ROWS_IN_WHOLE, LETTERS_IN_WHOLE, WORDS_IN_WHOLE
+        default:   // WHOLE segment
             return 1;
     }
 }
 
-uint16_t PhraseSpec::segmentSize(
+uint16_t PhraseSpec::nbPixels(
         const uint16_t layoutIndex,
         const uint16_t segmentIndex
 ) const {
@@ -29,8 +29,14 @@ uint16_t PhraseSpec::segmentSize(
         case LEDS_IN_WHOLE:
             return NB_LEDS;
 
-        case LETTERS_IN_WORDS: // TODO: double check this
-            return segmentSize(LEDS_IN_WORDS, segmentIndex) / segmentSize(LEDS_IN_LETTERS, segmentIndex);
+        case LETTERS_IN_WORDS: {
+            uint8_t nbLetters = 0;
+            auto word = WORDS[segmentIndex];
+            for (auto letter: LETTERS) {
+                if (letter[0] >= word[0] && letter[1] <= word[1]) nbLetters++;
+            }
+            return nbLetters;
+        }
 
         case LETTERS_IN_WHOLE:
             return NB_LETTERS;

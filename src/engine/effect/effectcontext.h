@@ -6,27 +6,22 @@
 #include "engine/utils/utils.h"
 #include "interpolator.h"
 
-enum EffectCycle {
-    WRAP, //starts back from 0 after reaching 255
-    BOUNCE //changes direction after reaching 255
-};
-
 class EffectContext {
 public:
 
-    const EffectCycle cycle;
+    const boolean isDisplayCircular;
     const uint16_t layoutIndex;
     const CRGBPalette16 palette;
     const Mirror mirror;
     const InterpolatorType interpolatorType;
 
     EffectContext(
-            const EffectCycle cycle,
+            const boolean isDisplayCircular,
             const uint16_t layoutIndex,
             const CRGBPalette16 &palette,
             const Mirror mirror,
             const InterpolatorType interpolatorType
-    ) : cycle(cycle),
+    ) : isDisplayCircular(isDisplayCircular),
         layoutIndex(layoutIndex),
         palette(palette),
         mirror(mirror),

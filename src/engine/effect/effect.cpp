@@ -1,42 +1,16 @@
 #include "effect.h"
 
-//TODO check logic for bounce
-void Effect::shiftArrayValues(CRGB *array, uint16_t arraySize, uint16_t shift) {
-    if (arraySize == 0) return;
-    shift = unsignedModulo(shift, arraySize);
-    if (shift == 0) return;
-
-    uint16_t nbMovedValues = 0;
-    for (uint16_t startIndex = 0; nbMovedValues < arraySize; ++startIndex) {
-        CRGB previousValue = array[startIndex];
-        uint16_t currentIndex = startIndex;
-
-        do {
-            uint16_t nextIndex = unsignedModulo(currentIndex + shift, arraySize);
-            CRGB temp = array[nextIndex];
-            array[nextIndex] = previousValue;
-            previousValue = temp;
-            currentIndex = nextIndex;
-            nbMovedValues++;
-        } while (startIndex != currentIndex);
-    }
-}
-
+//TODO must be offset by the cumulative number of LEDs for the pixel at pos cycleStep
 void Effect::fillArray(
         CRGB *effectArray,
         uint16_t effectArraySize,
         uint16_t frameIndex
 ) {
-    fillArrayInternal(effectArray, effectArraySize, frameIndex);
-
-    if (frameIndex % 2 == 0) { //TODO handle FPS
-        if (effectContext.cycle == WRAP) {
-            start = unsignedModulo(start + speed, 255);
-        } else {
-            if (start == 0 || start == 255) speed = -speed;
-            start += speed;
-        }
+    uint8_t delta = max(1, 255 / effectArraySize); //TODO use percent
+    if (frameIndex % cycleSpeed == 0) {
+        linearCycleStep = unsignedModulo(linearCycleStep + delta, 255);
+        if (circularCycleStep == 0 || circularCycleStep >= 255) isCycleReversed = !isCycleReversed;
+        circularCycleStep += isCycleReversed ? delta : -delta;
     }
-
-//    shiftArrayValues(effectArray, effectArraySize, start);
+    fillArrayInternal(effectArray, effectArraySize, frameIndex);
 };

@@ -4,7 +4,6 @@
 #include "effects/noise/noiseeeffect.h"
 #include "specs/fibonacci/FibonacciSpec.h"
 #include "effects/rainbow/rainboweffect.h"
-#include "effects/travel/traveleffect.h"
 
 //TODO add stack modifier, each pixel stacks on the previous one + reverse
 //TODO add swipe effect, one colour slides over the previous one
@@ -13,7 +12,7 @@
 //TODO for each modifier, allow for highlight (75% brightness for other pixels based on seed%2)
 //TODO add a Composite effect that picks a different effect for each segment or the same effect but a different palette
 
-#define LED_PIN 9
+#define LED_PIN 7
 #define BRIGHTNESS 10
 #define EFFECT_DURATION_IN_SECONDS 5
 
@@ -23,14 +22,13 @@ void setup() {
     Serial.begin(9600);
     delay(1000);
 
-    auto *displaySpec = new PhraseSpec();
+    auto *displaySpec = new FibonacciSpec();
     display = Display::create<LED_PIN, GRB>(
             *displaySpec,
             {
-//                    NoiseEffect::factory,
-//                    PartyEffect::factory,
+                    NoiseEffect::factory,
+                    PartyEffect::factory,
                     RainbowEffect::factory,
-//                    TravelEffect::factory,
             },
             BRIGHTNESS,
             EFFECT_DURATION_IN_SECONDS,

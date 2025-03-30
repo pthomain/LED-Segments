@@ -16,6 +16,8 @@ private:
     const std::unique_ptr<Renderer> renderer;
     const std::vector<EffectFactory> effectFactories;
     CRGB *outputArray;
+    const uint8_t *freePinsForEntropy;
+    const uint8_t nbPinsForEntropy;
 
     explicit Display(
             CRGB *outputArray,
@@ -24,10 +26,13 @@ private:
             const uint8_t brightness,
             const uint8_t effectDurationsInSecs,
             const uint8_t fps,
-            const int16_t transitionDurationInMillis
+            const int16_t transitionDurationInMillis,
+            const uint8_t *freePinsForEntropy,
+            const uint8_t nbPinsForEntropy
     );
 
     void changeEffect();
+
     void render();
 
 public:
@@ -39,7 +44,9 @@ public:
             const uint8_t brightness = 50,
             const uint8_t effectDurationsInSecs = 5,
             const uint8_t fps = 30,
-            const int16_t transitionDurationInMillis = 500 //use < 1 to disable
+            const int16_t transitionDurationInMillis = 500, //use < 1 to disable
+            const uint8_t *freePinsForEntropy = new uint8_t[6]{1, 2, 3, 4, 5, 6}, //change if any of those pins are in use
+            const uint8_t nbPinsForEntropy = 6
     ) {
         CRGB *outputArray = new CRGB[displaySpec.nbLeds()];
         CFastLED::addLeds<WS2812B, LED_PIN, RGB_ORDER>(outputArray, displaySpec.nbLeds());
@@ -50,7 +57,9 @@ public:
                 brightness,
                 effectDurationsInSecs,
                 fps,
-                transitionDurationInMillis
+                transitionDurationInMillis,
+                freePinsForEntropy,
+                nbPinsForEntropy
         );
     }
 
@@ -58,6 +67,7 @@ public:
 
     ~Display() {
         delete[] outputArray;
+        delete[] freePinsForEntropy;
     }
 };
 

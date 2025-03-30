@@ -14,7 +14,9 @@ Display::Display(
         const uint8_t brightness,
         const uint8_t effectDurationsInSecs,
         const uint8_t fps,
-        const int16_t transitionDurationInMillis
+        const int16_t transitionDurationInMillis,
+        const uint8_t *freePinsForEntropy,
+        const uint8_t nbPinsForEntropy
 ) : effectDurationsInSecs(effectDurationsInSecs),
     fps(fps),
     transitionDurationInMillis(transitionDurationInMillis),
@@ -26,11 +28,12 @@ Display::Display(
             : new Fader(displaySpec, "fader", refreshRateInMillis, transitionDurationInMillis)
     )),
     effectFactories(std::move(effectFactories)),
-    outputArray(outputArray) {
-
+    outputArray(outputArray),
+    freePinsForEntropy(freePinsForEntropy),
+    nbPinsForEntropy(nbPinsForEntropy) {
     FastLED.setBrightness(brightness);
     FastLED.clear(true);
-    addEntropy();
+    addEntropy(freePinsForEntropy, nbPinsForEntropy);
     changeEffect();
     render();
 }
@@ -47,7 +50,7 @@ void Display::changeEffect() {
 
     renderer->changeEffect(effectFactory(
             EffectContext(
-                    displaySpec.isCircular() ? WRAP : BOUNCE,
+                    displaySpec.isCircular(),
                     layoutIndex,
                     PALETTES[random8(PALETTES.size())],
                     mirror,
@@ -72,6 +75,6 @@ void Display::loop() {
         render();
     }
     EVERY_N_SECONDS(ENTROPY_UPDATE_IN_SECONDS) {
-        addEntropy();
+        addEntropy(freePinsForEntropy, nbPinsForEntropy);
     }
 }

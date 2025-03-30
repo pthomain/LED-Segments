@@ -7,14 +7,17 @@
 #include "effectcontext.h"
 #include "functional"
 
+const uint8_t MIN_CYCLE_SPEED = 5;
+const uint8_t MAX_CYCLE_SPEED = 15;
+
 class Effect {
 private:
 
-    void shiftArrayValues(CRGB *array, uint16_t arraySize, uint16_t shift);
-
 protected:
-    uint8_t start = 0;
-    int16_t speed = 0;//random8(5, 10);
+    uint16_t linearCycleStep = 0;
+    uint16_t circularCycleStep = 0;
+    uint8_t cycleSpeed = 5;//random8(MIN_CYCLE_SPEED, MAX_CYCLE_SPEED);
+    boolean isCycleReversed = false;
 
 public :
     const EffectContext effectContext;

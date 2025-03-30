@@ -12,5 +12,6 @@ void RainbowEffect::fillArrayInternal(
         const uint16_t frameIndex
 ) {
     uint8_t deltaHue = max(1, 255 / effectArraySize);
-    fill_rainbow(effectArray, effectArraySize, 0, deltaHue);
+    boolean step = linearCycleStep;
+    fill_rainbow(effectArray, effectArraySize, step, deltaHue);
 };

@@ -77,26 +77,20 @@ void Blender::mapPixels(
     }
 
     if (transitionStep >= 0 && rendererName == secondRendererName) {
-        //only update once both renderers have rendered
         const float transitionPercent = transitionStep / (float) transitionDurationInFrames;
-        Serial.println(
-                rendererName +
-                " transitionStep: " + String(transitionStep)
-                + " duration: " + String(transitionDurationInFrames)
-                + " percent: " + String(transitionPercent));
 
         applyTransition(
                 currentEffectContext->transition,
                 currentEffectContext->transitionMirror,
                 transitionArray,
                 segmentSize,
-                isFirstEffectRendering ? 1 - transitionPercent : transitionPercent
+                1 - transitionPercent
         );
 
         for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
             CRGB blendedPixel = blend(
-                    firstArray[pixelIndex],
-                    secondArray[pixelIndex],
+                    isFirstEffectRendering ? firstArray[pixelIndex] : secondArray[pixelIndex],
+                    isFirstEffectRendering ? secondArray[pixelIndex] : firstArray[pixelIndex],
                     transitionArray[pixelIndex]
             );
             displaySpec.setColour(

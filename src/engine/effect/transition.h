@@ -9,7 +9,7 @@ enum Transition {
     FADE,
     SLIDE_LTR,
     SLIDE_RTL,
-    RANDOM
+    DISSOLVE
 };
 
 static void applyTransition(
@@ -20,6 +20,14 @@ static void applyTransition(
         const float transitionPercent
 ) {
     switch (transition) {
+        case SLIDE_LTR: {
+            uint16_t limit = segmentSize * transitionPercent;
+            for (uint16_t i = 0; i < segmentSize; i++) {
+                transitionArray[i] = i < limit ? 255 : 0;
+            }
+        }
+            break;
+
         case FADE:
         default:
             for (uint16_t i = 0; i < segmentSize; i++) {

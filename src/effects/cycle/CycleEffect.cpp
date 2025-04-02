@@ -13,21 +13,21 @@ void CycleEffect::fillArrayInternal(
         const uint16_t frameIndex
 ) {
     CRGB colour = CRGB::Black;
-    switch (effectContext.effectIndex % 3) {
-        case 0:
-            colour = CRGB::Red;
-            break;
-
-        case 1:
-            colour = CRGB::Green;
-            break;
-
-        default:
-            colour = CRGB::Blue;
-            break;
-    }
-
     for (uint16_t i = 0; i < effectArraySize; i++) {
+        switch (effectContext.effectIndex % 3) {
+            case 0:
+                colour = CRGB::Red;
+                break;
+
+            case 1:
+                colour = CRGB::Green;
+                break;
+
+            default:
+                colour = CRGB::Blue;
+                break;
+        }
+
         effectArray[i] = colour;
     }
 };

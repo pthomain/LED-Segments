@@ -15,7 +15,7 @@ enum Transition {
 static void applyTransition(
         const Transition transition,
         const Mirror transitionMirror,
-        uint8_t *transitionArray,
+        CRGB *transitionArray,
         const uint16_t segmentSize,
         const float transitionPercent
 ) {
@@ -23,7 +23,7 @@ static void applyTransition(
         case SLIDE_LTR: {
             uint16_t limit = segmentSize * transitionPercent;
             for (uint16_t i = 0; i < segmentSize; i++) {
-                transitionArray[i] = i < limit ? 255 : 0;
+                transitionArray[i] = i < limit ? CRGB::White : CRGB::Black;
             }
         }
             break;

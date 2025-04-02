@@ -56,7 +56,7 @@ void Display::changeEffect() {
                     mirror,
                     LINEAR,
                     Transition::SLIDE_LTR,
-                    MIRROR_NONE
+                    MIRROR_CENTRE
             )
     ));
 

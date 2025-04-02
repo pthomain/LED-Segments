@@ -1,7 +1,9 @@
 #ifndef LED_SEGMENTS_FIBONACCIENUMS_H
 #define LED_SEGMENTS_FIBONACCIENUMS_H
 
+#include <WString.h>
 #include "vector"
+#include "Arduino.h"
 
 const uint16_t TOTAL_FIBONACCI_LEDS = 324;
 const uint8_t NB_LEDS_IN_SPIRAL = 27;

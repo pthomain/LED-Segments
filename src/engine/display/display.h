@@ -3,7 +3,7 @@
 
 #include "FastLED.h"
 #include "engine/effect/effect.h"
-#include "engine/displayspec.h"
+#include "engine/displayspec/displayspec.h"
 #include "engine/render/renderer.h"
 
 class Display {
@@ -18,6 +18,7 @@ private:
     CRGB *outputArray;
     const uint8_t *freePinsForEntropy;
     const uint8_t nbPinsForEntropy;
+    uint16_t effectIndex = 0;
 
     explicit Display(
             CRGB *outputArray,
@@ -25,8 +26,8 @@ private:
             const std::vector<EffectFactory> effectFactories,
             const uint8_t brightness,
             const uint8_t effectDurationsInSecs,
-            const uint8_t fps,
             const int16_t transitionDurationInMillis,
+            const uint8_t fps,
             const uint8_t *freePinsForEntropy,
             const uint8_t nbPinsForEntropy
     );
@@ -43,8 +44,8 @@ public:
             const std::vector<EffectFactory> effectFactories,
             const uint8_t brightness = 50,
             const uint8_t effectDurationsInSecs = 5,
-            const uint8_t fps = 30,
             const int16_t transitionDurationInMillis = 500, //use < 1 to disable
+            const uint8_t fps = 30,
             const uint8_t *freePinsForEntropy = new uint8_t[6]{1, 2, 3, 4, 5, 6}, //change if any of those pins are in use
             const uint8_t nbPinsForEntropy = 6
     ) {
@@ -56,8 +57,8 @@ public:
                 std::move(effectFactories),
                 brightness,
                 effectDurationsInSecs,
-                fps,
                 transitionDurationInMillis,
+                fps,
                 freePinsForEntropy,
                 nbPinsForEntropy
         );

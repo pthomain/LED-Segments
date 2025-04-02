@@ -2,19 +2,22 @@
 #define LED_SEGMENTS_SIMPLERENDERER_H
 
 #include "engine/render/renderer.h"
-#include "memory"
+#include "engine/render/pixelmapper.h"
 
 class SimpleRenderer : public Renderer {
 
 private:
+
     CRGB *effectArray;
     std::unique_ptr<Effect> currentEffect = nullptr;
     uint16_t frameIndex = 0;
+    PixelMapper *pixelMapper;
 
 public :
 
     explicit SimpleRenderer(
             const DisplaySpec &displaySpec,
+            PixelMapper *pixelMapper,
             const String &name
     );
 

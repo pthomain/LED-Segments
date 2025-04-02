@@ -2,8 +2,8 @@
 #define LED_SEGMENTS_RENDERER_H
 
 #include "engine/effect/effect.h"
-#include "engine/displayspec.h"
-#include "memory"
+#include "engine/displayspec/displayspec.h"
+#include "engine/effect/transition.h"
 
 class Renderer {
 protected:
@@ -12,8 +12,8 @@ protected:
 
 public:
     explicit Renderer(
-        const DisplaySpec &displaySpec,
-        const String &name
+            const DisplaySpec &displaySpec,
+            const String &name
     ) : displaySpec(displaySpec), name(name) {
     }
 

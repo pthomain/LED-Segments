@@ -6,7 +6,6 @@ String FibonacciSpec::layoutName(const uint16_t layoutIndex) const {
 }
 
 uint16_t FibonacciSpec::nbSegments(const uint16_t layoutIndex) const {
-    auto variation = variations[layoutIndex];
     //same effect applied to all segments, pixels are used as an optimisation
     //since all segments have the same size (might change later)
     //direction, inflexion and alignment are not meaningful when using PIXEL with this optimisation
@@ -103,7 +102,10 @@ void FibonacciSpec::applyColourToPixel(
         segmentStart = segmentStartAndSpiralLedIndex.first;
         spiralPixelIndex = segmentStartAndSpiralLedIndex.second;
     } else {
-        auto ccwOffset = unsignedModulo(segmentIndex + pixelIndex - inflexionPoint, NB_SPIRAL_SEGMENTS);
+        auto ccwOffset = unsignedModulo(
+                segmentIndex + pixelIndex - inflexionPoint,
+                NB_SPIRAL_SEGMENTS
+        );
 
         uint8_t directedSegmentIndex;
         //TODO special case with no inflexion, at the moment simple spirals are reversed
@@ -138,7 +140,7 @@ void FibonacciSpec::applyColourToPixelUnit(
 ) const {
     if (getPixelUnit(variation) == PIXEL) {
         //the colour must be applied to the same pixel index for each segment
-        int nbSegments = getAlignment(variation) == SPIRAL ? NB_SPIRAL_SEGMENTS : NB_RADIAL_SEGMENTS;
+        uint16_t nbSegments = getAlignment(variation) == SPIRAL ? NB_SPIRAL_SEGMENTS : NB_RADIAL_SEGMENTS;
         for (uint16_t segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
             applyColourToPixel(
                     variation,

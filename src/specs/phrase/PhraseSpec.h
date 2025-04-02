@@ -4,12 +4,14 @@
 #define IS_TEST_PHRASE true
 
 #if IS_TEST_PHRASE
+
 #include "config/TestPhraseConfig.h"
+
 #else
 #include "specs/phrase/config/DlhPhraseConfig.h"
 #endif
 
-#include "engine/displayspec.h"
+#include "engine/displayspec/displayspec.h"
 #include "FastLED.h"
 
 // Format is PIXELS_IN_SEGMENTS

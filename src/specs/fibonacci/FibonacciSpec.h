@@ -2,8 +2,9 @@
 #define LED_SEGMENTS_FIBONACCIDISPLAY_H
 
 #include <cstdint>
-#include "engine/displayspec.h"
 #include "FibonacciEnums.h"
+#include "crgb.h"
+#include "engine/displayspec/displayspec.h"
 
 class FibonacciSpec : public DisplaySpec {
 

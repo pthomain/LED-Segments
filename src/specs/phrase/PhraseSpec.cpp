@@ -68,7 +68,6 @@ String PhraseSpec::layoutName(const uint16_t layoutIndex) const {
     };
 }
 
-
 void PhraseSpec::setColour(
         const uint16_t layoutIndex,
         const uint16_t segmentIndex,
@@ -153,15 +152,13 @@ void PhraseSpec::applyColourToLed(
         CRGB *outputArray,
         const CRGB colour
 ) const {
-    if (IS_TEST_PHRASE) { //handle snake rows
-        const uint8_t ledsPerRow = 8;
-        const uint16_t rowIndex = ledIndex / ledsPerRow;
-        if (rowIndex % 2 == 1) {
-            auto rowStart = rowIndex * ledsPerRow;
-            auto rowEnd = rowStart + ledsPerRow - 1;
-            auto relativeIndex = ledIndex - rowStart;
-            outputArray[rowEnd - relativeIndex] = colour;
-        } else outputArray[ledIndex] = colour;
+    const uint8_t ledsPerRow = 8;
+    const uint16_t rowIndex = ledIndex / ledsPerRow;
+    if (IS_TEST_PHRASE && rowIndex % 2 == 1) { //handle snake rows
+        auto rowStart = rowIndex * ledsPerRow;
+        auto rowEnd = rowStart + ledsPerRow - 1;
+        auto relativeIndex = ledIndex - rowStart;
+        outputArray[rowEnd - relativeIndex] = colour;
     } else {
         outputArray[ledIndex] = colour;
     }

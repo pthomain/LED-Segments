@@ -1,8 +1,0 @@
-#ifndef LED_SEGMENTS_ANIMATOR_H
-#define LED_SEGMENTS_ANIMATOR_H
-
-class Animator {
-
-};
-
-#endif //LED_SEGMENTS_ANIMATOR_H

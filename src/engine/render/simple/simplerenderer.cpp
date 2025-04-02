@@ -1,12 +1,14 @@
 #include "simplerenderer.h"
-#include "engine/displayspec.h"
+#include "engine/render/pixelmapper.h"
 
 SimpleRenderer::SimpleRenderer(
         const DisplaySpec &displaySpec,
+        PixelMapper *pixelMapper,
         const String &name
 ) : Renderer(displaySpec, name),
-    effectArray(new CRGB[displaySpec.maxNbPixels()]) {
-    for (uint16_t i = 0; i < displaySpec.maxNbPixels(); i++) {
+    effectArray(new CRGB[displaySpec.maxSegmentSize()]),
+    pixelMapper(pixelMapper) {
+    for (uint16_t i = 0; i < displaySpec.maxSegmentSize(); i++) {
         effectArray[i] = CRGB::Black;
     }
 }
@@ -39,16 +41,15 @@ void SimpleRenderer::render(CRGB *outputArray) {
         currentEffect->fillArray(effectArray, mirrorSize, frameIndex);
         applyMirror(context.mirror, effectArray, nbPixels);
 
-        for (uint16_t pixelIndex = 0; pixelIndex < nbPixels; pixelIndex++) {
-            displaySpec.setColour(
-                    layoutIndex,
-                    segmentIndex,
-                    pixelIndex,
-                    frameIndex,
-                    outputArray,
-                    effectArray[pixelIndex]
-            );
-        }
+        pixelMapper->mapPixels(
+                name,
+                layoutIndex,
+                segmentIndex,
+                nbPixels,
+                frameIndex,
+                outputArray,
+                effectArray
+        );
     }
 
     frameIndex++;

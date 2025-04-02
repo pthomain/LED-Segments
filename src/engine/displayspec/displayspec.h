@@ -3,17 +3,17 @@
 
 #include <cstdint>
 #include "FastLED.h"
-#include "utils/utils.h"
+#include "engine/utils/utils.h"
 
 class DisplaySpec {
 private:
 
-    uint16_t _maxNbPixels = 0;
+    uint16_t _maxSegmentSize = 0;
 
     void calculateMaxSegmentSize() {
         for (uint8_t layoutIndex = 0; layoutIndex < nbLayouts(); layoutIndex++) {
             for (uint8_t segmentIndex = 0; segmentIndex < nbSegments(layoutIndex); segmentIndex++) {
-                _maxNbPixels = max(_maxNbPixels, nbPixels(layoutIndex, segmentIndex));
+                _maxSegmentSize = max(_maxSegmentSize, nbPixels(layoutIndex, segmentIndex));
             }
         }
     }
@@ -30,9 +30,9 @@ public:
 
     virtual bool isCircular() const { return false; }
 
-    virtual uint16_t maxNbPixels() const final {
-        if (_maxNbPixels == 0) const_cast<DisplaySpec *>(this)->calculateMaxSegmentSize();
-        return _maxNbPixels;
+    virtual uint16_t maxSegmentSize() const final {
+        if (_maxSegmentSize == 0) const_cast<DisplaySpec *>(this)->calculateMaxSegmentSize();
+        return _maxSegmentSize;
     };
 
     virtual uint16_t nbSegments(const uint16_t layoutIndex) const = 0;
@@ -46,7 +46,7 @@ public:
             const uint16_t frameIndex,
             CRGB *outputArray,
             const CRGB colour
-    ) const = 0;
+    ) const;
 
     virtual ~DisplaySpec() = default;
 };

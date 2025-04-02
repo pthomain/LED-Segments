@@ -17,12 +17,15 @@ private:
     CRGB *firstArray = nullptr;
     CRGB *secondArray = nullptr;
 
-    uint8_t *transitionArray;
+    CRGB *transitionSegmentArray;
+    CRGB *transitionArray;
     float transitionStep = -1;
     const EffectContext *currentEffectContext = nullptr;
 
     const String firstRendererName = "firstRenderer";
     const String secondRendererName = "secondRenderer";
+
+    void applyCustomTransition(CRGB *outputArray, float transitionPercent);
 
 private :
     const uint16_t refreshRateInMillis;
@@ -58,6 +61,7 @@ public :
     ~Blender() override {
         delete[] firstArray;
         delete[] secondArray;
+        delete[] transitionSegmentArray;
         delete[] transitionArray;
         delete firstRenderer;
         delete secondRenderer;

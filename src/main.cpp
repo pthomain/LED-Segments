@@ -27,9 +27,9 @@ void setup() {
     display = Display::create<LED_PIN, GRB>(
             *displaySpec,
             {
-                    CycleEffect::factory,
+//                    CycleEffect::factory,
 //                    NoiseEffect::factory,
-//                    PartyEffect::factory,
+                    PartyEffect::factory,
 //                    RainbowEffect::factory,
             },
             BRIGHTNESS,

@@ -13,7 +13,8 @@ Blender::Blender(
     secondRenderer(new SimpleRenderer(displaySpec, (PixelMapper *) this, secondRendererName)),
     firstArray(new CRGB[displaySpec.nbLeds()]{}),
     secondArray(new CRGB[displaySpec.nbLeds()]{}),
-    transitionArray(new uint8_t[displaySpec.maxSegmentSize()]{}),
+    transitionSegmentArray(new CRGB[displaySpec.maxSegmentSize()]{}),
+    transitionArray(new CRGB[displaySpec.nbLeds()]{}),
     refreshRateInMillis(refreshRateInMillis),
     transitionDurationInMillis(transitionDurationInMillis) {};
 
@@ -30,6 +31,45 @@ void Blender::changeEffect(std::unique_ptr<Effect> effect) {
     if (secondRenderer->hasEffect()) transitionStep = transitionDurationInFrames;
 }
 
+void Blender::applyCustomTransition(CRGB *outputArray, float transitionPercent) {
+    auto transitionLayoutIndex = 0; //TODO move to context
+    auto transitionSegments = displaySpec.nbSegments(transitionLayoutIndex);
+
+    for (auto segmentIndex = 0; segmentIndex < transitionSegments; segmentIndex++) {
+        auto segmentSize = displaySpec.nbPixels(transitionLayoutIndex, segmentIndex);
+        uint16_t transitionMirrorSize = getMirrorSize(currentEffectContext->transitionMirror, segmentSize);
+
+        applyTransition(
+                currentEffectContext->transition,
+                currentEffectContext->transitionMirror,
+                transitionSegmentArray,
+                transitionMirrorSize,
+                transitionPercent
+        );
+
+        applyMirror(currentEffectContext->transitionMirror, transitionSegmentArray, segmentSize);
+
+        for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
+            displaySpec.setColour(
+                    transitionLayoutIndex,
+                    segmentIndex,
+                    pixelIndex,
+                    0,
+                    transitionArray,
+                    transitionSegmentArray[pixelIndex]
+            );
+        }
+    }
+
+    for (uint16_t pixelIndex = 0; pixelIndex < displaySpec.nbLeds(); pixelIndex++) {
+        outputArray[pixelIndex] = blend(
+                isFirstEffectRendering ? firstArray[pixelIndex] : secondArray[pixelIndex],
+                isFirstEffectRendering ? secondArray[pixelIndex] : firstArray[pixelIndex],
+                transitionArray[pixelIndex] == CRGB::White ? 255 : 0
+        );
+    }
+}
+
 void Blender::render(CRGB *outputArray) {
     if (transitionStep < 0) {
         if (isFirstEffectRendering && firstRenderer->hasEffect()) firstRenderer->render(outputArray);
@@ -42,6 +82,10 @@ void Blender::render(CRGB *outputArray) {
 
         firstRenderer->render(outputArray);
         secondRenderer->render(outputArray);
+
+        const float transitionPercent = 1 - (transitionStep / (float) transitionDurationInFrames);
+
+        applyCustomTransition(outputArray, transitionPercent);
 
         transitionStep = max(-1, transitionStep - 1);
         if (transitionStep < 0) isFirstEffectRendering = !isFirstEffectRendering;
@@ -58,7 +102,7 @@ void Blender::mapPixels(
         CRGB *effectArray
 ) {
     if (effectArray == nullptr) {
-        Serial.println("Effect array is null for renderer " + rendererName + " with transitionStep == 0");
+        Serial.println("Effect array is null for renderer " + rendererName);
         return; //should not happen
     }
 
@@ -74,33 +118,5 @@ void Blender::mapPixels(
                 rendererOutputArray,
                 effectArray[pixelIndex]
         );
-    }
-
-    if (transitionStep >= 0 && rendererName == secondRendererName) {
-        const float transitionPercent = transitionStep / (float) transitionDurationInFrames;
-
-        applyTransition(
-                currentEffectContext->transition,
-                currentEffectContext->transitionMirror,
-                transitionArray,
-                segmentSize,
-                1 - transitionPercent
-        );
-
-        for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
-            CRGB blendedPixel = blend(
-                    isFirstEffectRendering ? firstArray[pixelIndex] : secondArray[pixelIndex],
-                    isFirstEffectRendering ? secondArray[pixelIndex] : firstArray[pixelIndex],
-                    transitionArray[pixelIndex]
-            );
-            displaySpec.setColour(
-                    layoutIndex,
-                    segmentIndex,
-                    pixelIndex,
-                    frameIndex,
-                    outputArray,
-                    blendedPixel
-            );
-        }
     }
 }

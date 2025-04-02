@@ -42,8 +42,6 @@ Display::Display(
 uint8_t index = 0;
 
 void Display::changeEffect() {
-    FastLED.clear(true);
-
     const auto effectFactoryIndex = random8(effectFactories.size());
     const auto &effectFactory = effectFactories.at(effectFactoryIndex);
     const auto layoutIndex = index;//random8(displaySpec.nbLayouts());
@@ -57,12 +55,11 @@ void Display::changeEffect() {
                     PALETTES[random8(PALETTES.size())],
                     mirror,
                     LINEAR,
-                    Transition::NONE,
+                    Transition::SLIDE_LTR,
                     MIRROR_NONE
             )
     ));
 
-    Serial.println("Change effect");
     effectIndex++;
     index = (index + 1) % displaySpec.nbLayouts();
     if (index == 0)Serial.println();

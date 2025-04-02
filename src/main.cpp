@@ -35,7 +35,7 @@ void setup() {
             BRIGHTNESS,
             EFFECT_DURATION_IN_SECONDS,
             2000,
-            10
+            30
     );
 }
 

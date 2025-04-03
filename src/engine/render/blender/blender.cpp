@@ -9,28 +9,31 @@ Blender::Blender(
     const uint16_t refreshRateInMillis,
     const uint16_t transitionDurationInMillis
 ) : Renderer(displaySpec, name),
-    runningRenderer(new SimpleRenderer(displaySpec, (PixelMapper *) this, runningRendererName)),
-    blendingRenderer(new SimpleRenderer(displaySpec, (PixelMapper *) this, blendingRendererName)),
     runningArray(new CRGB[displaySpec.nbLeds()]{}),
     blendingArray(new CRGB[displaySpec.nbLeds()]{}),
     transitionSegmentArray(new CRGB[displaySpec.maxSegmentSize()]{}),
     transitionArray(new CRGB[displaySpec.nbLeds()]{}),
     refreshRateInMillis(refreshRateInMillis),
     transitionDurationInMillis(transitionDurationInMillis) {
-};
-
-bool Blender::hasEffect() {
-    return runningRenderer->hasEffect() || blendingRenderer->hasEffect();
+    //Initialisation of both renderers needs to be done here, moving it to property setters causes issues
+    runningRenderer = std::make_unique<SimpleRenderer>(displaySpec, (PixelMapper *) this, runningRendererName);
+    blendingRenderer = std::make_unique<SimpleRenderer>(displaySpec, (PixelMapper *) this, blendingRendererName);
 }
 
-void Blender::changeEffect(std::unique_ptr<Effect> effect) {
+void Blender::changeEffect(std::shared_ptr<Effect> effect) {
     currentEffectContext = &effect->effectContext;
 
-    if (runningRenderer->hasEffect()) {
-        blendingRenderer->changeEffect(std::move(effect));
+    Serial.println(
+        "Layout: " + displaySpec.layoutName(currentEffectContext->layoutIndex)
+        + "\t\tEffect: " + effect->name()
+        + "\t\tMirror: " + getMirrorName(effect->effectContext.mirror)
+    );
+
+    if (runningRenderer->getEffect() != nullptr) {
+        blendingRenderer->changeEffect(effect);
         transitionStep = transitionDurationInFrames;
     } else {
-        runningRenderer->changeEffect(std::move(effect));
+        runningRenderer->changeEffect(effect);
     }
 }
 
@@ -71,29 +74,25 @@ void Blender::applyTransition(
     fillTransition(transitionPercent);
 
     for (uint16_t pixelIndex = 0; pixelIndex < displaySpec.nbLeds(); pixelIndex++) {
+        // if (runningArray[pixelIndex] == CRGB::Black) {
+            // Serial.println("Renderer is not initialised");
+            // runningRenderer = std::make_unique<SimpleRenderer>(displaySpec, (PixelMapper *) this, runningRendererName);
+            // return;
+        // }
+
         auto blendedColour = transitionArray[pixelIndex] == CRGB::White
                                  ? blendingArray[pixelIndex]
                                  : runningArray[pixelIndex];
 
         //TODO handle alpha
-        outputArray[pixelIndex] =  blendedColour;
+        outputArray[pixelIndex] = blendedColour;
     }
 }
 
 void Blender::render(CRGB *outputArray) {
     if (transitionStep < 0) {
-        if (runningRenderer->hasEffect()) runningRenderer->render(outputArray);
-        else Serial.println("No effect on running renderer with transition step < 0");
+        runningRenderer->render(outputArray);
     } else {
-        if (!runningRenderer->hasEffect()) {
-            Serial.println("No effect on running renderer with transition step >= 0");
-            return;
-        }
-        if (!blendingRenderer->hasEffect()) {
-            Serial.println("No effect on blending renderer with transition step >= 0");
-            return;
-        }
-
         runningRenderer->render(outputArray);
         blendingRenderer->render(outputArray);
 
@@ -102,7 +101,7 @@ void Blender::render(CRGB *outputArray) {
         transitionStep = max(-1, transitionStep - 1);
 
         if (transitionStep < 0) {
-            runningRenderer->changeEffect(std::move(blendingRenderer->handoverEffect()));
+            runningRenderer->changeEffect(blendingRenderer->getEffect());
         }
     }
 }
@@ -139,6 +138,6 @@ void Blender::mapPixels(
     }
 }
 
-std::unique_ptr<Effect> Blender::handoverEffect() {
+std::shared_ptr<Effect> Blender::getEffect() {
     return nullptr; //NOOP
 }

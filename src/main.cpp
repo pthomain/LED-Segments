@@ -28,9 +28,9 @@ void setup() {
         *displaySpec,
         {
             CycleEffect::factory,
-            // NoiseEffect::factory,
-            // PartyEffect::factory,
-            // RainbowEffect::factory,
+            NoiseEffect::factory,
+            PartyEffect::factory,
+            RainbowEffect::factory,
         },
         BRIGHTNESS,
         EFFECT_DURATION_IN_SECONDS,

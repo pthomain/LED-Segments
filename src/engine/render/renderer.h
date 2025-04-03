@@ -1,6 +1,8 @@
 #ifndef LED_SEGMENTS_RENDERER_H
 #define LED_SEGMENTS_RENDERER_H
 
+#include <utility>
+
 #include "engine/effect/effect.h"
 #include "engine/displayspec/displayspec.h"
 #include "engine/effect/transition.h"
@@ -13,17 +15,15 @@ protected:
 public:
     explicit Renderer(
             const DisplaySpec &displaySpec,
-            const String &name
-    ) : displaySpec(displaySpec), name(name) {
+            String name
+    ) : displaySpec(displaySpec), name(std::move(name)) {
     }
 
-    virtual bool hasEffect() = 0;
-
-    virtual void changeEffect(std::unique_ptr<Effect> effect) = 0;
+    virtual void changeEffect(std::shared_ptr<Effect> effect) = 0;
 
     virtual void render(CRGB *outputArray) = 0;
 
-    virtual std::unique_ptr<Effect> handoverEffect() = 0;
+    virtual std::shared_ptr<Effect> getEffect() = 0;
 
     virtual ~Renderer() = default;
 };

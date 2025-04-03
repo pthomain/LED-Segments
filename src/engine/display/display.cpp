@@ -55,7 +55,7 @@ void Display::changeEffect() {
             PALETTES[random8(PALETTES.size())],
             mirror,
             LINEAR,
-            Transition::SLIDE_LTR,//ALL_TRANSITIONS[random8(ALL_TRANSITIONS.size())],
+            Transition::SLIDE, //ALL_TRANSITIONS[random8(ALL_TRANSITIONS.size())],
             random8(displaySpec.nbLayouts()),
             ALL_MIRRORS[random8(ALL_MIRRORS.size())]
         )

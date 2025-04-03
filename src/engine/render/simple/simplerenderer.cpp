@@ -6,22 +6,12 @@ SimpleRenderer::SimpleRenderer(
     PixelMapper *pixelMapper,
     const String &name
 ) : Renderer(displaySpec, name),
-    effectArray(new CRGB[displaySpec.maxSegmentSize()]),
-    pixelMapper(pixelMapper) {
-    for (uint16_t i = 0; i < displaySpec.maxSegmentSize(); i++) {
-        effectArray[i] = CRGB::Black;
-    }
-}
+    effectArray(new CRGB[displaySpec.maxSegmentSize()]{}),
+    pixelMapper(pixelMapper) {}
 
-void SimpleRenderer::changeEffect(std::unique_ptr<Effect> effect) {
-    currentEffect = std::move(effect);
+void SimpleRenderer::changeEffect(std::shared_ptr<Effect> effect) {
+    currentEffect = effect;
     frameIndex = 0;
-
-    Serial.println(
-        "Layout: " + displaySpec.layoutName(currentEffect->effectContext.layoutIndex)
-        + "\t\tEffect: " + currentEffect->name()
-        + "\t\tMirror: " + getMirrorName(currentEffect->effectContext.mirror)
-    );
 }
 
 void SimpleRenderer::render(CRGB *outputArray) {
@@ -55,8 +45,6 @@ void SimpleRenderer::render(CRGB *outputArray) {
     frameIndex++;
 }
 
-std::unique_ptr<Effect> SimpleRenderer::handoverEffect() {
-    auto effect = std::move(currentEffect);
-    currentEffect = nullptr;
-    return effect;
+std::shared_ptr<Effect> SimpleRenderer::getEffect() {
+    return currentEffect;
 }

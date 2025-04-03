@@ -13,12 +13,15 @@ Display::Display(
     const DisplaySpec &displaySpec,
     const std::vector<EffectFactory> effectFactories,
     const uint8_t brightness,
-    const uint8_t effectDurationsInSecs,
+    const uint8_t minEffectDurationsInSecs,
+    const uint8_t maxEffectDurationsInSecs,
     const int16_t transitionDurationInMillis,
     const uint8_t fps,
     const uint8_t *freePinsForEntropy,
     const uint8_t nbPinsForEntropy
-) : effectDurationsInSecs(effectDurationsInSecs),
+) : minEffectDurationsInSecs(minEffectDurationsInSecs),
+    maxEffectDurationsInSecs(maxEffectDurationsInSecs),
+    currentEffectDurationsInSecs(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
     fps(fps),
     transitionDurationInMillis(transitionDurationInMillis),
     refreshRateInMillis(1000 / fps),
@@ -39,13 +42,13 @@ Display::Display(
     render();
 }
 
-uint8_t index = 0;
+// uint8_t index = 0;
 
 void Display::changeEffect() {
     const auto effectFactoryIndex = random8(effectFactories.size());
     const auto &effectFactory = effectFactories.at(effectFactoryIndex);
-    const auto layoutIndex = index; //random8(displaySpec.nbLayouts());
-    const auto mirror = MIRROR_NONE; //ALL_MIRRORS[random8(ALL_MIRRORS.size())];
+    const auto layoutIndex = random8(displaySpec.nbLayouts());
+    const auto mirror = ALL_MIRRORS[random8(ALL_MIRRORS.size())];
 
     renderer->changeEffect(effectFactory(
         EffectContext(
@@ -55,15 +58,15 @@ void Display::changeEffect() {
             PALETTES[random8(PALETTES.size())],
             mirror,
             LINEAR,
-            Transition::SLIDE, //ALL_TRANSITIONS[random8(ALL_TRANSITIONS.size())],
-            random8(displaySpec.nbLayouts()),
+            ALL_TRANSITIONS[random8(ALL_TRANSITIONS.size())],
+            displaySpec.transitionLayoutIndexes().at(random16(displaySpec.transitionLayoutIndexes().size())),
             ALL_MIRRORS[random8(ALL_MIRRORS.size())]
         )
     ));
 
     effectIndex++;
-    index = (index + 1) % displaySpec.nbLayouts();
-    if (index == 0)Serial.println();
+    // index = (index + 1) % displaySpec.nbLayouts();
+    // if (index == 0)Serial.println();
 }
 
 void Display::render() const {
@@ -71,13 +74,20 @@ void Display::render() const {
     FastLED.show();
 }
 
+static uint32_t lastChangeTime = 0;
+
 void Display::loop() {
-    EVERY_N_SECONDS(effectDurationsInSecs) {
+    if (millis() - lastChangeTime >= currentEffectDurationsInSecs * 1000) {
+        lastChangeTime = millis();
+        currentEffectDurationsInSecs = random8(minEffectDurationsInSecs, maxEffectDurationsInSecs);
+        Serial.println("Next effect change in " + String(currentEffectDurationsInSecs) + "s");
         changeEffect();
     }
+
     EVERY_N_MILLISECONDS(refreshRateInMillis) {
         render();
     }
+
     EVERY_N_SECONDS(ENTROPY_UPDATE_IN_SECONDS) {
         addEntropy(freePinsForEntropy, nbPinsForEntropy);
     }

@@ -8,14 +8,15 @@
 
 //TODO add stack modifier, each pixel stacks on the previous one + reverse
 //TODO add swipe effect, one colour slides over the previous one
-//TODO add word dwell modifier, dwell on each word for a while
+//TODO add word highlight modifier, increase luminosity on each word for a while
 //TODO add chase with trail modifier, like ping pong but with a trail
 //TODO for each modifier, allow for highlight (75% brightness for other pixels based on seed%2)
 //TODO add a Composite effect that picks a different effect for each segment or the same effect but a different palette
 
 #define LED_PIN 9
-#define BRIGHTNESS 10
-#define EFFECT_DURATION_IN_SECONDS 3
+#define BRIGHTNESS 128
+#define MIN_EFFECT_DURATION_IN_SECONDS 5
+#define MAX_EFFECT_DURATION_IN_SECONDS 15
 
 Display *display;
 
@@ -27,14 +28,15 @@ void setup() {
     display = Display::create<LED_PIN, GRB>(
         *displaySpec,
         {
-            CycleEffect::factory,
+            // CycleEffect::factory,
             NoiseEffect::factory,
             PartyEffect::factory,
             RainbowEffect::factory,
         },
         BRIGHTNESS,
-        EFFECT_DURATION_IN_SECONDS,
-        500,
+        MIN_EFFECT_DURATION_IN_SECONDS,
+        MAX_EFFECT_DURATION_IN_SECONDS,
+        1000,
         30
     );
 }

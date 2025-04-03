@@ -15,7 +15,7 @@
 
 #define LED_PIN 9
 #define BRIGHTNESS 10
-#define EFFECT_DURATION_IN_SECONDS 5
+#define EFFECT_DURATION_IN_SECONDS 3
 
 Display *display;
 
@@ -25,17 +25,17 @@ void setup() {
 
     auto *displaySpec = new PhraseSpec();
     display = Display::create<LED_PIN, GRB>(
-            *displaySpec,
-            {
-//                    CycleEffect::factory,
-//                    NoiseEffect::factory,
-                    PartyEffect::factory,
-//                    RainbowEffect::factory,
-            },
-            BRIGHTNESS,
-            EFFECT_DURATION_IN_SECONDS,
-            2000,
-            30
+        *displaySpec,
+        {
+            CycleEffect::factory,
+            // NoiseEffect::factory,
+            // PartyEffect::factory,
+            // RainbowEffect::factory,
+        },
+        BRIGHTNESS,
+        EFFECT_DURATION_IN_SECONDS,
+        500,
+        30
     );
 }
 

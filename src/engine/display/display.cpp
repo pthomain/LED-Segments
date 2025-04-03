@@ -9,22 +9,22 @@
 #define ENTROPY_UPDATE_IN_SECONDS 5
 
 Display::Display(
-        CRGB *outputArray,
-        const DisplaySpec &displaySpec,
-        const std::vector<EffectFactory> effectFactories,
-        const uint8_t brightness,
-        const uint8_t effectDurationsInSecs,
-        const int16_t transitionDurationInMillis,
-        const uint8_t fps,
-        const uint8_t *freePinsForEntropy,
-        const uint8_t nbPinsForEntropy
+    CRGB *outputArray,
+    const DisplaySpec &displaySpec,
+    const std::vector<EffectFactory> effectFactories,
+    const uint8_t brightness,
+    const uint8_t effectDurationsInSecs,
+    const int16_t transitionDurationInMillis,
+    const uint8_t fps,
+    const uint8_t *freePinsForEntropy,
+    const uint8_t nbPinsForEntropy
 ) : effectDurationsInSecs(effectDurationsInSecs),
     fps(fps),
     transitionDurationInMillis(transitionDurationInMillis),
     refreshRateInMillis(1000 / fps),
     displaySpec(std::move(displaySpec)),
     renderer(std::unique_ptr<Renderer>(
-            transitionDurationInMillis < 1
+        transitionDurationInMillis < 1
             ? (Renderer *) new SimpleRenderer(displaySpec, (PixelMapper *) new SimplePixelMapper(displaySpec), "simple")
             : new Blender(displaySpec, "blender", refreshRateInMillis, transitionDurationInMillis)
     )),
@@ -44,20 +44,21 @@ uint8_t index = 0;
 void Display::changeEffect() {
     const auto effectFactoryIndex = random8(effectFactories.size());
     const auto &effectFactory = effectFactories.at(effectFactoryIndex);
-    const auto layoutIndex = index;//random8(displaySpec.nbLayouts());
-    const auto mirror = MIRROR_NONE;//ALL_MIRRORS[random8(ALL_MIRRORS.size())];
+    const auto layoutIndex = index; //random8(displaySpec.nbLayouts());
+    const auto mirror = MIRROR_NONE; //ALL_MIRRORS[random8(ALL_MIRRORS.size())];
 
     renderer->changeEffect(effectFactory(
-            EffectContext(
-                    displaySpec.isCircular(),
-                    layoutIndex,
-                    effectIndex,
-                    PALETTES[random8(PALETTES.size())],
-                    mirror,
-                    LINEAR,
-                    Transition::SLIDE_LTR,
-                    MIRROR_CENTRE
-            )
+        EffectContext(
+            displaySpec.isCircular(),
+            layoutIndex,
+            effectIndex,
+            PALETTES[random8(PALETTES.size())],
+            mirror,
+            LINEAR,
+            Transition::SLIDE_LTR,//ALL_TRANSITIONS[random8(ALL_TRANSITIONS.size())],
+            random8(displaySpec.nbLayouts()),
+            ALL_MIRRORS[random8(ALL_MIRRORS.size())]
+        )
     ));
 
     effectIndex++;
@@ -65,7 +66,7 @@ void Display::changeEffect() {
     if (index == 0)Serial.println();
 }
 
-void Display::render() {
+void Display::render() const {
     renderer->render(outputArray);
     FastLED.show();
 }

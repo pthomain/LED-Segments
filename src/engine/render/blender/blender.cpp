@@ -4,119 +4,141 @@
 #include "engine/effect/transition.h"
 
 Blender::Blender(
-        const DisplaySpec &displaySpec,
-        const String &name,
-        const uint16_t refreshRateInMillis,
-        const uint16_t transitionDurationInMillis
+    const DisplaySpec &displaySpec,
+    const String &name,
+    const uint16_t refreshRateInMillis,
+    const uint16_t transitionDurationInMillis
 ) : Renderer(displaySpec, name),
-    firstRenderer(new SimpleRenderer(displaySpec, (PixelMapper *) this, firstRendererName)),
-    secondRenderer(new SimpleRenderer(displaySpec, (PixelMapper *) this, secondRendererName)),
-    firstArray(new CRGB[displaySpec.nbLeds()]{}),
-    secondArray(new CRGB[displaySpec.nbLeds()]{}),
+    runningRenderer(new SimpleRenderer(displaySpec, (PixelMapper *) this, runningRendererName)),
+    blendingRenderer(new SimpleRenderer(displaySpec, (PixelMapper *) this, blendingRendererName)),
+    runningArray(new CRGB[displaySpec.nbLeds()]{}),
+    blendingArray(new CRGB[displaySpec.nbLeds()]{}),
     transitionSegmentArray(new CRGB[displaySpec.maxSegmentSize()]{}),
     transitionArray(new CRGB[displaySpec.nbLeds()]{}),
     refreshRateInMillis(refreshRateInMillis),
-    transitionDurationInMillis(transitionDurationInMillis) {};
+    transitionDurationInMillis(transitionDurationInMillis) {
+};
 
 bool Blender::hasEffect() {
-    return firstRenderer->hasEffect() || secondRenderer->hasEffect();
+    return runningRenderer->hasEffect() || blendingRenderer->hasEffect();
 }
 
 void Blender::changeEffect(std::unique_ptr<Effect> effect) {
     currentEffectContext = &effect->effectContext;
 
-    if (isFirstEffectRendering && firstRenderer->hasEffect()) secondRenderer->changeEffect(std::move(effect));
-    else firstRenderer->changeEffect(std::move(effect));
-
-    if (secondRenderer->hasEffect()) transitionStep = transitionDurationInFrames;
+    if (runningRenderer->hasEffect()) {
+        blendingRenderer->changeEffect(std::move(effect));
+        transitionStep = transitionDurationInFrames;
+    } else {
+        runningRenderer->changeEffect(std::move(effect));
+    }
 }
 
-void Blender::applyCustomTransition(CRGB *outputArray, float transitionPercent) {
-    auto transitionLayoutIndex = 0; //TODO move to context
-    auto transitionSegments = displaySpec.nbSegments(transitionLayoutIndex);
+void Blender::fillTransition(float transitionPercent) const {
+    auto transitionSegments = displaySpec.nbSegments(currentEffectContext->transitionLayoutIndex);
 
     for (auto segmentIndex = 0; segmentIndex < transitionSegments; segmentIndex++) {
-        auto segmentSize = displaySpec.nbPixels(transitionLayoutIndex, segmentIndex);
+        auto segmentSize = displaySpec.nbPixels(currentEffectContext->transitionLayoutIndex, segmentIndex);
         uint16_t transitionMirrorSize = getMirrorSize(currentEffectContext->transitionMirror, segmentSize);
 
-        applyTransition(
-                currentEffectContext->transition,
-                currentEffectContext->transitionMirror,
-                transitionSegmentArray,
-                transitionMirrorSize,
-                transitionPercent
+        fillTransitionArray(
+            currentEffectContext->transition,
+            currentEffectContext->transitionMirror,
+            transitionSegmentArray,
+            transitionMirrorSize,
+            transitionPercent
         );
 
         applyMirror(currentEffectContext->transitionMirror, transitionSegmentArray, segmentSize);
 
         for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
             displaySpec.setColour(
-                    transitionLayoutIndex,
-                    segmentIndex,
-                    pixelIndex,
-                    0,
-                    transitionArray,
-                    transitionSegmentArray[pixelIndex]
+                currentEffectContext->transitionLayoutIndex,
+                segmentIndex,
+                pixelIndex,
+                0,
+                transitionArray,
+                transitionSegmentArray[pixelIndex]
             );
         }
     }
+}
+
+void Blender::applyTransition(
+    CRGB *outputArray,
+    float transitionPercent
+) const {
+    fillTransition(transitionPercent);
 
     for (uint16_t pixelIndex = 0; pixelIndex < displaySpec.nbLeds(); pixelIndex++) {
-        outputArray[pixelIndex] = blend(
-                isFirstEffectRendering ? firstArray[pixelIndex] : secondArray[pixelIndex],
-                isFirstEffectRendering ? secondArray[pixelIndex] : firstArray[pixelIndex],
-                transitionArray[pixelIndex] == CRGB::White ? 255 : 0
-        );
+        auto blendedColour = transitionArray[pixelIndex] == CRGB::White
+                                 ? blendingArray[pixelIndex]
+                                 : runningArray[pixelIndex];
+
+        //TODO handle alpha
+        outputArray[pixelIndex] =  blendedColour;
     }
 }
 
 void Blender::render(CRGB *outputArray) {
     if (transitionStep < 0) {
-        if (isFirstEffectRendering && firstRenderer->hasEffect()) firstRenderer->render(outputArray);
-        else if (secondRenderer->hasEffect()) secondRenderer->render(outputArray);
+        if (runningRenderer->hasEffect()) runningRenderer->render(outputArray);
+        else Serial.println("No effect on running renderer with transition step < 0");
     } else {
-        if (!firstRenderer->hasEffect() && !secondRenderer->hasEffect()) {
-            Serial.println("No effect on both renderers");
+        if (!runningRenderer->hasEffect()) {
+            Serial.println("No effect on running renderer with transition step >= 0");
+            return;
+        }
+        if (!blendingRenderer->hasEffect()) {
+            Serial.println("No effect on blending renderer with transition step >= 0");
             return;
         }
 
-        firstRenderer->render(outputArray);
-        secondRenderer->render(outputArray);
+        runningRenderer->render(outputArray);
+        blendingRenderer->render(outputArray);
 
         const float transitionPercent = 1 - (transitionStep / (float) transitionDurationInFrames);
-
-        applyCustomTransition(outputArray, transitionPercent);
-
+        applyTransition(outputArray, transitionPercent);
         transitionStep = max(-1, transitionStep - 1);
-        if (transitionStep < 0) isFirstEffectRendering = !isFirstEffectRendering;
+
+        if (transitionStep < 0) {
+            runningRenderer->changeEffect(std::move(blendingRenderer->handoverEffect()));
+        }
     }
 }
 
 void Blender::mapPixels(
-        const String &rendererName,
-        const uint16_t layoutIndex,
-        const uint16_t segmentIndex,
-        const uint16_t segmentSize,
-        const uint16_t frameIndex,
-        CRGB *outputArray,
-        CRGB *effectArray
+    const String &rendererName,
+    const uint16_t layoutIndex,
+    const uint16_t segmentIndex,
+    const uint16_t segmentSize,
+    const uint16_t frameIndex,
+    CRGB *outputArray,
+    CRGB *effectArray
 ) {
     if (effectArray == nullptr) {
         Serial.println("Effect array is null for renderer " + rendererName);
         return; //should not happen
     }
 
-    CRGB *rendererOutputArray = transitionStep < 0 ? outputArray
-                                                   : rendererName == firstRendererName ? firstArray : secondArray;
+    CRGB *rendererOutputArray = transitionStep < 0
+                                    ? outputArray
+                                    : rendererName == runningRendererName
+                                          ? runningArray
+                                          : blendingArray;
 
     for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
         displaySpec.setColour(
-                layoutIndex,
-                segmentIndex,
-                pixelIndex,
-                frameIndex,
-                rendererOutputArray,
-                effectArray[pixelIndex]
+            layoutIndex,
+            segmentIndex,
+            pixelIndex,
+            frameIndex,
+            rendererOutputArray,
+            effectArray[pixelIndex]
         );
     }
+}
+
+std::unique_ptr<Effect> Blender::handoverEffect() {
+    return nullptr; //NOOP
 }

@@ -27,6 +27,8 @@ public :
 
     void render(CRGB *outputArray) override;
 
+    std::unique_ptr<Effect> handoverEffect() override;
+
     ~SimpleRenderer() override {
         delete[] effectArray;
     }

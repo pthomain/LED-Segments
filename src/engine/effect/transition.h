@@ -12,12 +12,19 @@ enum Transition {
     DISSOLVE
 };
 
-static void applyTransition(
-        const Transition transition,
-        const Mirror transitionMirror,
-        CRGB *transitionArray,
-        const uint16_t segmentSize,
-        const float transitionPercent
+const std::vector ALL_TRANSITIONS = {
+    FADE,
+    SLIDE_LTR,
+    SLIDE_RTL,
+    DISSOLVE
+};
+
+static void fillTransitionArray(
+    const Transition transition,
+    const Mirror transitionMirror,
+    CRGB *transitionArray,
+    const uint16_t segmentSize,
+    const float transitionPercent
 ) {
     switch (transition) {
         case SLIDE_LTR: {
@@ -26,7 +33,7 @@ static void applyTransition(
                 transitionArray[i] = i < limit ? CRGB::White : CRGB::Black;
             }
         }
-            break;
+        break;
 
         case FADE:
         default:

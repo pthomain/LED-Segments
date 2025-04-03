@@ -10,14 +10,17 @@
 #include "WString.h"
 
 class Blender : public Renderer, PixelMapper {
-    Renderer *runningRenderer = nullptr;
-    Renderer *blendingRenderer = nullptr;
-    CRGB *runningArray = nullptr;
-    CRGB *blendingArray = nullptr;
+    std::unique_ptr<Renderer> runningRenderer = nullptr;
+    std::unique_ptr<Renderer> blendingRenderer = nullptr;
+
+    CRGB *runningArray;
+    CRGB *blendingArray;
 
     CRGB *transitionSegmentArray;
     CRGB *transitionArray;
     float transitionStep = -1;
+
+    //todo shared pointer
     const EffectContext *currentEffectContext = nullptr;
 
     const String runningRendererName = "runningRenderer";
@@ -39,13 +42,11 @@ public :
         const uint16_t transitionDurationInMillis
     );
 
-    bool hasEffect() override;
-
-    void changeEffect(std::unique_ptr<Effect> effect) override;
+    void changeEffect(std::shared_ptr<Effect> effect) override;
 
     void render(CRGB *outputArray) override;
 
-    std::unique_ptr<Effect> handoverEffect() override;
+    std::shared_ptr<Effect> getEffect() override;
 
     void mapPixels(
         const String &rendererName,
@@ -62,8 +63,8 @@ public :
         delete[] blendingArray;
         delete[] transitionSegmentArray;
         delete[] transitionArray;
-        delete runningRenderer;
-        delete blendingRenderer;
+        if (runningRenderer) runningRenderer.reset();
+        if (blendingRenderer) blendingRenderer.reset();
     }
 };
 

@@ -17,6 +17,7 @@ public:
     const Mirror mirror;
     const InterpolatorType interpolatorType;
     const Transition transition;
+    const uint8_t transitionLayoutIndex;
     const Mirror transitionMirror;
 
     EffectContext(
@@ -27,6 +28,7 @@ public:
             const Mirror mirror,
             const InterpolatorType interpolatorType,
             const Transition transition,
+            const uint8_t transitionLayoutIndex,
             const Mirror transitionMirror
     ) : isDisplayCircular(isDisplayCircular),
         layoutIndex(layoutIndex),
@@ -35,6 +37,7 @@ public:
         mirror(mirror),
         interpolatorType(interpolatorType),
         transition(transition),
+        transitionLayoutIndex(transitionLayoutIndex),
         transitionMirror(transitionMirror) {}
 };
 

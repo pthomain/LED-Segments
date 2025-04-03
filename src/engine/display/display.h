@@ -34,7 +34,7 @@ private:
 
     void changeEffect();
 
-    void render();
+    void render() const;
 
 public:
 

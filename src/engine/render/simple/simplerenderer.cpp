@@ -2,9 +2,9 @@
 #include "engine/render/pixelmapper.h"
 
 SimpleRenderer::SimpleRenderer(
-        const DisplaySpec &displaySpec,
-        PixelMapper *pixelMapper,
-        const String &name
+    const DisplaySpec &displaySpec,
+    PixelMapper *pixelMapper,
+    const String &name
 ) : Renderer(displaySpec, name),
     effectArray(new CRGB[displaySpec.maxSegmentSize()]),
     pixelMapper(pixelMapper) {
@@ -18,9 +18,9 @@ void SimpleRenderer::changeEffect(std::unique_ptr<Effect> effect) {
     frameIndex = 0;
 
     Serial.println(
-            "Layout: " + displaySpec.layoutName(currentEffect->effectContext.layoutIndex)
-            + "\t\tEffect: " + currentEffect->name()
-            + "\t\tMirror: " + getMirrorName(currentEffect->effectContext.mirror)
+        "Layout: " + displaySpec.layoutName(currentEffect->effectContext.layoutIndex)
+        + "\t\tEffect: " + currentEffect->name()
+        + "\t\tMirror: " + getMirrorName(currentEffect->effectContext.mirror)
     );
 }
 
@@ -42,15 +42,21 @@ void SimpleRenderer::render(CRGB *outputArray) {
         applyMirror(context.mirror, effectArray, nbPixels);
 
         pixelMapper->mapPixels(
-                name,
-                layoutIndex,
-                segmentIndex,
-                nbPixels,
-                frameIndex,
-                outputArray,
-                effectArray
+            name,
+            layoutIndex,
+            segmentIndex,
+            nbPixels,
+            frameIndex,
+            outputArray,
+            effectArray
         );
     }
 
     frameIndex++;
+}
+
+std::unique_ptr<Effect> SimpleRenderer::handoverEffect() {
+    auto effect = std::move(currentEffect);
+    currentEffect = nullptr;
+    return effect;
 }

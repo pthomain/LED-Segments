@@ -10,36 +10,33 @@
 #include "WString.h"
 
 class Blender : public Renderer, PixelMapper {
-
-private:
-    Renderer *firstRenderer = nullptr;
-    Renderer *secondRenderer = nullptr;
-    CRGB *firstArray = nullptr;
-    CRGB *secondArray = nullptr;
+    Renderer *runningRenderer = nullptr;
+    Renderer *blendingRenderer = nullptr;
+    CRGB *runningArray = nullptr;
+    CRGB *blendingArray = nullptr;
 
     CRGB *transitionSegmentArray;
     CRGB *transitionArray;
     float transitionStep = -1;
     const EffectContext *currentEffectContext = nullptr;
 
-    const String firstRendererName = "firstRenderer";
-    const String secondRendererName = "secondRenderer";
+    const String runningRendererName = "runningRenderer";
+    const String blendingRendererName = "blendingRenderer";
 
-    void applyCustomTransition(CRGB *outputArray, float transitionPercent);
-
-private :
     const uint16_t refreshRateInMillis;
     const uint16_t transitionDurationInMillis;
     const uint16_t transitionDurationInFrames = transitionDurationInMillis / refreshRateInMillis;
-    bool isFirstEffectRendering = true;
+
+    void fillTransition(float transitionPercent) const;
+
+    void applyTransition(CRGB *outputArray, float transitionPercent) const;
 
 public :
-
     explicit Blender(
-            const DisplaySpec &displaySpec,
-            const String &name,
-            const uint16_t refreshRateInMillis,
-            const uint16_t transitionDurationInMillis
+        const DisplaySpec &displaySpec,
+        const String &name,
+        const uint16_t refreshRateInMillis,
+        const uint16_t transitionDurationInMillis
     );
 
     bool hasEffect() override;
@@ -48,23 +45,25 @@ public :
 
     void render(CRGB *outputArray) override;
 
+    std::unique_ptr<Effect> handoverEffect() override;
+
     void mapPixels(
-            const String &rendererName,
-            const uint16_t layoutIndex,
-            const uint16_t segmentIndex,
-            const uint16_t segmentSize,
-            const uint16_t frameIndex,
-            CRGB *outputArray,
-            CRGB *effectArray
+        const String &rendererName,
+        const uint16_t layoutIndex,
+        const uint16_t segmentIndex,
+        const uint16_t segmentSize,
+        const uint16_t frameIndex,
+        CRGB *outputArray,
+        CRGB *effectArray
     ) override;
 
     ~Blender() override {
-        delete[] firstArray;
-        delete[] secondArray;
+        delete[] runningArray;
+        delete[] blendingArray;
         delete[] transitionSegmentArray;
         delete[] transitionArray;
-        delete firstRenderer;
-        delete secondRenderer;
+        delete runningRenderer;
+        delete blendingRenderer;
     }
 };
 

@@ -23,6 +23,8 @@ public:
 
     virtual void render(CRGB *outputArray) = 0;
 
+    virtual std::unique_ptr<Effect> handoverEffect() = 0;
+
     virtual ~Renderer() = default;
 };
 

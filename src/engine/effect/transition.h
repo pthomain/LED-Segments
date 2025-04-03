@@ -7,14 +7,12 @@
 enum Transition {
     NONE,
     FADE,
-    SLIDE,
-    DISSOLVE
+    SLIDE
 };
 
 const std::vector ALL_TRANSITIONS = {
     FADE,
-    SLIDE,
-    DISSOLVE
+    SLIDE
 };
 
 static void fillTransitionArray(
@@ -25,21 +23,22 @@ static void fillTransitionArray(
     const float transitionPercent
 ) {
     switch (transition) {
-        case SLIDE:
-        default: {
+        case SLIDE: {
             uint16_t limit = segmentSize * transitionPercent;
             for (uint16_t i = 0; i < segmentSize; i++) {
                 transitionArray[i] = i < limit ? CRGB::White : CRGB::Black;
             }
         }
+        break;
+
+        case FADE:
+        default: {
+            uint8_t alpha = 255 * transitionPercent;
+            for (uint16_t i = 0; i < segmentSize; i++) {
+                transitionArray[i] = CRGB(alpha, alpha, alpha);
+            }
+        }
             break;
-        //
-        // case FADE:
-        // default:
-        //     for (uint16_t i = 0; i < segmentSize; i++) {
-        //         transitionArray[i] = transitionPercent * 255;
-        //     }
-        //     break;
     }
 }
 

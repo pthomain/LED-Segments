@@ -6,7 +6,6 @@
 #include "engine/utils/utils.h"
 
 class DisplaySpec {
-private:
 
     uint16_t _maxSegmentSize = 0;
 
@@ -25,6 +24,8 @@ public:
     virtual uint16_t nbLeds() const = 0;
 
     virtual uint16_t nbLayouts() const = 0;
+
+    virtual const std::vector<uint16_t> transitionLayoutIndexes() const = 0;
 
     virtual String layoutName(const uint16_t layoutIndex) const = 0;
 

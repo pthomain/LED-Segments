@@ -8,7 +8,9 @@
 
 class Display {
 private:
-    const uint8_t effectDurationsInSecs;
+    const uint8_t minEffectDurationsInSecs;
+    const uint8_t maxEffectDurationsInSecs;
+    uint8_t currentEffectDurationsInSecs;
     const uint8_t fps;
     const int16_t transitionDurationInMillis;
     const uint16_t refreshRateInMillis;
@@ -25,7 +27,8 @@ private:
         const DisplaySpec &displaySpec,
         const std::vector<EffectFactory> effectFactories,
         const uint8_t brightness,
-        const uint8_t effectDurationsInSecs,
+        const uint8_t minEffectDurationsInSecs,
+        const uint8_t maxEffectDurationsInSecs,
         const int16_t transitionDurationInMillis,
         const uint8_t fps,
         const uint8_t *freePinsForEntropy,
@@ -42,7 +45,8 @@ public:
         const DisplaySpec &displaySpec,
         const std::vector<EffectFactory> effectFactories,
         const uint8_t brightness = 50,
-        const uint8_t effectDurationsInSecs = 5,
+        const uint8_t minEffectDurationsInSecs = 3,
+        const uint8_t maxEffectDurationsInSecs = 10,
         const int16_t transitionDurationInMillis = 500, //use < 1 to disable
         const uint8_t fps = 30,
         const uint8_t *freePinsForEntropy = new uint8_t[6]{1, 2, 3, 4, 5, 6}, //change if any of those pins are in use
@@ -55,7 +59,8 @@ public:
             std::move(displaySpec),
             std::move(effectFactories),
             brightness,
-            effectDurationsInSecs,
+            minEffectDurationsInSecs,
+            maxEffectDurationsInSecs,
             transitionDurationInMillis,
             fps,
             freePinsForEntropy,

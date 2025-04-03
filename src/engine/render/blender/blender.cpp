@@ -30,8 +30,11 @@ void Blender::changeEffect(std::shared_ptr<Effect> effect) {
     );
 
     if (runningRenderer->getEffect() != nullptr) {
-        blendingRenderer->changeEffect(effect);
         transitionStep = transitionDurationInFrames;
+        for (uint16_t pixelIndex = 0; pixelIndex < displaySpec.maxSegmentSize(); pixelIndex++) {
+            transitionSegmentArray[pixelIndex] = 0;
+        }
+        blendingRenderer->changeEffect(effect);
     } else {
         runningRenderer->changeEffect(effect);
     }
@@ -74,15 +77,11 @@ void Blender::applyTransition(
     fillTransition(transitionPercent);
 
     for (uint16_t pixelIndex = 0; pixelIndex < displaySpec.nbLeds(); pixelIndex++) {
-        // if (runningArray[pixelIndex] == CRGB::Black) {
-            // Serial.println("Renderer is not initialised");
-            // runningRenderer = std::make_unique<SimpleRenderer>(displaySpec, (PixelMapper *) this, runningRendererName);
-            // return;
-        // }
-
-        auto blendedColour = transitionArray[pixelIndex] == CRGB::White
-                                 ? blendingArray[pixelIndex]
-                                 : runningArray[pixelIndex];
+        auto blendedColour = blend(
+            runningArray[pixelIndex],
+            blendingArray[pixelIndex],
+            transitionArray[pixelIndex].r
+        );
 
         //TODO handle alpha
         outputArray[pixelIndex] = blendedColour;

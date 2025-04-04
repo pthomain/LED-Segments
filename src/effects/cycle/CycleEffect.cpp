@@ -2,15 +2,15 @@
 #include <functional>
 
 EffectFactory CycleEffect::factory = [](
-        const EffectContext &effectContext
+    const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
-    return std::unique_ptr<Effect>(new CycleEffect(effectContext));
+    return std::make_unique<CycleEffect>(effectContext);
 };
 
 void CycleEffect::fillArrayInternal(
-        CRGB *effectArray,
-        const uint16_t effectArraySize,
-        const uint16_t frameIndex
+    CRGB *effectArray,
+    const uint16_t effectArraySize,
+    const uint16_t frameIndex
 ) {
     CRGB colour = CRGB::Black;
     for (uint16_t i = 0; i < effectArraySize; i++) {

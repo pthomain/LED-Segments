@@ -1,7 +1,7 @@
 #ifndef LED_SEGMENTS_PHRASESPEC_H
 #define LED_SEGMENTS_PHRASESPEC_H
 
-#define IS_TEST_PHRASE false
+#define IS_TEST_PHRASE true
 
 #if IS_TEST_PHRASE
 
@@ -38,6 +38,15 @@ class PhraseSpec : public DisplaySpec {
         4 //LETTERS_IN_WHOLE
     };
 
+    std::vector<uint16_t> allLayouts = std::vector<uint16_t>{
+        0, //LEDS_IN_LETTERS,
+        1, //LETTERS_IN_WORDS,
+        // 2, //LEDS_IN_WORDS,
+        3, //WORDS_IN_WHOLE,
+        4, //LETTERS_IN_WHOLE,
+        // 5 //LEDS_IN_WHOLE
+    };
+
     void applyColourToLed(
         const uint16_t ledIndex,
         CRGB *outputArray,
@@ -67,6 +76,8 @@ public :
         CRGB *outputArray,
         const CRGB colour
     ) const override;
+
+    std::vector<std::pair<EffectFactory, std::vector<uint16_t> > > getSupportedEffectFactories() const override;
 
     ~PhraseSpec() override = default;
 };

@@ -3,10 +3,10 @@
 #include <string>
 #include "FastLED.h"
 
-std::string CRGBToHex(const CRGB &color) {
+String CRGBToHex(const CRGB &color) {
     char hexColor[7];
     sprintf(hexColor, "%02X%02X%02X", color.r, color.g, color.b);
-    return std::string(hexColor);
+    return String(hexColor);
 }
 
 uint16_t unsignedModulo(int value, uint16_t modulo) {

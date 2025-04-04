@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-    int freeMemory();
+int freeMemory();
 
 #ifdef  __cplusplus
 }

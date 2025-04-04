@@ -1,4 +1,9 @@
 #include "PhraseSpec.h"
+
+#include <effects/noise/NoiseEffect.h>
+#include <effects/party/PartyEffect.h>
+#include <effects/rainbow/RainbowEffect.h>
+
 #include "functional"
 
 uint16_t PhraseSpec::nbSegments(const uint16_t layoutIndex) const {
@@ -10,14 +15,14 @@ uint16_t PhraseSpec::nbSegments(const uint16_t layoutIndex) const {
         case LETTERS_IN_WORDS:
             return NB_WORDS;
 
-        default:   // WHOLE segment
+        default: // WHOLE segment
             return 1;
     }
 }
 
 uint16_t PhraseSpec::nbPixels(
-        const uint16_t layoutIndex,
-        const uint16_t segmentIndex
+    const uint16_t layoutIndex,
+    const uint16_t segmentIndex
 ) const {
     switch (layoutIndex) {
         case LEDS_IN_LETTERS:
@@ -69,12 +74,12 @@ String PhraseSpec::layoutName(const uint16_t layoutIndex) const {
 }
 
 void PhraseSpec::setColour(
-        const uint16_t layoutIndex,
-        const uint16_t segmentIndex,
-        const uint16_t pixelIndex,
-        const uint16_t frameIndex,
-        CRGB *outputArray,
-        const CRGB colour
+    const uint16_t layoutIndex,
+    const uint16_t segmentIndex,
+    const uint16_t pixelIndex,
+    const uint16_t frameIndex,
+    CRGB *outputArray,
+    const CRGB colour
 ) const {
     auto applyColourToRange = [&](uint16_t start, uint16_t end) {
         for (uint16_t i = start; i <= end; i++) {
@@ -83,10 +88,10 @@ void PhraseSpec::setColour(
     };
 
     auto applyColourToPixel = [&](
-            uint16_t segmentStart,
-            uint16_t segmentEnd,
-            uint16_t pixelArraySize,
-            const std::function<std::array<uint16_t, 2>(uint16_t)> &getPixel
+        uint16_t segmentStart,
+        uint16_t segmentEnd,
+        uint16_t pixelArraySize,
+        const std::function<std::array<uint16_t, 2>(uint16_t)> &getPixel
     ) {
         uint16_t containedPixelIndex = 0;
         for (uint8_t i = 0; i <= pixelArraySize; i++) {
@@ -104,36 +109,36 @@ void PhraseSpec::setColour(
     switch (layoutIndex) {
         case LEDS_IN_LETTERS:
             applyColourToLed(
-                    LETTERS[segmentIndex][0] + pixelIndex,
-                    outputArray,
-                    colour
+                LETTERS[segmentIndex][0] + pixelIndex,
+                outputArray,
+                colour
             );
             break;
 
         case LEDS_IN_WORDS:
             applyColourToLed(
-                    WORDS[segmentIndex][0] + pixelIndex,
-                    outputArray,
-                    colour
+                WORDS[segmentIndex][0] + pixelIndex,
+                outputArray,
+                colour
             );
             break;
 
         case LEDS_IN_WHOLE:
             applyColourToLed(
-                    pixelIndex,
-                    outputArray,
-                    colour
+                pixelIndex,
+                outputArray,
+                colour
             );
             break;
 
         case LETTERS_IN_WORDS:
             applyColourToPixel(
-                    WORDS[segmentIndex][0],
-                    WORDS[segmentIndex][1],
-                    NB_LETTERS,
-                    [&](uint16_t pixelIndex) {
-                        return std::array<uint16_t, 2>{LETTERS[pixelIndex][0], LETTERS[pixelIndex][1]};
-                    }
+                WORDS[segmentIndex][0],
+                WORDS[segmentIndex][1],
+                NB_LETTERS,
+                [&](uint16_t pixelIndex) {
+                    return std::array<uint16_t, 2>{LETTERS[pixelIndex][0], LETTERS[pixelIndex][1]};
+                }
             );
             break;
 
@@ -148,13 +153,14 @@ void PhraseSpec::setColour(
 }
 
 void PhraseSpec::applyColourToLed(
-        const uint16_t ledIndex,
-        CRGB *outputArray,
-        const CRGB colour
+    const uint16_t ledIndex,
+    CRGB *outputArray,
+    const CRGB colour
 ) const {
     const uint8_t ledsPerRow = 8;
     const uint16_t rowIndex = ledIndex / ledsPerRow;
-    if (IS_TEST_PHRASE && rowIndex % 2 == 1) { //handle snake rows
+    if (IS_TEST_PHRASE && rowIndex % 2 == 1) {
+        //handle snake rows
         auto rowStart = rowIndex * ledsPerRow;
         auto rowEnd = rowStart + ledsPerRow - 1;
         auto relativeIndex = ledIndex - rowStart;
@@ -162,4 +168,12 @@ void PhraseSpec::applyColourToLed(
     } else {
         outputArray[ledIndex] = colour;
     }
-};
+}
+
+std::vector<std::pair<EffectFactory, std::vector<uint16_t> > > PhraseSpec::getSupportedEffectFactories() const {
+    return {
+        make_pair(NoiseEffect::factory, allLayouts),
+        make_pair(PartyEffect::factory, allLayouts),
+        make_pair(RainbowEffect::factory, allLayouts)
+    };
+}

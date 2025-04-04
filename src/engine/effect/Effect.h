@@ -1,10 +1,9 @@
 #pragma once
-
 #ifndef EFFECTS_H
 #define EFFECTS_H
 
-#include "engine/utils/utils.h"
-#include "effectcontext.h"
+#include <memory>
+#include "EffectContext.h"
 #include "functional"
 
 const uint8_t MIN_CYCLE_SPEED = 5;

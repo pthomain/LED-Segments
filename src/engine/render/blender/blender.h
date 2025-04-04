@@ -2,12 +2,11 @@
 #define LED_SEGMENTS_BLENDER_H
 
 #include "FastLED.h"
-#include "engine/effect/effect.h"
-#include "engine/render/renderer.h"
-#include "engine/render/pixelmapper.h"
-#include "engine/displayspec/displayspec.h"
+#include "engine/effect/Effect.h"
+#include "engine/render/Renderer.h"
+#include "engine/render/PixelMapper.h"
+#include "engine/displayspec/DisplaySpec.h"
 #include "memory"
-#include "WString.h"
 
 class Blender : public Renderer, PixelMapper {
     std::unique_ptr<Renderer> runningRenderer = nullptr;

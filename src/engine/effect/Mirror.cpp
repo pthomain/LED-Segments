@@ -1,5 +1,4 @@
-#include "mirror.h"
-#include <string>
+#include "Mirror.h"
 
 uint16_t getMirrorSize(Mirror mirror, uint16_t effectArraySize) {
     switch (mirror) {
@@ -9,7 +8,7 @@ uint16_t getMirrorSize(Mirror mirror, uint16_t effectArraySize) {
         case MIRROR_REPEAT_REVERSE:
             return (effectArraySize / 2) + (effectArraySize % 2 == 0 ? 0 : 1);
 
-        default :
+        default:
             return effectArraySize;
     }
 }

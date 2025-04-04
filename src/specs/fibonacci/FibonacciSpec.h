@@ -10,6 +10,7 @@
 class FibonacciSpec : public DisplaySpec {
     const std::vector<uint8_t> variations = computeVariations();
     std::vector<uint16_t> transitionLayouts = std::vector<uint16_t>();
+    std::vector<uint16_t> allLayouts = std::vector<uint16_t>();
 
     void applyColourToPixel(
         const uint16_t variation,
@@ -41,6 +42,7 @@ class FibonacciSpec : public DisplaySpec {
 public :
     explicit FibonacciSpec() {
         std::copy(variations.begin(), variations.end(), transitionLayouts.begin());
+        std::copy(variations.begin(), variations.end(), allLayouts.begin());
     }
 
     uint16_t nbLeds() const override { return TOTAL_FIBONACCI_LEDS; }
@@ -65,6 +67,8 @@ public :
         CRGB *outputArray,
         const CRGB colour
     ) const override;
+
+    std::vector<std::pair<EffectFactory, std::vector<uint16_t> > > getSupportedEffectFactories() const override;
 
     ~FibonacciSpec() override = default;
 };

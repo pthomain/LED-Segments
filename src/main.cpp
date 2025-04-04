@@ -11,8 +11,10 @@
 
 #define LED_PIN 9
 #define BRIGHTNESS 10
-#define MIN_EFFECT_DURATION_IN_SECONDS 5
-#define MAX_EFFECT_DURATION_IN_SECONDS 15
+#define MIN_EFFECT_DURATION_IN_SECONDS 2
+#define MAX_EFFECT_DURATION_IN_SECONDS 2
+
+//TODO add effect burst
 
 Display *display;
 
@@ -29,7 +31,7 @@ void setup() {
         BRIGHTNESS,
         MIN_EFFECT_DURATION_IN_SECONDS,
         MAX_EFFECT_DURATION_IN_SECONDS,
-        1000,
+        500,
         30
     );
 }

@@ -1,4 +1,4 @@
-#include "effect.h"
+#include "Effect.h"
 
 //TODO must be offset by the cumulative number of LEDs for the pixel at pos cycleStep
 void Effect::fillArray(

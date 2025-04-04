@@ -2,8 +2,8 @@
 #define LED_SEGMENTS_DISPLAYSPEC_H
 
 #include <cstdint>
-#include "FastLED.h"
-#include "engine/utils/utils.h"
+#include <engine/effect/Effect.h>
+#include "utils/Utils.h"
 
 class DisplaySpec {
 
@@ -19,7 +19,7 @@ class DisplaySpec {
 
 public:
 
-    explicit DisplaySpec() {}
+    explicit DisplaySpec() = default;
 
     virtual uint16_t nbLeds() const = 0;
 
@@ -41,13 +41,16 @@ public:
     virtual uint16_t nbPixels(const uint16_t layoutIndex, const uint16_t segmentIndex) const = 0;
 
     virtual void setColour(
-            const uint16_t layoutIndex,
-            const uint16_t segmentIndex,
-            const uint16_t pixelIndex,
-            const uint16_t frameIndex,
-            CRGB *outputArray,
-            const CRGB colour
+        const uint16_t layoutIndex,
+        const uint16_t segmentIndex,
+        const uint16_t pixelIndex,
+        const uint16_t frameIndex,
+        CRGB *outputArray,
+        const CRGB colour
     ) const;
+
+    // maps EffectFactory to a vector of supported layouts for that effect
+    virtual std::vector<std::pair<EffectFactory, std::vector<uint16_t> > > getSupportedEffectFactories() const;
 
     virtual ~DisplaySpec() = default;
 };

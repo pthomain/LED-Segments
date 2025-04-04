@@ -1,9 +1,10 @@
 #ifndef LED_SEGMENTS_FIBONACCIENUMS_H
 #define LED_SEGMENTS_FIBONACCIENUMS_H
 
-#include <WString.h>
 #include "vector"
 #include "Arduino.h"
+#include "WString.h"
+#include "utils/Utils.h"
 
 const uint16_t TOTAL_FIBONACCI_LEDS = 324;
 const uint8_t NB_LEDS_IN_SPIRAL = 27;
@@ -111,7 +112,10 @@ static std::vector<uint8_t> computeVariations() {
                 static_cast<Inflexion>(inflexion)
         ));
         unsigned int lastIndex = variations.size() - 1;
-        Serial.println(String(lastIndex) + ": " + getLayoutName(variations.at(lastIndex)));
+
+        if constexpr (IS_DEBUG) {
+            Serial.println(String(lastIndex) + ": " + String(getLayoutName(variations.at(lastIndex))));
+        }
     };
 
     //Spiral is very similar to radial for PIXEL, but has a smoother gradient so radial is omitted

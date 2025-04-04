@@ -1,7 +1,7 @@
-#include "blender.h"
-#include "engine/effect/effect.h"
-#include "engine/render/simple/simplerenderer.h"
-#include "engine/effect/transition.h"
+#include "Blender.h"
+#include "engine/effect/Effect.h"
+#include "engine/render/simple/SimpleRenderer.h"
+#include "engine/effect/Transition.h"
 
 Blender::Blender(
     const DisplaySpec &displaySpec,
@@ -23,11 +23,13 @@ Blender::Blender(
 void Blender::changeEffect(std::shared_ptr<Effect> effect) {
     currentEffectContext = &effect->effectContext;
 
-    Serial.println(
-        "Layout: " + displaySpec.layoutName(currentEffectContext->layoutIndex)
-        + "\t\tEffect: " + effect->name()
-        + "\t\tMirror: " + getMirrorName(effect->effectContext.mirror)
-    );
+    if constexpr (IS_DEBUG) {
+        Serial.println(
+            "Layout: " + displaySpec.layoutName(currentEffectContext->layoutIndex)
+            + "\t\tEffect: " + effect->name()
+            + "\t\tMirror: " + getMirrorName(effect->effectContext.mirror)
+        );
+    }
 
     if (runningRenderer->getEffect() != nullptr) {
         transitionStep = transitionDurationInFrames;
@@ -115,7 +117,7 @@ void Blender::mapPixels(
     CRGB *effectArray
 ) {
     if (effectArray == nullptr) {
-        Serial.println("Effect array is null for renderer " + rendererName);
+        if constexpr (IS_DEBUG) Serial.println("Effect array is null for renderer " + rendererName);
         return; //should not happen
     }
 

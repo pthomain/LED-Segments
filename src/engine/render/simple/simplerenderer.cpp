@@ -1,5 +1,5 @@
-#include "simplerenderer.h"
-#include "engine/render/pixelmapper.h"
+#include "SimpleRenderer.h"
+#include "engine/render/PixelMapper.h"
 
 SimpleRenderer::SimpleRenderer(
     const DisplaySpec &displaySpec,
@@ -7,7 +7,8 @@ SimpleRenderer::SimpleRenderer(
     const String &name
 ) : Renderer(displaySpec, name),
     effectArray(new CRGB[displaySpec.maxSegmentSize()]{}),
-    pixelMapper(pixelMapper) {}
+    pixelMapper(pixelMapper) {
+}
 
 void SimpleRenderer::changeEffect(std::shared_ptr<Effect> effect) {
     currentEffect = effect;
@@ -16,7 +17,7 @@ void SimpleRenderer::changeEffect(std::shared_ptr<Effect> effect) {
 
 void SimpleRenderer::render(CRGB *outputArray) {
     if (currentEffect == nullptr) {
-        Serial.println("No effect on " + name);
+        if constexpr (IS_DEBUG) Serial.println("No effect on " + name);
         return;
     }
 

@@ -4,22 +4,18 @@
 #include "engine/effect/effect.h"
 
 class PartyEffect : public Effect, public Effect::Factory<PartyEffect> {
-private:
-    uint8_t primeA;
-    uint8_t primeB;
-    uint8_t scale;
+    const uint8_t primeA = PRIMES.at(random8(PRIMES.size()));
+    const uint8_t primeB = PRIMES.at(random8(PRIMES.size()));
+    const uint8_t scale = random8(128, 192);
 
 public:
     explicit PartyEffect(const EffectContext &effectContext) : Effect(effectContext) {
-        primeA = PRIMES.at(random8(PRIMES.size()));
-        primeB = PRIMES.at(random8(PRIMES.size()));
-        scale = random8(128, 192);
     }
 
     void fillArrayInternal(
-            CRGB *effectArray,
-            const uint16_t effectArraySize,
-            const uint16_t frameIndex
+        CRGB *effectArray,
+        const uint16_t effectArraySize,
+        const uint16_t frameIndex
     ) override;
 
     String name() const override { return "Party"; }

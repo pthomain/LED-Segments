@@ -2,7 +2,7 @@
 #define LED_SEGMENTS_TRANSITION_H
 
 #include "crgb.h"
-#include "mirror.h"
+#include "Mirror.h"
 
 enum Transition {
     NONE,
@@ -34,8 +34,9 @@ static void fillTransitionArray(
         case FADE:
         default: {
             uint8_t alpha = 255 * transitionPercent;
+            CRGB colour = CRGB(alpha, alpha, alpha);
             for (uint16_t i = 0; i < segmentSize; i++) {
-                transitionArray[i] = CRGB(alpha, alpha, alpha);
+                transitionArray[i] = colour;
             }
         }
             break;

@@ -17,12 +17,12 @@ typedef enum {
 } Mirror;
 
 const std::vector<Mirror> ALL_MIRRORS = {
-        MIRROR_NONE,
-        MIRROR_REVERSE,
-        MIRROR_CENTRE,
-        MIRROR_EDGE,
-        MIRROR_REPEAT,
-        MIRROR_REPEAT_REVERSE
+    MIRROR_NONE,
+    MIRROR_REVERSE,
+    MIRROR_CENTRE,
+    MIRROR_EDGE,
+    MIRROR_REPEAT,
+    MIRROR_REPEAT_REVERSE
 };
 
 

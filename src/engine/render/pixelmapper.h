@@ -2,7 +2,8 @@
 #define LED_SEGMENTS_PIXELMAPPER_H
 
 #include "WString.h"
-#include "FastLED.h"
+#include <cstdint>
+#include "crgb.h"
 
 class PixelMapper {
 

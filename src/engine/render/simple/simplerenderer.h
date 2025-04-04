@@ -1,8 +1,8 @@
 #ifndef LED_SEGMENTS_SIMPLERENDERER_H
 #define LED_SEGMENTS_SIMPLERENDERER_H
 
-#include "engine/render/renderer.h"
-#include "engine/render/pixelmapper.h"
+#include "engine/render/Renderer.h"
+#include "engine/render/PixelMapper.h"
 
 class SimpleRenderer : public Renderer {
     CRGB *effectArray;

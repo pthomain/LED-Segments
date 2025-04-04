@@ -1,5 +1,8 @@
 #include "FibonacciSpec.h"
 #include "FibonacciEnums.h"
+#include <effects/noise/NoiseEffect.h>
+#include <effects/party/PartyEffect.h>
+#include <effects/rainbow/RainbowEffect.h>
 
 String FibonacciSpec::layoutName(const uint16_t layoutIndex) const {
     return getLayoutName(variations[layoutIndex]);
@@ -199,4 +202,12 @@ void FibonacciSpec::setColour(
             outputArray,
             colour
     );
+}
+
+std::vector<std::pair<EffectFactory, std::vector<uint16_t> > > FibonacciSpec::getSupportedEffectFactories() const {
+    return {
+        std::make_pair(NoiseEffect::factory, allLayouts),
+        std::make_pair(PartyEffect::factory, allLayouts),
+        std::make_pair(RainbowEffect::factory, allLayouts)
+    };
 }

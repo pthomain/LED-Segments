@@ -2,12 +2,11 @@
 #define LED_SEGMENTS_DISPLAY_H
 
 #include "FastLED.h"
-#include "engine/effect/effect.h"
-#include "engine/displayspec/displayspec.h"
-#include "engine/render/renderer.h"
+#include "engine/effect/Effect.h"
+#include "engine/displayspec/DisplaySpec.h"
+#include "engine/render/Renderer.h"
 
 class Display {
-private:
     const uint8_t minEffectDurationsInSecs;
     const uint8_t maxEffectDurationsInSecs;
     uint8_t currentEffectDurationsInSecs;
@@ -16,7 +15,6 @@ private:
     const uint16_t refreshRateInMillis;
     const DisplaySpec &displaySpec;
     const std::unique_ptr<Renderer> renderer;
-    const std::vector<EffectFactory> effectFactories;
     CRGB *outputArray;
     const uint8_t *freePinsForEntropy;
     const uint8_t nbPinsForEntropy;
@@ -25,7 +23,6 @@ private:
     explicit Display(
         CRGB *outputArray,
         const DisplaySpec &displaySpec,
-        const std::vector<EffectFactory> effectFactories,
         const uint8_t brightness,
         const uint8_t minEffectDurationsInSecs,
         const uint8_t maxEffectDurationsInSecs,
@@ -43,7 +40,6 @@ public:
     template<int LED_PIN, EOrder RGB_ORDER>
     static Display *create(
         const DisplaySpec &displaySpec,
-        const std::vector<EffectFactory> effectFactories,
         const uint8_t brightness = 50,
         const uint8_t minEffectDurationsInSecs = 3,
         const uint8_t maxEffectDurationsInSecs = 10,
@@ -57,7 +53,6 @@ public:
         return new Display(
             outputArray,
             std::move(displaySpec),
-            std::move(effectFactories),
             brightness,
             minEffectDurationsInSecs,
             maxEffectDurationsInSecs,
@@ -75,6 +70,5 @@ public:
         delete[] freePinsForEntropy;
     }
 };
-
 
 #endif //LED_SEGMENTS_DISPLAY_H

@@ -1,10 +1,6 @@
-#include "effects/party/partyeffect.h"
-#include "engine/display/display.h"
+#include "engine/display/Display.h"
 #include "specs/phrase/PhraseSpec.h"
-#include "effects/noise/noiseeeffect.h"
 #include "specs/fibonacci/FibonacciSpec.h"
-#include "effects/rainbow/rainboweffect.h"
-#include "effects/cycle/CycleEffect.h"
 
 //TODO add stack modifier, each pixel stacks on the previous one + reverse
 //TODO add swipe effect, one colour slides over the previous one
@@ -14,25 +10,22 @@
 //TODO add a Composite effect that picks a different effect for each segment or the same effect but a different palette
 
 #define LED_PIN 9
-#define BRIGHTNESS 128
+#define BRIGHTNESS 10
 #define MIN_EFFECT_DURATION_IN_SECONDS 5
 #define MAX_EFFECT_DURATION_IN_SECONDS 15
 
 Display *display;
 
 void setup() {
-    Serial.begin(9600);
-    delay(1000);
+    if constexpr (IS_DEBUG) {
+        Serial.begin(9600);
+        delay(1000);
+    }
 
     auto *displaySpec = new PhraseSpec();
+
     display = Display::create<LED_PIN, GRB>(
         *displaySpec,
-        {
-            // CycleEffect::factory,
-            NoiseEffect::factory,
-            PartyEffect::factory,
-            RainbowEffect::factory,
-        },
         BRIGHTNESS,
         MIN_EFFECT_DURATION_IN_SECONDS,
         MAX_EFFECT_DURATION_IN_SECONDS,

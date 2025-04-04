@@ -1,9 +1,9 @@
-#include "display.h"
-#include "engine/render/simple/simplerenderer.h"
-#include "engine/render/blender/blender.h"
-#include "engine/utils/seedgenerator.h"
+#include "Display.h"
+#include "engine/render/simple/SimpleRenderer.h"
+#include "engine/render/blender/Blender.h"
+#include "utils/SeedGenerator.h"
+#include "engine/render/simple/SimplePixelMapper.h"
 #include <FastLED.h>
-#include "engine/render/simple/simplepixelmapper.h"
 
 #define FASTLED_USE_PROGMEM 1
 #define ENTROPY_UPDATE_IN_SECONDS 5
@@ -11,7 +11,6 @@
 Display::Display(
     CRGB *outputArray,
     const DisplaySpec &displaySpec,
-    const std::vector<EffectFactory> effectFactories,
     const uint8_t brightness,
     const uint8_t minEffectDurationsInSecs,
     const uint8_t maxEffectDurationsInSecs,
@@ -31,7 +30,6 @@ Display::Display(
             ? (Renderer *) new SimpleRenderer(displaySpec, (PixelMapper *) new SimplePixelMapper(displaySpec), "simple")
             : new Blender(displaySpec, "blender", refreshRateInMillis, transitionDurationInMillis)
     )),
-    effectFactories(std::move(effectFactories)),
     outputArray(outputArray),
     freePinsForEntropy(freePinsForEntropy),
     nbPinsForEntropy(nbPinsForEntropy) {
@@ -45,19 +43,18 @@ Display::Display(
 // uint8_t index = 0;
 
 void Display::changeEffect() {
-    const auto effectFactoryIndex = random8(effectFactories.size());
-    const auto &effectFactory = effectFactories.at(effectFactoryIndex);
-    const auto layoutIndex = random8(displaySpec.nbLayouts());
-    const auto mirror = ALL_MIRRORS[random8(ALL_MIRRORS.size())];
+    const auto effectFactoryIndex = random8(displaySpec.getSupportedEffectFactories().size());
+    const auto factoryAndLayouts = displaySpec.getSupportedEffectFactories().at(effectFactoryIndex);
+    const auto layoutIndex = factoryAndLayouts.second.at(random8(factoryAndLayouts.second.size()));
+    const auto mirror = ALL_MIRRORS[random8(ALL_MIRRORS.size())]; //TODO no mirror for words, add to supported factories
 
-    renderer->changeEffect(effectFactory(
+    renderer->changeEffect(factoryAndLayouts.first(
         EffectContext(
             displaySpec.isCircular(),
             layoutIndex,
             effectIndex,
             PALETTES[random8(PALETTES.size())],
             mirror,
-            LINEAR,
             ALL_TRANSITIONS[random8(ALL_TRANSITIONS.size())],
             displaySpec.transitionLayoutIndexes().at(random16(displaySpec.transitionLayoutIndexes().size())),
             ALL_MIRRORS[random8(ALL_MIRRORS.size())]
@@ -66,7 +63,6 @@ void Display::changeEffect() {
 
     effectIndex++;
     // index = (index + 1) % displaySpec.nbLayouts();
-    // if (index == 0)Serial.println();
 }
 
 void Display::render() const {
@@ -80,7 +76,9 @@ void Display::loop() {
     if (millis() - lastChangeTime >= currentEffectDurationsInSecs * 1000) {
         lastChangeTime = millis();
         currentEffectDurationsInSecs = random8(minEffectDurationsInSecs, maxEffectDurationsInSecs);
-        Serial.println("Next effect change in " + String(currentEffectDurationsInSecs) + "s");
+
+        if constexpr (IS_DEBUG) Serial.println("Next effect change in " + String(currentEffectDurationsInSecs) + "s");
+
         changeEffect();
     }
 

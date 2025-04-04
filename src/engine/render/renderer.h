@@ -1,11 +1,9 @@
 #ifndef LED_SEGMENTS_RENDERER_H
 #define LED_SEGMENTS_RENDERER_H
 
-#include <utility>
-
-#include "engine/effect/effect.h"
-#include "engine/displayspec/displayspec.h"
-#include "engine/effect/transition.h"
+#include "engine/effect/Effect.h"
+#include "engine/displayspec/DisplaySpec.h"
+#include "engine/effect/Transition.h"
 
 class Renderer {
 protected:
@@ -14,8 +12,8 @@ protected:
 
 public:
     explicit Renderer(
-            const DisplaySpec &displaySpec,
-            String name
+        const DisplaySpec &displaySpec,
+        String name
     ) : displaySpec(displaySpec), name(std::move(name)) {
     }
 

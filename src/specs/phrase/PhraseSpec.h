@@ -12,7 +12,6 @@
 #endif
 
 #include "engine/displayspec/displayspec.h"
-#include "FastLED.h"
 
 // Format is PIXELS_IN_SEGMENTS
 enum PhraseLayout {

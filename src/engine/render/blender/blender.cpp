@@ -98,7 +98,9 @@ void Blender::render(CRGB *outputArray) {
         blendingRenderer->render(outputArray);
 
         const float transitionPercent = 1 - (transitionStep / (float) transitionDurationInFrames);
-        applyTransition(outputArray, transitionPercent);
+        const float smoothed = 1 - cos((transitionPercent * PI) / 2); //sine easing
+
+        applyTransition(outputArray, smoothed);
         transitionStep = max(-1, transitionStep - 1);
 
         if (transitionStep < 0) {

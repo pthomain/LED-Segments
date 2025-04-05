@@ -49,8 +49,6 @@ public :
 
     uint16_t nbLayouts() const override { return variations.size(); }
 
-    const std::vector<uint16_t> transitionLayoutIndexes() const override { return transitionLayouts; }
-
     String layoutName(const uint16_t layoutIndex) const override;
 
     bool isCircular() const override { return true; }
@@ -68,7 +66,9 @@ public :
         const CRGB colour
     ) const override;
 
-    std::vector<std::pair<EffectFactory, std::vector<uint16_t> > > getSupportedEffectFactories() const override;
+    std::vector<EffectFactory> effects() const override { return NO_EFFECTS; }
+    std::vector<EffectFactory> highlights() const override { return NO_EFFECTS; }
+    std::vector<uint16_t> matchLayouts(LayoutDescription description) const override;
 
     ~FibonacciSpec() override = default;
 };

@@ -18,6 +18,7 @@ public:
     ) override;
 
     String name() const override { return "Noise"; }
+    EffectType type() const override { return EFFECT; }
 
     static EffectFactory factory;
 };

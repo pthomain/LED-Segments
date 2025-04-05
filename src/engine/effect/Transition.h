@@ -1,8 +1,8 @@
 #ifndef LED_SEGMENTS_TRANSITION_H
 #define LED_SEGMENTS_TRANSITION_H
 
+#include <engine/mirror/Mirror.h>
 #include "crgb.h"
-#include "Mirror.h"
 
 enum Transition {
     NONE,

@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <engine/effect/Effect.h>
 #include "utils/Utils.h"
+#include "engine/displayspec/LayoutDescription.h"
 
 class DisplaySpec {
-
     uint16_t _maxSegmentSize = 0;
 
     void calculateMaxSegmentSize() {
@@ -18,14 +18,11 @@ class DisplaySpec {
     }
 
 public:
-
     explicit DisplaySpec() = default;
 
     virtual uint16_t nbLeds() const = 0;
 
     virtual uint16_t nbLayouts() const = 0;
-
-    virtual const std::vector<uint16_t> transitionLayoutIndexes() const = 0;
 
     virtual String layoutName(const uint16_t layoutIndex) const = 0;
 
@@ -49,8 +46,9 @@ public:
         const CRGB colour
     ) const;
 
-    // maps EffectFactory to a vector of supported layouts for that effect
-    virtual std::vector<std::pair<EffectFactory, std::vector<uint16_t> > > getSupportedEffectFactories() const;
+    virtual std::vector<EffectFactory> effects() const = 0;
+    virtual std::vector<EffectFactory> highlights() const = 0;
+    virtual std::vector<uint16_t> matchLayouts(LayoutDescription description) const = 0;
 
     virtual ~DisplaySpec() = default;
 };

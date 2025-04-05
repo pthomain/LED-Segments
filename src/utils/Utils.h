@@ -3,6 +3,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <algorithm>
 #include <Arduino.h>
 #include <string>
 #include <vector>
@@ -38,6 +39,11 @@ static uint16_t unsignedModulo(int value, uint16_t modulo) {
 
 static uint8_t increaseContrast(uint8_t noise) {
     return map(noise, 50, 190, 0, 255);
+}
+
+template <typename T>
+static bool contains(const std::vector<T> &vector, const T &value) {
+    return std::find(vector.begin(), vector.end(), value) != vector.end();
 }
 
 #endif //UTILS_H

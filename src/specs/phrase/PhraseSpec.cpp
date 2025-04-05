@@ -1,9 +1,4 @@
 #include "PhraseSpec.h"
-
-#include <effects/noise/NoiseEffect.h>
-#include <effects/party/PartyEffect.h>
-#include <effects/rainbow/RainbowEffect.h>
-
 #include "functional"
 
 uint16_t PhraseSpec::nbSegments(const uint16_t layoutIndex) const {
@@ -170,10 +165,13 @@ void PhraseSpec::applyColourToLed(
     }
 }
 
-std::vector<std::pair<EffectFactory, std::vector<uint16_t> > > PhraseSpec::getSupportedEffectFactories() const {
-    return {
-        make_pair(NoiseEffect::factory, allLayouts),
-        make_pair(PartyEffect::factory, allLayouts),
-        make_pair(RainbowEffect::factory, allLayouts)
-    };
+std::vector<uint16_t> PhraseSpec::matchLayouts(LayoutDescription description) const {
+    switch (description) {
+        case PIXEL_HEAVY: return pixelHeavyLayouts;
+        case BALANCED: return balancedLayouts;
+        case SEGMENT_HEAVY: return segmentHeavyLayouts;
+        case MIRRORABLE: return mirrorableLayouts;
+        case TRANSITIONABLE: return balancedLayouts;
+        case HIGHLIGHTABLE: return segmentHeavyLayouts;
+    }
 }

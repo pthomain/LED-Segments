@@ -15,6 +15,7 @@ public:
     ) override;
 
     String name() const override { return "Cycle"; }
+    EffectType type() const override { return EFFECT; }
 
     static EffectFactory factory;
 };

@@ -40,24 +40,41 @@ Display::Display(
     render();
 }
 
-// uint8_t index = 0;
-
 void Display::changeEffect() {
-    const auto effectFactoryIndex = random8(displaySpec.getSupportedEffectFactories().size());
-    const auto factoryAndLayouts = displaySpec.getSupportedEffectFactories().at(effectFactoryIndex);
-    const auto layoutIndex = factoryAndLayouts.second.at(random8(factoryAndLayouts.second.size()));
-    const auto mirror = ALL_MIRRORS[random8(ALL_MIRRORS.size())]; //TODO no mirror for words, add to supported factories
+    if (displaySpec.effects().empty()) return;
 
-    renderer->changeEffect(factoryAndLayouts.first(
+    const auto effectFactoryIndex = random8(displaySpec.effects().size());
+    const auto effectFactory = displaySpec.effects().at(effectFactoryIndex);
+
+    const auto layoutIndex = random16(displaySpec.nbLayouts());
+    const auto mirrorableLayouts = displaySpec.matchLayouts(MIRRORABLE);
+
+    const auto effectMirror = contains(mirrorableLayouts, layoutIndex)
+                                  ? ALL_MIRRORS[random8(ALL_MIRRORS.size())]
+                                  : MIRROR_NONE;
+
+    const auto transition = ALL_TRANSITIONS[random8(ALL_TRANSITIONS.size())];
+    const auto transitionLayouts = displaySpec.matchLayouts(TRANSITIONABLE);
+    const auto transitionLayoutIndex = transitionLayouts.at(random8(transitionLayouts.size()));
+
+    const auto transitionMirror = contains(mirrorableLayouts, transitionLayoutIndex)
+                                      ? ALL_MIRRORS[random8(ALL_MIRRORS.size())]
+                                      : MIRROR_NONE;
+
+    //TODO highlight
+
+    const auto palette = PALETTES[random8(PALETTES.size())];
+
+    renderer->changeEffect(effectFactory(
         EffectContext(
             displaySpec.isCircular(),
             layoutIndex,
             effectIndex,
-            PALETTES[random8(PALETTES.size())],
-            mirror,
-            ALL_TRANSITIONS[random8(ALL_TRANSITIONS.size())],
-            displaySpec.transitionLayoutIndexes().at(random16(displaySpec.transitionLayoutIndexes().size())),
-            ALL_MIRRORS[random8(ALL_MIRRORS.size())]
+            palette,
+            effectMirror,
+            transition,
+            transitionLayoutIndex,
+            transitionMirror
         )
     ));
 

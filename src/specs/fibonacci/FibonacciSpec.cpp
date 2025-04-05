@@ -203,11 +203,3 @@ void FibonacciSpec::setColour(
             colour
     );
 }
-
-std::vector<std::pair<EffectFactory, std::vector<uint16_t> > > FibonacciSpec::getSupportedEffectFactories() const {
-    return {
-        std::make_pair(NoiseEffect::factory, allLayouts),
-        std::make_pair(PartyEffect::factory, allLayouts),
-        std::make_pair(RainbowEffect::factory, allLayouts)
-    };
-}

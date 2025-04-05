@@ -19,6 +19,7 @@ public:
     ) override;
 
     String name() const override { return "Party"; }
+    EffectType type() const override { return EFFECT; }
 
     static EffectFactory factory;
 };

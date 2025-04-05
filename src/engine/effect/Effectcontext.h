@@ -2,7 +2,6 @@
 #define LED_SEGMENTS_EFFECTCONTEXT_H
 
 #include "FastLED.h"
-#include "Mirror.h"
 #include "utils/Utils.h"
 #include "Transition.h"
 

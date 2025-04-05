@@ -4,6 +4,8 @@
 #include "engine/effect/Effect.h"
 
 class RainbowEffect : public Effect, public Effect::Factory<RainbowEffect> {
+    const uint8_t start = random8(); //start hue
+
 public:
     explicit RainbowEffect(const EffectContext &effectContext) : Effect(effectContext) {
     }
@@ -15,6 +17,7 @@ public:
     ) override;
 
     String name() const override { return "Rainbow"; }
+    EffectType type() const override { return EFFECT; }
 
     static EffectFactory factory;
 };

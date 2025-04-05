@@ -5,6 +5,7 @@
 #include <memory>
 #include "EffectContext.h"
 #include "functional"
+#include "engine/effect/EffectType.h"
 
 const uint8_t MIN_CYCLE_SPEED = 5;
 const uint8_t MAX_CYCLE_SPEED = 15;
@@ -36,6 +37,8 @@ public :
 
     virtual String name() const = 0;
 
+    virtual EffectType type() const = 0;
+
     virtual ~Effect() = default;
 
     template<typename T>
@@ -48,5 +51,6 @@ public :
 };
 
 using EffectFactory = std::function<std::unique_ptr<Effect>(const EffectContext &effectContext)>;
+static const std::vector<EffectFactory> NO_EFFECTS = std::vector<EffectFactory>{};
 
 #endif //EFFECTS_H

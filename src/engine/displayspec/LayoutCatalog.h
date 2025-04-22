@@ -115,7 +115,6 @@ public:
         }),
         _supportedEffects(supportedEffects),
         _supportedHighlights(supportedHighlights) {
-        // Serial.println("Cat");
     }
 
     const uint16_t nbLayouts() const {

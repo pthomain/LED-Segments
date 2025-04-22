@@ -1,8 +1,9 @@
+#include "utils/Utils.h"
 #include "engine/display/Display.h"
 #include "specs/phrase/PhraseSpec.h"
 #include "specs/fibonacci/FibonacciSpec.h"
 
-//TODO add stack modifier, each pixel stacks on the previous one + reverse
+//TODO add stack highlight, each pixel stacks on the previous one + reverse
 //TODO add swipe effect, one colour slides over the previous one
 //TODO add word highlight modifier, increase luminosity on each word for a while
 //TODO add chase with trail modifier, like ping pong but with a trail
@@ -11,8 +12,8 @@
 
 #define LED_PIN 9
 #define BRIGHTNESS 10
-#define MIN_EFFECT_DURATION_IN_SECONDS 3
-#define MAX_EFFECT_DURATION_IN_SECONDS 3
+#define MIN_EFFECT_DURATION_IN_SECONDS 5
+#define MAX_EFFECT_DURATION_IN_SECONDS 5
 
 //TODO add effect burst
 
@@ -31,8 +32,7 @@ void setup() {
         BRIGHTNESS,
         MIN_EFFECT_DURATION_IN_SECONDS,
         MAX_EFFECT_DURATION_IN_SECONDS,
-        500,
-        30
+        2000
     );
 }
 

@@ -43,7 +43,7 @@ public:
         const uint8_t brightness = 50,
         const uint8_t minEffectDurationsInSecs = 3,
         const uint8_t maxEffectDurationsInSecs = 10,
-        const int16_t transitionDurationInMillis = 500, //use < 1 to disable
+        const int16_t transitionDurationInMillis = 1000, //use < 1 to disable
         const uint8_t fps = 30,
         const uint8_t *freePinsForEntropy = new uint8_t[6]{1, 2, 3, 4, 5, 6}, //change if any of those pins are in use
         const uint8_t nbPinsForEntropy = 6

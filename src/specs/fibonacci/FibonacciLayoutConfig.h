@@ -1,10 +1,12 @@
 #ifndef LED_SEGMENTS_FIBONACCIENUMS_H
 #define LED_SEGMENTS_FIBONACCIENUMS_H
 
-#include "vector"
+#include <vector>
 #include "Arduino.h"
 #include "WString.h"
 #include "utils/Utils.h"
+#include <effects/rainbow/RainbowEffect.h>
+#include <engine/displayspec/LayoutCatalog.h>
 
 const uint16_t TOTAL_FIBONACCI_LEDS = 324;
 const uint8_t NB_LEDS_IN_SPIRAL = 27;
@@ -56,10 +58,10 @@ static Inflexion getInflexion(uint8_t layout) {
 }
 
 static uint8_t getLayout(
-        PixelUnit pixelUnit,
-        Direction direction,
-        Alignment alignment,
-        Inflexion inflexion
+    PixelUnit pixelUnit,
+    Direction direction,
+    Alignment alignment,
+    Inflexion inflexion
 ) {
     uint8_t pixelUnitValue = (pixelUnit == PIXEL ? 0 : 1);
     uint8_t directionValue = (direction == CLOCKWISE ? 0 : 1) << 1;
@@ -100,16 +102,16 @@ static std::vector<uint8_t> computeVariations() {
     auto variations = std::vector<uint8_t>();
 
     auto addVariation = [&](
-            uint8_t pixelUnit,
-            uint8_t direction,
-            uint8_t alignment,
-            uint8_t inflexion
+        uint8_t pixelUnit,
+        uint8_t direction,
+        uint8_t alignment,
+        uint8_t inflexion
     ) {
         variations.push_back(getLayout(
-                static_cast<PixelUnit>(pixelUnit),
-                static_cast<Direction>(direction),
-                static_cast<Alignment>(alignment),
-                static_cast<Inflexion>(inflexion)
+            static_cast<PixelUnit>(pixelUnit),
+            static_cast<Direction>(direction),
+            static_cast<Alignment>(alignment),
+            static_cast<Inflexion>(inflexion)
         ));
         unsigned int lastIndex = variations.size() - 1;
 
@@ -132,6 +134,34 @@ static std::vector<uint8_t> computeVariations() {
     }
 
     return variations;
+}
+
+//Prevents instantiation before setup() is called
+inline const std::vector<uint8_t> &variations() {
+    static const auto variations = computeVariations();
+    return variations;
+}
+
+static const std::vector<uint16_t> layoutsPlaceholder = std::vector<uint16_t>();
+
+//Prevents instantiation before setup() is called
+inline const LayoutCatalog &fibonacciLayoutCatalog() {
+    static const auto catalog = LayoutCatalog(
+        variations().size(),
+        layoutsPlaceholder,
+        layoutsPlaceholder,
+        layoutsPlaceholder,
+        layoutsPlaceholder,
+        layoutsPlaceholder,
+        layoutsPlaceholder,
+        std::vector<EffectFactory>{
+            // NoiseEffect::factory,
+            // PartyEffect::factory,
+            RainbowEffect::factory
+        },
+        NO_EFFECTS
+    );
+    return catalog;
 }
 
 #endif //LED_SEGMENTS_FIBONACCIENUMS_H

@@ -11,7 +11,7 @@
 #include "specs/phrase/config/DlhPhraseConfig.h"
 #endif
 
-#include "engine/displayspec/displayspec.h"
+#include "engine/displayspec/DisplaySpec.h"
 #include "specs/phrase/config/PhraseLayoutConfig.h"
 
 class PhraseSpec : public DisplaySpec {
@@ -22,7 +22,8 @@ class PhraseSpec : public DisplaySpec {
     ) const;
 
 public :
-    explicit PhraseSpec() = default;
+    explicit PhraseSpec(): DisplaySpec(phraseLayoutCatalog()) {
+    }
 
     uint16_t nbLeds() const override { return NB_LEDS; }
 
@@ -42,10 +43,6 @@ public :
         CRGB *outputArray,
         const CRGB colour
     ) const override;
-
-    std::vector<EffectFactory> effects() const override { return supportedEffects; }
-    std::vector<EffectFactory> highlights() const override { return NO_EFFECTS; }
-    std::vector<uint16_t> matchLayouts(LayoutDescription description) const override;
 
     ~PhraseSpec() override = default;
 };

@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <engine/effect/Effect.h>
 #include "utils/Utils.h"
-#include "engine/displayspec/LayoutDescription.h"
+#include "engine/displayspec/LayoutCatalog.h"
 
 class DisplaySpec {
     uint16_t _maxSegmentSize = 0;
@@ -17,8 +17,12 @@ class DisplaySpec {
         }
     }
 
+protected:
+    const LayoutCatalog _catalog;
+
 public:
-    explicit DisplaySpec() = default;
+    explicit DisplaySpec(const LayoutCatalog &catalog): _catalog(catalog) {
+    }
 
     virtual uint16_t nbLeds() const = 0;
 
@@ -44,11 +48,11 @@ public:
         const uint16_t frameIndex,
         CRGB *outputArray,
         const CRGB colour
-    ) const;
+    ) const = 0;
 
-    virtual std::vector<EffectFactory> effects() const = 0;
-    virtual std::vector<EffectFactory> highlights() const = 0;
-    virtual std::vector<uint16_t> matchLayouts(LayoutDescription description) const = 0;
+    const LayoutCatalog &catalog() const {
+        return _catalog;
+    }
 
     virtual ~DisplaySpec() = default;
 };

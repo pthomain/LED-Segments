@@ -1,11 +1,9 @@
 #include "FibonacciSpec.h"
-#include "FibonacciEnums.h"
+#include "FibonacciLayoutConfig.h"
 #include <effects/noise/NoiseEffect.h>
-#include <effects/party/PartyEffect.h>
-#include <effects/rainbow/RainbowEffect.h>
 
 String FibonacciSpec::layoutName(const uint16_t layoutIndex) const {
-    return getLayoutName(variations[layoutIndex]);
+    return getLayoutName(variations()[layoutIndex]);
 }
 
 uint16_t FibonacciSpec::nbSegments(const uint16_t layoutIndex) const {
@@ -17,9 +15,9 @@ uint16_t FibonacciSpec::nbSegments(const uint16_t layoutIndex) const {
 }
 
 uint16_t FibonacciSpec::nbPixels(const uint16_t layoutIndex, const uint16_t segmentIndex) const {
-    auto variation = variations[layoutIndex];
-    auto pixelUnit = getPixelUnit(variation);
-    auto alignment = getAlignment(variation);
+    const auto variation = variations()[layoutIndex];
+    const auto pixelUnit = getPixelUnit(variation);
+    const auto alignment = getAlignment(variation);
 
     if (alignment == SPIRAL) {
         return pixelUnit == PIXEL ? NB_SPIRAL_PIXELS : NB_SPIRAL_SEGMENTS;
@@ -30,12 +28,12 @@ uint16_t FibonacciSpec::nbPixels(const uint16_t layoutIndex, const uint16_t segm
 }
 
 std::pair<uint16_t, uint8_t> FibonacciSpec::radialToSpiralIndex(
-        const uint8_t segmentIndex,
-        const uint8_t radialIndex
+    const uint8_t segmentIndex,
+    const uint8_t radialIndex
 ) const {
-    bool isEvenSegment = segmentIndex % 2 == 0;
-    uint8_t segmentOffset = isEvenSegment ? segmentIndex / 2 : (segmentIndex + 1) / 2;
-    uint16_t segmentStart = unsignedModulo(NB_LEDS_IN_SPIRAL * (segmentOffset + radialIndex), nbLeds());
+    const bool isEvenSegment = segmentIndex % 2 == 0;
+    const uint8_t segmentOffset = isEvenSegment ? segmentIndex / 2 : (segmentIndex + 1) / 2;
+    const uint16_t segmentStart = unsignedModulo(NB_LEDS_IN_SPIRAL * (segmentOffset + radialIndex), nbLeds());
     uint8_t spiralPixelIndex;
 
     if (isEvenSegment) {
@@ -78,15 +76,15 @@ uint8_t FibonacciSpec::getLedPadding(const uint8_t spiralPixelIndex) const {
 }
 
 void FibonacciSpec::applyColourToPixel(
-        const uint16_t variation,
-        const uint16_t segmentIndex,
-        uint16_t pixelIndex,
-        int8_t inflexionPoint,
-        CRGB *outputArray,
-        const CRGB colour
+    const uint16_t variation,
+    const uint16_t segmentIndex,
+    const uint16_t pixelIndex,
+    const int8_t inflexionPoint,
+    CRGB *outputArray,
+    const CRGB colour
 ) const {
-    auto applyColourToLed = [&](uint16_t ledIndex) {
-        uint16_t remappedIndex = ledIndex;  //segments 0 and 1 are swapped
+    const auto applyColourToLed = [&](uint16_t ledIndex) {
+        uint16_t remappedIndex = ledIndex; //segments 0 and 1 are swapped
         if (ledIndex >= 0 && ledIndex < 27) {
             remappedIndex = ledIndex + 27;
         } else if (ledIndex >= 27 && ledIndex < 54) {
@@ -95,19 +93,19 @@ void FibonacciSpec::applyColourToPixel(
         outputArray[remappedIndex] = colour;
     };
 
-    auto direction = getDirection(variation);
-    auto alignment = getAlignment(variation);
+    const auto direction = getDirection(variation);
+    const auto alignment = getAlignment(variation);
 
     uint16_t segmentStart;
     uint8_t spiralPixelIndex;
     if (alignment == RADIAL) {
-        auto segmentStartAndSpiralLedIndex = radialToSpiralIndex(segmentIndex, pixelIndex);
+        const auto segmentStartAndSpiralLedIndex = radialToSpiralIndex(segmentIndex, pixelIndex);
         segmentStart = segmentStartAndSpiralLedIndex.first;
         spiralPixelIndex = segmentStartAndSpiralLedIndex.second;
     } else {
-        auto ccwOffset = unsignedModulo(
-                segmentIndex + pixelIndex - inflexionPoint,
-                NB_SPIRAL_SEGMENTS
+        const auto ccwOffset = unsignedModulo(
+            segmentIndex + pixelIndex - inflexionPoint,
+            NB_SPIRAL_SEGMENTS
         );
 
         uint8_t directedSegmentIndex;
@@ -122,8 +120,8 @@ void FibonacciSpec::applyColourToPixel(
 
         spiralPixelIndex = pixelIndex;
         segmentStart = unsignedModulo(
-                NB_LEDS_IN_SPIRAL * directedSegmentIndex,
-                nbLeds()
+            NB_LEDS_IN_SPIRAL * directedSegmentIndex,
+            nbLeds()
         );
     }
 
@@ -135,23 +133,23 @@ void FibonacciSpec::applyColourToPixel(
 };
 
 void FibonacciSpec::applyColourToPixelUnit(
-        const uint16_t variation,
-        const uint16_t pixelUnitIndex,
-        int8_t inflexionPoint,
-        CRGB *outputArray,
-        const CRGB colour
+    const uint16_t variation,
+    const uint16_t pixelUnitIndex,
+    const int8_t inflexionPoint,
+    CRGB *outputArray,
+    const CRGB colour
 ) const {
     if (getPixelUnit(variation) == PIXEL) {
         //the colour must be applied to the same pixel index for each segment
         uint16_t nbSegments = getAlignment(variation) == SPIRAL ? NB_SPIRAL_SEGMENTS : NB_RADIAL_SEGMENTS;
         for (uint16_t segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
             applyColourToPixel(
-                    variation,
-                    segmentIndex,
-                    pixelUnitIndex, //pixel index
-                    inflexionPoint,
-                    outputArray,
-                    colour
+                variation,
+                segmentIndex,
+                pixelUnitIndex, //pixel index
+                inflexionPoint,
+                outputArray,
+                colour
             );
         }
     } else {
@@ -159,27 +157,27 @@ void FibonacciSpec::applyColourToPixelUnit(
         int nbPixels = getAlignment(variation) == SPIRAL ? NB_SPIRAL_PIXELS : NB_RADIAL_PIXELS;
         for (uint16_t pixelIndex = 0; pixelIndex < nbPixels; pixelIndex++) {
             applyColourToPixel(
-                    variation,
-                    pixelUnitIndex,  //segment index
-                    pixelIndex,
-                    inflexionPoint,
-                    outputArray,
-                    colour
+                variation,
+                pixelUnitIndex, //segment index
+                pixelIndex,
+                inflexionPoint,
+                outputArray,
+                colour
             );
         }
     }
 };
 
 void FibonacciSpec::setColour(
-        const uint16_t layoutIndex,
-        const uint16_t segmentIndex,
-        const uint16_t pixelIndex,
-        const uint16_t frameIndex,
-        CRGB *outputArray,
-        const CRGB colour
+    const uint16_t layoutIndex,
+    const uint16_t segmentIndex,
+    const uint16_t pixelIndex,
+    const uint16_t frameIndex,
+    CRGB *outputArray,
+    const CRGB colour
 ) const {
-    auto variation = variations[layoutIndex];
-    auto inflexion = getInflexion(variation);
+    const auto variation = variations()[layoutIndex];
+    const auto inflexion = getInflexion(variation);
     int8_t inflexionPoint;
 
     switch (inflexion) {
@@ -196,10 +194,10 @@ void FibonacciSpec::setColour(
     }
 
     applyColourToPixelUnit(
-            variation,
-            pixelIndex,//optimisation for spirals, each segment is considered a pixel
-            inflexionPoint,
-            outputArray,
-            colour
+        variation,
+        pixelIndex, //optimisation for spirals, each segment is considered a pixel
+        inflexionPoint,
+        outputArray,
+        colour
     );
 }

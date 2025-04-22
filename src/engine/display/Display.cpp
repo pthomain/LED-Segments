@@ -41,23 +41,29 @@ Display::Display(
 }
 
 void Display::changeEffect() {
-    if (displaySpec.effects().empty()) return;
+    const auto catalog = displaySpec.catalog();
+    const auto effects = catalog.supportedEffects();
 
-    const auto effectFactoryIndex = random8(displaySpec.effects().size());
-    const auto effectFactory = displaySpec.effects().at(effectFactoryIndex);
+    if (effects.empty()) {
+        if constexpr (IS_DEBUG) Serial.print("No effects provided");
+        return;
+    }
+    const auto effectFactoryIndex = random8(effects.size());
+    const auto effectFactory = effects.at(effectFactoryIndex);
 
     const auto layoutIndex = random16(displaySpec.nbLayouts());
-    const auto mirrorableLayouts = displaySpec.matchLayouts(MIRRORABLE);
+    const auto mirrorableLayouts = catalog.matchLayouts(MIRRORABLE);
 
     const auto effectMirror = contains(mirrorableLayouts, layoutIndex)
                                   ? ALL_MIRRORS[random8(ALL_MIRRORS.size())]
                                   : MIRROR_NONE;
 
     const auto transition = ALL_TRANSITIONS[random8(ALL_TRANSITIONS.size())];
-    const auto transitionLayouts = displaySpec.matchLayouts(TRANSITIONABLE);
+
+    const auto transitionLayouts = catalog.matchLayouts(TRANSITIONABLE);
     const auto transitionLayoutIndex = transitionLayouts.at(random8(transitionLayouts.size()));
 
-    const auto transitionMirror = contains(mirrorableLayouts, transitionLayoutIndex)
+    const auto transitionMirror = contains(mirrorableLayouts, transitionLayoutIndex) && transition != FADE
                                       ? ALL_MIRRORS[random8(ALL_MIRRORS.size())]
                                       : MIRROR_NONE;
 

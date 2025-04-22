@@ -51,7 +51,6 @@ void Blender::fillTransition(float transitionPercent) const {
 
         fillTransitionArray(
             currentEffectContext->transition,
-            currentEffectContext->transitionMirror,
             transitionSegmentArray,
             transitionMirrorSize,
             transitionPercent

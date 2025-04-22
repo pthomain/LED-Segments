@@ -164,14 +164,3 @@ void PhraseSpec::applyColourToLed(
         outputArray[ledIndex] = colour;
     }
 }
-
-std::vector<uint16_t> PhraseSpec::matchLayouts(LayoutDescription description) const {
-    switch (description) {
-        case PIXEL_HEAVY: return pixelHeavyLayouts;
-        case BALANCED: return balancedLayouts;
-        case SEGMENT_HEAVY: return segmentHeavyLayouts;
-        case MIRRORABLE: return mirrorableLayouts;
-        case TRANSITIONABLE: return balancedLayouts;
-        case HIGHLIGHTABLE: return segmentHeavyLayouts;
-    }
-}

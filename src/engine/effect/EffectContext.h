@@ -25,13 +25,13 @@
 #include "FastLED.h"
 #include "utils/Utils.h"
 #include "Transition.h"
+#include "../palette/Palette.h"
 
 class EffectContext {
 public:
     const boolean isDisplayCircular;
     const uint16_t layoutIndex;
-    const uint16_t effectIndex;
-    const CRGBPalette16 palette;
+    const Palette palette;
     const Mirror mirror;
     const Transition transition;
     const uint8_t transitionLayoutIndex;
@@ -40,15 +40,13 @@ public:
     EffectContext(
         const boolean isDisplayCircular,
         const uint16_t layoutIndex,
-        const uint16_t effectIndex,
-        const CRGBPalette16 &palette,
+        const Palette &palette,
         const Mirror mirror,
         const Transition transition,
         const uint8_t transitionLayoutIndex,
         const Mirror transitionMirror
     ) : isDisplayCircular(isDisplayCircular),
         layoutIndex(layoutIndex),
-        effectIndex(effectIndex),
         palette(palette),
         mirror(mirror),
         transition(transition),

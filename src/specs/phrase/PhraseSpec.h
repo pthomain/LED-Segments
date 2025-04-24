@@ -20,13 +20,10 @@
 
 #ifndef LED_SEGMENTS_PHRASESPEC_H
 #define LED_SEGMENTS_PHRASESPEC_H
+#include"utils/Utils.h"
 
-#define IS_TEST_PHRASE true
-
-#if IS_TEST_PHRASE
-
+#if IS_DEBUG
 #include "config/TestPhraseConfig.h"
-
 #else
 #include "specs/phrase/config/DlhPhraseConfig.h"
 #endif
@@ -47,7 +44,7 @@ public :
 
     uint16_t nbLeds() const override { return NB_LEDS; }
 
-    uint16_t nbLayouts() const override { return NB_LAYOUTS; }
+    uint16_t nbLayouts() const override { return phraseLayouts.size(); }
 
     String layoutName(const uint16_t layoutIndex) const override;
 

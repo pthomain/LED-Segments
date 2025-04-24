@@ -174,7 +174,7 @@ void PhraseSpec::applyColourToLed(
 ) const {
     const uint8_t ledsPerRow = 8;
     const uint16_t rowIndex = ledIndex / ledsPerRow;
-    if (IS_TEST_PHRASE && rowIndex % 2 == 1) {
+    if (IS_DEBUG && rowIndex % 2 == 1) {
         //handle snake rows
         auto rowStart = rowIndex * ledsPerRow;
         auto rowEnd = rowStart + ledsPerRow - 1;

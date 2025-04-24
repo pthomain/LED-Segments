@@ -18,21 +18,22 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "RainbowEffect.h"
+#include "GradientEffect.h"
 
-EffectFactory RainbowEffect::factory = [](
+EffectFactory GradientEffect::factory = [](
     const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
-    return std::make_unique<RainbowEffect>(effectContext);
+    return std::make_unique<GradientEffect>(effectContext);
 };
 
-void RainbowEffect::fillArrayInternal(
+void GradientEffect::fillArrayInternal(
     CRGB *effectArray,
     const uint16_t effectArraySize,
+    const uint16_t segmentIndex,
     const uint16_t frameIndex
 ) {
     const uint8_t deltaHue = max(1, 255 / effectArraySize);
 
     //TODO adjust initial hue increment based on density (effectArraySize / maxSegmentSize)
-    fill_rainbow(effectArray, effectArraySize, start + (frameIndex * deltaHue /5), deltaHue);
+    // fill_gradient(effectArray, effectArraySize)
 };

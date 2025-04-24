@@ -49,7 +49,7 @@ void SimpleRenderer::render(CRGB *outputArray) {
         uint16_t nbPixels = displaySpec.nbPixels(layoutIndex, segmentIndex);
         uint16_t mirrorSize = getMirrorSize(context.mirror, nbPixels);
 
-        currentEffect->fillArray(effectArray, mirrorSize, frameIndex);
+        currentEffect->fillArray(effectArray, mirrorSize, segmentIndex, frameIndex);
         applyMirror(context.mirror, effectArray, nbPixels);
 
         pixelMapper->mapPixels(

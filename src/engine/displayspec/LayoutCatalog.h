@@ -26,7 +26,7 @@
 #include <vector>
 #include <engine/effect/Effect.h>
 
-enum LayoutDescription {
+enum class LayoutDescription {
     /* Layouts with a high ratio of pixels to segments:
      * - good for gradients and repeating patterns across segments
      * - should be used by effects that require room to render nicely (animations, complex gradients, etc)
@@ -53,13 +53,13 @@ enum LayoutDescription {
      * and animations will be affected.
      * - usually only the finest layouts will fit the bill
      */
-    MIRRORABLE,
+    // MIRRORABLE,
 
     /* Layouts on which transitions can be applied (excluding FADE):
      * - the same considerations as for the COARSE layouts apply, effects might look jerky
      * - usually correlate highly with the FINE and BALANCED layouts, with a few exceptions
      */
-    TRANSITIONABLE,
+    // TRANSITIONABLE,
 
     /* Layouts that are good for highlights:
      * - these layouts usually correlate highly with the COARSE layouts but some BALANCED ones might apply too
@@ -71,48 +71,69 @@ enum LayoutDescription {
 
 class LayoutCatalog {
     const uint16_t _nbLayouts;
-    const std::map<LayoutDescription, std::vector<uint16_t> > _layoutMap;
     const std::vector<EffectFactory> _supportedEffects;
     const std::vector<EffectFactory> _supportedHighlights;
+    const std::map<uint16_t, std::vector<Mirror> > _mirrors;
+    const std::map<uint16_t, std::vector<Transition> > _transitions;
 
 public:
     explicit LayoutCatalog(
         const uint16_t nbLayouts,
-        const std::vector<uint16_t> &fineLayouts,
-        const std::vector<uint16_t> &balancedLayouts,
-        const std::vector<uint16_t> &coarseLayouts,
-        const std::vector<uint16_t> &mirrorableLayouts,
-        const std::vector<uint16_t> &transitionableLayouts,
-        const std::vector<uint16_t> &highlightableLayouts,
         const std::vector<EffectFactory> &supportedEffects,
-        const std::vector<EffectFactory> &supportedHighlights
+        const std::vector<EffectFactory> &supportedHighlights,
+        const std::map<uint16_t, std::vector<Mirror> > &mirrors,
+        const std::map<uint16_t, std::vector<Transition> > &transitions
     ) : _nbLayouts(nbLayouts),
-        _layoutMap({
-            {FINE, fineLayouts},
-            {BALANCED, balancedLayouts},
-            {COARSE, coarseLayouts},
-            {MIRRORABLE, mirrorableLayouts},
-            {TRANSITIONABLE, transitionableLayouts},
-            {HIGHLIGHTABLE, highlightableLayouts}
-        }),
         _supportedEffects(supportedEffects),
-        _supportedHighlights(supportedHighlights) {
+        _supportedHighlights(supportedHighlights),
+        _mirrors(std::move(mirrors)),
+        _transitions(std::move(transitions)) {
     }
 
     const uint16_t nbLayouts() const {
         return _nbLayouts;
     }
 
+    //TODO randomEffect(layoutIndex)
     const std::vector<EffectFactory> &supportedEffects() const {
         return _supportedEffects;
     }
 
+    //TODO randomHighlight(layoutIndex)
     const std::vector<EffectFactory> &supportedHighlights() const {
         return _supportedHighlights;
     }
 
-    const std::vector<uint16_t> &matchLayouts(LayoutDescription description) const {
-        return _layoutMap.at(description);
+    const Mirror randomMirror(uint16_t layoutIndex) const {
+        auto mirrors = _mirrors.at(layoutIndex);
+        return mirrors.empty() ? Mirror::NONE : mirrors.at(random8(mirrors.size()));
+    }
+
+    const std::pair<uint16_t, Transition> randomTransition() const {
+        if (_transitions.empty()) return std::make_pair(0, Transition::NONE);
+
+        auto iterator = _transitions.begin();
+        std::advance(iterator, random8(_transitions.size()));
+
+        return std::pair(
+            iterator->first,
+            iterator->second.empty() ? Transition::NONE : iterator->second.at(random8(iterator->second.size()))
+        );
+    }
+
+    template<typename T>
+    static const std::map<uint16_t, std::vector<T> > &mapLayoutIndex(
+        const std::vector<uint16_t> layoutIndexes,
+        const std::function<std::vector<T> (uint16_t)> mapper
+    ) {
+        static const std::map<uint16_t, std::vector<T> > map = [layoutIndexes, mapper] {
+            auto innerMap = std::map<uint16_t, std::vector<T> >();
+            for (const auto layoutIndex: layoutIndexes) {
+                innerMap[layoutIndex] = mapper(layoutIndex);
+            }
+            return innerMap;
+        }();
+        return map;
     }
 };
 

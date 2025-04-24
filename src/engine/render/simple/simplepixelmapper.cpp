@@ -20,7 +20,6 @@
 
 
 #include "SimplePixelMapper.h"
-#include <string>
 
 void SimplePixelMapper::mapPixels(
     const String &rendererName,

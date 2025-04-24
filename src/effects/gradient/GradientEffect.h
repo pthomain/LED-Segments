@@ -18,26 +18,29 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LED_SEGMENTS_CYCLEEFFECT_H
-#define LED_SEGMENTS_CYCLEEFFECT_H
+#ifndef LED_SEGMENTS_GRADIENTEFFECT_H
+#define LED_SEGMENTS_GRADIENTEFFECT_H
 
 #include "engine/effect/Effect.h"
 
-class CycleEffect : public Effect, public Effect::Factory<CycleEffect> {
+class GradientEffect : public Effect, public Effect::Factory<GradientEffect> {
+    const uint8_t start = random8(); //start hue
+
 public:
-    explicit CycleEffect(const EffectContext &effectContext) : Effect(effectContext) {
+    explicit GradientEffect(const EffectContext &effectContext) : Effect(effectContext) {
     }
 
     void fillArrayInternal(
         CRGB *effectArray,
         const uint16_t effectArraySize,
+        const uint16_t segmentIndex,
         const uint16_t frameIndex
     ) override;
 
-    String name() const override { return "Cycle"; }
-    EffectType type() const override { return EFFECT; }
+    String name() const override { return "Gradient"; }
+    EffectType type() const override { return EffectType::EFFECT; }
 
     static EffectFactory factory;
 };
 
-#endif //LED_SEGMENTS_CYCLEEFFECT_H
+#endif //LED_SEGMENTS_GRADIENTEFFECT_H

@@ -21,15 +21,10 @@
 #ifndef EFFECTTYPE_H
 #define EFFECTTYPE_H
 
-enum EffectType {
+enum class EffectType {
   EFFECT,
   HIGHLIGHT,
   TRANSITION
-};
-
-enum PaletteType {
-  GRADIENT, // used for effects using the given palette for complex gradients
-  DISCRETE // used for effects using individual colours from the given palette
 };
 
 #endif //EFFECTTYPE_H

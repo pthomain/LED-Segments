@@ -71,40 +71,37 @@ void Display::changeEffect() {
     const auto effectFactoryIndex = random8(effects.size());
     const auto effectFactory = effects.at(effectFactoryIndex);
 
-    const auto layoutIndex = random16(displaySpec.nbLayouts());
-    const auto mirrorableLayouts = catalog.matchLayouts(MIRRORABLE);
+    const uint16_t layoutIndex = random16(displaySpec.nbLayouts());
+    const auto effectMirror = catalog.randomMirror(layoutIndex);
 
-    const auto effectMirror = contains(mirrorableLayouts, layoutIndex)
-                                  ? ALL_MIRRORS[random8(ALL_MIRRORS.size())]
-                                  : MIRROR_NONE;
-
-    const auto transition = ALL_TRANSITIONS[random8(ALL_TRANSITIONS.size())];
-
-    const auto transitionLayouts = catalog.matchLayouts(TRANSITIONABLE);
-    const auto transitionLayoutIndex = transitionLayouts.at(random8(transitionLayouts.size()));
-
-    const auto transitionMirror = contains(mirrorableLayouts, transitionLayoutIndex) && transition != FADE
-                                      ? ALL_MIRRORS[random8(ALL_MIRRORS.size())]
-                                      : MIRROR_NONE;
+    const auto [transitionLayoutIndex, transition] = catalog.randomTransition();
+    const auto transitionMirror = catalog.randomMirror(transitionLayoutIndex);
 
     //TODO highlight
 
     const auto palette = PALETTES[random8(PALETTES.size())];
 
-    renderer->changeEffect(effectFactory(
+    auto effect = effectFactory(
         EffectContext(
             displaySpec.isCircular(),
             layoutIndex,
-            effectIndex,
-            palette,
+            Palette(palette, PaletteType::GRADIENT),
             effectMirror,
             transition,
             transitionLayoutIndex,
             transitionMirror
         )
-    ));
+    );
 
-    effectIndex++;
+    if constexpr (IS_DEBUG) {
+        Serial.println(
+            "Layout: " + displaySpec.layoutName(layoutIndex)
+            + "\t\tEffect: " + effect->name()
+            + "\t\tMirror: " + getMirrorName(effectMirror)
+        );
+    }
+
+    renderer->changeEffect(std::move(effect));
     // index = (index + 1) % displaySpec.nbLayouts();
 }
 

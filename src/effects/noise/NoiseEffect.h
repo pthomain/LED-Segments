@@ -25,7 +25,9 @@
 
 class NoiseEffect : public Effect, public Effect::Factory<NoiseEffect> {
 protected:
-    const uint8_t noiseSpeed = random8(5, 10);
+    const uint8_t noiseScale = random8(10, 20);
+    const uint8_t paletteScale = random8(1, 6);
+    const uint8_t noiseSpeed = random8(5, 100);
 
 public:
     explicit NoiseEffect(const EffectContext &effectContext) : Effect(effectContext) {
@@ -34,11 +36,12 @@ public:
     void fillArrayInternal(
         CRGB *effectArray,
         const uint16_t effectArraySize,
+        const uint16_t segmentIndex,
         const uint16_t frameIndex
     ) override;
 
     String name() const override { return "Noise"; }
-    EffectType type() const override { return EFFECT; }
+    EffectType type() const override { return EffectType::EFFECT; }
 
     static EffectFactory factory;
 };

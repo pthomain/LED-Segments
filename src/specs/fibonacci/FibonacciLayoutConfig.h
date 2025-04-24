@@ -25,7 +25,8 @@
 #include "Arduino.h"
 #include "WString.h"
 #include "utils/Utils.h"
-#include <effects/rainbow/RainbowEffect.h>
+#include <effects/gradient/GradientEffect.h>
+#include <effects/noise/NoiseEffect.h>
 #include <engine/displayspec/LayoutCatalog.h>
 
 const uint16_t TOTAL_FIBONACCI_LEDS = 324;
@@ -118,8 +119,8 @@ static String getLayoutName(const uint16_t variation) {
     return String(pixelUnit == PIXEL ? "PIXEL" : "SEGMENT") + alignmentName + inflexionName + directionName;
 }
 
-static std::vector<uint8_t> computeVariations() {
-    auto variations = std::vector<uint8_t>();
+static std::vector<uint16_t> computeVariations() {
+    auto variations = std::vector<uint16_t>();
 
     auto addVariation = [&](
         uint8_t pixelUnit,
@@ -157,29 +158,40 @@ static std::vector<uint8_t> computeVariations() {
 }
 
 //Prevents instantiation before setup() is called
-inline const std::vector<uint8_t> &variations() {
+inline const std::vector<uint16_t> &variations() {
     static const auto variations = computeVariations();
     return variations;
 }
 
-static const std::vector<uint16_t> layoutsPlaceholder = std::vector<uint16_t>();
+static const std::map<uint16_t, std::vector<Mirror> > &fibonacciMirrors() {
+    return LayoutCatalog::mapLayoutIndex<Mirror>(
+        variations(),
+        [](uint16_t layoutIndex) {
+            return ALL_MIRRORS;
+        }
+    );
+}
+
+static const std::map<uint16_t, std::vector<Transition> > &fibonacciTransitions() {
+    return LayoutCatalog::mapLayoutIndex<Transition>(
+        variations(),
+        [](uint16_t layoutIndex) {
+            return ALL_TRANSITIONS;
+        }
+    );
+}
 
 //Prevents instantiation before setup() is called
 inline const LayoutCatalog &fibonacciLayoutCatalog() {
     static const auto catalog = LayoutCatalog(
         variations().size(),
-        layoutsPlaceholder,
-        layoutsPlaceholder,
-        layoutsPlaceholder,
-        layoutsPlaceholder,
-        layoutsPlaceholder,
-        layoutsPlaceholder,
-        std::vector<EffectFactory>{
-            // NoiseEffect::factory,
-            // PartyEffect::factory,
-            RainbowEffect::factory
+        std::vector{
+            NoiseEffect::factory,
+            // GradientEffect::factory
         },
-        NO_EFFECTS
+        NO_EFFECTS,
+        fibonacciMirrors(),
+        fibonacciTransitions()
     );
     return catalog;
 }

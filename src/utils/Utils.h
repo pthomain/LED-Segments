@@ -28,12 +28,9 @@
 #include <string>
 #include <vector>
 #include "FastLED.h"
-
-constexpr bool IS_DEBUG = true;
+#define IS_DEBUG true
 
 static const std::vector<CRGBPalette16> PALETTES PROGMEM = std::vector<CRGBPalette16>{
-    PartyColors_p,
-    PartyColors_p,
     PartyColors_p,
     ForestColors_p,
     CloudColors_p,
@@ -57,11 +54,12 @@ static uint16_t unsignedModulo(int value, uint16_t modulo) {
     return ((value % modulo) + modulo) % modulo;
 }
 
-static uint8_t increaseContrast(uint8_t noise) {
-    return map(noise, 50, 190, 0, 255);
+//Ensures noise values are between 0 and 255 (they usually are between 50 and 190 by default)
+static uint8_t normaliseNoise(uint8_t noise) {
+    return map(constrain(noise, 50, 190), 50, 190, 0, 255);
 }
 
-template <typename T>
+template<typename T>
 static bool contains(const std::vector<T> &vector, const T &value) {
     return std::find(vector.begin(), vector.end(), value) != vector.end();
 }

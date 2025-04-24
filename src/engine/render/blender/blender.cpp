@@ -43,14 +43,6 @@ Blender::Blender(
 void Blender::changeEffect(std::shared_ptr<Effect> effect) {
     currentEffectContext = &effect->effectContext;
 
-    if constexpr (IS_DEBUG) {
-        Serial.println(
-            "Layout: " + displaySpec.layoutName(currentEffectContext->layoutIndex)
-            + "\t\tEffect: " + effect->name()
-            + "\t\tMirror: " + getMirrorName(effect->effectContext.mirror)
-        );
-    }
-
     if (runningRenderer->getEffect() != nullptr) {
         transitionStep = transitionDurationInFrames;
         for (uint16_t pixelIndex = 0; pixelIndex < displaySpec.maxSegmentSize(); pixelIndex++) {

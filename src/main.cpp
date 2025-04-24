@@ -49,7 +49,7 @@ void setup() {
 
     display = Display::create<LED_PIN, GRB>(
         *displaySpec,
-        BRIGHTNESS,
+        IS_DEBUG ? 10 : 128,
         MIN_EFFECT_DURATION_IN_SECONDS,
         MAX_EFFECT_DURATION_IN_SECONDS,
         2000

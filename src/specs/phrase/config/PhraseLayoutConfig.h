@@ -22,8 +22,7 @@
 #define PHRASELAYOUTCONFIG_H
 
 #include <effects/noise/NoiseEffect.h>
-#include <effects/party/PartyEffect.h>
-#include <effects/rainbow/RainbowEffect.h>
+#include <effects/gradient/GradientEffect.h>
 
 // Format is PIXELS_IN_SEGMENTS
 enum PhraseLayout {
@@ -37,54 +36,79 @@ enum PhraseLayout {
     LEDS_IN_WHOLE
 };
 
-static constexpr uint16_t NB_LAYOUTS = 6;
+static const std::vector<uint16_t> phraseLayouts = std::vector<uint16_t>{0, 1, 2, 3, 4, 5};
 
 static const std::vector<uint16_t> pixelHeavyLayouts = std::vector<uint16_t>{
-    2, //LEDS_IN_WORDS,
-    5 //LEDS_IN_WHOLE
+    LEDS_IN_WORDS,
+    LEDS_IN_WHOLE
 };
 
 static const std::vector<uint16_t> balancedLayouts = std::vector<uint16_t>{
-    0, //LEDS_IN_LETTERS,
-    1, //LETTERS_IN_WORDS,
-    4, //LETTERS_IN_WHOLE,
+    LEDS_IN_LETTERS,
+    LETTERS_IN_WORDS,
+    LETTERS_IN_WHOLE,
 };
 
 static const std::vector<uint16_t> segmentHeavyLayouts = std::vector<uint16_t>{
-    3 //WORDS_IN_WHOLE,
+    WORDS_IN_WHOLE,
 };
 
 static const std::vector<uint16_t> mirrorableLayouts = std::vector<uint16_t>{
-    0, //LEDS_IN_LETTERS,
-    2, //LEDS_IN_WORDS,
-    4, //LETTERS_IN_WHOLE,
-    5 //LEDS_IN_WHOLE
+    LEDS_IN_LETTERS,
+    LEDS_IN_WORDS,
+    LETTERS_IN_WHOLE,
+    LEDS_IN_WHOLE
 };
+
+static const std::map<uint16_t, std::vector<Mirror> > &phraseMirrors() {
+    return LayoutCatalog::mapLayoutIndex<Mirror>(
+        phraseLayouts,
+        [](uint16_t layoutIndex) {
+            switch (layoutIndex) {
+                case LEDS_IN_LETTERS:
+                case LEDS_IN_WORDS:
+                case LEDS_IN_WHOLE:
+                case LETTERS_IN_WHOLE:
+                case LETTERS_IN_WORDS: return ALL_UNREPEATED_MIRRORS;
+
+                case WORDS_IN_WHOLE: ;
+                default: return std::vector{Mirror::NONE, Mirror::REVERSE};
+            }
+        }
+    );
+}
+
+static const std::map<uint16_t, std::vector<Transition> > &phraseTransitions() {
+    return LayoutCatalog::mapLayoutIndex<Transition>(
+        phraseLayouts,
+        [](uint16_t layoutIndex) {
+            switch (layoutIndex) {
+                case LEDS_IN_LETTERS:
+                case LEDS_IN_WORDS:
+                case LEDS_IN_WHOLE:
+                case LETTERS_IN_WHOLE: return ALL_TRANSITIONS;
+
+                case LETTERS_IN_WORDS:
+                case WORDS_IN_WHOLE:
+                default: return std::vector{Transition::FADE};
+            }
+        }
+    );
+}
 
 //Prevents instantiation before setup() is called
 inline const LayoutCatalog &phraseLayoutCatalog() {
     static const auto catalog = LayoutCatalog(
-        NB_LAYOUTS,
-        pixelHeavyLayouts,
-        balancedLayouts,
-        segmentHeavyLayouts,
-        mirrorableLayouts,
-        balancedLayouts,
-        segmentHeavyLayouts,
+        phraseLayouts.size(),
         std::vector{
             NoiseEffect::factory,
-            PartyEffect::factory,
-            RainbowEffect::factory
+            // GradientEffect::factory
         },
-        NO_EFFECTS
+        NO_EFFECTS,
+        phraseMirrors(),
+        phraseTransitions()
     );
     return catalog;
 }
-
-static const std::vector<EffectFactory> supportedEffects = std::vector{
-    // NoiseEffect::factory,
-    // PartyEffect::factory,
-    RainbowEffect::factory
-};
 
 #endif //PHRASELAYOUTCONFIG_H

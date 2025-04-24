@@ -24,15 +24,15 @@
 #include <engine/mirror/Mirror.h>
 #include "crgb.h"
 
-enum Transition {
+enum class Transition {
     NONE,
     FADE,
     SLIDE
 };
 
-const std::vector ALL_TRANSITIONS = {
-    FADE,
-    SLIDE
+const std::vector<Transition> ALL_TRANSITIONS = {
+    Transition::FADE,
+    Transition::SLIDE
 };
 
 static void fillTransitionArray(
@@ -42,7 +42,7 @@ static void fillTransitionArray(
     const float transitionPercent
 ) {
     switch (transition) {
-        case SLIDE: {
+        case Transition::SLIDE: {
             uint16_t limit = segmentSize * transitionPercent;
             for (uint16_t i = 0; i < segmentSize; i++) {
                 transitionArray[i] = i < limit ? CRGB::White : CRGB::Black;
@@ -50,7 +50,7 @@ static void fillTransitionArray(
         }
         break;
 
-        case FADE: {
+        case Transition::FADE: {
             uint8_t alpha = 255 * transitionPercent;
             CRGB colour = CRGB(alpha, alpha, alpha);
             for (uint16_t i = 0; i < segmentSize; i++) {
@@ -59,7 +59,7 @@ static void fillTransitionArray(
         }
         break;
 
-        case NONE:
+        case Transition::NONE:
         default: {
             for (uint16_t i = 0; i < segmentSize; i++) {
                 transitionArray[i] = transitionPercent < 0.5f ? CRGB::Black : CRGB::White;

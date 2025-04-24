@@ -27,8 +27,9 @@
 #include "functional"
 #include "engine/effect/EffectType.h"
 
-const uint8_t MIN_CYCLE_SPEED = 5;
-const uint8_t MAX_CYCLE_SPEED = 15;
+constexpr uint8_t MIN_CYCLE_SPEED = 5;
+constexpr uint8_t MAX_CYCLE_SPEED = 15;
+constexpr uint8_t PALETTE_SIZE = 16;
 
 class Effect {
 protected:
@@ -36,22 +37,26 @@ protected:
     uint16_t circularCycleStep = 0;
     uint8_t cycleSpeed = 5; //random8(MIN_CYCLE_SPEED, MAX_CYCLE_SPEED);
     boolean isCycleReversed = false;
+    CRGBPalette16 palette;
 
 public :
     const EffectContext effectContext;
 
     explicit Effect(EffectContext effectContext) : effectContext(std::move(effectContext)) {
+        palette = effectContext.palette.palette();
     };
 
     void fillArray(
         CRGB *effectArray,
         uint16_t effectArraySize,
+        uint16_t segmentIndex,
         uint16_t frameIndex
     );
 
     virtual void fillArrayInternal(
         CRGB *effectArray,
         uint16_t effectArraySize,
+        uint16_t segmentIndex,
         uint16_t frameIndex
     ) = 0;
 

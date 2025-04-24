@@ -38,7 +38,6 @@ class Display {
     CRGB *outputArray;
     const uint8_t *freePinsForEntropy;
     const uint8_t nbPinsForEntropy;
-    uint16_t effectIndex = 0;
 
     explicit Display(
         CRGB *outputArray,

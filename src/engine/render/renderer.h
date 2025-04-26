@@ -23,7 +23,6 @@
 
 #include "engine/effect/Effect.h"
 #include "engine/displayspec/DisplaySpec.h"
-#include "engine/effect/Transition.h"
 
 class Renderer {
 protected:

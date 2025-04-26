@@ -28,7 +28,7 @@
 #include "engine/displayspec/DisplaySpec.h"
 #include "memory"
 
-class Blender : public Renderer, PixelMapper {
+class Blender : public Renderer, public PixelMapper {
     std::unique_ptr<Renderer> runningRenderer = nullptr;
     std::unique_ptr<Renderer> blendingRenderer = nullptr;
 
@@ -39,8 +39,7 @@ class Blender : public Renderer, PixelMapper {
     CRGB *transitionArray;
     float transitionStep = -1;
 
-    //todo shared pointer
-    const EffectContext *currentEffectContext = nullptr;
+    std::shared_ptr<Effect> currentEffect = nullptr;
 
     const String runningRendererName = "runningRenderer";
     const String blendingRendererName = "blendingRenderer";
@@ -57,8 +56,8 @@ public :
     explicit Blender(
         const DisplaySpec &displaySpec,
         const String &name,
-        const uint16_t refreshRateInMillis,
-        const uint16_t transitionDurationInMillis
+        uint16_t refreshRateInMillis,
+        uint16_t transitionDurationInMillis
     );
 
     void changeEffect(std::shared_ptr<Effect> effect) override;
@@ -69,10 +68,10 @@ public :
 
     void mapPixels(
         const String &rendererName,
-        const uint16_t layoutIndex,
-        const uint16_t segmentIndex,
-        const uint16_t segmentSize,
-        const uint16_t frameIndex,
+        uint16_t layoutIndex,
+        uint16_t segmentIndex,
+        uint16_t segmentSize,
+        uint16_t frameIndex,
         CRGB *outputArray,
         CRGB *effectArray
     ) override;

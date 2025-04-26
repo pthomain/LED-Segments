@@ -25,6 +25,10 @@
 #include <map>
 #include <vector>
 #include <engine/effect/Effect.h>
+#include <engine/mirror/Mirror.h>
+#include <engine/transition/Transition.h>
+
+const String UNKNOWN = "UNKNOWN";
 
 enum class LayoutDescription {
     /* Layouts with a high ratio of pixels to segments:
@@ -69,23 +73,55 @@ enum class LayoutDescription {
     HIGHLIGHTABLE
 };
 
+static const String EFFECT_ENTRY = "effect";
+static const String MIRROR_ENTRY = "mirror";
+
 class LayoutCatalog {
     const uint16_t _nbLayouts;
-    const std::vector<EffectFactory> _supportedEffects;
-    const std::vector<EffectFactory> _supportedHighlights;
-    const std::map<uint16_t, std::vector<Mirror> > _mirrors;
-    const std::map<uint16_t, std::vector<Transition> > _transitions;
+    const std::map<uint16_t, String> _layoutNames{};
+    const std::map<uint16_t, std::vector<EffectFactory> > _effects{};
+    const std::map<uint16_t, std::vector<Mirror> > _mirrors{};
+    const std::map<uint16_t, std::vector<Transition> > _transitions{};
+
+    template<typename T>
+    const T &randomMapEntryForLayout(
+        const String &entryType,
+        uint16_t layoutIndex,
+        const std::map<uint16_t, std::vector<T> > &map,
+        const T &defaultValue
+    ) const {
+        if (map.empty() || map.find(layoutIndex) == map.end()) {
+            if constexpr (IS_DEBUG) {
+                Serial.print("No entries in ");
+                Serial.print(entryType);
+                Serial.println(" map");
+            }
+            return defaultValue;
+        }
+
+        auto &entry = map.at(layoutIndex);
+        if (entry.empty()) {
+            if constexpr (IS_DEBUG) {
+                Serial.print("No ");
+                Serial.print(entryType);
+                Serial.println(" values provided for layout ");
+                Serial.println(layoutIndex);
+            }
+            return defaultValue;
+        }
+        return entry.at(random8(entry.size()));
+    }
 
 public:
     explicit LayoutCatalog(
         const uint16_t nbLayouts,
-        const std::vector<EffectFactory> &supportedEffects,
-        const std::vector<EffectFactory> &supportedHighlights,
+        const std::map<uint16_t, String> &layoutNames,
+        const std::map<uint16_t, std::vector<EffectFactory> > &effects,
         const std::map<uint16_t, std::vector<Mirror> > &mirrors,
         const std::map<uint16_t, std::vector<Transition> > &transitions
     ) : _nbLayouts(nbLayouts),
-        _supportedEffects(supportedEffects),
-        _supportedHighlights(supportedHighlights),
+        _layoutNames(std::move(layoutNames)),
+        _effects(std::move(effects)),
         _mirrors(std::move(mirrors)),
         _transitions(std::move(transitions)) {
     }
@@ -94,47 +130,32 @@ public:
         return _nbLayouts;
     }
 
-    //TODO randomEffect(layoutIndex)
-    const std::vector<EffectFactory> &supportedEffects() const {
-        return _supportedEffects;
+    virtual String layoutName(uint16_t layoutIndex) const {
+        return _layoutNames.find(layoutIndex) == _layoutNames.end() ? UNKNOWN : _layoutNames.at(layoutIndex);
     }
 
-    //TODO randomHighlight(layoutIndex)
-    const std::vector<EffectFactory> &supportedHighlights() const {
-        return _supportedHighlights;
-    }
+    const EffectFactory &randomEffectFactory(uint16_t layoutIndex) const;
 
-    const Mirror randomMirror(uint16_t layoutIndex) const {
-        auto mirrors = _mirrors.at(layoutIndex);
-        return mirrors.empty() ? Mirror::NONE : mirrors.at(random8(mirrors.size()));
-    }
+    const Mirror randomMirror(uint16_t layoutIndex) const;
 
-    const std::pair<uint16_t, Transition> randomTransition() const {
-        if (_transitions.empty()) return std::make_pair(0, Transition::NONE);
+    const std::pair<uint16_t, Transition> randomTransition() const;
 
-        auto iterator = _transitions.begin();
-        std::advance(iterator, random8(_transitions.size()));
-
-        return std::pair(
-            iterator->first,
-            iterator->second.empty() ? Transition::NONE : iterator->second.at(random8(iterator->second.size()))
-        );
-    }
-
-    template<typename T>
-    static const std::map<uint16_t, std::vector<T> > &mapLayoutIndex(
-        const std::vector<uint16_t> layoutIndexes,
-        const std::function<std::vector<T> (uint16_t)> mapper
-    ) {
-        static const std::map<uint16_t, std::vector<T> > map = [layoutIndexes, mapper] {
-            auto innerMap = std::map<uint16_t, std::vector<T> >();
-            for (const auto layoutIndex: layoutIndexes) {
-                innerMap[layoutIndex] = mapper(layoutIndex);
-            }
-            return innerMap;
-        }();
-        return map;
-    }
+    virtual ~LayoutCatalog() = default;
 };
+
+template<typename T>
+const std::map<uint16_t, std::vector<T> > &mapLayoutIndex(
+    const std::vector<uint16_t> layoutIndexes,
+    const std::function<std::vector<T> (uint16_t)> mapper
+) {
+    static const std::map<uint16_t, std::vector<T> > map = [layoutIndexes, mapper] {
+        auto innerMap = std::map<uint16_t, std::vector<T> >();
+        for (const auto layoutIndex: layoutIndexes) {
+            innerMap[layoutIndex] = mapper(layoutIndex);
+        }
+        return innerMap;
+    }();
+    return map;
+}
 
 #endif //LAYOUTCATALOG_H

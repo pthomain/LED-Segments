@@ -22,10 +22,12 @@
 #ifndef LED_SEGMENTS_EFFECTCONTEXT_H
 #define LED_SEGMENTS_EFFECTCONTEXT_H
 
+#include <engine/mirror/Mirror.h>
+#include <engine/palette/Palette.h>
+#include <engine/transition/Transition.h>
+
 #include "FastLED.h"
 #include "utils/Utils.h"
-#include "Transition.h"
-#include "../palette/Palette.h"
 
 class EffectContext {
 public:
@@ -40,14 +42,14 @@ public:
     EffectContext(
         const boolean isDisplayCircular,
         const uint16_t layoutIndex,
-        const Palette &palette,
+        Palette palette,
         const Mirror mirror,
         const Transition transition,
         const uint8_t transitionLayoutIndex,
         const Mirror transitionMirror
     ) : isDisplayCircular(isDisplayCircular),
         layoutIndex(layoutIndex),
-        palette(palette),
+        palette(std::move(palette)),
         mirror(mirror),
         transition(transition),
         transitionLayoutIndex(transitionLayoutIndex),

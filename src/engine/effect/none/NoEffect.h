@@ -18,26 +18,29 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef NOEFFECT_H
+#define NOEFFECT_H
 
-#include "SimplePixelMapper.h"
+#include "engine/effect/Effect.h"
 
-void SimplePixelMapper::mapPixels(
-    const String &rendererName,
-    uint16_t layoutIndex,
-    uint16_t segmentIndex,
-    uint16_t segmentSize,
-    uint16_t frameIndex,
-    CRGB *outputArray,
-    CRGB *effectArray
-) {
-    for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
-        displaySpec.setColour(
-            layoutIndex,
-            segmentIndex,
-            pixelIndex,
-            frameIndex,
-            outputArray,
-            effectArray[pixelIndex]
-        );
+class NoEffect : public Effect, public Effect::Factory<NoEffect> {
+
+public:
+    explicit NoEffect(const EffectContext &effectContext) : Effect(effectContext) {
     }
-}
+
+    void fillArrayInternal(
+        CRGB *effectArray,
+        const uint16_t effectArraySize,
+        const uint16_t segmentIndex,
+        const uint16_t frameIndex
+    ) override;
+
+    String name() const override { return "None"; }
+    EffectType type() const override { return EffectType::EFFECT; }
+
+    static EffectFactory factory;
+};
+
+
+#endif //NOEFFECT_H

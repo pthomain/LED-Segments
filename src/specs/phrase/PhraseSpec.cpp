@@ -69,25 +69,6 @@ uint16_t PhraseSpec::nbPixels(
     }
 }
 
-String PhraseSpec::layoutName(const uint16_t layoutIndex) const {
-    switch (layoutIndex) {
-        case LEDS_IN_LETTERS:
-            return "LEDS_IN_LETTERS";
-        case LEDS_IN_WORDS:
-            return "LEDS_IN_WORDS";
-        case LEDS_IN_WHOLE:
-            return "LEDS_IN_WHOLE";
-        case LETTERS_IN_WORDS:
-            return "LETTERS_IN_WORDS";
-        case LETTERS_IN_WHOLE:
-            return "LETTERS_IN_WHOLE";
-        case WORDS_IN_WHOLE:
-            return "WORDS_IN_WHOLE";
-        default:
-            return "UNKNOWN";
-    };
-}
-
 void PhraseSpec::setColour(
     const uint16_t layoutIndex,
     const uint16_t segmentIndex,

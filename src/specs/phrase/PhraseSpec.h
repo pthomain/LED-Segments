@@ -33,9 +33,9 @@
 
 class PhraseSpec : public DisplaySpec {
     void applyColourToLed(
-        const uint16_t ledIndex,
+        uint16_t ledIndex,
         CRGB *outputArray,
-        const CRGB colour
+        CRGB colour
     ) const;
 
 public :
@@ -44,21 +44,17 @@ public :
 
     uint16_t nbLeds() const override { return NB_LEDS; }
 
-    uint16_t nbLayouts() const override { return phraseLayouts.size(); }
+    uint16_t nbSegments(uint16_t layoutIndex) const override;
 
-    String layoutName(const uint16_t layoutIndex) const override;
-
-    uint16_t nbSegments(const uint16_t layoutIndex) const override;
-
-    uint16_t nbPixels(const uint16_t layoutIndex, const uint16_t segmentIndex) const override;
+    uint16_t nbPixels(uint16_t layoutIndex, uint16_t segmentIndex) const override;
 
     void setColour(
-        const uint16_t layoutIndex,
-        const uint16_t segmentIndex,
-        const uint16_t pixelIndex,
-        const uint16_t frameIndex,
+        uint16_t layoutIndex,
+        uint16_t segmentIndex,
+        uint16_t pixelIndex,
+        uint16_t frameIndex,
         CRGB *outputArray,
-        const CRGB colour
+        CRGB colour
     ) const override;
 
     ~PhraseSpec() override = default;

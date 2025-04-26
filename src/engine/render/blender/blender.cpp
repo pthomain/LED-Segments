@@ -21,7 +21,6 @@
 #include "Blender.h"
 #include "engine/effect/Effect.h"
 #include "engine/render/simple/SimpleRenderer.h"
-#include "engine/effect/Transition.h"
 
 Blender::Blender(
     const DisplaySpec &displaySpec,
@@ -36,12 +35,20 @@ Blender::Blender(
     refreshRateInMillis(refreshRateInMillis),
     transitionDurationInMillis(transitionDurationInMillis) {
     //Initialisation of both renderers needs to be done here, moving it to property setters causes issues
-    runningRenderer = std::make_unique<SimpleRenderer>(displaySpec, (PixelMapper *) this, runningRendererName);
-    blendingRenderer = std::make_unique<SimpleRenderer>(displaySpec, (PixelMapper *) this, blendingRendererName);
+    runningRenderer = std::make_unique<SimpleRenderer>(
+        displaySpec,
+        std::unique_ptr<PixelMapper>(this),
+        runningRendererName
+    );
+    blendingRenderer = std::make_unique<SimpleRenderer>(
+        displaySpec,
+        std::unique_ptr<PixelMapper>(this),
+        blendingRendererName
+    );
 }
 
 void Blender::changeEffect(std::shared_ptr<Effect> effect) {
-    currentEffectContext = &effect->effectContext;
+    currentEffect = effect;
 
     if (runningRenderer->getEffect() != nullptr) {
         transitionStep = transitionDurationInFrames;
@@ -55,24 +62,25 @@ void Blender::changeEffect(std::shared_ptr<Effect> effect) {
 }
 
 void Blender::fillTransition(float transitionPercent) const {
-    auto transitionSegments = displaySpec.nbSegments(currentEffectContext->transitionLayoutIndex);
+    auto context = currentEffect->effectContext;
+    auto transitionSegments = displaySpec.nbSegments(context.transitionLayoutIndex);
 
     for (auto segmentIndex = 0; segmentIndex < transitionSegments; segmentIndex++) {
-        auto segmentSize = displaySpec.nbPixels(currentEffectContext->transitionLayoutIndex, segmentIndex);
-        uint16_t transitionMirrorSize = getMirrorSize(currentEffectContext->transitionMirror, segmentSize);
+        auto segmentSize = displaySpec.nbPixels(context.transitionLayoutIndex, segmentIndex);
+        uint16_t transitionMirrorSize = getMirrorSize(context.transitionMirror, segmentSize);
 
         fillTransitionArray(
-            currentEffectContext->transition,
+            context.transition,
             transitionSegmentArray,
             transitionMirrorSize,
             transitionPercent
         );
 
-        applyMirror(currentEffectContext->transitionMirror, transitionSegmentArray, segmentSize);
+        applyMirror(context.transitionMirror, transitionSegmentArray, segmentSize);
 
         for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
             displaySpec.setColour(
-                currentEffectContext->transitionLayoutIndex,
+                context.transitionLayoutIndex,
                 segmentIndex,
                 pixelIndex,
                 0,

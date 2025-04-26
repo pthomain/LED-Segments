@@ -24,7 +24,7 @@
 #include "engine/render/PixelMapper.h"
 #include "engine/displayspec/DisplaySpec.h"
 
-class SimplePixelMapper : PixelMapper {
+class SimplePixelMapper : public PixelMapper {
     const DisplaySpec &displaySpec;
 
 public:
@@ -33,10 +33,10 @@ public:
 
     void mapPixels(
         const String &rendererName,
-        const uint16_t layoutIndex,
-        const uint16_t segmentIndex,
-        const uint16_t segmentSize,
-        const uint16_t frameIndex,
+        uint16_t layoutIndex,
+        uint16_t segmentIndex,
+        uint16_t segmentSize,
+        uint16_t frameIndex,
         CRGB *outputArray,
         CRGB *effectArray
     ) override;

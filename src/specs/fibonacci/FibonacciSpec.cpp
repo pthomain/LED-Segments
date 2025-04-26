@@ -22,10 +22,6 @@
 #include "FibonacciLayoutConfig.h"
 #include <effects/noise/NoiseEffect.h>
 
-String FibonacciSpec::layoutName(const uint16_t layoutIndex) const {
-    return getLayoutName(variations()[layoutIndex]);
-}
-
 uint16_t FibonacciSpec::nbSegments(const uint16_t layoutIndex) const {
     //same effect applied to all segments, pixels are used as an optimisation
     //since all segments have the same size (might change later)
@@ -62,7 +58,7 @@ std::pair<uint16_t, uint8_t> FibonacciSpec::radialToSpiralIndex(
         spiralPixelIndex = (radialIndex * 2) + 1;
     }
 
-    return std::pair<uint16_t, uint8_t>(segmentStart, spiralPixelIndex);
+    return std::pair(segmentStart, spiralPixelIndex);
 }
 
 

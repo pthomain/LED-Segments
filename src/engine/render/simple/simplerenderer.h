@@ -28,20 +28,14 @@ class SimpleRenderer : public Renderer {
     CRGB *effectArray;
     std::shared_ptr<Effect> currentEffect = nullptr;
     uint16_t frameIndex = 0;
-
-    //TODO unique ptr
-    PixelMapper *pixelMapper;
+    std::unique_ptr<PixelMapper> pixelMapper;
 
 public :
     explicit SimpleRenderer(
         const DisplaySpec &displaySpec,
-        PixelMapper *pixelMapper,
+        std::unique_ptr<PixelMapper> pixelMapper,
         const String &name
     );
-
-    // bool hasEffect() override {
-    //     return currentEffect != nullptr;
-    // }
 
     void changeEffect(std::shared_ptr<Effect> effect) override;
 

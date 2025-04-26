@@ -163,33 +163,49 @@ inline const std::vector<uint16_t> &variations() {
     return variations;
 }
 
+static const std::map<uint16_t, std::vector<EffectFactory> > &fibonacciEffects() {
+    static const auto map = mapLayoutIndex<EffectFactory>(
+        variations(),
+        [](uint16_t layoutIndex) {
+            return std::vector{
+                NoiseEffect::factory,
+                // GradientEffect::factory
+            };
+        }
+    );
+    return map;
+}
+
 static const std::map<uint16_t, std::vector<Mirror> > &fibonacciMirrors() {
-    return LayoutCatalog::mapLayoutIndex<Mirror>(
+    static const auto map = mapLayoutIndex<Mirror>(
         variations(),
         [](uint16_t layoutIndex) {
             return ALL_MIRRORS;
         }
     );
+    return map;
 }
 
 static const std::map<uint16_t, std::vector<Transition> > &fibonacciTransitions() {
-    return LayoutCatalog::mapLayoutIndex<Transition>(
+    static const auto map = mapLayoutIndex<Transition>(
         variations(),
         [](uint16_t layoutIndex) {
             return ALL_TRANSITIONS;
         }
     );
+    return map;
 }
 
 //Prevents instantiation before setup() is called
 inline const LayoutCatalog &fibonacciLayoutCatalog() {
+    auto names = std::map<uint16_t, String>();
+    for (auto variation: variations()) {
+        names.insert(std::pair(variation, getLayoutName(variation)));
+    }
     static const auto catalog = LayoutCatalog(
         variations().size(),
-        std::vector{
-            NoiseEffect::factory,
-            // GradientEffect::factory
-        },
-        NO_EFFECTS,
+        names,
+        fibonacciEffects(),
         fibonacciMirrors(),
         fibonacciTransitions()
     );

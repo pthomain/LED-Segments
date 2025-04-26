@@ -60,8 +60,21 @@ static const std::vector<uint16_t> mirrorableLayouts = std::vector<uint16_t>{
     LEDS_IN_WHOLE
 };
 
+static const std::map<uint16_t, std::vector<EffectFactory> > &phraseEffects() {
+    static const auto map = mapLayoutIndex<EffectFactory>(
+        phraseLayouts,
+        [](uint16_t layoutIndex) {
+            return std::vector{
+                NoiseEffect::factory,
+                // GradientEffect::factory
+            };
+        }
+    );
+    return map;
+}
+
 static const std::map<uint16_t, std::vector<Mirror> > &phraseMirrors() {
-    return LayoutCatalog::mapLayoutIndex<Mirror>(
+    static const auto map = mapLayoutIndex<Mirror>(
         phraseLayouts,
         [](uint16_t layoutIndex) {
             switch (layoutIndex) {
@@ -76,10 +89,11 @@ static const std::map<uint16_t, std::vector<Mirror> > &phraseMirrors() {
             }
         }
     );
+    return map;
 }
 
 static const std::map<uint16_t, std::vector<Transition> > &phraseTransitions() {
-    return LayoutCatalog::mapLayoutIndex<Transition>(
+    static const auto map = mapLayoutIndex<Transition>(
         phraseLayouts,
         [](uint16_t layoutIndex) {
             switch (layoutIndex) {
@@ -94,17 +108,22 @@ static const std::map<uint16_t, std::vector<Transition> > &phraseTransitions() {
             }
         }
     );
+    return map;
 }
 
 //Prevents instantiation before setup() is called
 inline const LayoutCatalog &phraseLayoutCatalog() {
     static const auto catalog = LayoutCatalog(
         phraseLayouts.size(),
-        std::vector{
-            NoiseEffect::factory,
-            // GradientEffect::factory
+        {
+            {LEDS_IN_LETTERS, "LEDS_IN_LETTERS"},
+            {LEDS_IN_WORDS, "LEDS_IN_WORDS"},
+            {LEDS_IN_WHOLE, "LEDS_IN_WHOLE"},
+            {LETTERS_IN_WORDS, "LETTERS_IN_WORDS"},
+            {LETTERS_IN_WHOLE, "LETTERS_IN_WHOLE"},
+            {WORDS_IN_WHOLE, "WORDS_IN_WHOLE"},
         },
-        NO_EFFECTS,
+        phraseEffects(),
         phraseMirrors(),
         phraseTransitions()
     );

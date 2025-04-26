@@ -38,18 +38,30 @@ Display::Display(
     const uint8_t fps,
     const uint8_t *freePinsForEntropy,
     const uint8_t nbPinsForEntropy
-) : minEffectDurationsInSecs(minEffectDurationsInSecs),
-    maxEffectDurationsInSecs(maxEffectDurationsInSecs),
+) : minEffectDurationsInSecs(min(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
+    maxEffectDurationsInSecs(max(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
     currentEffectDurationsInSecs(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
     fps(fps),
     transitionDurationInMillis(transitionDurationInMillis),
-    refreshRateInMillis(1000 / fps),
+    refreshRateInMillis(fps == 0 ? 1000 : 1000 / fps),
     displaySpec(std::move(displaySpec)),
-    renderer(std::unique_ptr<Renderer>(
-        transitionDurationInMillis < 1
-            ? (Renderer *) new SimpleRenderer(displaySpec, (PixelMapper *) new SimplePixelMapper(displaySpec), "simple")
-            : new Blender(displaySpec, "blender", refreshRateInMillis, transitionDurationInMillis)
-    )),
+    renderer(
+        [&]() -> std::unique_ptr<Renderer> {
+            if (transitionDurationInMillis < 1) {
+                return std::make_unique<SimpleRenderer>(
+                    displaySpec,
+                    std::make_unique<SimplePixelMapper>(displaySpec),
+                    "simple"
+                );
+            }
+            return std::make_unique<Blender>(
+                displaySpec,
+                "blender",
+                refreshRateInMillis,
+                transitionDurationInMillis
+            );
+        }()
+    ),
     outputArray(outputArray),
     freePinsForEntropy(freePinsForEntropy),
     nbPinsForEntropy(nbPinsForEntropy) {
@@ -62,23 +74,17 @@ Display::Display(
 
 void Display::changeEffect() {
     const auto catalog = displaySpec.catalog();
-    const auto effects = catalog.supportedEffects();
+    const uint16_t layoutIndex = random16(catalog.nbLayouts());
 
-    if (effects.empty()) {
-        if constexpr (IS_DEBUG) Serial.print("No effects provided");
-        return;
-    }
-    const auto effectFactoryIndex = random8(effects.size());
-    const auto effectFactory = effects.at(effectFactoryIndex);
-
-    const uint16_t layoutIndex = random16(displaySpec.nbLayouts());
+    const auto effectFactory = catalog.randomEffectFactory(layoutIndex);
     const auto effectMirror = catalog.randomMirror(layoutIndex);
 
     const auto [transitionLayoutIndex, transition] = catalog.randomTransition();
-    const auto transitionMirror = catalog.randomMirror(transitionLayoutIndex);
+    const auto transitionMirror = transition == Transition::NONE || transition == Transition::FADE
+                                      ? Mirror::NONE
+                                      : catalog.randomMirror(transitionLayoutIndex);
 
     //TODO highlight
-
     const auto palette = PALETTES[random8(PALETTES.size())];
 
     auto effect = effectFactory(
@@ -94,15 +100,22 @@ void Display::changeEffect() {
     );
 
     if constexpr (IS_DEBUG) {
-        Serial.println(
-            "Layout: " + displaySpec.layoutName(layoutIndex)
-            + "\t\tEffect: " + effect->name()
-            + "\t\tMirror: " + getMirrorName(effectMirror)
-        );
+        Serial.print("Layout\t\t\t");
+        Serial.println(catalog.layoutName(layoutIndex));
+        Serial.print("Effect\t\t\t");
+        Serial.println(effect->name());
+        Serial.print("Effect mirror\t\t");
+        Serial.println(getMirrorName(effectMirror));
+        Serial.print("Transition\t\t");
+        Serial.println(getTransitionName(transition));
+        Serial.print("Transition layout\t");
+        Serial.println(catalog.layoutName(transitionLayoutIndex));
+        Serial.print("Transition mirror\t");
+        Serial.println(getMirrorName(transitionMirror));
+        Serial.println("---");
     }
 
     renderer->changeEffect(std::move(effect));
-    // index = (index + 1) % displaySpec.nbLayouts();
 }
 
 void Display::render() const {

@@ -23,11 +23,11 @@
 
 SimpleRenderer::SimpleRenderer(
     const DisplaySpec &displaySpec,
-    PixelMapper *pixelMapper,
+    std::unique_ptr<PixelMapper> pixelMapper,
     const String &name
 ) : Renderer(displaySpec, name),
     effectArray(new CRGB[displaySpec.maxSegmentSize()]{}),
-    pixelMapper(pixelMapper) {
+    pixelMapper(std::move(pixelMapper)) {
 }
 
 void SimpleRenderer::changeEffect(std::shared_ptr<Effect> effect) {

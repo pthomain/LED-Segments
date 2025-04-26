@@ -23,25 +23,24 @@
 #define LED_SEGMENTS_PIXELMAPPER_H
 
 #include "WString.h"
-#include <cstdint>
 #include "crgb.h"
 
 class PixelMapper {
 
 public:
-
     PixelMapper() = default;
 
     virtual void mapPixels(
             const String &rendererName,
-            const uint16_t layoutIndex,
-            const uint16_t segmentIndex,
-            const uint16_t segmentSize,
-            const uint16_t frameIndex,
+            uint16_t layoutIndex,
+            uint16_t segmentIndex,
+            uint16_t segmentSize,
+            uint16_t frameIndex,
             CRGB *outputArray,
             CRGB *effectArray
     ) = 0;
 
+    virtual ~PixelMapper() = default;
 };
 
 #endif //LED_SEGMENTS_PIXELMAPPER_H

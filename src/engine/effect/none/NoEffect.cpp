@@ -18,26 +18,19 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "NoEffect.h"
 
-#include "SimplePixelMapper.h"
+EffectFactory NoEffect::factory = [](
+    const EffectContext &effectContext
+) -> std::unique_ptr<Effect> {
+    return std::make_unique<NoEffect>(effectContext);
+};
 
-void SimplePixelMapper::mapPixels(
-    const String &rendererName,
-    uint16_t layoutIndex,
-    uint16_t segmentIndex,
-    uint16_t segmentSize,
-    uint16_t frameIndex,
-    CRGB *outputArray,
-    CRGB *effectArray
+void NoEffect::fillArrayInternal(
+    CRGB *effectArray,
+    const uint16_t effectArraySize,
+    const uint16_t segmentIndex,
+    const uint16_t frameIndex
 ) {
-    for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
-        displaySpec.setColour(
-            layoutIndex,
-            segmentIndex,
-            pixelIndex,
-            frameIndex,
-            outputArray,
-            effectArray[pixelIndex]
-        );
-    }
-}
+    //NOOP
+};

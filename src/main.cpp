@@ -32,10 +32,8 @@
 
 #define LED_PIN 9
 #define BRIGHTNESS 10
-#define MIN_EFFECT_DURATION_IN_SECONDS 10
-#define MAX_EFFECT_DURATION_IN_SECONDS MIN_EFFECT_DURATION_IN_SECONDS
-
-//TODO add effect burst
+#define MIN_EFFECT_DURATION_IN_SECONDS 5
+#define MAX_EFFECT_DURATION_IN_SECONDS 30
 
 Display *display;
 
@@ -50,8 +48,8 @@ void setup() {
     display = Display::create<LED_PIN, GRB>(
         *displaySpec,
         IS_DEBUG ? 10 : 128,
-        MIN_EFFECT_DURATION_IN_SECONDS,
-        MAX_EFFECT_DURATION_IN_SECONDS,
+        IS_DEBUG ? 5 : MIN_EFFECT_DURATION_IN_SECONDS,
+        IS_DEBUG ? 5 : MAX_EFFECT_DURATION_IN_SECONDS,
         2000
     );
 }

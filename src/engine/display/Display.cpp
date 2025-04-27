@@ -68,18 +68,18 @@ Display::Display(
     FastLED.setBrightness(brightness);
     FastLED.clear(true);
     addEntropy(freePinsForEntropy, nbPinsForEntropy);
-    changeEffect();
+    changeEffect(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs));
     render();
 }
 
-void Display::changeEffect() {
+void Display::changeEffect(uint8_t effectDurationsInSecs) {
     const auto catalog = displaySpec.catalog();
     const uint16_t layoutIndex = random16(catalog.nbLayouts());
 
     const auto effectFactory = catalog.randomEffectFactory(layoutIndex);
     const auto effectMirror = catalog.randomMirror(layoutIndex);
 
-    const auto [transitionLayoutIndex, transition] = catalog.randomTransition();
+    auto [transitionLayoutIndex, transition] = catalog.randomTransition();
     const auto transitionMirror = transition == Transition::NONE || transition == Transition::FADE
                                       ? Mirror::NONE
                                       : catalog.randomMirror(transitionLayoutIndex);
@@ -89,6 +89,7 @@ void Display::changeEffect() {
 
     auto effect = effectFactory(
         EffectContext(
+            effectDurationsInSecs * fps,
             displaySpec.isCircular(),
             layoutIndex,
             Palette(palette, PaletteType::GRADIENT),
@@ -116,6 +117,9 @@ void Display::changeEffect() {
     }
 
     renderer->changeEffect(std::move(effect));
+
+    currentEffectDurationsInSecs = effectDurationsInSecs;
+    lastChangeTime = millis();
 }
 
 void Display::render() const {
@@ -123,16 +127,9 @@ void Display::render() const {
     FastLED.show();
 }
 
-static uint32_t lastChangeTime = 0;
-
 void Display::loop() {
     if (millis() - lastChangeTime >= currentEffectDurationsInSecs * 1000) {
-        lastChangeTime = millis();
-        currentEffectDurationsInSecs = random8(minEffectDurationsInSecs, maxEffectDurationsInSecs);
-
-        if constexpr (IS_DEBUG) Serial.println("Next effect change in " + String(currentEffectDurationsInSecs) + "s");
-
-        changeEffect();
+        changeEffect(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs));
     }
 
     EVERY_N_MILLISECONDS(refreshRateInMillis) {

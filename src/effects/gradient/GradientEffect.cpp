@@ -28,12 +28,14 @@ EffectFactory GradientEffect::factory = [](
 
 void GradientEffect::fillArrayInternal(
     CRGB *effectArray,
-    const uint16_t effectArraySize,
-    const uint16_t segmentIndex,
-    const uint16_t frameIndex
+    uint16_t effectArraySize,
+    float progress,
+    unsigned long time
 ) {
-    const uint8_t deltaHue = max(1, 255 / effectArraySize);
+    uint8_t increment = 255 / effectArraySize;
+    uint8_t progressOffset = progress * 255;
 
-    //TODO adjust initial hue increment based on density (effectArraySize / maxSegmentSize)
-    // fill_gradient(effectArray, effectArraySize)
-};
+    for (int i = 0; i < effectArraySize; i++) {
+        effectArray[i] = ColorFromPalette(palette, progressOffset + (i * increment));
+    }
+}

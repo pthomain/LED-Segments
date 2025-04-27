@@ -45,11 +45,14 @@ void SimpleRenderer::render(CRGB *outputArray) {
     uint16_t layoutIndex = context.layoutIndex;
     uint16_t nbSegments = displaySpec.nbSegments(layoutIndex);
 
+    float progress = frameIndex / static_cast<float>(context.currentEffectDurationsInFrames);
+
     for (uint8_t segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
         uint16_t nbPixels = displaySpec.nbPixels(layoutIndex, segmentIndex);
         uint16_t mirrorSize = getMirrorSize(context.mirror, nbPixels);
 
-        currentEffect->fillArray(effectArray, mirrorSize, segmentIndex, frameIndex);
+        currentEffect->fillArray(effectArray, mirrorSize, progress);
+
         applyMirror(context.mirror, effectArray, nbPixels);
 
         pixelMapper->mapPixels(
@@ -57,7 +60,7 @@ void SimpleRenderer::render(CRGB *outputArray) {
             layoutIndex,
             segmentIndex,
             nbPixels,
-            frameIndex,
+            progress,
             outputArray,
             effectArray
         );

@@ -30,6 +30,7 @@ class Display {
     const uint8_t minEffectDurationsInSecs;
     const uint8_t maxEffectDurationsInSecs;
     uint8_t currentEffectDurationsInSecs;
+    uint32_t lastChangeTime = 0;
     const uint8_t fps;
     const int16_t transitionDurationInMillis;
     const uint16_t refreshRateInMillis;
@@ -51,7 +52,7 @@ class Display {
         const uint8_t nbPinsForEntropy
     );
 
-    void changeEffect();
+    void changeEffect(uint8_t effectDurationsInSecs);
 
     void render() const;
 
@@ -68,7 +69,8 @@ public:
         const uint8_t nbPinsForEntropy = 6
     ) {
         CRGB *outputArray = new CRGB[displaySpec.nbLeds()];
-        CFastLED::addLeds<WS2812B, LED_PIN, RGB_ORDER>(outputArray, displaySpec.nbLeds());
+        CFastLED::addLeds<WS2812B, LED_PIN, RGB_ORDER>(outputArray, displaySpec.nbLeds())
+                .setCorrection(TypicalLEDStrip);
         return new Display(
             outputArray,
             std::move(displaySpec),

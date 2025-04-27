@@ -133,7 +133,7 @@ void Blender::mapPixels(
     const uint16_t layoutIndex,
     const uint16_t segmentIndex,
     const uint16_t segmentSize,
-    const uint16_t frameIndex,
+    float progress,
     CRGB *outputArray,
     CRGB *effectArray
 ) {
@@ -153,7 +153,7 @@ void Blender::mapPixels(
             layoutIndex,
             segmentIndex,
             pixelIndex,
-            frameIndex,
+            progress,
             rendererOutputArray,
             effectArray[pixelIndex]
         );

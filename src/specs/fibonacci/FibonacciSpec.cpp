@@ -188,7 +188,7 @@ void FibonacciSpec::setColour(
     const uint16_t layoutIndex,
     const uint16_t segmentIndex,
     const uint16_t pixelIndex,
-    const uint16_t frameIndex,
+    float progress,
     CRGB *outputArray,
     const CRGB colour
 ) const {
@@ -201,7 +201,7 @@ void FibonacciSpec::setColour(
             inflexionPoint = 15;
             break;
         case DYNAMIC_INFLEXION:
-            inflexionPoint = (frameIndex / 1) % NB_SPIRAL_PIXELS;
+            inflexionPoint = progress * NB_SPIRAL_PIXELS;
             break;
         case INFLEXION_NONE:
         default:

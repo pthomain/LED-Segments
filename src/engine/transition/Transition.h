@@ -47,7 +47,7 @@ enum class Transition {
     SLIDE
 };
 
-const std::vector<Transition> ALL_TRANSITIONS = {
+const std::vector ALL_TRANSITIONS = {
     Transition::FADE,
     Transition::SLIDE
 };
@@ -69,7 +69,7 @@ static void fillTransitionArray(
 ) {
     switch (transition) {
         case Transition::SLIDE: {
-            uint16_t limit = segmentSize * transitionPercent;
+            uint16_t limit = constrain(round((float)segmentSize * transitionPercent), 0, segmentSize);
             for (uint16_t i = 0; i < segmentSize; i++) {
                 transitionArray[i] = i < limit ? CRGB::White : CRGB::Black;
             }

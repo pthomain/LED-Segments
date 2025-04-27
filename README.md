@@ -8,7 +8,7 @@ Multiple layouts can be defined, if required, to allow for the display to be seg
 Individual LEDs aren't addressed directly but are instead abstracted into Pixels and Segments:
 - Each Layout is composed of at least one Segment and each Segment is composed of at least one Pixel.
 - Each Pixel is itself composed of one or more LEDs.
-- LED indexes do not have to be contiguous in a given Pixel, neither do Pixels need to be contiguous in a Segment.
+- LED indexes do not have to be contiguous in a given Pixel, providing flexibility to displays where you might want to group LEDs that are physically close together but far from each other in terms of their indexes on the strip.
   
 Custom effects can be applied to any given Layout, where they are repeatedly applied to each Segment, using Pixel as the smallest addressable unit for applying a colour.
 By randomising layouts in the rendering loop, you can achieve a multitude of different ways to render the same effect.

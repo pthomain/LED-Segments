@@ -69,7 +69,7 @@ public :
         uint16_t layoutIndex,
         uint16_t segmentIndex,
         uint16_t pixelIndex,
-        uint16_t frameIndex,
+        float progress,
         CRGB *outputArray,
         CRGB colour
     ) const override;

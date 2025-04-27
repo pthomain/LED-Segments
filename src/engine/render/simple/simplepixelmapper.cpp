@@ -26,7 +26,7 @@ void SimplePixelMapper::mapPixels(
     uint16_t layoutIndex,
     uint16_t segmentIndex,
     uint16_t segmentSize,
-    uint16_t frameIndex,
+    float progress,
     CRGB *outputArray,
     CRGB *effectArray
 ) {
@@ -35,7 +35,7 @@ void SimplePixelMapper::mapPixels(
             layoutIndex,
             segmentIndex,
             pixelIndex,
-            frameIndex,
+            progress,
             outputArray,
             effectArray[pixelIndex]
         );

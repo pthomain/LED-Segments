@@ -31,9 +31,8 @@
 #define IS_DEBUG true
 
 static const std::vector<CRGBPalette16> PALETTES PROGMEM = std::vector<CRGBPalette16>{
-    PartyColors_p,
+    Rainbow_gp,
     ForestColors_p,
-    CloudColors_p,
     OceanColors_p,
 };
 

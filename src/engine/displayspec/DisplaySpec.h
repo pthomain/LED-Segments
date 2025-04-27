@@ -55,15 +55,15 @@ public:
 
     virtual uint16_t nbSegments(uint16_t layoutIndex) const = 0;
 
-    virtual uint16_t nbPixels(uint16_t layoutIndex, const uint16_t segmentIndex) const = 0;
+    virtual uint16_t nbPixels(uint16_t layoutIndex, uint16_t segmentIndex) const = 0;
 
     virtual void setColour(
-        const uint16_t layoutIndex,
-        const uint16_t segmentIndex,
-        const uint16_t pixelIndex,
-        const uint16_t frameIndex,
+        uint16_t layoutIndex,
+        uint16_t segmentIndex,
+        uint16_t pixelIndex,
+        float progress,
         CRGB *outputArray,
-        const CRGB colour
+        CRGB colour
     ) const = 0;
 
     const LayoutCatalog &catalog() const {

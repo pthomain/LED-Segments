@@ -35,9 +35,9 @@ public:
 
     void fillArrayInternal(
         CRGB *effectArray,
-        const uint16_t effectArraySize,
-        const uint16_t segmentIndex,
-        const uint16_t frameIndex
+        uint16_t effectArraySize,
+        float progress,
+        unsigned long time
     ) override;
 
     String name() const override { return "Noise"; }

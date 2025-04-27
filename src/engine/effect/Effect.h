@@ -32,32 +32,32 @@ constexpr uint8_t MAX_CYCLE_SPEED = 15;
 constexpr uint8_t PALETTE_SIZE = 16;
 
 class Effect {
+    const unsigned long start;
+
 protected:
-    uint16_t linearCycleStep = 0;
-    uint16_t circularCycleStep = 0;
-    uint8_t cycleSpeed = 5; //random8(MIN_CYCLE_SPEED, MAX_CYCLE_SPEED);
-    boolean isCycleReversed = false;
     CRGBPalette16 palette;
+    uint8_t randomStart;
 
 public :
     const EffectContext effectContext;
 
-    explicit Effect(EffectContext effectContext) : effectContext(std::move(effectContext)) {
+    explicit Effect(EffectContext effectContext) : effectContext(std::move(effectContext)),
+                                                   start(millis()),
+                                                   randomStart(random8()) {
         palette = effectContext.palette.palette();
     };
 
     void fillArray(
         CRGB *effectArray,
         uint16_t effectArraySize,
-        uint16_t segmentIndex,
-        uint16_t frameIndex
+        float progress
     );
 
     virtual void fillArrayInternal(
         CRGB *effectArray,
         uint16_t effectArraySize,
-        uint16_t segmentIndex,
-        uint16_t frameIndex
+        float progress,
+        unsigned long time
     ) = 0;
 
     virtual String name() const = 0;

@@ -30,22 +30,20 @@ EffectFactory NoiseEffect::factory = [](
 
 void NoiseEffect::fillArrayInternal(
     CRGB *effectArray,
-    const uint16_t effectArraySize,
-    const uint16_t segmentIndex,
-    const uint16_t frameIndex
+    uint16_t effectArraySize,
+    float progress,
+    unsigned long time
 ) {
-    auto time = millis() / noiseSpeed;
-    const uint8_t noise = inoise8(frameIndex * noiseScale / paletteScale, time);
+    const uint8_t noise = inoise8(noiseScale, randomStart + time / 5);
+    const uint8_t delta = max(1, 256 / (effectArraySize * paletteScale));
 
     fill_palette(
         effectArray,
         effectArraySize,
         normaliseNoise(noise),
-        max(1, 256 / (effectArraySize * paletteScale)),
-        RainbowColors_p,
+        delta,
+        palette,
         255,
         LINEARBLEND
     );
-};
-
-//TODO OctaveEffect: https://www.youtube.com/watch?v=7Dhh0IMSI4Q&ab_channel=ScottMarley
+}

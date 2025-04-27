@@ -24,16 +24,15 @@
 #include "engine/effect/Effect.h"
 
 class NoEffect : public Effect, public Effect::Factory<NoEffect> {
-
 public:
     explicit NoEffect(const EffectContext &effectContext) : Effect(effectContext) {
     }
 
     void fillArrayInternal(
         CRGB *effectArray,
-        const uint16_t effectArraySize,
-        const uint16_t segmentIndex,
-        const uint16_t frameIndex
+        uint16_t effectArraySize,
+        float progress,
+        unsigned long time
     ) override;
 
     String name() const override { return "None"; }

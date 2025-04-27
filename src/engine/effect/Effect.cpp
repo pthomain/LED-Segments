@@ -24,14 +24,12 @@
 void Effect::fillArray(
     CRGB *effectArray,
     uint16_t effectArraySize,
-    uint16_t segmentIndex,
-    uint16_t frameIndex
+    float progress
 ) {
-    uint8_t delta = max(1, 255 / effectArraySize); //TODO use percent
-    if (frameIndex % cycleSpeed == 0) {
-        linearCycleStep = unsignedModulo(linearCycleStep + delta, 255);
-        if (circularCycleStep == 0 || circularCycleStep >= 255) isCycleReversed = !isCycleReversed;
-        circularCycleStep += isCycleReversed ? delta : -delta;
-    }
-    fillArrayInternal(effectArray, effectArraySize, segmentIndex, frameIndex);
+    fillArrayInternal(
+        effectArray,
+        effectArraySize,
+        progress,
+        millis() - start
+    );
 };

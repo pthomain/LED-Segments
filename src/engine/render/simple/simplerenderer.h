@@ -27,7 +27,7 @@
 class SimpleRenderer : public Renderer {
     CRGB *effectArray;
     std::shared_ptr<Effect> currentEffect = nullptr;
-    uint16_t frameIndex = 0;
+    float frameIndex = 0;
     std::unique_ptr<PixelMapper> pixelMapper;
 
 public :

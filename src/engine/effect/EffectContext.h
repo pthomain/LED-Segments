@@ -31,6 +31,7 @@
 
 class EffectContext {
 public:
+    const uint16_t currentEffectDurationsInFrames;
     const boolean isDisplayCircular;
     const uint16_t layoutIndex;
     const Palette palette;
@@ -40,6 +41,7 @@ public:
     const Mirror transitionMirror;
 
     EffectContext(
+        const uint16_t currentEffectDurationsInFrames,
         const boolean isDisplayCircular,
         const uint16_t layoutIndex,
         Palette palette,
@@ -47,7 +49,8 @@ public:
         const Transition transition,
         const uint8_t transitionLayoutIndex,
         const Mirror transitionMirror
-    ) : isDisplayCircular(isDisplayCircular),
+    ) : currentEffectDurationsInFrames(currentEffectDurationsInFrames),
+        isDisplayCircular(isDisplayCircular),
         layoutIndex(layoutIndex),
         palette(std::move(palette)),
         mirror(mirror),

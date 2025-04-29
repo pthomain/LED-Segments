@@ -18,17 +18,23 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Effect.h"
+#include "FadeTransition.h"
 
-void Effect::fillArray(
+EffectFactory FadeTransition::factory = [](
+    const EffectContext &effectContext
+) -> std::unique_ptr<Effect> {
+    return std::make_unique<FadeTransition>(effectContext);
+};
+
+void FadeTransition::fillArrayInternal(
     CRGB *effectArray,
     uint16_t effectArraySize,
-    float progress
+    float progress,
+    unsigned long time
 ) {
-    fillArrayInternal(
-        effectArray,
-        effectArraySize,
-        progress,
-        millis() - start
-    );
-};
+    uint8_t alpha = 255 * progress;
+    CRGB colour = CRGB(alpha, alpha, alpha);
+    for (uint16_t i = 0; i < effectArraySize; i++) {
+        effectArray[i] = colour;
+    }
+}

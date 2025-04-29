@@ -39,8 +39,6 @@
 #ifndef LED_SEGMENTS_TRANSITION_H
 #define LED_SEGMENTS_TRANSITION_H
 
-#include "crgb.h"
-
 enum class Transition {
     NONE,
     FADE,
@@ -51,48 +49,5 @@ const std::vector ALL_TRANSITIONS = {
     Transition::FADE,
     Transition::SLIDE
 };
-
-static const String getTransitionName(Transition transition) {
-    switch (transition) {
-        case Transition::NONE: return "NONE";
-        case Transition::FADE: return "FADE";
-        case Transition::SLIDE: return "SLIDE";
-        default: return "UNKNOWN";
-    }
-}
-
-static void fillTransitionArray(
-    const Transition transition,
-    CRGB *transitionArray,
-    const uint16_t segmentSize,
-    const float transitionPercent
-) {
-    switch (transition) {
-        case Transition::SLIDE: {
-            uint16_t limit = constrain(round((float)segmentSize * transitionPercent), 0, segmentSize);
-            for (uint16_t i = 0; i < segmentSize; i++) {
-                transitionArray[i] = i < limit ? CRGB::White : CRGB::Black;
-            }
-        }
-        break;
-
-        case Transition::FADE: {
-            uint8_t alpha = 255 * transitionPercent;
-            CRGB colour = CRGB(alpha, alpha, alpha);
-            for (uint16_t i = 0; i < segmentSize; i++) {
-                transitionArray[i] = colour;
-            }
-        }
-        break;
-
-        case Transition::NONE:
-        default: {
-            for (uint16_t i = 0; i < segmentSize; i++) {
-                transitionArray[i] = transitionPercent < 0.5f ? CRGB::Black : CRGB::White;
-            }
-        }
-            break;
-    }
-}
 
 #endif //LED_SEGMENTS_TRANSITION_H

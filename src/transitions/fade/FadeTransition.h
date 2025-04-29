@@ -18,17 +18,26 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Effect.h"
+#ifndef FADETRANSITION_H
+#define FADETRANSITION_H
+#include "engine/effect/Effect.h"
 
-void Effect::fillArray(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
-    float progress
-) {
-    fillArrayInternal(
-        effectArray,
-        effectArraySize,
-        progress,
-        millis() - start
-    );
+class FadeTransition : public Effect, public Effect::Factory<FadeTransition> {
+public:
+    explicit FadeTransition(const EffectContext &effectContext) : Effect(effectContext) {
+    }
+
+    void fillArrayInternal(
+        CRGB *effectArray,
+        uint16_t effectArraySize,
+        float progress,
+        unsigned long time
+    ) override;
+
+    String name() const override { return "Fade"; }
+    EffectType type() const override { return EffectType::TRANSITION; }
+
+    static EffectFactory factory;
 };
+
+#endif //FADETRANSITION_H

@@ -50,4 +50,13 @@ const std::vector ALL_TRANSITIONS = {
     Transition::SLIDE
 };
 
+static const String getTransitionName(Transition transition) {
+    switch (transition) {
+        case Transition::NONE: return "NONE";
+        case Transition::FADE: return "FADE";
+        case Transition::SLIDE: return "SLIDE";
+        default: return "UNKNOWN";
+    }
+}
+
 #endif //LED_SEGMENTS_TRANSITION_H

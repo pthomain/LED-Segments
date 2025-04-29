@@ -21,7 +21,6 @@
 #include "engine/displayspec/LayoutCatalog.h"
 #include <engine/effect/none/NoEffect.h>
 #include <engine/mirror/Mirror.h>
-
 #include "specs/fibonacci/FibonacciLayoutConfig.h"
 
 const EffectFactory &LayoutCatalog::randomEffectFactory(uint16_t layoutIndex) const {

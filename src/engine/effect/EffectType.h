@@ -23,7 +23,8 @@
 
 enum class EffectType {
   EFFECT,
-  HIGHLIGHT,
+  OVERLAY_ALPHA,
+  OVERLAY_COLOUR,
   TRANSITION
 };
 

@@ -18,17 +18,22 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Effect.h"
+#include "SlideTransition.h"
 
-void Effect::fillArray(
+EffectFactory SlideTransition::factory = [](
+    const EffectContext &effectContext
+) -> std::unique_ptr<Effect> {
+    return std::make_unique<SlideTransition>(effectContext);
+};
+
+void SlideTransition::fillArrayInternal(
     CRGB *effectArray,
     uint16_t effectArraySize,
-    float progress
+    float progress,
+    unsigned long time
 ) {
-    fillArrayInternal(
-        effectArray,
-        effectArraySize,
-        progress,
-        millis() - start
-    );
-};
+    uint16_t limit = constrain(round((float) effectArraySize * progress), 0, effectArraySize);
+    for (uint16_t i = 0; i < effectArraySize; i++) {
+        effectArray[i] = i < limit ? CRGB::White : CRGB::Black;
+    }
+}

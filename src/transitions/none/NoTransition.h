@@ -18,17 +18,26 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Effect.h"
+#ifndef NOTRANSITION_H
+#define NOTRANSITION_H
+#include "engine/effect/EffectType.h"
 
-void Effect::fillArray(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
-    float progress
-) {
-    fillArrayInternal(
-        effectArray,
-        effectArraySize,
-        progress,
-        millis() - start
-    );
+class NoTransition : public Effect, public Effect::Factory<SlideTransition> {
+public:
+    explicit SlideTransition(const EffectContext &effectContext) : Effect(effectContext) {
+    }
+
+    void fillArrayInternal(
+        CRGB *effectArray,
+        uint16_t effectArraySize,
+        float progress,
+        unsigned long time
+    ) override;
+
+    String name() const override { return "None"; }
+    EffectType type() const override { return EffectType::TRANSITION; }
+
+    static EffectFactory factory;
 };
+
+#endif //NOTRANSITION_H

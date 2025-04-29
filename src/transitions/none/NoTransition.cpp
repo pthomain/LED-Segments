@@ -18,17 +18,21 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Effect.h"
+#include "NoTransition.h"
 
-void Effect::fillArray(
+EffectFactory NoTransition::factory = [](
+    const EffectContext &effectContext
+) -> std::unique_ptr<Effect> {
+    return std::make_unique<NoTransition>(effectContext);
+};
+
+void NoTransition::fillArrayInternal(
     CRGB *effectArray,
     uint16_t effectArraySize,
-    float progress
+    float progress,
+    unsigned long time
 ) {
-    fillArrayInternal(
-        effectArray,
-        effectArraySize,
-        progress,
-        millis() - start
-    );
-};
+    for (uint16_t i = 0; i < effectArraySize; i++) {
+        effectArray[i] = progress < 0.5f ? CRGB::Black : CRGB::White;
+    }
+}

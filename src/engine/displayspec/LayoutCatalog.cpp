@@ -38,6 +38,8 @@ const std::pair<uint16_t, Transition> LayoutCatalog::randomTransition() const {
         return {0, Transition::NONE};
     }
 
+    //TODO return effect factory
+
     auto iterator = _transitions.begin();
     std::advance(iterator, random8(_transitions.size()));
 

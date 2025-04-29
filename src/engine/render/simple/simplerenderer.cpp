@@ -45,7 +45,7 @@ void SimpleRenderer::render(CRGB *outputArray) {
     uint16_t layoutIndex = context.layoutIndex;
     uint16_t nbSegments = displaySpec.nbSegments(layoutIndex);
 
-    float progress = frameIndex / static_cast<float>(context.currentEffectDurationsInFrames);
+    float progress = frameIndex / static_cast<float>(context.durationsInFrames);
 
     for (uint8_t segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
         uint16_t nbPixels = displaySpec.nbPixels(layoutIndex, segmentIndex);

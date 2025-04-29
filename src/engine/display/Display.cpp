@@ -85,7 +85,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
                                       : catalog.randomMirror(transitionLayoutIndex);
 
     //TODO highlight
-    const auto palette = PALETTES[random8(PALETTES.size())];
+    const auto palette = Rainbow_gp;//PALETTES[random8(PALETTES.size())];
 
     auto effect = effectFactory(
         EffectContext(
@@ -108,7 +108,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
         Serial.print("Effect mirror\t\t");
         Serial.println(getMirrorName(effectMirror));
         Serial.print("Transition\t\t");
-        Serial.println(getTransitionName(transition));
+        Serial.println(transition.name());
         Serial.print("Transition layout\t");
         Serial.println(catalog.layoutName(transitionLayoutIndex));
         Serial.print("Transition mirror\t");

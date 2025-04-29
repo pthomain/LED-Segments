@@ -85,8 +85,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
                                       : catalog.randomMirror(transitionLayoutIndex);
 
     //TODO highlight
-    const auto palette = Rainbow_gp;//PALETTES[random8(PALETTES.size())];
-
+    const CRGBPalette16 palette = Rainbow_gp; //PALETTES[random8(PALETTES.size())];
     auto effect = effectFactory(
         EffectContext(
             effectDurationsInSecs * fps,

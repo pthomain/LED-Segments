@@ -26,6 +26,7 @@
 #include "engine/displayspec/DisplaySpec.h"
 #include "engine/render/Renderer.h"
 
+
 class Display {
     const uint8_t minEffectDurationsInSecs;
     const uint8_t maxEffectDurationsInSecs;

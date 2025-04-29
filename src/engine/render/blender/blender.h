@@ -27,6 +27,9 @@
 #include "engine/render/PixelMapper.h"
 #include "engine/displayspec/DisplaySpec.h"
 #include "memory"
+#include <transitions/none/NoTransition.h>
+#include <transitions/fade/FadeTransition.h>
+#include <transitions/slide/SlideTransition.h>
 
 class Blender : public Renderer, public PixelMapper {
     std::unique_ptr<Renderer> runningRenderer = nullptr;
@@ -39,7 +42,14 @@ class Blender : public Renderer, public PixelMapper {
     CRGB *transitionArray;
     float transitionStep = -1;
 
+    const std::map<Transition, EffectFactory> transitionfactories = {
+        {Transition::NONE, NoTransition::factory},
+        {Transition::FADE, FadeTransition::factory},
+        {Transition::SLIDE, SlideTransition::factory}
+    };
+
     std::shared_ptr<Effect> currentEffect = nullptr;
+    std::shared_ptr<Effect> currentTransition = nullptr;
 
     const String runningRendererName = "runningRenderer";
     const String blendingRendererName = "blendingRenderer";

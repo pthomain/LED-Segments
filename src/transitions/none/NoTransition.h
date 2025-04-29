@@ -20,11 +20,12 @@
 
 #ifndef NOTRANSITION_H
 #define NOTRANSITION_H
+#include "engine/effect/Effect.h"
 #include "engine/effect/EffectType.h"
 
-class NoTransition : public Effect, public Effect::Factory<SlideTransition> {
+class NoTransition : public Effect, public Effect::Factory<NoTransition> {
 public:
-    explicit SlideTransition(const EffectContext &effectContext) : Effect(effectContext) {
+    explicit NoTransition(const EffectContext &effectContext) : Effect(effectContext) {
     }
 
     void fillArrayInternal(

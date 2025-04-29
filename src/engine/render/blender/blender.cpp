@@ -50,6 +50,10 @@ Blender::Blender(
 void Blender::changeEffect(std::shared_ptr<Effect> effect) {
     currentEffect = effect;
 
+    auto context = currentEffect->effectContext;
+    auto transitionFactory = transitionfactories.at(context.transition);
+    currentTransition = transitionFactory(context);
+
     if (runningRenderer->getEffect() != nullptr) {
         transitionStep = transitionDurationInFrames;
         for (uint16_t pixelIndex = 0; pixelIndex < displaySpec.maxSegmentSize(); pixelIndex++) {
@@ -69,8 +73,7 @@ void Blender::fillTransition(float transitionPercent) const {
         auto segmentSize = displaySpec.nbPixels(context.transitionLayoutIndex, segmentIndex);
         uint16_t transitionMirrorSize = getMirrorSize(context.transitionMirror, segmentSize);
 
-        fillTransitionArray(
-            context.transition,
+        currentTransition->fillArray(
             transitionSegmentArray,
             transitionMirrorSize,
             transitionPercent

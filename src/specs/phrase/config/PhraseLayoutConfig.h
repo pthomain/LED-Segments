@@ -21,8 +21,12 @@
 #ifndef PHRASELAYOUTCONFIG_H
 #define PHRASELAYOUTCONFIG_H
 
+#include "engine/displayspec/LayoutCatalog.h"
+#include "engine/effect/Effect.h"
 #include <effects/noise/NoiseEffect.h>
-#include <effects/gradient/GradientEffect.h>
+#include "engine/overlay/none/NoOverlay.h"
+#include "engine/transition/Transition.h"
+#include "overlays/sparkle/SparkleOverlay.h"
 
 // Format is PIXELS_IN_SEGMENTS
 enum PhraseLayout {
@@ -38,30 +42,8 @@ enum PhraseLayout {
 
 static const std::vector<uint16_t> phraseLayouts = std::vector<uint16_t>{0, 1, 2, 3, 4, 5};
 
-static const std::vector<uint16_t> pixelHeavyLayouts = std::vector<uint16_t>{
-    LEDS_IN_WORDS,
-    LEDS_IN_WHOLE
-};
-
-static const std::vector<uint16_t> balancedLayouts = std::vector<uint16_t>{
-    LEDS_IN_LETTERS,
-    LETTERS_IN_WORDS,
-    LETTERS_IN_WHOLE,
-};
-
-static const std::vector<uint16_t> segmentHeavyLayouts = std::vector<uint16_t>{
-    WORDS_IN_WHOLE,
-};
-
-static const std::vector<uint16_t> mirrorableLayouts = std::vector<uint16_t>{
-    LEDS_IN_LETTERS,
-    LEDS_IN_WORDS,
-    LETTERS_IN_WHOLE,
-    LEDS_IN_WHOLE
-};
-
-static const std::map<uint16_t, std::vector<EffectFactory> > &phraseEffects() {
-    static const auto map = mapLayoutIndex<EffectFactory>(
+static std::map<uint16_t, std::vector<EffectFactory> > phraseEffects() {
+    return mapLayoutIndex<EffectFactory>(
         phraseLayouts,
         [](uint16_t layoutIndex) {
             return std::vector{
@@ -70,11 +52,26 @@ static const std::map<uint16_t, std::vector<EffectFactory> > &phraseEffects() {
             };
         }
     );
-    return map;
 }
 
-static const std::map<uint16_t, std::vector<Mirror> > &phraseMirrors() {
-    static const auto map = mapLayoutIndex<Mirror>(
+static std::map<uint16_t, std::vector<EffectFactory> > phraseOverlays() {
+    return mapLayoutIndex<EffectFactory>(
+        phraseLayouts,
+        [](uint16_t layoutIndex) {
+            switch (layoutIndex) {
+                case LEDS_IN_LETTERS:
+                case LEDS_IN_WORDS:
+                case LEDS_IN_WHOLE: return std::vector{
+                        SparkleOverlay::factory,
+                    };
+                default: return NO_OVERLAYS;
+            }
+        }
+    );
+}
+
+static std::map<uint16_t, std::vector<Mirror> > phraseMirrors() {
+    return mapLayoutIndex<Mirror>(
         phraseLayouts,
         [](uint16_t layoutIndex) {
             switch (layoutIndex) {
@@ -84,16 +81,14 @@ static const std::map<uint16_t, std::vector<Mirror> > &phraseMirrors() {
                 case LETTERS_IN_WHOLE:
                 case LETTERS_IN_WORDS: return ALL_UNREPEATED_MIRRORS;
 
-                case WORDS_IN_WHOLE: ;
                 default: return std::vector{Mirror::NONE, Mirror::REVERSE};
             }
         }
     );
-    return map;
 }
 
-static const std::map<uint16_t, std::vector<Transition> > &phraseTransitions() {
-    static const auto map = mapLayoutIndex<Transition>(
+static std::map<uint16_t, std::vector<EffectFactory> > phraseTransitions() {
+    return mapLayoutIndex<EffectFactory>(
         phraseLayouts,
         [](uint16_t layoutIndex) {
             switch (layoutIndex) {
@@ -102,18 +97,14 @@ static const std::map<uint16_t, std::vector<Transition> > &phraseTransitions() {
                 case LEDS_IN_WHOLE:
                 case LETTERS_IN_WHOLE: return ALL_TRANSITIONS;
 
-                case LETTERS_IN_WORDS:
-                case WORDS_IN_WHOLE:
-                default: return std::vector{Transition::FADE};
+                default: return std::vector{FadeTransition::factory};
             }
         }
     );
-    return map;
 }
 
-//Prevents instantiation before setup() is called
-inline const LayoutCatalog &phraseLayoutCatalog() {
-    static const auto catalog = LayoutCatalog(
+static LayoutCatalog phraseLayoutCatalog() {
+    return LayoutCatalog(
         phraseLayouts.size(),
         {
             {LEDS_IN_LETTERS, "LEDS_IN_LETTERS"},
@@ -124,10 +115,11 @@ inline const LayoutCatalog &phraseLayoutCatalog() {
             {WORDS_IN_WHOLE, "WORDS_IN_WHOLE"},
         },
         phraseEffects(),
+        phraseOverlays(),
+        phraseTransitions(),
         phraseMirrors(),
-        phraseTransitions()
+        1.0f
     );
-    return catalog;
 }
 
 #endif //PHRASELAYOUTCONFIG_H

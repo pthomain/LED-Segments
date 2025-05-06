@@ -18,26 +18,41 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Renderer.h"
 
-#include "SimplePixelMapper.h"
+#include "PixelMapper.h"
 
-void SimplePixelMapper::mapPixels(
-    const String &rendererName,
+void Renderer::applyEffect(
+    const std::shared_ptr<Effect> &effect,
     uint16_t layoutIndex,
-    uint16_t segmentIndex,
-    uint16_t segmentSize,
-    float progress,
+    Mirror mirror,
+    CRGB *segmentArray,
     CRGB *outputArray,
-    CRGB *segmentArray
-) {
-    for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
-        displaySpec.setColour(
+    float progress,
+    const std::shared_ptr<PixelMapper> &pixelMapper
+) const {
+    auto nbSegments = displaySpec.nbSegments(layoutIndex);
+
+    for (auto segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
+        auto segmentSize = displaySpec.nbPixels(layoutIndex, segmentIndex);
+        uint16_t mirrorSize = getMirrorSize(mirror, segmentSize);
+
+        effect->fillArray(
+            segmentArray,
+            mirrorSize,
+            progress
+        );
+
+        applyMirror(mirror, segmentArray, segmentSize);
+
+        pixelMapper->mapPixels(
+            name,
             layoutIndex,
             segmentIndex,
-            pixelIndex,
+            segmentSize,
             progress,
             outputArray,
-            segmentArray[pixelIndex]
+            segmentArray
         );
     }
 }

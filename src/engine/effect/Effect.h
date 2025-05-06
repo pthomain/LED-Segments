@@ -23,6 +23,7 @@
 #define EFFECTS_H
 
 #include <memory>
+
 #include "EffectContext.h"
 #include "functional"
 #include "engine/effect/EffectType.h"
@@ -37,6 +38,7 @@ class Effect {
 protected:
     CRGBPalette16 palette;
     uint8_t randomStart;
+    bool isArrayInitialised = false;
 
 public :
     const EffectContext effectContext;

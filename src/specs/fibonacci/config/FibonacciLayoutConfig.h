@@ -25,9 +25,10 @@
 #include "Arduino.h"
 #include "WString.h"
 #include "utils/Utils.h"
-#include <effects/gradient/GradientEffect.h>
 #include <effects/noise/NoiseEffect.h>
 #include <engine/displayspec/LayoutCatalog.h>
+#include "engine/transition/Transition.h"
+#include "overlays/sparkle/SparkleOverlay.h"
 
 const uint16_t TOTAL_FIBONACCI_LEDS = 324;
 const uint8_t NB_LEDS_IN_SPIRAL = 27;
@@ -163,8 +164,8 @@ inline const std::vector<uint16_t> &variations() {
     return variations;
 }
 
-static const std::map<uint16_t, std::vector<EffectFactory> > &fibonacciEffects() {
-    static const auto map = mapLayoutIndex<EffectFactory>(
+static std::map<uint16_t, std::vector<EffectFactory> > fibonacciEffects() {
+    return mapLayoutIndex<EffectFactory>(
         variations(),
         [](uint16_t layoutIndex) {
             return std::vector{
@@ -173,43 +174,50 @@ static const std::map<uint16_t, std::vector<EffectFactory> > &fibonacciEffects()
             };
         }
     );
-    return map;
 }
 
-static const std::map<uint16_t, std::vector<Mirror> > &fibonacciMirrors() {
-    static const auto map = mapLayoutIndex<Mirror>(
+static std::map<uint16_t, std::vector<EffectFactory> > fibonacciOverlays() {
+    return mapLayoutIndex<EffectFactory>(
+        variations(),
+        [](uint16_t layoutIndex) {
+            return std::vector{
+                SparkleOverlay::factory,
+            };
+        }
+    );
+}
+
+static std::map<uint16_t, std::vector<Mirror> > fibonacciMirrors() {
+    return mapLayoutIndex<Mirror>(
         variations(),
         [](uint16_t layoutIndex) {
             return ALL_MIRRORS;
         }
     );
-    return map;
 }
 
-static const std::map<uint16_t, std::vector<Transition> > &fibonacciTransitions() {
-    static const auto map = mapLayoutIndex<Transition>(
+static std::map<uint16_t, std::vector<EffectFactory> > fibonacciTransitions() {
+    return mapLayoutIndex<EffectFactory>(
         variations(),
         [](uint16_t layoutIndex) {
             return ALL_TRANSITIONS;
         }
     );
-    return map;
 }
 
-//Prevents instantiation before setup() is called
-inline const LayoutCatalog &fibonacciLayoutCatalog() {
+static LayoutCatalog fibonacciLayoutCatalog() {
     auto names = std::map<uint16_t, String>();
     for (auto variation: variations()) {
         names.insert(std::pair(variation, getLayoutName(variation)));
     }
-    static const auto catalog = LayoutCatalog(
+    return LayoutCatalog(
         variations().size(),
         names,
         fibonacciEffects(),
-        fibonacciMirrors(),
-        fibonacciTransitions()
+        fibonacciOverlays(),
+        fibonacciTransitions(),
+        fibonacciMirrors()
     );
-    return catalog;
 }
 
 #endif //LED_SEGMENTS_FIBONACCIENUMS_H

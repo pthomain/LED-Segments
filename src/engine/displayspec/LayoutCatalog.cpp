@@ -18,45 +18,117 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "engine/displayspec/LayoutCatalog.h"
+#include "LayoutCatalog.h"
 #include <engine/effect/none/NoEffect.h>
-#include <engine/mirror/Mirror.h>
-#include "specs/fibonacci/FibonacciLayoutConfig.h"
+#include <engine/overlay/none/NoOverlay.h>
+#include "engine/transitions/none/NoTransition.h"
 
-const EffectFactory &LayoutCatalog::randomEffectFactory(uint16_t layoutIndex) const {
+// Explicit instantiation for EffectFactory
+template std::map<uint16_t, std::vector<EffectFactory> >
+mapLayoutIndex<EffectFactory>(
+    const std::vector<uint16_t> &,
+    const std::function<std::vector<EffectFactory>(uint16_t)> &
+);
+
+// Explicit instantiation for Mirror
+template std::map<uint16_t, std::vector<Mirror> >
+mapLayoutIndex<Mirror>(
+    const std::vector<uint16_t> &,
+    const std::function<std::vector<Mirror>(uint16_t)> &
+);
+
+template<typename T>
+std::map<uint16_t, std::vector<T> > mapLayoutIndex(
+    const std::vector<uint16_t> &layoutIndexes,
+    const std::function<std::vector<T>(uint16_t)> &mapper
+) {
+    std::map<uint16_t, std::vector<T> > map;
+    for (const auto layoutIndex: layoutIndexes) {
+        map[layoutIndex] = mapper(layoutIndex);
+    }
+    return map;
+}
+
+template<typename T>
+std::pair<uint16_t, T> LayoutCatalog::randomLayoutSpecificEntry(
+    const String &entryType,
+    const std::map<uint16_t, std::vector<T> > &map,
+    const std::pair<uint16_t, T> &defaultValue
+) const {
+    if (map.empty()) {
+        if constexpr (IS_DEBUG) {
+            Serial.print("No entries in ");
+            Serial.print(entryType);
+            Serial.println(" map");
+        }
+        return defaultValue;
+    }
+
+    auto iterator = map.begin();
+    std::advance(iterator, random8(map.size()));
+
+    const uint16_t randomLayoutIndex = iterator->first;
+    const std::vector<T> &entries = iterator->second;
+
+    if (entries.empty()) {
+        if constexpr (IS_DEBUG) {
+            Serial.print("No ");
+            Serial.print(entryType);
+            Serial.print(" values provided for layout ");
+            Serial.println(randomLayoutIndex);
+        }
+        return defaultValue;
+    }
+
+    const T &entry = entries.at(random8(entries.size()));
+    return {randomLayoutIndex, entry};
+}
+
+//TODO return reference
+template<typename T>
+T LayoutCatalog::randomMapEntryForLayout(
+    const String &entryType,
+    uint16_t layoutIndex,
+    const std::map<uint16_t, std::vector<T> > &map,
+    const T &defaultValue
+) const {
+    if (map.empty() || map.find(layoutIndex) == map.end()) {
+        if constexpr (IS_DEBUG) {
+            Serial.print("No entries in ");
+            Serial.print(entryType);
+            Serial.println(" map");
+        }
+        return defaultValue;
+    }
+
+    auto &entry = map.at(layoutIndex);
+    if (entry.empty()) {
+        if constexpr (IS_DEBUG) {
+            Serial.print("No ");
+            Serial.print(entryType);
+            Serial.println(" values provided for layout ");
+            Serial.println(layoutIndex);
+        }
+        return defaultValue;
+    }
+    return entry.at(random8(entry.size()));
+}
+
+EffectFactory LayoutCatalog::randomEffectFactory(uint16_t layoutIndex) const {
     return randomMapEntryForLayout(EFFECT_ENTRY, layoutIndex, _effects, NoEffect::factory);
 }
 
-const Mirror LayoutCatalog::randomMirror(uint16_t layoutIndex) const {
+Mirror LayoutCatalog::randomMirror(uint16_t layoutIndex) const {
     return randomMapEntryForLayout(MIRROR_ENTRY, layoutIndex, _mirrors, Mirror::NONE);
 }
 
-const std::pair<uint16_t, Transition> LayoutCatalog::randomTransition() const {
-    if (_transitions.empty()) {
-        if constexpr (IS_DEBUG) Serial.println("Transition map is empty");
-        return {0, Transition::NONE};
+std::pair<uint16_t, EffectFactory> LayoutCatalog::randomTransition() const {
+    return randomLayoutSpecificEntry(TRANSITION_ENTRY, _transitions, {0, NoTransition::factory});
+}
+
+std::pair<uint16_t, EffectFactory> LayoutCatalog::randomOverlay() const {
+    if (probability(probabilityOfOverlay)) {
+        return randomLayoutSpecificEntry(OVERLAY_ENTRY, _overlays, {0, NoOverlay::factory});
     }
-
-    //TODO return effect factory
-
-    auto iterator = _transitions.begin();
-    std::advance(iterator, random8(_transitions.size()));
-
-    uint16_t transitionLayoutIndex = iterator->first;
-    std::vector<Transition> transitions = iterator->second;
-
-    if (transitions.empty()) {
-        if constexpr (IS_DEBUG) {
-            Serial.println("No transition values provided for layout ");
-            Serial.println(transitionLayoutIndex);
-        }
-        return {0, Transition::NONE};
-    }
-
-    Transition transition = transitions.at(random8(transitions.size()));
-
-    return {
-        transitionLayoutIndex,
-        transition
-    };
+    return {0, NoOverlay::factory};
 }

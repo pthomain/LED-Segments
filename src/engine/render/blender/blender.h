@@ -21,19 +21,16 @@
 #ifndef LED_SEGMENTS_BLENDER_H
 #define LED_SEGMENTS_BLENDER_H
 
-#include "FastLED.h"
 #include "engine/effect/Effect.h"
 #include "engine/render/Renderer.h"
 #include "engine/render/PixelMapper.h"
 #include "engine/displayspec/DisplaySpec.h"
 #include "memory"
-#include <transitions/none/NoTransition.h>
-#include <transitions/fade/FadeTransition.h>
-#include <transitions/slide/SlideTransition.h>
 
 class Blender : public Renderer, public PixelMapper {
     std::unique_ptr<Renderer> runningRenderer = nullptr;
     std::unique_ptr<Renderer> blendingRenderer = nullptr;
+    std::shared_ptr<PixelMapper> transitionPixelMapper = nullptr;
 
     CRGB *runningArray;
     CRGB *blendingArray;
@@ -42,13 +39,6 @@ class Blender : public Renderer, public PixelMapper {
     CRGB *transitionArray;
     float transitionStep = -1;
 
-    const std::map<Transition, EffectFactory> transitionfactories = {
-        {Transition::NONE, NoTransition::factory},
-        {Transition::FADE, FadeTransition::factory},
-        {Transition::SLIDE, SlideTransition::factory}
-    };
-
-    std::shared_ptr<Effect> currentEffect = nullptr;
     std::shared_ptr<Effect> currentTransition = nullptr;
 
     const String runningRendererName = "runningRenderer";
@@ -58,9 +48,19 @@ class Blender : public Renderer, public PixelMapper {
     const uint16_t transitionDurationInMillis;
     const uint16_t transitionDurationInFrames = transitionDurationInMillis / refreshRateInMillis;
 
-    void fillTransition(float transitionPercent) const;
-
     void applyTransition(CRGB *outputArray, float transitionPercent) const;
+
+protected:
+
+    void mapPixels(
+        const String &rendererName,
+        uint16_t layoutIndex,
+        uint16_t segmentIndex,
+        uint16_t segmentSize,
+        float progress,
+        CRGB *outputArray,
+        CRGB *segmentArray
+    ) override;
 
 public :
     explicit Blender(
@@ -70,29 +70,27 @@ public :
         uint16_t transitionDurationInMillis
     );
 
-    void changeEffect(std::shared_ptr<Effect> effect) override;
+    void changeEffect(
+        std::shared_ptr<Effect> effect,
+        std::shared_ptr<Effect> overlay,
+        std::shared_ptr<Effect> transition
+    ) override;
 
     void render(CRGB *outputArray) override;
 
     std::shared_ptr<Effect> getEffect() override;
 
-    void mapPixels(
-        const String &rendererName,
-        uint16_t layoutIndex,
-        uint16_t segmentIndex,
-        uint16_t segmentSize,
-        float progress,
-        CRGB *outputArray,
-        CRGB *effectArray
-    ) override;
+    std::shared_ptr<Effect> getOverlay() override;
 
     ~Blender() override {
         delete[] runningArray;
         delete[] blendingArray;
         delete[] transitionSegmentArray;
         delete[] transitionArray;
+        if (currentTransition) currentTransition.reset();
         if (runningRenderer) runningRenderer.reset();
         if (blendingRenderer) blendingRenderer.reset();
+        if (transitionPixelMapper) transitionPixelMapper.reset();
     }
 };
 

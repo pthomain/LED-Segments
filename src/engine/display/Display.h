@@ -25,7 +25,7 @@
 #include "engine/effect/Effect.h"
 #include "engine/displayspec/DisplaySpec.h"
 #include "engine/render/Renderer.h"
-
+#include <algorithm> // Required for std::remove and std::erase
 
 class Display {
     const uint8_t minEffectDurationsInSecs;
@@ -38,19 +38,17 @@ class Display {
     const DisplaySpec &displaySpec;
     const std::unique_ptr<Renderer> renderer;
     CRGB *outputArray;
-    const uint8_t *freePinsForEntropy;
-    const uint8_t nbPinsForEntropy;
+    const std::vector<uint8_t> freePinsForEntropy;
 
     explicit Display(
         CRGB *outputArray,
         const DisplaySpec &displaySpec,
-        const uint8_t brightness,
-        const uint8_t minEffectDurationsInSecs,
-        const uint8_t maxEffectDurationsInSecs,
-        const int16_t transitionDurationInMillis,
-        const uint8_t fps,
-        const uint8_t *freePinsForEntropy,
-        const uint8_t nbPinsForEntropy
+        uint8_t brightness,
+        uint8_t minEffectDurationsInSecs,
+        uint8_t maxEffectDurationsInSecs,
+        int16_t transitionDurationInMillis,
+        uint8_t fps,
+        const std::vector<uint8_t> &freePinsForEntropy
     );
 
     void changeEffect(uint8_t effectDurationsInSecs);
@@ -66,22 +64,27 @@ public:
         const uint8_t maxEffectDurationsInSecs = 10,
         const int16_t transitionDurationInMillis = 1000, //use < 1 to disable
         const uint8_t fps = 30,
-        const uint8_t *freePinsForEntropy = new uint8_t[6]{1, 2, 3, 4, 5, 6}, //change if any of those pins are in use
-        const uint8_t nbPinsForEntropy = 6
+        //change if any of those pins are already in use or unavailable on the board
+        std::vector<unsigned char> freePinsForEntropy = std::vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
     ) {
+        freePinsForEntropy.erase(
+            std::remove(freePinsForEntropy.begin(), freePinsForEntropy.end(), static_cast<uint8_t>(LED_PIN)),
+            freePinsForEntropy.end()
+        );
+
         CRGB *outputArray = new CRGB[displaySpec.nbLeds()];
         CFastLED::addLeds<WS2812B, LED_PIN, RGB_ORDER>(outputArray, displaySpec.nbLeds())
                 .setCorrection(TypicalLEDStrip);
+
         return new Display(
             outputArray,
-            std::move(displaySpec),
+            displaySpec,
             brightness,
             minEffectDurationsInSecs,
             maxEffectDurationsInSecs,
             transitionDurationInMillis,
             fps,
-            freePinsForEntropy,
-            nbPinsForEntropy
+            freePinsForEntropy
         );
     }
 
@@ -89,7 +92,6 @@ public:
 
     ~Display() {
         delete[] outputArray;
-        delete[] freePinsForEntropy;
     }
 };
 

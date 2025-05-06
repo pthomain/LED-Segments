@@ -18,22 +18,29 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef SPARKLEOVERLAY_H
+#define SPARKLEOVERLAY_H
+#include "engine/effect/Effect.h"
 
-#ifndef LED_SEGMENTS_SEEDGENERATOR_H
-#define LED_SEGMENTS_SEEDGENERATOR_H
+class SparkleOverlay : public Effect, public Effect::Factory<SparkleOverlay> {
+    const float density = 0.005f;
+    const CRGB minBrightness = CRGB(50, 50, 50);
 
-#include <cstdint>
-#include "Arduino.h"
-
-//Provide any free pin to use to gather electrical noise to build entropy for the PRNG.
-//Be careful not to include any pin already used in your circuit.
-void addEntropy(const uint8_t *freePins, const uint8_t nbFreePins) {
-    uint8_t entropy = 0;
-    for (uint8_t i = 0; i < nbFreePins; i++) {
-        entropy = (entropy << 1) | (analogRead(i) & 1); //Use only LSB for more entropy
+public:
+    explicit SparkleOverlay(const EffectContext &effectContext) : Effect(effectContext) {
     }
-    random16_add_entropy(entropy);
-}
 
-#endif //LED_SEGMENTS_SEEDGENERATOR_H
+    void fillArrayInternal(
+        CRGB *effectArray,
+        uint16_t effectArraySize,
+        float progress,
+        unsigned long time
+    ) override;
+
+    String name() const override { return "Sparkle"; }
+    EffectType type() const override { return EffectType::OVERLAY_COLOUR; }
+
+    static EffectFactory factory;
+};
+
+#endif //SPARKLEOVERLAY_H

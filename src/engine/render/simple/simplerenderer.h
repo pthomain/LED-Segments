@@ -25,29 +25,45 @@
 #include "engine/render/PixelMapper.h"
 
 class SimpleRenderer : public Renderer {
-    CRGB *effectArray;
+    CRGB *effectSegmentArray;
+    CRGB *overlaySegmentArray;
+    CRGB *overlayBlendingArray;
     std::shared_ptr<Effect> currentEffect = nullptr;
+    std::shared_ptr<Effect> currentOverlay = nullptr;
+    std::shared_ptr<PixelMapper> simplePixelMapper = nullptr;
+    std::shared_ptr<PixelMapper> callbackPixelMapper = nullptr;
     float frameIndex = 0;
-    std::unique_ptr<PixelMapper> pixelMapper;
 
 public :
     explicit SimpleRenderer(
         const DisplaySpec &displaySpec,
-        std::unique_ptr<PixelMapper> pixelMapper,
+        std::shared_ptr<PixelMapper> callbackPixelMapper,
         const String &name
     );
 
-    void changeEffect(std::shared_ptr<Effect> effect) override;
+    void changeEffect(
+        std::shared_ptr<Effect> effect,
+        std::shared_ptr<Effect> overlay,
+        std::shared_ptr<Effect> transition
+    ) override;
 
     void render(CRGB *outputArray) override;
 
     std::shared_ptr<Effect> getEffect() override;
 
+    std::shared_ptr<Effect> getOverlay() override;
+
     ~SimpleRenderer() override {
-        delete[] effectArray;
-        effectArray = nullptr;
+        delete[] effectSegmentArray;
+        delete[] overlaySegmentArray;
+        delete[] overlayBlendingArray;
+        effectSegmentArray = nullptr;
+        overlaySegmentArray = nullptr;
+        overlayBlendingArray = nullptr;
+        if (simplePixelMapper) simplePixelMapper.reset();
+        if (callbackPixelMapper) callbackPixelMapper.reset();
         if (currentEffect) currentEffect.reset();
-        pixelMapper = nullptr;
+        if (currentOverlay) currentOverlay.reset();
     }
 };
 

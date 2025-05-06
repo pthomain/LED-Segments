@@ -18,30 +18,18 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LED_SEGMENTS_TESTPHRASECONFIG_H
-#define LED_SEGMENTS_TESTPHRASECONFIG_H
+#pragma once
 
-#define NB_LEDS 256
-#define NB_LETTERS 10
-#define NB_WORDS 3
+#ifndef LED_SEGMENTS_SEEDGENERATOR_H
+#define LED_SEGMENTS_SEEDGENERATOR_H
 
-constexpr static uint16_t LETTERS[NB_LETTERS][2] = {
-    {0, 23},
-    {24, 39},
-    {40, 63},
-    {64, 103},
-    {104, 151},
-    {152, 207},
-    {208, 231},
-    {232, 239},
-    {240, 247},
-    {248, 255}
-};
+#include <cstdint>
+#include <vector>
 
-constexpr static uint16_t WORDS[NB_WORDS][2] = {
-    {0, 103},
-    {104, 231},
-    {232, 255}
-};
+//Provide any free pin to use to gather electrical noise to build entropy for the PRNG.
+//Be careful not to include any pin already used in your circuit.
+void addEntropy(
+    const std::vector<uint8_t> &freePinsForEntropy
+);
 
-#endif //LED_SEGMENTS_TESTPHRASECONFIG_H
+#endif //LED_SEGMENTS_SEEDGENERATOR_H

@@ -32,8 +32,8 @@
 
 static const std::vector<CRGBPalette16> PALETTES PROGMEM = std::vector<CRGBPalette16>{
     Rainbow_gp,
-    ForestColors_p,
-    OceanColors_p,
+    // ForestColors_p,
+    // OceanColors_p,
 };
 
 static const std::vector<uint8_t> PRIMES PROGMEM = std::vector<uint8_t>{
@@ -56,6 +56,10 @@ static uint16_t unsignedModulo(int value, uint16_t modulo) {
 //Ensures noise values are between 0 and 255 (they usually are between 50 and 190 by default)
 static uint8_t normaliseNoise(uint8_t noise) {
     return map(constrain(noise, 50, 190), 50, 190, 0, 255);
+}
+
+inline bool probability(const float probability) {
+    return random16() < static_cast<uint32_t>(probability * 65535.0f);
 }
 
 template<typename T>

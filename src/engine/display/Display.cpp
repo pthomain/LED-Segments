@@ -21,9 +21,12 @@
 #include "Display.h"
 #include "engine/render/simple/SimpleRenderer.h"
 #include "engine/render/blender/Blender.h"
-#include "utils/SeedGenerator.h"
+#include "utils/seed/SeedGenerator.h"
 #include "engine/render/simple/SimplePixelMapper.h"
 #include <FastLED.h>
+
+#include "engine/transitions/fade/FadeTransition.h"
+#include "engine/transitions/slide/SlideTransition.h"
 
 #define FASTLED_USE_PROGMEM 1
 #define ENTROPY_UPDATE_IN_SECONDS 5
@@ -36,8 +39,7 @@ Display::Display(
     const uint8_t maxEffectDurationsInSecs,
     const int16_t transitionDurationInMillis,
     const uint8_t fps,
-    const uint8_t *freePinsForEntropy,
-    const uint8_t nbPinsForEntropy
+    const std::vector<uint8_t> &freePinsForEntropy
 ) : minEffectDurationsInSecs(min(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
     maxEffectDurationsInSecs(max(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
     currentEffectDurationsInSecs(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
@@ -63,51 +65,70 @@ Display::Display(
         }()
     ),
     outputArray(outputArray),
-    freePinsForEntropy(freePinsForEntropy),
-    nbPinsForEntropy(nbPinsForEntropy) {
+    freePinsForEntropy(freePinsForEntropy) {
     FastLED.setBrightness(brightness);
     FastLED.clear(true);
-    addEntropy(freePinsForEntropy, nbPinsForEntropy);
+    addEntropy(freePinsForEntropy);
     changeEffect(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs));
     render();
 }
 
 void Display::changeEffect(uint8_t effectDurationsInSecs) {
     const auto catalog = displaySpec.catalog();
-    const uint16_t layoutIndex = random16(catalog.nbLayouts());
+    const CRGBPalette16 &palette = PALETTES[random8(PALETTES.size())];
+    const uint16_t effectLayoutIndex = random16(catalog.nbLayouts());
 
-    const auto effectFactory = catalog.randomEffectFactory(layoutIndex);
-    const auto effectMirror = catalog.randomMirror(layoutIndex);
+    const auto effectFactory = catalog.randomEffectFactory(effectLayoutIndex);
+    const auto effectMirror = catalog.randomMirror(effectLayoutIndex);
 
-    auto [transitionLayoutIndex, transition] = catalog.randomTransition();
-    const auto transitionMirror = transition == Transition::NONE || transition == Transition::FADE
-                                      ? Mirror::NONE
-                                      : catalog.randomMirror(transitionLayoutIndex);
+    auto [transitionLayoutIndex, transitionFactory] = catalog.randomTransition();
+    const auto transitionMirror = catalog.randomMirror(transitionLayoutIndex);
 
-    //TODO highlight
-    const CRGBPalette16 palette = Rainbow_gp; //PALETTES[random8(PALETTES.size())];
-    auto effect = effectFactory(
-        EffectContext(
-            effectDurationsInSecs * fps,
-            displaySpec.isCircular(),
-            layoutIndex,
-            Palette(palette, PaletteType::GRADIENT),
-            effectMirror,
-            transition,
-            transitionLayoutIndex,
-            transitionMirror
-        )
+    const auto [overlayLayoutIndex, overlayFactory] = catalog.randomOverlay();
+
+    const uint16_t effectDurationInFrames = effectDurationsInSecs * fps;
+
+    EffectContext effectContext(
+        effectDurationInFrames,
+        displaySpec.isCircular(),
+        effectLayoutIndex,
+        Palette(palette, PaletteType::GRADIENT),
+        effectMirror
     );
+
+    EffectContext overlayContext(
+        effectDurationInFrames,
+        displaySpec.isCircular(),
+        overlayLayoutIndex,
+        NO_PALETTE,
+        Mirror::NONE //TODO maybe add mirror
+    );
+
+    EffectContext transitionContext(
+        fps * transitionDurationInMillis / 1000,
+        displaySpec.isCircular(),
+        transitionLayoutIndex,
+        NO_PALETTE,
+        transitionMirror
+    );
+
+    auto effect = effectFactory(effectContext);
+    auto overlay = overlayFactory(overlayContext);
+    auto transition = SlideTransition::factory(transitionContext);
 
     if constexpr (IS_DEBUG) {
         Serial.print("Layout\t\t\t");
-        Serial.println(catalog.layoutName(layoutIndex));
+        Serial.println(catalog.layoutName(effectLayoutIndex));
         Serial.print("Effect\t\t\t");
         Serial.println(effect->name());
         Serial.print("Effect mirror\t\t");
         Serial.println(getMirrorName(effectMirror));
+        Serial.print("Overlay\t\t\t");
+        Serial.println(overlay->name());
+        Serial.print("Overlay layout\t\t");
+        Serial.println(catalog.layoutName(overlayLayoutIndex));
         Serial.print("Transition\t\t");
-        Serial.println(transition.name());
+        Serial.println(transition->name());
         Serial.print("Transition layout\t");
         Serial.println(catalog.layoutName(transitionLayoutIndex));
         Serial.print("Transition mirror\t");
@@ -115,7 +136,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
         Serial.println("---");
     }
 
-    renderer->changeEffect(std::move(effect));
+    renderer->changeEffect(std::move(effect), std::move(overlay), std::move(transition));
 
     currentEffectDurationsInSecs = effectDurationsInSecs;
     lastChangeTime = millis();
@@ -136,6 +157,6 @@ void Display::loop() {
     }
 
     EVERY_N_SECONDS(ENTROPY_UPDATE_IN_SECONDS) {
-        addEntropy(freePinsForEntropy, nbPinsForEntropy);
+        addEntropy(freePinsForEntropy);
     }
 }

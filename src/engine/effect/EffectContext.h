@@ -18,14 +18,11 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #ifndef LED_SEGMENTS_EFFECTCONTEXT_H
 #define LED_SEGMENTS_EFFECTCONTEXT_H
 
 #include <engine/mirror/Mirror.h>
 #include <engine/palette/Palette.h>
-#include <engine/transition/Transition.h>
-
 #include "FastLED.h"
 #include "utils/Utils.h"
 
@@ -36,27 +33,18 @@ public:
     const uint16_t layoutIndex;
     const Palette palette;
     const Mirror mirror;
-    const Transition transition;
-    const uint8_t transitionLayoutIndex;
-    const Mirror transitionMirror;
 
     EffectContext(
         const uint16_t durationsInFrames,
         const boolean isDisplayCircular,
         const uint16_t layoutIndex,
         Palette palette,
-        const Mirror mirror,
-        const Transition transition,
-        const uint8_t transitionLayoutIndex,
-        const Mirror transitionMirror
+        const Mirror mirror
     ) : durationsInFrames(durationsInFrames),
         isDisplayCircular(isDisplayCircular),
         layoutIndex(layoutIndex),
         palette(std::move(palette)),
-        mirror(mirror),
-        transition(transition),
-        transitionLayoutIndex(transitionLayoutIndex),
-        transitionMirror(transitionMirror) {
+        mirror(mirror) {
     }
 };
 

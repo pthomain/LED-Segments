@@ -18,7 +18,6 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #ifndef LED_SEGMENTS_PIXELMAPPER_H
 #define LED_SEGMENTS_PIXELMAPPER_H
 
@@ -26,18 +25,17 @@
 #include "crgb.h"
 
 class PixelMapper {
-
 public:
     PixelMapper() = default;
 
     virtual void mapPixels(
-            const String &rendererName,
-            uint16_t layoutIndex,
-            uint16_t segmentIndex,
-            uint16_t segmentSize,
-            float progress,
-            CRGB *outputArray,
-            CRGB *effectArray
+        const String &rendererName,
+        uint16_t layoutIndex,
+        uint16_t segmentIndex,
+        uint16_t segmentSize,
+        float progress,
+        CRGB *outputArray,
+        CRGB *segmentArray
     ) = 0;
 
     virtual ~PixelMapper() = default;

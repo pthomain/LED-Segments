@@ -18,30 +18,29 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LED_SEGMENTS_TESTPHRASECONFIG_H
-#define LED_SEGMENTS_TESTPHRASECONFIG_H
+#ifndef NOOVERLAY_H
+#define NOOVERLAY_H
 
-#define NB_LEDS 256
-#define NB_LETTERS 10
-#define NB_WORDS 3
+#include "engine/effect/Effect.h"
 
-constexpr static uint16_t LETTERS[NB_LETTERS][2] = {
-    {0, 23},
-    {24, 39},
-    {40, 63},
-    {64, 103},
-    {104, 151},
-    {152, 207},
-    {208, 231},
-    {232, 239},
-    {240, 247},
-    {248, 255}
+class NoOverlay : public Effect, public Effect::Factory<NoOverlay> {
+public:
+    explicit NoOverlay(const EffectContext &effectContext) : Effect(effectContext) {
+    }
+
+    void fillArrayInternal(
+        CRGB *effectArray,
+        uint16_t effectArraySize,
+        float progress,
+        unsigned long time
+    ) override;
+
+    String name() const override { return "None"; }
+    EffectType type() const override { return EffectType::OVERLAY_ALPHA; }
+
+    static EffectFactory factory;
 };
 
-constexpr static uint16_t WORDS[NB_WORDS][2] = {
-    {0, 103},
-    {104, 231},
-    {232, 255}
-};
+static const std::vector NO_OVERLAYS = {NoOverlay::factory};
 
-#endif //LED_SEGMENTS_TESTPHRASECONFIG_H
+#endif //NOOVERLAY_H

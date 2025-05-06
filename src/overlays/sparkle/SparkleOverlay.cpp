@@ -18,30 +18,22 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LED_SEGMENTS_TESTPHRASECONFIG_H
-#define LED_SEGMENTS_TESTPHRASECONFIG_H
+#include "SparkleOverlay.h"
+#include "crgb.h"
 
-#define NB_LEDS 256
-#define NB_LETTERS 10
-#define NB_WORDS 3
-
-constexpr static uint16_t LETTERS[NB_LETTERS][2] = {
-    {0, 23},
-    {24, 39},
-    {40, 63},
-    {64, 103},
-    {104, 151},
-    {152, 207},
-    {208, 231},
-    {232, 239},
-    {240, 247},
-    {248, 255}
+EffectFactory SparkleOverlay::factory = [](
+    const EffectContext &effectContext
+) -> std::unique_ptr<Effect> {
+    return std::make_unique<SparkleOverlay>(effectContext);
 };
 
-constexpr static uint16_t WORDS[NB_WORDS][2] = {
-    {0, 103},
-    {104, 231},
-    {232, 255}
-};
-
-#endif //LED_SEGMENTS_TESTPHRASECONFIG_H
+void SparkleOverlay::fillArrayInternal(
+    CRGB *effectArray,
+    uint16_t effectArraySize,
+    float progress,
+    unsigned long time
+) {
+    for (uint16_t i = 0; i < effectArraySize; i++) {
+        effectArray[i] = probability(density) ? CRGB::White : CRGB::Black;
+    }
+}

@@ -32,7 +32,7 @@ void FadeTransition::fillArrayInternal(
     float progress,
     unsigned long time
 ) {
-    uint8_t alpha = 255 * progress;
+    auto alpha = static_cast<uint8_t>(255.0f * progress);
     CRGB colour = CRGB(alpha, alpha, alpha);
     for (uint16_t i = 0; i < effectArraySize; i++) {
         effectArray[i] = colour;

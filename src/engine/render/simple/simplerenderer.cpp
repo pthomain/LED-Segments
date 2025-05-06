@@ -19,19 +19,28 @@
  */
 
 #include "SimpleRenderer.h"
+#include "SimplePixelMapper.h"
 #include "engine/render/PixelMapper.h"
 
 SimpleRenderer::SimpleRenderer(
     const DisplaySpec &displaySpec,
-    std::unique_ptr<PixelMapper> pixelMapper,
+    std::shared_ptr<PixelMapper> callbackPixelMapper,
     const String &name
 ) : Renderer(displaySpec, name),
-    effectArray(new CRGB[displaySpec.maxSegmentSize()]{}),
-    pixelMapper(std::move(pixelMapper)) {
+    effectSegmentArray(new CRGB[displaySpec.maxSegmentSize()]{}),
+    overlaySegmentArray(new CRGB[displaySpec.maxSegmentSize()]{}),
+    overlayBlendingArray(new CRGB[displaySpec.nbLeds()]{}),
+    simplePixelMapper(std::make_shared<SimplePixelMapper>(displaySpec)),
+    callbackPixelMapper(std::move(callbackPixelMapper)) {
 }
 
-void SimpleRenderer::changeEffect(std::shared_ptr<Effect> effect) {
+void SimpleRenderer::changeEffect(
+    std::shared_ptr<Effect> effect,
+    std::shared_ptr<Effect> overlay,
+    std::shared_ptr<Effect> transition
+) {
     currentEffect = effect;
+    currentOverlay = overlay;
     frameIndex = 0;
 }
 
@@ -41,34 +50,43 @@ void SimpleRenderer::render(CRGB *outputArray) {
         return;
     }
 
-    EffectContext context = currentEffect->effectContext;
-    uint16_t layoutIndex = context.layoutIndex;
-    uint16_t nbSegments = displaySpec.nbSegments(layoutIndex);
-
-    float progress = frameIndex / static_cast<float>(context.durationsInFrames);
-
-    for (uint8_t segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
-        uint16_t nbPixels = displaySpec.nbPixels(layoutIndex, segmentIndex);
-        uint16_t mirrorSize = getMirrorSize(context.mirror, nbPixels);
-
-        currentEffect->fillArray(effectArray, mirrorSize, progress);
-
-        applyMirror(context.mirror, effectArray, nbPixels);
-
-        pixelMapper->mapPixels(
-            name,
-            layoutIndex,
-            segmentIndex,
-            nbPixels,
-            progress,
-            outputArray,
-            effectArray
-        );
-    }
-
+    EffectContext effectContext = currentEffect->effectContext;
+    EffectContext overlayContext = currentOverlay->effectContext;
+    float progress = frameIndex / static_cast<float>(effectContext.durationsInFrames);
     frameIndex++;
+
+    applyEffect(
+        currentEffect,
+        effectContext.layoutIndex,
+        effectContext.mirror,
+        effectSegmentArray,
+        outputArray,
+        progress,
+        callbackPixelMapper
+    );
+
+    // applyEffect(
+    //     currentOverlay,
+    //     overlayContext.layoutIndex,
+    //     overlayContext.mirror,
+    //     overlaySegmentArray,
+    //     overlayBlendingArray,
+    //     progress,
+    //     thisPixelMapper
+    // );
+    //
+    // if (currentOverlay->type() == EffectType::OVERLAY_COLOUR) {
+    //     for (uint16_t ledIndex = 0; ledIndex < displaySpec.nbLeds(); ledIndex++) {
+    //         if (overlayBlendingArray[ledIndex] != CRGB::Black)
+    //             outputArray[ledIndex] = overlayBlendingArray[ledIndex];
+    //     }
+    // }
 }
 
 std::shared_ptr<Effect> SimpleRenderer::getEffect() {
     return currentEffect;
+}
+
+std::shared_ptr<Effect> SimpleRenderer::getOverlay() {
+    return currentOverlay;
 }

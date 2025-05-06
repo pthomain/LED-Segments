@@ -22,10 +22,10 @@
 #define EFFECTTYPE_H
 
 enum class EffectType {
-  EFFECT,
-  OVERLAY_ALPHA,
-  OVERLAY_COLOUR,
-  TRANSITION
+    EFFECT,
+    OVERLAY_ALPHA,
+    OVERLAY_COLOUR,
+    TRANSITION
 };
 
 #endif //EFFECTTYPE_H

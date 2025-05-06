@@ -20,6 +20,7 @@
 
 #include "Blender.h"
 #include "engine/effect/Effect.h"
+#include "engine/render/simple/SimplePixelMapper.h"
 #include "engine/render/simple/SimpleRenderer.h"
 
 Blender::Blender(
@@ -35,62 +36,36 @@ Blender::Blender(
     refreshRateInMillis(refreshRateInMillis),
     transitionDurationInMillis(transitionDurationInMillis) {
     //Initialisation of both renderers needs to be done here, moving it to property setters causes issues
+    std::shared_ptr<PixelMapper> mapper(this);
     runningRenderer = std::make_unique<SimpleRenderer>(
         displaySpec,
-        std::unique_ptr<PixelMapper>(this),
+        mapper,
         runningRendererName
     );
     blendingRenderer = std::make_unique<SimpleRenderer>(
         displaySpec,
-        std::unique_ptr<PixelMapper>(this),
+        mapper,
         blendingRendererName
     );
+
+    transitionPixelMapper = std::make_shared<SimplePixelMapper>(displaySpec);
 }
 
-void Blender::changeEffect(std::shared_ptr<Effect> effect) {
-    currentEffect = effect;
+void Blender::changeEffect(
+    std::shared_ptr<Effect> effect,
+    std::shared_ptr<Effect> overlay,
+    std::shared_ptr<Effect> transition
+) {
+    currentTransition = transition;
 
-    auto context = currentEffect->effectContext;
-    auto transitionFactory = transitionfactories.at(context.transition);
-    currentTransition = transitionFactory(context);
-
-    if (runningRenderer->getEffect() != nullptr) {
+    if (runningRenderer->getEffect() == nullptr) {
+        runningRenderer->changeEffect(effect, overlay, transition);
+    } else {
         transitionStep = transitionDurationInFrames;
         for (uint16_t pixelIndex = 0; pixelIndex < displaySpec.maxSegmentSize(); pixelIndex++) {
             transitionSegmentArray[pixelIndex] = 0;
         }
-        blendingRenderer->changeEffect(effect);
-    } else {
-        runningRenderer->changeEffect(effect);
-    }
-}
-
-void Blender::fillTransition(float transitionPercent) const {
-    auto context = currentEffect->effectContext;
-    auto transitionSegments = displaySpec.nbSegments(context.transitionLayoutIndex);
-
-    for (auto segmentIndex = 0; segmentIndex < transitionSegments; segmentIndex++) {
-        auto segmentSize = displaySpec.nbPixels(context.transitionLayoutIndex, segmentIndex);
-        uint16_t transitionMirrorSize = getMirrorSize(context.transitionMirror, segmentSize);
-
-        currentTransition->fillArray(
-            transitionSegmentArray,
-            transitionMirrorSize,
-            transitionPercent
-        );
-
-        applyMirror(context.transitionMirror, transitionSegmentArray, segmentSize);
-
-        for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
-            displaySpec.setColour(
-                context.transitionLayoutIndex,
-                segmentIndex,
-                pixelIndex,
-                0,
-                transitionArray,
-                transitionSegmentArray[pixelIndex]
-            );
-        }
+        blendingRenderer->changeEffect(effect, overlay, transition);
     }
 }
 
@@ -98,17 +73,24 @@ void Blender::applyTransition(
     CRGB *outputArray,
     float transitionPercent
 ) const {
-    fillTransition(transitionPercent);
+    auto context = currentTransition->effectContext;
+
+    applyEffect(
+        currentTransition,
+        context.layoutIndex,
+        context.mirror,
+        transitionSegmentArray,
+        transitionArray,
+        transitionPercent,
+        transitionPixelMapper
+    );
 
     for (uint16_t pixelIndex = 0; pixelIndex < displaySpec.nbLeds(); pixelIndex++) {
-        auto blendedColour = blend(
+        outputArray[pixelIndex] = blend(
             runningArray[pixelIndex],
             blendingArray[pixelIndex],
             transitionArray[pixelIndex].r
         );
-
-        //TODO handle alpha
-        outputArray[pixelIndex] = blendedColour;
     }
 }
 
@@ -119,14 +101,18 @@ void Blender::render(CRGB *outputArray) {
         runningRenderer->render(outputArray);
         blendingRenderer->render(outputArray);
 
-        const float transitionPercent = 1 - (transitionStep / (float) transitionDurationInFrames);
-        const float smoothed = 1 - cos((transitionPercent * PI) / 2); //sine easing
+        const float transitionPercent = 1 - (transitionStep / static_cast<float>(transitionDurationInFrames));
+        const float smoothed = 1.0f - cos(transitionPercent * PI / 2); //sine easing
 
         applyTransition(outputArray, smoothed);
         transitionStep = max(-1, transitionStep - 1);
 
         if (transitionStep < 0) {
-            runningRenderer->changeEffect(blendingRenderer->getEffect());
+            runningRenderer->changeEffect(
+                blendingRenderer->getEffect(),
+                blendingRenderer->getOverlay(),
+                currentTransition
+            );
         }
     }
 }
@@ -138,16 +124,18 @@ void Blender::mapPixels(
     const uint16_t segmentSize,
     float progress,
     CRGB *outputArray,
-    CRGB *effectArray
+    CRGB *segmentArray
 ) {
-    if (effectArray == nullptr) {
+    if (segmentArray == nullptr) {
         if constexpr (IS_DEBUG) Serial.println("Effect array is null for renderer " + rendererName);
         return; //should not happen
     }
 
+    bool isRunningRenderer = rendererName == runningRendererName;
+
     CRGB *rendererOutputArray = transitionStep < 0
                                     ? outputArray
-                                    : rendererName == runningRendererName
+                                    : isRunningRenderer
                                           ? runningArray
                                           : blendingArray;
 
@@ -158,11 +146,15 @@ void Blender::mapPixels(
             pixelIndex,
             progress,
             rendererOutputArray,
-            effectArray[pixelIndex]
+            segmentArray[pixelIndex]
         );
     }
 }
 
 std::shared_ptr<Effect> Blender::getEffect() {
+    return nullptr; //NOOP
+}
+
+std::shared_ptr<Effect> Blender::getOverlay() {
     return nullptr; //NOOP
 }

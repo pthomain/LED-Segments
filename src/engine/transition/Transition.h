@@ -1,23 +1,5 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  Copyright (C) 2023 Pierre Thomain <pthomain@gmail.com>
-//
-// /*
-//  * This file is part of LED Segments.
-//  *
-//  * LED Segments is free software: you can redistribute it and/or modify
-//  * it under the terms of the GNU General Public License as published by
-//  * the Free Software Foundation, either version 3 of the License, or
-//  * (at your option) any later version.
-//  *
-//  * LED Segments is distributed in the hope that it will be useful,
-//  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  * GNU General Public License for more details.
-//  *
-//  * You should have received a copy of the GNU General Public License
-//  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
-//  *
-//
 
 /*
  * This file is part of LED Segments.
@@ -38,6 +20,9 @@
 
 #ifndef LED_SEGMENTS_TRANSITION_H
 #define LED_SEGMENTS_TRANSITION_H
+#include "engine/transitions/fade/FadeTransition.h"
+#include "engine/transitions/none/NoTransition.h"
+#include "engine/transitions/slide/SlideTransition.h"
 
 enum class Transition {
     NONE,
@@ -46,11 +31,11 @@ enum class Transition {
 };
 
 const std::vector ALL_TRANSITIONS = {
-    Transition::FADE,
-    Transition::SLIDE
+    FadeTransition::factory,
+    SlideTransition::factory
 };
 
-static const String getTransitionName(Transition transition) {
+static String getTransitionName(Transition transition) {
     switch (transition) {
         case Transition::NONE: return "NONE";
         case Transition::FADE: return "FADE";
@@ -58,5 +43,11 @@ static const String getTransitionName(Transition transition) {
         default: return "UNKNOWN";
     }
 }
+
+const std::map<Transition, EffectFactory> transitionfactories = {
+    {Transition::NONE, NoTransition::factory},
+    {Transition::FADE, FadeTransition::factory},
+    {Transition::SLIDE, SlideTransition::factory}
+};
 
 #endif //LED_SEGMENTS_TRANSITION_H

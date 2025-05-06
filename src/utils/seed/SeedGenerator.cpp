@@ -18,30 +18,31 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LED_SEGMENTS_TESTPHRASECONFIG_H
-#define LED_SEGMENTS_TESTPHRASECONFIG_H
+#include "SeedGenerator.h"
+#include <Arduino.h>
+#include "lib8tion/random8.h"
+#include <vector>
 
-#define NB_LEDS 256
-#define NB_LETTERS 10
-#define NB_WORDS 3
+void addEntropy(
+    const std::vector<uint8_t> &freePinsForEntropy
+) {
+    static bool seedSet = false;
+    uint8_t entropy = 0;
 
-constexpr static uint16_t LETTERS[NB_LETTERS][2] = {
-    {0, 23},
-    {24, 39},
-    {40, 63},
-    {64, 103},
-    {104, 151},
-    {152, 207},
-    {208, 231},
-    {232, 239},
-    {240, 247},
-    {248, 255}
-};
+    if (!seedSet) {
+        for (auto pin: freePinsForEntropy) {
+            pinMode(pin, INPUT);
+        }
+    }
 
-constexpr static uint16_t WORDS[NB_WORDS][2] = {
-    {0, 103},
-    {104, 231},
-    {232, 255}
-};
+    for (uint8_t i = 0; i < 16; i++) {
+        entropy = (entropy << 1) | (analogRead(freePinsForEntropy[i % freePinsForEntropy.size()]) & 1);
+    }
 
-#endif //LED_SEGMENTS_TESTPHRASECONFIG_H
+    if (seedSet) {
+        random16_add_entropy(entropy);
+    } else {
+        random16_set_seed(entropy);
+        seedSet = true;
+    }
+}

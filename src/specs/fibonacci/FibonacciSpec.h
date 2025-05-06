@@ -23,7 +23,7 @@
 
 #include <cstdint>
 #include "crgb.h"
-#include "FibonacciLayoutConfig.h"
+#include "config/FibonacciLayoutConfig.h"
 #include "engine/displayspec/DisplaySpec.h"
 
 class FibonacciSpec : public DisplaySpec {

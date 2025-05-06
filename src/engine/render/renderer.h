@@ -21,6 +21,7 @@
 #ifndef LED_SEGMENTS_RENDERER_H
 #define LED_SEGMENTS_RENDERER_H
 
+#include "PixelMapper.h"
 #include "engine/effect/Effect.h"
 #include "engine/displayspec/DisplaySpec.h"
 
@@ -29,6 +30,16 @@ protected:
     const DisplaySpec &displaySpec;
     const String name;
 
+    void applyEffect(
+        const std::shared_ptr<Effect> &effect,
+        uint16_t layoutIndex,
+        Mirror mirror,
+        CRGB *segmentArray,
+        CRGB *outputArray,
+        float progress,
+        const std::shared_ptr<PixelMapper> &pixelMapper
+    ) const;
+
 public:
     explicit Renderer(
         const DisplaySpec &displaySpec,
@@ -36,14 +47,19 @@ public:
     ) : displaySpec(displaySpec), name(std::move(name)) {
     }
 
-    virtual void changeEffect(std::shared_ptr<Effect> effect) = 0;
+    virtual void changeEffect(
+        std::shared_ptr<Effect> effect,
+        std::shared_ptr<Effect> overlay,
+        std::shared_ptr<Effect> transition
+    ) = 0;
 
     virtual void render(CRGB *outputArray) = 0;
 
     virtual std::shared_ptr<Effect> getEffect() = 0;
 
+    virtual std::shared_ptr<Effect> getOverlay() = 0;
+
     virtual ~Renderer() = default;
 };
-
 
 #endif //LED_SEGMENTS_RENDERER_H

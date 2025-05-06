@@ -25,6 +25,11 @@ void Effect::fillArray(
     uint16_t effectArraySize,
     float progress
 ) {
+    if (!isArrayInitialised) {
+        memset(effectArray, 0, effectArraySize * sizeof(CRGB));
+        isArrayInitialised = true;
+    }
+
     fillArrayInternal(
         effectArray,
         effectArraySize,

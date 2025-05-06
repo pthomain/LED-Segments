@@ -18,30 +18,22 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LED_SEGMENTS_TESTPHRASECONFIG_H
-#define LED_SEGMENTS_TESTPHRASECONFIG_H
+#include "crgb.h"
+#include "NoOverlay.h"
 
-#define NB_LEDS 256
-#define NB_LETTERS 10
-#define NB_WORDS 3
-
-constexpr static uint16_t LETTERS[NB_LETTERS][2] = {
-    {0, 23},
-    {24, 39},
-    {40, 63},
-    {64, 103},
-    {104, 151},
-    {152, 207},
-    {208, 231},
-    {232, 239},
-    {240, 247},
-    {248, 255}
+EffectFactory NoOverlay::factory = [](
+    const EffectContext &effectContext
+) -> std::unique_ptr<Effect> {
+    return std::make_unique<NoOverlay>(effectContext);
 };
 
-constexpr static uint16_t WORDS[NB_WORDS][2] = {
-    {0, 103},
-    {104, 231},
-    {232, 255}
+void NoOverlay::fillArrayInternal(
+    CRGB *effectArray,
+    uint16_t effectArraySize,
+    float progress,
+    unsigned long time
+) {
+    for (uint16_t i = 0; i < effectArraySize; i++) {
+        effectArray[i] = CRGB::Black;
+    }
 };
-
-#endif //LED_SEGMENTS_TESTPHRASECONFIG_H

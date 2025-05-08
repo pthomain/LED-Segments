@@ -29,13 +29,9 @@ class Renderer {
     const DisplaySpec &displaySpec;
 
     CRGB *outputArray = nullptr;
-
     CRGB *segmentArray = nullptr;
-    uint8_t *transitionSegmentArray = nullptr;
-
-    CRGB *bufferOutputArray = nullptr;
+    uint8_t *segmentArray8 = nullptr;
     CRGB *pendingOutputArray = nullptr;
-    uint8_t *transitionOutputArray = nullptr;
 
     std::shared_ptr<Effect<CRGB> > effect = nullptr;
     std::shared_ptr<Effect<CRGB> > overlay = nullptr;
@@ -60,7 +56,8 @@ class Renderer {
     void applyEffectOrTransition(
         const std::shared_ptr<Effect<C> > &effect,
         C *segmentArray,
-        C *outputArray,
+        CRGB *outputArray,
+        std::function<CRGB(uint16_t ledIndex, CRGB existing, C toBeMixed)> mix,
         float progress
     ) const;
 

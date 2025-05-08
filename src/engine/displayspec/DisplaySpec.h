@@ -54,13 +54,12 @@ public:
 
     virtual uint16_t nbPixels(uint16_t layoutIndex, uint16_t segmentIndex) const = 0;
 
-    virtual void setColour(
+    virtual void mapLeds(
         uint16_t layoutIndex,
         uint16_t segmentIndex,
         uint16_t pixelIndex,
         float progress,
-        CRGB *outputArray,
-        CRGB colour
+        const std::function<void(uint16_t)> &onLedMapped
     ) const = 0;
 
     const LayoutCatalog &catalog() const {

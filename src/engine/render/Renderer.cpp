@@ -184,13 +184,14 @@ void Renderer::applyEffect(
         applyMirror(mirror, segmentArray, segmentSize);
 
         for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
-            displaySpec.setColour(
+            displaySpec.mapLeds(
                 layoutIndex,
                 segmentIndex,
                 pixelIndex,
                 progress,
-                outputArray,
-                segmentArray[pixelIndex]
+                [&](uint16_t ledIndex) {
+                    outputArray[ledIndex] = segmentArray[pixelIndex];
+                }
             );
         }
     }

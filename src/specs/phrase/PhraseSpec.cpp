@@ -70,89 +70,75 @@ uint16_t PhraseSpec::nbPixels(
     }
 }
 
-void PhraseSpec::setColour(
-    const uint16_t layoutIndex,
-    const uint16_t segmentIndex,
-    const uint16_t pixelIndex,
+void PhraseSpec::mapLeds(
+    uint16_t layoutIndex,
+    uint16_t segmentIndex,
+    uint16_t pixelIndex,
     float progress,
-    CRGB *outputArray,
-    const CRGB colour
+    const std::function<void(uint16_t)> &onLedMapped
 ) const {
-    auto applyColourToRange = [&](uint16_t start, uint16_t end) {
+    auto mapRange = [&](uint16_t start, uint16_t end) {
         for (uint16_t i = start; i <= end; i++) {
-            outputArray[i] = colour;
+            mapLed(i, onLedMapped);
         }
     };
 
-    auto applyColourToPixel = [&](
+    auto mapSegmentPixel = [&](
         uint16_t segmentStart,
         uint16_t segmentEnd,
         uint16_t pixelArraySize,
         const std::function<std::array<uint16_t, 2>(uint16_t)> &getPixel
     ) {
-        uint16_t containedPixelIndex = 0;
-        for (uint8_t i = 0; i <= pixelArraySize; i++) {
+        uint16_t intersectingPixelIndex = 0;
+        for (uint16_t i = 0; i <= pixelArraySize; i++) {
             auto pixel = getPixel(i);
             if (pixel[0] >= segmentStart && pixel[1] <= segmentEnd) {
-                if (containedPixelIndex == pixelIndex) {
-                    applyColourToRange(pixel[0], pixel[1]);
+                if (intersectingPixelIndex == pixelIndex) {
+                    mapRange(pixel[0], pixel[1]);
                     return;
                 }
-                containedPixelIndex++;
+                intersectingPixelIndex++;
             }
         }
     };
 
     switch (layoutIndex) {
         case LEDS_IN_LETTERS:
-            applyColourToLed(
-                LETTERS[segmentIndex][0] + pixelIndex,
-                outputArray,
-                colour
-            );
+            mapLed(LETTERS[segmentIndex][0] + pixelIndex, onLedMapped);
             break;
 
         case LEDS_IN_WORDS:
-            applyColourToLed(
-                WORDS[segmentIndex][0] + pixelIndex,
-                outputArray,
-                colour
-            );
+            mapLed(WORDS[segmentIndex][0] + pixelIndex, onLedMapped);
             break;
 
         case LEDS_IN_WHOLE:
-            applyColourToLed(
-                pixelIndex,
-                outputArray,
-                colour
-            );
+            mapLed(pixelIndex, onLedMapped);
             break;
 
         case LETTERS_IN_WORDS:
-            applyColourToPixel(
+            mapSegmentPixel(
                 WORDS[segmentIndex][0],
                 WORDS[segmentIndex][1],
                 NB_LETTERS,
-                [&](uint16_t pixelIndex) {
-                    return std::array<uint16_t, 2>{LETTERS[pixelIndex][0], LETTERS[pixelIndex][1]};
+                [&](uint16_t segmentPixelIndex) {
+                    return std::array<uint16_t, 2>{LETTERS[segmentPixelIndex][0], LETTERS[segmentPixelIndex][1]};
                 }
             );
             break;
 
         case LETTERS_IN_WHOLE:
-            applyColourToRange(LETTERS[pixelIndex][0], LETTERS[pixelIndex][1]);
+            mapRange(LETTERS[pixelIndex][0], LETTERS[pixelIndex][1]);
             break;
 
         case WORDS_IN_WHOLE:
-            applyColourToRange(WORDS[pixelIndex][0], WORDS[pixelIndex][1]);
+            mapRange(WORDS[pixelIndex][0], WORDS[pixelIndex][1]);
             break;
     };
 }
 
-void PhraseSpec::applyColourToLed(
+void PhraseSpec::mapLed(
     const uint16_t ledIndex,
-    CRGB *outputArray,
-    const CRGB colour
+    const std::function<void(uint16_t)> &onLedMapped
 ) const {
     const uint8_t ledsPerRow = 8;
     const uint16_t rowIndex = ledIndex / ledsPerRow;
@@ -161,8 +147,8 @@ void PhraseSpec::applyColourToLed(
         auto rowStart = rowIndex * ledsPerRow;
         auto rowEnd = rowStart + ledsPerRow - 1;
         auto relativeIndex = ledIndex - rowStart;
-        outputArray[rowEnd - relativeIndex] = colour;
+        onLedMapped(rowEnd - relativeIndex);
     } else {
-        outputArray[ledIndex] = colour;
+        onLedMapped(ledIndex);
     }
 }

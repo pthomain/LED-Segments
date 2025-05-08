@@ -32,10 +32,9 @@
 #include "specs/phrase/config/PhraseLayoutConfig.h"
 
 class PhraseSpec : public DisplaySpec {
-    void applyColourToLed(
+    void mapLed(
         uint16_t ledIndex,
-        CRGB *outputArray,
-        CRGB colour
+        const std::function<void(uint16_t)> &onLedMapped
     ) const;
 
 public :
@@ -48,13 +47,12 @@ public :
 
     uint16_t nbPixels(uint16_t layoutIndex, uint16_t segmentIndex) const override;
 
-    void setColour(
+    void mapLeds(
         uint16_t layoutIndex,
         uint16_t segmentIndex,
         uint16_t pixelIndex,
         float progress,
-        CRGB *outputArray,
-        CRGB colour
+        const std::function<void(uint16_t)> &onLedMapped
     ) const override;
 
     ~PhraseSpec() override = default;

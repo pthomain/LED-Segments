@@ -20,6 +20,7 @@
 
 #ifndef LED_SEGMENTS_TRANSITION_H
 #define LED_SEGMENTS_TRANSITION_H
+
 #include "engine/transitions/fade/FadeTransition.h"
 #include "engine/transitions/none/NoTransition.h"
 #include "engine/transitions/slide/SlideTransition.h"
@@ -44,7 +45,7 @@ static String getTransitionName(Transition transition) {
     }
 }
 
-static std::map<Transition, EffectFactory> transitionfactories = {
+static std::map<Transition, EffectFactory<uint8_t>> transitionfactories = {
     {Transition::NONE, NoTransition::factory},
     {Transition::FADE, FadeTransition::factory},
     {Transition::SLIDE, SlideTransition::factory}

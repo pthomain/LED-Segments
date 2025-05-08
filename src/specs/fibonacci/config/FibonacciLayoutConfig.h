@@ -164,8 +164,8 @@ inline const std::vector<uint16_t> &variations() {
     return variations;
 }
 
-static std::map<uint16_t, std::vector<EffectFactory> > fibonacciEffects() {
-    return mapLayoutIndex<EffectFactory>(
+static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > fibonacciEffects() {
+    return mapLayoutIndex<EffectFactory<CRGB> >(
         variations(),
         [](uint16_t layoutIndex) {
             return std::vector{
@@ -176,8 +176,8 @@ static std::map<uint16_t, std::vector<EffectFactory> > fibonacciEffects() {
     );
 }
 
-static std::map<uint16_t, std::vector<EffectFactory> > fibonacciOverlays() {
-    return mapLayoutIndex<EffectFactory>(
+static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > fibonacciOverlays() {
+    return mapLayoutIndex<EffectFactory<CRGB> >(
         variations(),
         [](uint16_t layoutIndex) {
             return std::vector{
@@ -196,8 +196,8 @@ static std::map<uint16_t, std::vector<Mirror> > fibonacciMirrors() {
     );
 }
 
-static std::map<uint16_t, std::vector<EffectFactory> > fibonacciTransitions() {
-    return mapLayoutIndex<EffectFactory>(
+static std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > fibonacciTransitions() {
+    return mapLayoutIndex<EffectFactory<uint8_t> >(
         variations(),
         [](uint16_t layoutIndex) {
             return ALL_TRANSITIONS;

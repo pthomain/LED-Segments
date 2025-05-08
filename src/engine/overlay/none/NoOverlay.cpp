@@ -21,7 +21,7 @@
 #include "crgb.h"
 #include "NoOverlay.h"
 
-EffectFactory NoOverlay::factory = [](
+EffectFactory<CRGB> NoOverlay::factory = [](
     const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
     return std::make_unique<NoOverlay>(effectContext);

@@ -20,13 +20,28 @@
 
 #include "Effect.h"
 
-void Effect::fillArray(
+template
+void Effect<CRGB>::fillArray(
     CRGB *effectArray,
+    uint16_t effectArraySize,
+    float progress
+);
+
+template
+void Effect<uint8_t>::fillArray(
+    uint8_t *effectArray,
+    uint16_t effectArraySize,
+    float progress
+);
+
+template<typename C>
+void Effect<C>::fillArray(
+    C *effectArray,
     uint16_t effectArraySize,
     float progress
 ) {
     if (!isArrayInitialised) {
-        memset(effectArray, 0, effectArraySize * sizeof(CRGB));
+        memset(effectArray, 0, effectArraySize * sizeof(C));
         isArrayInitialised = true;
     }
 

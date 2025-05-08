@@ -35,9 +35,9 @@ static const String TRANSITION_ENTRY = "transition";
 class LayoutCatalog {
     const uint16_t _nbLayouts;
     const std::map<uint16_t, String> _layoutNames;
-    const std::map<uint16_t, std::vector<EffectFactory> > _effects;
-    const std::map<uint16_t, std::vector<EffectFactory> > _overlays;
-    const std::map<uint16_t, std::vector<EffectFactory> > _transitions;
+    const std::map<uint16_t, std::vector<EffectFactory<CRGB> > > _effects;
+    const std::map<uint16_t, std::vector<EffectFactory<CRGB> > > _overlays;
+    const std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > _transitions;
     const std::map<uint16_t, std::vector<Mirror> > _mirrors;
     const float probabilityOfOverlay;
 
@@ -60,9 +60,9 @@ public:
     explicit LayoutCatalog(
         const uint16_t nbLayouts,
         std::map<uint16_t, String> layoutNames,
-        std::map<uint16_t, std::vector<EffectFactory> > effects,
-        std::map<uint16_t, std::vector<EffectFactory> > overlays,
-        std::map<uint16_t, std::vector<EffectFactory> > transitions,
+        std::map<uint16_t, std::vector<EffectFactory<CRGB> > > effects,
+        std::map<uint16_t, std::vector<EffectFactory<CRGB> > > overlays,
+        std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > transitions,
         std::map<uint16_t, std::vector<Mirror> > mirrors,
         const float probabilityOfOverlay = 0.0f
     ) : _nbLayouts(nbLayouts),
@@ -82,13 +82,13 @@ public:
         return _layoutNames.find(layoutIndex) == _layoutNames.end() ? UNKNOWN : _layoutNames.at(layoutIndex);
     }
 
-    EffectFactory randomEffectFactory(uint16_t layoutIndex) const;
+    EffectFactory<CRGB> randomEffectFactory(uint16_t layoutIndex) const;
 
     Mirror randomMirror(uint16_t layoutIndex) const;
 
-    std::pair<uint16_t, EffectFactory> randomTransition() const;
+    std::pair<uint16_t, EffectFactory<uint8_t> > randomTransition() const;
 
-    std::pair<uint16_t, EffectFactory> randomOverlay() const;
+    std::pair<uint16_t, EffectFactory<CRGB> > randomOverlay() const;
 
     virtual ~LayoutCatalog() = default;
 };

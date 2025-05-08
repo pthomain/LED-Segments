@@ -43,8 +43,8 @@ enum PhraseLayout {
 
 static const std::vector<uint16_t> phraseLayouts = std::vector<uint16_t>{0, 1, 2, 3, 4, 5};
 
-static std::map<uint16_t, std::vector<EffectFactory> > phraseEffects() {
-    return mapLayoutIndex<EffectFactory>(
+static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > phraseEffects() {
+    return mapLayoutIndex<EffectFactory<CRGB> >(
         phraseLayouts,
         [](uint16_t layoutIndex) {
             return std::vector{
@@ -55,8 +55,8 @@ static std::map<uint16_t, std::vector<EffectFactory> > phraseEffects() {
     );
 }
 
-static std::map<uint16_t, std::vector<EffectFactory> > phraseOverlays() {
-    return mapLayoutIndex<EffectFactory>(
+static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > phraseOverlays() {
+    return mapLayoutIndex<EffectFactory<CRGB> >(
         phraseLayouts,
         [](uint16_t layoutIndex) {
             switch (layoutIndex) {
@@ -88,8 +88,8 @@ static std::map<uint16_t, std::vector<Mirror> > phraseMirrors() {
     );
 }
 
-static std::map<uint16_t, std::vector<EffectFactory> > phraseTransitions() {
-    return mapLayoutIndex<EffectFactory>(
+static std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > phraseTransitions() {
+    return mapLayoutIndex<EffectFactory<uint8_t> >(
         phraseLayouts,
         [](uint16_t layoutIndex) {
             switch (layoutIndex) {

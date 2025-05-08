@@ -20,7 +20,7 @@
 
 #include "NoEffect.h"
 
-EffectFactory NoEffect::factory = [](
+EffectFactory<CRGB> NoEffect::factory = [](
     const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
     return std::make_unique<NoEffect>(effectContext);

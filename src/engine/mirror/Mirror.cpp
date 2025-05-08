@@ -20,20 +20,14 @@
 
 #include "Mirror.h"
 
-uint16_t getMirrorSize(Mirror mirror, uint16_t effectArraySize) {
-    switch (mirror) {
-        case Mirror::CENTRE:
-        case Mirror::EDGE:
-        case Mirror::REPEAT:
-        case Mirror::REPEAT_REVERSE:
-            return (effectArraySize / 2) + (effectArraySize % 2 == 0 ? 0 : 1);
+template
+void applyMirror(Mirror mirror, CRGB *effectArray, uint16_t effectArraySize);
 
-        default:
-            return effectArraySize;
-    }
-}
+template
+void applyMirror(Mirror mirror, uint8_t *effectArray, uint16_t effectArraySize);
 
-void applyMirror(Mirror mirror, CRGB *effectArray, uint16_t effectArraySize) {
+template<typename C>
+void applyMirror(Mirror mirror, C *effectArray, uint16_t effectArraySize) {
     if (mirror == Mirror::NONE) return;
 
     uint16_t mirrorSize = getMirrorSize(mirror, effectArraySize);
@@ -44,7 +38,7 @@ void applyMirror(Mirror mirror, CRGB *effectArray, uint16_t effectArraySize) {
         for (uint16_t index = 0; index < mirrorSize / 2; index++) {
             uint16_t reverseIndex = mirrorSize - 1 - index;
 
-            CRGB temp = effectArray[index];
+            auto temp = effectArray[index];
             effectArray[index] = effectArray[reverseIndex];
             effectArray[reverseIndex] = temp;
         }
@@ -67,12 +61,25 @@ void applyMirror(Mirror mirror, CRGB *effectArray, uint16_t effectArraySize) {
         for (uint16_t index = 0; index < mirrorSize; index++) {
             if (index < mirrorSize / 2) {
                 uint16_t reverseIndex = mirrorSize - 1 - index;
-                CRGB temp = effectArray[index];
+                auto temp = effectArray[index];
                 effectArray[index] = effectArray[reverseIndex];
                 effectArray[reverseIndex] = temp;
             }
             effectArray[mirrorSize + index] = effectArray[index];
         }
+    }
+}
+
+uint16_t getMirrorSize(Mirror mirror, uint16_t effectArraySize) {
+    switch (mirror) {
+        case Mirror::CENTRE:
+        case Mirror::EDGE:
+        case Mirror::REPEAT:
+        case Mirror::REPEAT_REVERSE:
+            return (effectArraySize / 2) + (effectArraySize % 2 == 0 ? 0 : 1);
+
+        default:
+            return effectArraySize;
     }
 }
 

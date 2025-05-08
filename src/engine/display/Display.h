@@ -37,7 +37,6 @@ class Display {
     const uint16_t refreshRateInMillis;
     const DisplaySpec &displaySpec;
     const std::unique_ptr<Renderer> renderer;
-    CRGB *outputArray;
     const std::vector<uint8_t> freePinsForEntropy;
 
     explicit Display(
@@ -90,9 +89,7 @@ public:
 
     void loop();
 
-    ~Display() {
-        delete[] outputArray;
-    }
+    ~Display() = default;
 };
 
 #endif //LED_SEGMENTS_DISPLAY_H

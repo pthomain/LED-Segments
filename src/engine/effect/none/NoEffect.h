@@ -23,7 +23,7 @@
 
 #include "engine/effect/Effect.h"
 
-class NoEffect : public Effect, public Effect::Factory<NoEffect> {
+class NoEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<NoEffect> {
 public:
     explicit NoEffect(const EffectContext &effectContext) : Effect(effectContext) {
     }
@@ -38,7 +38,7 @@ public:
     String name() const override { return "None"; }
     EffectType type() const override { return EffectType::EFFECT; }
 
-    static EffectFactory factory;
+    static EffectFactory<CRGB> factory;
 };
 
 #endif //NOEFFECT_H

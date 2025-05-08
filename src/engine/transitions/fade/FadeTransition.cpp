@@ -20,21 +20,20 @@
 
 #include "FadeTransition.h"
 
-EffectFactory FadeTransition::factory = [](
+EffectFactory<uint8_t> FadeTransition::factory = [](
     const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
     return std::make_unique<FadeTransition>(effectContext);
 };
 
 void FadeTransition::fillArrayInternal(
-    CRGB *effectArray,
+    uint8_t *effectArray,
     uint16_t effectArraySize,
     float progress,
     unsigned long time
 ) {
     auto alpha = static_cast<uint8_t>(255.0f * progress);
-    CRGB colour = CRGB(alpha, alpha, alpha);
     for (uint16_t i = 0; i < effectArraySize; i++) {
-        effectArray[i] = colour;
+        effectArray[i] = alpha;
     }
 }

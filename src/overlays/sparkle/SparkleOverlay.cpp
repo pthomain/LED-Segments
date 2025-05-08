@@ -22,7 +22,7 @@
 #include "crgb.h"
 #include "engine/utils/Utils.h"
 
-EffectFactory SparkleOverlay::factory = [](
+EffectFactory<CRGB> SparkleOverlay::factory = [](
     const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
     return std::make_unique<SparkleOverlay>(effectContext);

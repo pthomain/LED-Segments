@@ -24,13 +24,13 @@
 #include "engine/effect/Effect.h"
 #include "engine/effect/EffectType.h"
 
-class NoTransition : public Effect, public Effect::Factory<NoTransition> {
+class NoTransition : public Effect<uint8_t>, public Effect<uint8_t>::Factory<NoTransition> {
 public:
     explicit NoTransition(const EffectContext &effectContext) : Effect(effectContext) {
     }
 
     void fillArrayInternal(
-        CRGB *effectArray,
+        uint8_t *effectArray,
         uint16_t effectArraySize,
         float progress,
         unsigned long time
@@ -39,7 +39,7 @@ public:
     String name() const override { return "None"; }
     EffectType type() const override { return EffectType::TRANSITION; }
 
-    static EffectFactory factory;
+    static EffectFactory<uint8_t> factory;
 };
 
 #endif //NOTRANSITION_H

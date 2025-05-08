@@ -90,22 +90,22 @@ uint8_t FibonacciSpec::getLedPadding(const uint8_t spiralPixelIndex) const {
     }
 }
 
-void FibonacciSpec::applyColourToPixel(
+void FibonacciSpec::mapPixel(
     const uint16_t variation,
     const uint16_t segmentIndex,
     const uint16_t pixelIndex,
-    const int8_t inflexionPoint,
-    CRGB *outputArray,
-    const CRGB colour
+    const uint8_t inflexionPoint,
+    const std::function<void(uint16_t)> &onLedMapped
 ) const {
-    const auto applyColourToLed = [&](uint16_t ledIndex) {
-        uint16_t remappedIndex = ledIndex; //segments 0 and 1 are swapped
-        if (ledIndex >= 0 && ledIndex < 27) {
-            remappedIndex = ledIndex + 27;
+    const auto mapLed = [&](uint16_t ledIndex) {
+        //segments 0 and 1 are swapped
+        if (ledIndex < 27) {
+            onLedMapped(ledIndex + 27);
         } else if (ledIndex >= 27 && ledIndex < 54) {
-            remappedIndex = ledIndex - 27;
+            onLedMapped(ledIndex - 27);
+        } else {
+            onLedMapped(ledIndex);
         }
-        outputArray[remappedIndex] = colour;
     };
 
     const auto direction = getDirection(variation);
@@ -143,64 +143,60 @@ void FibonacciSpec::applyColourToPixel(
     uint16_t ledIndex = segmentStart + spiralPixelIndex + getLedOffset(spiralPixelIndex);
 
     for (uint8_t padding = 0; padding <= getLedPadding(spiralPixelIndex); padding++) {
-        applyColourToLed(ledIndex + padding);
+        mapLed(ledIndex + padding);
     }
 };
 
-void FibonacciSpec::applyColourToPixelUnit(
+void FibonacciSpec::mapPixelUnit(
     const uint16_t variation,
     const uint16_t pixelUnitIndex,
-    const int8_t inflexionPoint,
-    CRGB *outputArray,
-    const CRGB colour
+    const uint8_t inflexionPoint,
+    const std::function<void(uint16_t)> &onLedMapped
 ) const {
     if (getPixelUnit(variation) == PIXEL) {
         //the colour must be applied to the same pixel index for each segment
         uint16_t nbSegments = getAlignment(variation) == SPIRAL ? NB_SPIRAL_SEGMENTS : NB_RADIAL_SEGMENTS;
         for (uint16_t segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
-            applyColourToPixel(
+            mapPixel(
                 variation,
                 segmentIndex,
                 pixelUnitIndex, //pixel index
                 inflexionPoint,
-                outputArray,
-                colour
+                onLedMapped
             );
         }
     } else {
         //each pixel index represents a segment and the colour must be applied to the entire segment
-        int nbPixels = getAlignment(variation) == SPIRAL ? NB_SPIRAL_PIXELS : NB_RADIAL_PIXELS;
+        uint16_t nbPixels = getAlignment(variation) == SPIRAL ? NB_SPIRAL_PIXELS : NB_RADIAL_PIXELS;
         for (uint16_t pixelIndex = 0; pixelIndex < nbPixels; pixelIndex++) {
-            applyColourToPixel(
+            mapPixel(
                 variation,
                 pixelUnitIndex, //segment index
                 pixelIndex,
                 inflexionPoint,
-                outputArray,
-                colour
+                onLedMapped
             );
         }
     }
 };
 
-void FibonacciSpec::setColour(
-    const uint16_t layoutIndex,
-    const uint16_t segmentIndex,
-    const uint16_t pixelIndex,
+void FibonacciSpec::mapLeds(
+    uint16_t layoutIndex,
+    uint16_t segmentIndex,
+    uint16_t pixelIndex,
     float progress,
-    CRGB *outputArray,
-    const CRGB colour
+    const std::function<void(uint16_t)> &onLedMapped
 ) const {
     const auto variation = variations()[layoutIndex];
     const auto inflexion = getInflexion(variation);
-    int8_t inflexionPoint;
+    uint8_t inflexionPoint;
 
     switch (inflexion) {
         case STATIC_INFLEXION:
             inflexionPoint = 15;
             break;
         case DYNAMIC_INFLEXION:
-            inflexionPoint = progress * NB_SPIRAL_PIXELS;
+            inflexionPoint = static_cast<uint8_t>(progress * NB_SPIRAL_PIXELS);
             break;
         case INFLEXION_NONE:
         default:
@@ -208,11 +204,10 @@ void FibonacciSpec::setColour(
             break;
     }
 
-    applyColourToPixelUnit(
+    mapPixelUnit(
         variation,
         pixelIndex, //optimisation for spirals, each segment is considered a pixel
         inflexionPoint,
-        outputArray,
-        colour
+        onLedMapped
     );
 }

@@ -27,21 +27,19 @@
 #include "engine/displayspec/DisplaySpec.h"
 
 class FibonacciSpec : public DisplaySpec {
-    void applyColourToPixel(
+    void mapPixel(
         uint16_t variation,
         uint16_t segmentIndex,
         uint16_t pixelIndex,
-        int8_t inflexionPoint,
-        CRGB *outputArray,
-        CRGB colour
+        uint8_t inflexionPoint,
+        const std::function<void(uint16_t)> &onLedMapped
     ) const;
 
-    void applyColourToPixelUnit(
+    void mapPixelUnit(
         uint16_t variation,
         uint16_t pixelUnitIndex,
-        int8_t inflexionPoint,
-        CRGB *outputArray,
-        CRGB colour
+        uint8_t inflexionPoint,
+        const std::function<void(uint16_t)> &onLedMapped
     ) const;
 
     std::pair<uint16_t, uint8_t> radialToSpiralIndex(
@@ -65,13 +63,12 @@ public :
 
     uint16_t nbPixels(uint16_t layoutIndex, uint16_t segmentIndex) const override;
 
-    void setColour(
+    void mapLeds(
         uint16_t layoutIndex,
         uint16_t segmentIndex,
         uint16_t pixelIndex,
         float progress,
-        CRGB *outputArray,
-        CRGB colour
+        const std::function<void(uint16_t)> &onLedMapped
     ) const override;
 
     ~FibonacciSpec() override = default;

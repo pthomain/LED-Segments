@@ -20,7 +20,7 @@
 
 #include "FibonacciSpec.h"
 #include "config/FibonacciLayoutConfig.h"
-#include <effects/noise/NoiseEffect.h>
+#include "engine/utils/Utils.h"
 
 uint16_t FibonacciSpec::nbSegments(const uint16_t layoutIndex) const {
     //same effect applied to all segments, pixels are used as an optimisation
@@ -60,7 +60,6 @@ std::pair<uint16_t, uint8_t> FibonacciSpec::radialToSpiralIndex(
 
     return std::pair(segmentStart, spiralPixelIndex);
 }
-
 
 uint8_t FibonacciSpec::getLedOffset(const uint8_t spiralPixelIndex) const {
     switch (spiralPixelIndex) {

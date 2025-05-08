@@ -20,6 +20,7 @@
 
 #ifndef NOTRANSITION_H
 #define NOTRANSITION_H
+
 #include "engine/effect/Effect.h"
 #include "engine/effect/EffectType.h"
 

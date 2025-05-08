@@ -20,6 +20,7 @@
 
 #include "PhraseSpec.h"
 #include "functional"
+#include "engine/utils/Utils.h"
 
 uint16_t PhraseSpec::nbSegments(const uint16_t layoutIndex) const {
     switch (layoutIndex) {

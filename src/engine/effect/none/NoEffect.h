@@ -41,5 +41,4 @@ public:
     static EffectFactory factory;
 };
 
-
 #endif //NOEFFECT_H

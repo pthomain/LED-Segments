@@ -20,6 +20,7 @@
 
 #include "SparkleOverlay.h"
 #include "crgb.h"
+#include "engine/utils/Utils.h"
 
 EffectFactory SparkleOverlay::factory = [](
     const EffectContext &effectContext

@@ -20,6 +20,7 @@
 
 #ifndef SLIDETRANSITION_H
 #define SLIDETRANSITION_H
+
 #include "engine/effect/Effect.h"
 #include "engine/effect/EffectType.h"
 

@@ -46,14 +46,14 @@ class LayoutCatalog {
         const String &entryType,
         uint16_t layoutIndex,
         const std::map<uint16_t, std::vector<T> > &map,
-        const T &defaultValue
+        T defaultValue
     ) const;
 
     template<typename T>
     std::pair<uint16_t, T> randomLayoutSpecificEntry(
         const String &entryType,
         const std::map<uint16_t, std::vector<T> > &map,
-        const std::pair<uint16_t, T> &defaultValue
+        std::pair<uint16_t, T> defaultValue
     ) const;
 
 public:

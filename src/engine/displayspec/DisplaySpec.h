@@ -21,17 +21,14 @@
 #ifndef LED_SEGMENTS_DISPLAYSPEC_H
 #define LED_SEGMENTS_DISPLAYSPEC_H
 
-#include <cstdint>
-#include <engine/effect/Effect.h>
-#include "utils/Utils.h"
 #include "engine/displayspec/LayoutCatalog.h"
 
 class DisplaySpec {
     uint16_t _maxSegmentSize = 0;
 
     void calculateMaxSegmentSize() {
-        for (uint8_t layoutIndex = 0; layoutIndex < _catalog.nbLayouts(); layoutIndex++) {
-            for (uint8_t segmentIndex = 0; segmentIndex < nbSegments(layoutIndex); segmentIndex++) {
+        for (uint16_t layoutIndex = 0; layoutIndex < _catalog.nbLayouts(); layoutIndex++) {
+            for (uint16_t segmentIndex = 0; segmentIndex < nbSegments(layoutIndex); segmentIndex++) {
                 _maxSegmentSize = max(_maxSegmentSize, nbPixels(layoutIndex, segmentIndex));
             }
         }

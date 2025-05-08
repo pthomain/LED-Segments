@@ -34,6 +34,6 @@ void NoOverlay::fillArrayInternal(
     unsigned long time
 ) {
     for (uint16_t i = 0; i < effectArraySize; i++) {
-        effectArray[i] = CRGB::Black;
+        effectArray[i] = CRGB::White;
     }
 };

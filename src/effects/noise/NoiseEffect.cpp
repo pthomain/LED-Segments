@@ -18,9 +18,9 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "engine/displayspec/DisplaySpec.h"
 #include "NoiseEffect.h"
 #include <functional>
+#include "engine/utils/Utils.h"
 
 EffectFactory NoiseEffect::factory = [](
     const EffectContext &effectContext

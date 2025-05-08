@@ -22,13 +22,13 @@
 #define FADETRANSITION_H
 #include "engine/effect/Effect.h"
 
-class FadeTransition : public Effect, public Effect::Factory<FadeTransition> {
+class FadeTransition : public Effect<uint8_t>, public Effect<uint8_t>::Factory<FadeTransition> {
 public:
     explicit FadeTransition(const EffectContext &effectContext) : Effect(effectContext) {
     }
 
     void fillArrayInternal(
-        CRGB *effectArray,
+        uint8_t *effectArray,
         uint16_t effectArraySize,
         float progress,
         unsigned long time
@@ -37,7 +37,7 @@ public:
     String name() const override { return "Fade"; }
     EffectType type() const override { return EffectType::TRANSITION; }
 
-    static EffectFactory factory;
+    static EffectFactory<uint8_t> factory;
 };
 
 #endif //FADETRANSITION_H

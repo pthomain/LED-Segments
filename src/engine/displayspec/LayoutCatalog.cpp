@@ -24,16 +24,20 @@
 #include "engine/transitions/none/NoTransition.h"
 #include "engine/utils/Utils.h"
 
-// Explicit instantiation for EffectFactory
-template std::map<uint16_t, std::vector<EffectFactory> >
-mapLayoutIndex<EffectFactory>(
+template
+std::map<uint16_t, std::vector<EffectFactory<CRGB> > > mapLayoutIndex<EffectFactory<CRGB> >(
     const std::vector<uint16_t> &,
-    const std::function<std::vector<EffectFactory>(uint16_t)> &
+    const std::function<std::vector<EffectFactory<CRGB> >(uint16_t)> &
 );
 
-// Explicit instantiation for Mirror
-template std::map<uint16_t, std::vector<Mirror> >
-mapLayoutIndex<Mirror>(
+template
+std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > mapLayoutIndex<EffectFactory<uint8_t> >(
+    const std::vector<uint16_t> &,
+    const std::function<std::vector<EffectFactory<uint8_t> >(uint16_t)> &
+);
+
+template
+std::map<uint16_t, std::vector<Mirror> > mapLayoutIndex<Mirror>(
     const std::vector<uint16_t> &,
     const std::function<std::vector<Mirror>(uint16_t)> &
 );
@@ -114,7 +118,7 @@ T LayoutCatalog::randomMapEntryForLayout(
     return entry.at(random8(entry.size()));
 }
 
-EffectFactory LayoutCatalog::randomEffectFactory(uint16_t layoutIndex) const {
+EffectFactory<CRGB> LayoutCatalog::randomEffectFactory(uint16_t layoutIndex) const {
     return randomMapEntryForLayout(EFFECT_ENTRY, layoutIndex, _effects, NoEffect::factory);
 }
 
@@ -122,11 +126,11 @@ Mirror LayoutCatalog::randomMirror(uint16_t layoutIndex) const {
     return randomMapEntryForLayout(MIRROR_ENTRY, layoutIndex, _mirrors, Mirror::NONE);
 }
 
-std::pair<uint16_t, EffectFactory> LayoutCatalog::randomTransition() const {
+std::pair<uint16_t, EffectFactory<uint8_t> > LayoutCatalog::randomTransition() const {
     return randomLayoutSpecificEntry(TRANSITION_ENTRY, _transitions, {0, NoTransition::factory});
 }
 
-std::pair<uint16_t, EffectFactory> LayoutCatalog::randomOverlay() const {
+std::pair<uint16_t, EffectFactory<CRGB> > LayoutCatalog::randomOverlay() const {
     if (probability(probabilityOfOverlay)) {
         return randomLayoutSpecificEntry(OVERLAY_ENTRY, _overlays, {0, NoOverlay::factory});
     }

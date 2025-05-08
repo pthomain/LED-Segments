@@ -23,7 +23,7 @@
 
 #include "engine/effect/Effect.h"
 
-class NoOverlay : public Effect, public Effect::Factory<NoOverlay> {
+class NoOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<NoOverlay> {
 public:
     explicit NoOverlay(const EffectContext &effectContext) : Effect(effectContext) {
     }
@@ -38,7 +38,7 @@ public:
     String name() const override { return "None"; }
     EffectType type() const override { return EffectType::OVERLAY_ALPHA; }
 
-    static EffectFactory factory;
+    static EffectFactory<CRGB> factory;
 };
 
 static const std::vector NO_OVERLAYS = {NoOverlay::factory};

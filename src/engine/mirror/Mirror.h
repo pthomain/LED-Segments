@@ -55,7 +55,8 @@ static std::vector ALL_UNREPEATED_MIRRORS = {
 
 uint16_t getMirrorSize(Mirror mirror, uint16_t effectArraySize);
 
-void applyMirror(Mirror mirror, CRGB *effectArray, uint16_t effectArraySize);
+template<typename C>
+void applyMirror(Mirror mirror, C *effectArray, uint16_t effectArraySize);
 
 String getMirrorName(Mirror mirror);
 

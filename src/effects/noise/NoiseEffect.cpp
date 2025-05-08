@@ -22,7 +22,7 @@
 #include <functional>
 #include "engine/utils/Utils.h"
 
-EffectFactory NoiseEffect::factory = [](
+EffectFactory<CRGB> NoiseEffect::factory = [](
     const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
     return std::make_unique<NoiseEffect>(effectContext);
@@ -42,7 +42,7 @@ void NoiseEffect::fillArrayInternal(
         effectArraySize,
         normaliseNoise(noise),
         delta,
-        palette,
+        context.palette.palette(),
         255,
         LINEARBLEND
     );

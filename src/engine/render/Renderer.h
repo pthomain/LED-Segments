@@ -28,18 +28,22 @@
 class Renderer {
     const DisplaySpec &displaySpec;
 
+    CRGB *outputArray = nullptr;
+
     CRGB *segmentArray = nullptr;
+    uint8_t *transitionSegmentArray = nullptr;
+
     CRGB *bufferOutputArray = nullptr;
     CRGB *pendingOutputArray = nullptr;
-    CRGB *transitionOutputArray = nullptr; //TODO use uint8_t
+    uint8_t *transitionOutputArray = nullptr;
 
-    std::shared_ptr<Effect> effect = nullptr;
-    std::shared_ptr<Effect> overlay = nullptr;
-    std::shared_ptr<Effect> transition = nullptr;
+    std::shared_ptr<Effect<CRGB> > effect = nullptr;
+    std::shared_ptr<Effect<CRGB> > overlay = nullptr;
+    std::shared_ptr<Effect<uint8_t> > transition = nullptr;
 
-    std::shared_ptr<Effect> pendingEffect = nullptr;
-    std::shared_ptr<Effect> pendingOverlay = nullptr;
-    std::shared_ptr<Effect> pendingTransition = nullptr;
+    std::shared_ptr<Effect<CRGB> > pendingEffect = nullptr;
+    std::shared_ptr<Effect<CRGB> > pendingOverlay = nullptr;
+    std::shared_ptr<Effect<uint8_t> > pendingTransition = nullptr;
 
     float effectFrameIndex = 0.0f;
     float pendingEffectFrameIndex = 0.0f;
@@ -47,34 +51,36 @@ class Renderer {
     float transitionDurationInFrames = -1.0f;
 
     static bool validateEffect(
-        const std::shared_ptr<Effect> &effect,
-        const std::shared_ptr<Effect> &overlay,
-        const std::shared_ptr<Effect> &transition
+        const std::shared_ptr<Effect<CRGB> > &effect,
+        const std::shared_ptr<Effect<CRGB> > &overlay,
+        const std::shared_ptr<Effect<uint8_t> > &transition
     );
 
-    void applyEffect(
-        const std::shared_ptr<Effect> &effect,
-        CRGB *outputArray,
+    template<typename C>
+    void applyEffectOrTransition(
+        const std::shared_ptr<Effect<C> > &effect,
+        C *segmentArray,
+        C *outputArray,
         float progress
     ) const;
 
     void flattenEffectAndOverlay(
-        const std::shared_ptr<Effect> &effect,
-        const std::shared_ptr<Effect> &overlay,
+        const std::shared_ptr<Effect<CRGB> > &effect,
+        const std::shared_ptr<Effect<CRGB> > &overlay,
         float progress,
         CRGB *outputArray
     ) const;
 
 public:
-    explicit Renderer(const DisplaySpec &displaySpec);
+    explicit Renderer(const DisplaySpec &displaySpec, CRGB *outputArray);
 
     void changeEffect(
-        const std::shared_ptr<Effect> &effect,
-        const std::shared_ptr<Effect> &overlay,
-        const std::shared_ptr<Effect> &transition
+        const std::shared_ptr<Effect<CRGB> > &effect,
+        const std::shared_ptr<Effect<CRGB> > &overlay,
+        const std::shared_ptr<Effect<uint8_t> > &transition
     );
 
-    void render(CRGB *outputArray);
+    void render();
 
     ~Renderer();
 };

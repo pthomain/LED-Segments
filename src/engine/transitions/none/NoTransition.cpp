@@ -20,19 +20,19 @@
 
 #include "NoTransition.h"
 
-EffectFactory NoTransition::factory = [](
+EffectFactory<uint8_t> NoTransition::factory = [](
     const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
     return std::make_unique<NoTransition>(effectContext);
 };
 
 void NoTransition::fillArrayInternal(
-    CRGB *effectArray,
+    uint8_t *effectArray,
     uint16_t effectArraySize,
     float progress,
     unsigned long time
 ) {
     for (uint16_t i = 0; i < effectArraySize; i++) {
-        effectArray[i] = progress < 0.5f ? CRGB::Black : CRGB::White;
+        effectArray[i] = progress < 0.5f ? 0 : 255;
     }
 }

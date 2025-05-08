@@ -24,13 +24,13 @@
 #include "engine/effect/Effect.h"
 #include "engine/effect/EffectType.h"
 
-class SlideTransition : public Effect, public Effect::Factory<SlideTransition> {
+class SlideTransition : public Effect<uint8_t>, public Effect<uint8_t>::Factory<SlideTransition> {
 public:
     explicit SlideTransition(const EffectContext &effectContext) : Effect(effectContext) {
     }
 
     void fillArrayInternal(
-        CRGB *effectArray,
+        uint8_t *effectArray,
         uint16_t effectArraySize,
         float progress,
         unsigned long time
@@ -39,7 +39,7 @@ public:
     String name() const override { return "Slide"; }
     EffectType type() const override { return EffectType::TRANSITION; }
 
-    static EffectFactory factory;
+    static EffectFactory<uint8_t> factory;
 };
 
 #endif //SLIDETRANSITION_H

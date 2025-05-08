@@ -20,7 +20,7 @@
 
 #include "GradientEffect.h"
 
-EffectFactory GradientEffect::factory = [](
+EffectFactory<CRGB> GradientEffect::factory = [](
     const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
     return std::make_unique<GradientEffect>(effectContext);
@@ -36,6 +36,9 @@ void GradientEffect::fillArrayInternal(
     uint8_t progressOffset = progress * 255;
 
     for (int i = 0; i < effectArraySize; i++) {
-        effectArray[i] = ColorFromPalette(palette, progressOffset + (i * increment));
+        effectArray[i] = ColorFromPalette(
+            context.palette.palette(),
+            progressOffset + (i * increment)
+        );
     }
 }

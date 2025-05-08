@@ -46,8 +46,7 @@ Display::Display(
     transitionDurationInMillis(transitionDurationInMillis),
     refreshRateInMillis(fps == 0 ? 1000 : 1000 / fps),
     displaySpec(std::move(displaySpec)),
-    renderer(std::make_unique<Renderer>(displaySpec)),
-    outputArray(outputArray),
+    renderer(std::make_unique<Renderer>(displaySpec, outputArray)),
     freePinsForEntropy(freePinsForEntropy) {
     FastLED.setBrightness(brightness);
     FastLED.clear(true);
@@ -130,7 +129,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
 }
 
 void Display::render() const {
-    renderer->render(outputArray);
+    renderer->render();
     FastLED.show();
 }
 

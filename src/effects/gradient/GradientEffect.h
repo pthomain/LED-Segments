@@ -23,7 +23,7 @@
 
 #include "engine/effect/Effect.h"
 
-class GradientEffect : public Effect, public Effect::Factory<GradientEffect> {
+class GradientEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<GradientEffect> {
     const uint8_t start = random8(); //start hue
 
 public:
@@ -40,7 +40,7 @@ public:
     String name() const override { return "Gradient"; }
     EffectType type() const override { return EffectType::EFFECT; }
 
-    static EffectFactory factory;
+    static EffectFactory<CRGB> factory;
 };
 
 #endif //LED_SEGMENTS_GRADIENTEFFECT_H

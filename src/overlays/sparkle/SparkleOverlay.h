@@ -22,7 +22,7 @@
 #define SPARKLEOVERLAY_H
 #include "engine/effect/Effect.h"
 
-class SparkleOverlay : public Effect, public Effect::Factory<SparkleOverlay> {
+class SparkleOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<SparkleOverlay> {
     const float density = 0.005f;
     const CRGB minBrightness = CRGB(50, 50, 50);
 
@@ -40,7 +40,7 @@ public:
     String name() const override { return "Sparkle"; }
     EffectType type() const override { return EffectType::OVERLAY_COLOUR; }
 
-    static EffectFactory factory;
+    static EffectFactory<CRGB> factory;
 };
 
 #endif //SPARKLEOVERLAY_H

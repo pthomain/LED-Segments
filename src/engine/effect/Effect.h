@@ -23,7 +23,6 @@
 #define EFFECTS_H
 
 #include <memory>
-
 #include "EffectContext.h"
 #include "functional"
 #include "engine/effect/EffectType.h"
@@ -32,12 +31,11 @@ constexpr uint8_t MIN_CYCLE_SPEED = 5;
 constexpr uint8_t MAX_CYCLE_SPEED = 15;
 constexpr uint8_t PALETTE_SIZE = 16;
 
-//TODO add type for CRGB / uint8_t
+template<typename C>
 class Effect {
     const unsigned long start;
 
 protected:
-    CRGBPalette16 palette;
     uint8_t randomStart;
     bool isArrayInitialised = false;
 
@@ -47,17 +45,16 @@ public :
     explicit Effect(EffectContext effectContext) : context(std::move(effectContext)),
                                                    start(millis()),
                                                    randomStart(random8()) {
-        palette = effectContext.palette.palette();
     };
 
     void fillArray(
-        CRGB *effectArray,
+        C *effectArray,
         uint16_t effectArraySize,
         float progress
     );
 
     virtual void fillArrayInternal(
-        CRGB *effectArray,
+        C *effectArray,
         uint16_t effectArraySize,
         float progress,
         unsigned long time
@@ -69,16 +66,19 @@ public :
 
     virtual ~Effect() = default;
 
-    template<typename T>
+    template<typename E>
     class Factory {
     public:
-        static std::shared_ptr<Effect> createEffect(const EffectContext &effectContext) {
-            return std::make_shared<Effect>(new T(effectContext));
+        static std::unique_ptr<Effect> createEffect(const EffectContext &context) {
+            return std::make_unique<E>(context);
         }
     };
 };
 
-using EffectFactory = std::function<std::unique_ptr<Effect>(const EffectContext &effectContext)>;
-static const std::vector<EffectFactory> NO_EFFECTS = std::vector<EffectFactory>{};
+template<typename C>
+using EffectFactory = std::function<std::unique_ptr<Effect<C>>(const EffectContext &effectContext)>;
+
+template<typename C>
+static const std::vector<EffectFactory<C>> NO_EFFECTS = std::vector<EffectFactory<C>>{};
 
 #endif //EFFECTS_H

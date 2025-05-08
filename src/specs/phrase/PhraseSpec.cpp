@@ -70,6 +70,7 @@ uint16_t PhraseSpec::nbPixels(
     }
 }
 
+
 void PhraseSpec::mapLeds(
     uint16_t layoutIndex,
     uint16_t segmentIndex,
@@ -80,25 +81,6 @@ void PhraseSpec::mapLeds(
     auto mapRange = [&](uint16_t start, uint16_t end) {
         for (uint16_t i = start; i <= end; i++) {
             mapLed(i, onLedMapped);
-        }
-    };
-
-    auto mapSegmentPixel = [&](
-        uint16_t segmentStart,
-        uint16_t segmentEnd,
-        uint16_t pixelArraySize,
-        const std::function<std::array<uint16_t, 2>(uint16_t)> &getPixel
-    ) {
-        uint16_t intersectingPixelIndex = 0;
-        for (uint16_t i = 0; i <= pixelArraySize; i++) {
-            auto pixel = getPixel(i);
-            if (pixel[0] >= segmentStart && pixel[1] <= segmentEnd) {
-                if (intersectingPixelIndex == pixelIndex) {
-                    mapRange(pixel[0], pixel[1]);
-                    return;
-                }
-                intersectingPixelIndex++;
-            }
         }
     };
 
@@ -115,16 +97,21 @@ void PhraseSpec::mapLeds(
             mapLed(pixelIndex, onLedMapped);
             break;
 
-        case LETTERS_IN_WORDS:
-            mapSegmentPixel(
-                WORDS[segmentIndex][0],
-                WORDS[segmentIndex][1],
-                NB_LETTERS,
-                [&](uint16_t segmentPixelIndex) {
-                    return std::array<uint16_t, 2>{LETTERS[segmentPixelIndex][0], LETTERS[segmentPixelIndex][1]};
+        case LETTERS_IN_WORDS: {
+            uint16_t intersectingPixelIndex = 0;
+            for (uint16_t i = 0; i <= NB_LETTERS; i++) {
+                auto letterStart = LETTERS[i][0];
+                auto letterEnd = LETTERS[i][1];
+                if (letterStart >= WORDS[segmentIndex][0] && letterEnd <= WORDS[segmentIndex][1]) {
+                    if (intersectingPixelIndex == pixelIndex) {
+                        mapRange(letterStart, letterEnd);
+                        return;
+                    }
+                    intersectingPixelIndex++;
                 }
-            );
-            break;
+            }
+        }
+        break;
 
         case LETTERS_IN_WHOLE:
             mapRange(LETTERS[pixelIndex][0], LETTERS[pixelIndex][1]);

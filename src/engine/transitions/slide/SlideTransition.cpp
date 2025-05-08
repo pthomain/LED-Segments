@@ -20,20 +20,20 @@
 
 #include "SlideTransition.h"
 
-EffectFactory SlideTransition::factory = [](
+EffectFactory<uint8_t> SlideTransition::factory = [](
     const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
     return std::make_unique<SlideTransition>(effectContext);
 };
 
 void SlideTransition::fillArrayInternal(
-    CRGB *effectArray,
+    uint8_t *effectArray,
     uint16_t effectArraySize,
     float progress,
     unsigned long time
 ) {
     uint16_t limit = constrain(round((float) effectArraySize * progress), 0, effectArraySize);
     for (uint16_t i = 0; i < effectArraySize; i++) {
-        effectArray[i] = i < limit ? CRGB::White : CRGB::Black;
+        effectArray[i] = i < limit ? 255 : 0;
     }
 }

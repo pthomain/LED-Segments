@@ -29,7 +29,6 @@ enum class PaletteType {
     NONE // used for effects that don't use a palette
 };
 
-
 class Palette {
     const CRGBPalette16 _palette;
     const PaletteType _type;

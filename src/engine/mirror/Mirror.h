@@ -36,7 +36,7 @@ enum class Mirror {
     REPEAT_REVERSE
 };
 
-const std::vector ALL_MIRRORS = {
+static std::vector ALL_MIRRORS = {
     Mirror::NONE,
     Mirror::REVERSE,
     Mirror::CENTRE,
@@ -46,7 +46,7 @@ const std::vector ALL_MIRRORS = {
     Mirror::REPEAT_REVERSE
 };
 
-const std::vector ALL_UNREPEATED_MIRRORS = {
+static std::vector ALL_UNREPEATED_MIRRORS = {
     Mirror::NONE,
     Mirror::REVERSE,
     Mirror::CENTRE,

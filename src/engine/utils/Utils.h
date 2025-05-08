@@ -25,9 +25,9 @@
 
 #include <algorithm>
 #include <Arduino.h>
-#include <string>
 #include <vector>
 #include "FastLED.h"
+
 #define IS_DEBUG true
 
 static const std::vector<CRGBPalette16> PALETTES PROGMEM = std::vector<CRGBPalette16>{

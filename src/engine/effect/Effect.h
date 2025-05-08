@@ -32,6 +32,7 @@ constexpr uint8_t MIN_CYCLE_SPEED = 5;
 constexpr uint8_t MAX_CYCLE_SPEED = 15;
 constexpr uint8_t PALETTE_SIZE = 16;
 
+//TODO add type for CRGB / uint8_t
 class Effect {
     const unsigned long start;
 
@@ -41,9 +42,9 @@ protected:
     bool isArrayInitialised = false;
 
 public :
-    const EffectContext effectContext;
+    const EffectContext context;
 
-    explicit Effect(EffectContext effectContext) : effectContext(std::move(effectContext)),
+    explicit Effect(EffectContext effectContext) : context(std::move(effectContext)),
                                                    start(millis()),
                                                    randomStart(random8()) {
         palette = effectContext.palette.palette();

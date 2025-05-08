@@ -24,10 +24,10 @@
 #include <vector>
 #include "Arduino.h"
 #include "WString.h"
-#include "utils/Utils.h"
+#include "engine/utils/Utils.h"
 #include <effects/noise/NoiseEffect.h>
 #include <engine/displayspec/LayoutCatalog.h>
-#include "engine/transition/Transition.h"
+#include "engine/transitions/Transition.h"
 #include "overlays/sparkle/SparkleOverlay.h"
 
 const uint16_t TOTAL_FIBONACCI_LEDS = 324;

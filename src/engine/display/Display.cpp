@@ -18,13 +18,12 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Display.h"
-#include "engine/render/simple/SimpleRenderer.h"
-#include "engine/render/blender/Blender.h"
-#include "utils/seed/SeedGenerator.h"
-#include "engine/render/simple/SimplePixelMapper.h"
 #include <FastLED.h>
+#include "Display.h"
 
+#include "engine/overlay/none/NoOverlay.h"
+#include "engine/utils/Utils.h"
+#include "engine/utils/seed/SeedGenerator.h"
 #include "engine/transitions/fade/FadeTransition.h"
 #include "engine/transitions/slide/SlideTransition.h"
 
@@ -47,23 +46,7 @@ Display::Display(
     transitionDurationInMillis(transitionDurationInMillis),
     refreshRateInMillis(fps == 0 ? 1000 : 1000 / fps),
     displaySpec(std::move(displaySpec)),
-    renderer(
-        [&]() -> std::unique_ptr<Renderer> {
-            if (transitionDurationInMillis < 1) {
-                return std::make_unique<SimpleRenderer>(
-                    displaySpec,
-                    std::make_unique<SimplePixelMapper>(displaySpec),
-                    "simple"
-                );
-            }
-            return std::make_unique<Blender>(
-                displaySpec,
-                "blender",
-                refreshRateInMillis,
-                transitionDurationInMillis
-            );
-        }()
-    ),
+    renderer(std::make_unique<Renderer>(displaySpec)),
     outputArray(outputArray),
     freePinsForEntropy(freePinsForEntropy) {
     FastLED.setBrightness(brightness);
@@ -81,12 +64,16 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
     const auto effectFactory = catalog.randomEffectFactory(effectLayoutIndex);
     const auto effectMirror = catalog.randomMirror(effectLayoutIndex);
 
-    auto [transitionLayoutIndex, transitionFactory] = catalog.randomTransition();
+    // auto [transitionLayoutIndex, transitionFactory] = catalog.randomTransition();
+    auto transitionLayoutIndex = 0;
+    auto transitionFactory = SlideTransition::factory;
+
     const auto transitionMirror = catalog.randomMirror(transitionLayoutIndex);
 
     const auto [overlayLayoutIndex, overlayFactory] = catalog.randomOverlay();
-
     const uint16_t effectDurationInFrames = effectDurationsInSecs * fps;
+
+    auto transitionDurationInFrames = fps * transitionDurationInMillis / 1000;
 
     EffectContext effectContext(
         effectDurationInFrames,
@@ -105,7 +92,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
     );
 
     EffectContext transitionContext(
-        fps * transitionDurationInMillis / 1000,
+        transitionDurationInFrames,
         displaySpec.isCircular(),
         transitionLayoutIndex,
         NO_PALETTE,
@@ -114,7 +101,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
 
     auto effect = effectFactory(effectContext);
     auto overlay = overlayFactory(overlayContext);
-    auto transition = SlideTransition::factory(transitionContext);
+    auto transition = transitionFactory(transitionContext);
 
     if constexpr (IS_DEBUG) {
         Serial.print("Layout\t\t\t");

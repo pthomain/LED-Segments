@@ -22,6 +22,7 @@
 #include <engine/effect/none/NoEffect.h>
 #include <engine/overlay/none/NoOverlay.h>
 #include "engine/transitions/none/NoTransition.h"
+#include "engine/utils/Utils.h"
 
 // Explicit instantiation for EffectFactory
 template std::map<uint16_t, std::vector<EffectFactory> >
@@ -53,7 +54,7 @@ template<typename T>
 std::pair<uint16_t, T> LayoutCatalog::randomLayoutSpecificEntry(
     const String &entryType,
     const std::map<uint16_t, std::vector<T> > &map,
-    const std::pair<uint16_t, T> &defaultValue
+    const std::pair<uint16_t, T> defaultValue
 ) const {
     if (map.empty()) {
         if constexpr (IS_DEBUG) {
@@ -84,13 +85,12 @@ std::pair<uint16_t, T> LayoutCatalog::randomLayoutSpecificEntry(
     return {randomLayoutIndex, entry};
 }
 
-//TODO return reference
 template<typename T>
 T LayoutCatalog::randomMapEntryForLayout(
     const String &entryType,
     uint16_t layoutIndex,
     const std::map<uint16_t, std::vector<T> > &map,
-    const T &defaultValue
+    T defaultValue
 ) const {
     if (map.empty() || map.find(layoutIndex) == map.end()) {
         if constexpr (IS_DEBUG) {

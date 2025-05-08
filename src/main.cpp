@@ -18,8 +18,8 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "utils/Utils.h"
 #include "engine/display/Display.h"
+#include "engine/utils/Utils.h"
 #include "specs/phrase/PhraseSpec.h"
 #include "specs/fibonacci/FibonacciSpec.h"
 
@@ -40,11 +40,10 @@ Display *display;
 void setup() {
     if constexpr (IS_DEBUG) {
         Serial.begin(9600);
-        delay(1000);
+        delay(2000);
     }
 
     auto *displaySpec = new PhraseSpec();
-
     display = Display::create<LED_PIN, GRB>(
         *displaySpec,
         IS_DEBUG ? 10 : 128,

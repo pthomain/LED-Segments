@@ -25,7 +25,8 @@
 #include "engine/effect/Effect.h"
 #include <effects/noise/NoiseEffect.h>
 #include "engine/overlay/none/NoOverlay.h"
-#include "engine/transition/Transition.h"
+#include "engine/transitions/Transition.h"
+#include "engine/transitions/fade/FadeTransition.h"
 #include "overlays/sparkle/SparkleOverlay.h"
 
 // Format is PIXELS_IN_SEGMENTS

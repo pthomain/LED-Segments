@@ -27,7 +27,7 @@
 
 #include <cstdint>
 
-constexpr static const uint16_t LETTERS[NB_LETTERS][2] = {
+constexpr static uint16_t LETTERS[NB_LETTERS][2] = {
     {0, 12},
     {13, 25},
     {26, 41},
@@ -48,7 +48,7 @@ constexpr static const uint16_t LETTERS[NB_LETTERS][2] = {
     {178, 190}
 };
 
-constexpr static const uint16_t WORDS[NB_WORDS][2] = {
+constexpr static uint16_t WORDS[NB_WORDS][2] = {
     {0, 74},
     {75, 82},
     {83, 135},

@@ -24,23 +24,22 @@
 #include <engine/mirror/Mirror.h>
 #include <engine/palette/Palette.h>
 #include "FastLED.h"
-#include "utils/Utils.h"
 
 class EffectContext {
 public:
-    const uint16_t durationsInFrames;
+    const uint16_t durationInFrames;
     const boolean isDisplayCircular;
     const uint16_t layoutIndex;
     const Palette palette;
     const Mirror mirror;
 
     EffectContext(
-        const uint16_t durationsInFrames,
+        const uint16_t durationInFrames,
         const boolean isDisplayCircular,
         const uint16_t layoutIndex,
         Palette palette,
         const Mirror mirror
-    ) : durationsInFrames(durationsInFrames),
+    ) : durationInFrames(durationInFrames),
         isDisplayCircular(isDisplayCircular),
         layoutIndex(layoutIndex),
         palette(std::move(palette)),

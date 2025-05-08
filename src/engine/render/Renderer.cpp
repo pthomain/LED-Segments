@@ -25,6 +25,7 @@ void Renderer::applyEffectOrTransition(
     const std::shared_ptr<Effect<CRGB> > &effect,
     CRGB *segmentArray,
     CRGB *outputArray,
+    std::function<CRGB(uint16_t ledIndex, CRGB existing, CRGB toBeMixed)> mix,
     float progress
 ) const;
 
@@ -32,7 +33,8 @@ template
 void Renderer::applyEffectOrTransition(
     const std::shared_ptr<Effect<uint8_t> > &effect,
     uint8_t *segmentArray,
-    uint8_t *outputArray,
+    CRGB *outputArray,
+    std::function<CRGB(uint16_t ledIndex, CRGB existing, uint8_t toBeMixed)> mix,
     float progress
 ) const;
 
@@ -40,7 +42,8 @@ template<typename C>
 void Renderer::applyEffectOrTransition(
     const std::shared_ptr<Effect<C> > &effect,
     C *segmentArray,
-    C *outputArray,
+    CRGB *outputArray,
+    std::function<CRGB(uint16_t ledIndex, CRGB existing, C toBeMixed)> mix,
     float progress
 ) const {
     auto context = effect->context;
@@ -67,7 +70,7 @@ void Renderer::applyEffectOrTransition(
                 pixelIndex,
                 progress,
                 [&](uint16_t ledIndex) {
-                    outputArray[ledIndex] = segmentArray[pixelIndex];
+                    outputArray[ledIndex] = mix(ledIndex, outputArray[ledIndex], segmentArray[pixelIndex]);
                 }
             );
         }
@@ -77,19 +80,15 @@ void Renderer::applyEffectOrTransition(
 Renderer::Renderer(const DisplaySpec &displaySpec, CRGB *outputArray) : displaySpec(displaySpec),
                                                                         outputArray(outputArray) {
     segmentArray = new CRGB[displaySpec.maxSegmentSize()]();
-    transitionSegmentArray = new uint8_t[displaySpec.maxSegmentSize()]();
-    bufferOutputArray = new CRGB[displaySpec.nbLeds()]();
+    segmentArray8 = new uint8_t[displaySpec.maxSegmentSize()]();
     pendingOutputArray = new CRGB[displaySpec.nbLeds()]();
-    transitionOutputArray = new uint8_t[displaySpec.nbLeds()]();
 }
 
 Renderer::~Renderer() {
     delete[] outputArray;
     delete[] segmentArray;
-    delete[] transitionSegmentArray;
-    delete[] bufferOutputArray;
+    delete[] segmentArray8;
     delete[] pendingOutputArray;
-    delete[] transitionOutputArray;
 }
 
 bool Renderer::validateEffect(
@@ -154,29 +153,19 @@ void Renderer::render() {
     const float transitionPercent = 1.0f - (transitionStep / transitionDurationInFrames);
     const float smoothedTransition = 1.0f - static_cast<float>(cos(transitionPercent * PI / 2.0f)); //sine easing
 
-    applyEffectOrTransition(
+    applyEffectOrTransition<uint8_t>(
         transition,
-        transitionSegmentArray,
-        transitionOutputArray,
+        segmentArray8,
+        outputArray,
+        [&](uint16_t ledIndex, CRGB _, uint8_t toBeMixed) {
+            return blend(
+                outputArray[ledIndex],
+                pendingOutputArray[ledIndex],
+                toBeMixed
+            );
+        },
         smoothedTransition
     );
-
-    //Merge outputArray and pendingOutputArray using transition
-    for (uint16_t ledIndex = 0; ledIndex < displaySpec.nbLeds(); ledIndex++) {
-        outputArray[ledIndex] = blend(
-            outputArray[ledIndex],
-            pendingOutputArray[ledIndex],
-            transitionOutputArray[ledIndex]
-        );
-
-        if (outputArray[ledIndex] == CRGB::Black) {
-            Serial.print("empty outputArray ledIndex: ");
-            Serial.println(ledIndex);
-        } else if (pendingOutputArray[ledIndex] == CRGB::Black) {
-            Serial.print("empty pendingOutputArray ledIndex: ");
-            Serial.println(ledIndex);
-        }
-    }
 
     transitionStep--;
 
@@ -193,29 +182,27 @@ void Renderer::flattenEffectAndOverlay(
     const std::shared_ptr<Effect<CRGB> > &effect,
     const std::shared_ptr<Effect<CRGB> > &overlay,
     float progress,
-    CRGB *outputArray
+    CRGB *effectOutputArray
 ) const {
-    applyEffectOrTransition(
+    applyEffectOrTransition<CRGB>(
         effect,
         segmentArray,
-        outputArray,
+        effectOutputArray,
+        [](uint16_t, CRGB, CRGB toBeMixed) { return toBeMixed; },
         progress
     );
 
-    applyEffectOrTransition(
+    applyEffectOrTransition<CRGB>(
         overlay,
         segmentArray,
-        bufferOutputArray,
+        effectOutputArray,
+        [&](uint16_t, CRGB existing, CRGB toBeMixed) {
+            if (overlay->type() == EffectType::OVERLAY_COLOUR) {
+                return toBeMixed == CRGB::White ? toBeMixed : existing;
+            } else {
+                return existing; //TODO
+            }
+        },
         progress
     );
-
-    //TODO fix this
-    for (uint16_t ledIndex = 0; ledIndex < displaySpec.nbLeds(); ledIndex++) {
-        if (overlay->type() == EffectType::OVERLAY_COLOUR) {
-            if (bufferOutputArray[ledIndex] == CRGB::White)
-                outputArray[ledIndex] = CRGB::White;
-        } else if (overlay->type() == EffectType::OVERLAY_ALPHA) {
-            // outputArray[ledIndex] = outputArray[ledIndex].nscale8_video(255 - bufferOutputArray[ledIndex].r);
-        }
-    }
 }

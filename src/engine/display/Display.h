@@ -26,8 +26,10 @@
 #include "engine/displayspec/DisplaySpec.h"
 #include "engine/render/Renderer.h"
 #include <algorithm> // Required for std::remove and std::erase
+#include <memory> // Required for std::unique_ptr
 
 class Display {
+    std::unique_ptr<CRGB[]> leds; // Manages the lifetime of the LED array
     const uint8_t minEffectDurationsInSecs;
     const uint8_t maxEffectDurationsInSecs;
     uint8_t currentEffectDurationsInSecs;
@@ -40,7 +42,7 @@ class Display {
     const std::vector<uint8_t> freePinsForEntropy;
 
     explicit Display(
-        CRGB *outputArray,
+        std::unique_ptr<CRGB[]> newLeds, // Accept unique_ptr for ownership transfer
         const DisplaySpec &displaySpec,
         uint8_t brightness,
         uint8_t minEffectDurationsInSecs,
@@ -71,12 +73,12 @@ public:
             freePinsForEntropy.end()
         );
 
-        CRGB *outputArray = new CRGB[displaySpec.nbLeds()];
-        CFastLED::addLeds<WS2812B, LED_PIN, RGB_ORDER>(outputArray, displaySpec.nbLeds())
+        auto concreteLeds = std::make_unique<CRGB[]>(displaySpec.nbLeds());
+        CFastLED::addLeds<WS2812B, LED_PIN, RGB_ORDER>(concreteLeds.get(), displaySpec.nbLeds())
                 .setCorrection(TypicalLEDStrip);
 
         return new Display(
-            outputArray,
+            std::move(concreteLeds), // Pass ownership to Display constructor
             displaySpec,
             brightness,
             minEffectDurationsInSecs,
@@ -89,7 +91,7 @@ public:
 
     void loop();
 
-    ~Display() = default;
+    // ~Display() = default; // Default destructor is fine with unique_ptr managing leds
 };
 
 #endif //LED_SEGMENTS_DISPLAY_H

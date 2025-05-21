@@ -85,7 +85,7 @@ Renderer::Renderer(const DisplaySpec &displaySpec, CRGB *outputArray) : displayS
 }
 
 Renderer::~Renderer() {
-    delete[] outputArray;
+    // outputArray is owned by Display class, Renderer should not delete it.
     delete[] segmentArray;
     delete[] segmentArray8;
     delete[] pendingOutputArray;

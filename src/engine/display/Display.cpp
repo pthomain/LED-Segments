@@ -31,7 +31,7 @@
 #define ENTROPY_UPDATE_IN_SECONDS 5
 
 Display::Display(
-    CRGB *outputArray,
+    std::unique_ptr<CRGB[]> newLeds,
     const DisplaySpec &displaySpec,
     const uint8_t brightness,
     const uint8_t minEffectDurationsInSecs,
@@ -39,17 +39,18 @@ Display::Display(
     const int16_t transitionDurationInMillis,
     const uint8_t fps,
     const std::vector<uint8_t> &freePinsForEntropy
-) : minEffectDurationsInSecs(min(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
+) : leds(std::move(newLeds)),
+    minEffectDurationsInSecs(min(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
     maxEffectDurationsInSecs(max(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
     currentEffectDurationsInSecs(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
     fps(fps),
     transitionDurationInMillis(transitionDurationInMillis),
     refreshRateInMillis(fps == 0 ? 1000 : 1000 / fps),
-    displaySpec(std::move(displaySpec)),
-    renderer(std::make_unique<Renderer>(displaySpec, outputArray)),
+    displaySpec(displaySpec), // Use copy for const DisplaySpec&
+    renderer(std::make_unique<Renderer>(displaySpec, leds.get())),
     freePinsForEntropy(freePinsForEntropy) {
     FastLED.setBrightness(brightness);
-    FastLED.clear(true);
+    FastLED.clear(true); // Clear with the new leds array
     addEntropy(freePinsForEntropy);
     changeEffect(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs));
     render();

@@ -18,22 +18,26 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "NoTransition.h"
+#include "TrainEffect.h"
+#include <functional>
+#include "engine/utils/Utils.h"
 
-EffectFactory<uint8_t> NoTransition::factory = [](
+EffectFactory<CRGB> TrainEffect::factory = [](
     const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
-    return std::make_unique<NoTransition>(effectContext);
+    return std::make_unique<TrainEffect>(effectContext);
 };
 
-void NoTransition::fillArrayInternal(
-    uint8_t *effectArray,
+void TrainEffect::fillArrayInternal(
+    CRGB *effectArray,
     uint16_t effectArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    for (uint16_t i = 0; i < effectArraySize; i++) {
-        effectArray[i] = progress < 0.5f ? 0 : 255;
-    }
+    fillEffectPalette(
+        effectArray,
+        effectArraySize,
+        context.palette.palette
+    );
 }

@@ -21,12 +21,12 @@
 #ifndef LED_SEGMENTS_FIBONACCIDISPLAY_H
 #define LED_SEGMENTS_FIBONACCIDISPLAY_H
 
-#include <cstdint>
-#include "crgb.h"
 #include "config/FibonacciLayoutConfig.h"
 #include "engine/displayspec/DisplaySpec.h"
 
 class FibonacciSpec : public DisplaySpec {
+    const std::vector<uint16_t> variations;
+
     void mapPixel(
         uint16_t variation,
         uint16_t segmentIndex,
@@ -52,7 +52,7 @@ class FibonacciSpec : public DisplaySpec {
     uint8_t getLedPadding(uint8_t pixelIndex) const;
 
 public :
-    explicit FibonacciSpec() : DisplaySpec(fibonacciLayoutCatalog()) {
+    explicit FibonacciSpec() : variations(computeVariations()), DisplaySpec(fibonacciLayoutCatalog(variations)) {
     };
 
     uint16_t nbLeds() const override { return TOTAL_FIBONACCI_LEDS; }
@@ -61,7 +61,7 @@ public :
 
     uint16_t nbSegments(uint16_t layoutIndex) const override;
 
-    uint16_t nbPixels(uint16_t layoutIndex, uint16_t segmentIndex) const override;
+    uint16_t segmentSize(uint16_t layoutIndex, uint16_t segmentIndex) const override;
 
     void mapLeds(
         uint16_t layoutIndex,

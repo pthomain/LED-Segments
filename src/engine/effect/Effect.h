@@ -37,6 +37,7 @@ class Effect {
 
 protected:
     uint8_t randomStart;
+    uint16_t frameIndex = 0;
     bool isArrayInitialised = false;
 
 public :
@@ -50,14 +51,16 @@ public :
     void fillArray(
         C *effectArray,
         uint16_t effectArraySize,
+        uint16_t segmentIndex,
         float progress
     );
 
     virtual void fillArrayInternal(
         C *effectArray,
         uint16_t effectArraySize,
+        uint16_t segmentIndex,
         float progress,
-        unsigned long time
+        unsigned long timeInMillis
     ) = 0;
 
     virtual String name() const = 0;
@@ -76,9 +79,9 @@ public :
 };
 
 template<typename C>
-using EffectFactory = std::function<std::unique_ptr<Effect<C>>(const EffectContext &effectContext)>;
+using EffectFactory = std::function<std::unique_ptr<Effect<C> >(const EffectContext &effectContext)>;
 
 template<typename C>
-static const std::vector<EffectFactory<C>> NO_EFFECTS = std::vector<EffectFactory<C>>{};
+static const std::vector<EffectFactory<C> > NO_EFFECTS = std::vector<EffectFactory<C> >{};
 
 #endif //EFFECTS_H

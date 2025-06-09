@@ -33,12 +33,13 @@ public:
     void fillArrayInternal(
         CRGB *effectArray,
         uint16_t effectArraySize,
+        uint16_t segmentIndex,
         float progress,
-        unsigned long time
+        unsigned long timeElapsedInMillis
     ) override;
 
     String name() const override { return "Sparkle"; }
-    EffectType type() const override { return EffectType::OVERLAY_COLOUR; }
+    EffectType type() const override { return EffectType::OVERLAY_ALPHA; }
 
     static EffectFactory<CRGB> factory;
 };

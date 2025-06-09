@@ -32,10 +32,6 @@
 #include "specs/phrase/config/PhraseLayoutConfig.h"
 
 class PhraseSpec : public DisplaySpec {
-    void mapLed(
-        uint16_t ledIndex,
-        const std::function<void(uint16_t)> &onLedMapped
-    ) const;
 
 public :
     explicit PhraseSpec(): DisplaySpec(phraseLayoutCatalog()) {
@@ -45,7 +41,7 @@ public :
 
     uint16_t nbSegments(uint16_t layoutIndex) const override;
 
-    uint16_t nbPixels(uint16_t layoutIndex, uint16_t segmentIndex) const override;
+    uint16_t segmentSize(uint16_t layoutIndex, uint16_t segmentIndex) const override;
 
     void mapLeds(
         uint16_t layoutIndex,

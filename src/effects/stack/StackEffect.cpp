@@ -18,28 +18,37 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "GradientEffect.h"
+#include "StackEffect.h"
 
-EffectFactory<CRGB> GradientEffect::factory = [](
+EffectFactory<CRGB> StackEffect::factory = [](
     const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
-    return std::make_unique<GradientEffect>(effectContext);
+    return std::make_unique<StackEffect>(effectContext);
 };
 
-void GradientEffect::fillArrayInternal(
+void StackEffect::fillArrayInternal(
     CRGB *effectArray,
     uint16_t effectArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeInMillis
 ) {
+    //TODO
     auto increment = static_cast<uint8_t>(variation * (255.0f / static_cast<float>(effectArraySize)));
-    uint8_t progressOffset = start + progress * 255;
+
+    if (bottomColour == 0 || topColour == 0) {
+        bottomColour = ColorFromPalette(context.palette.palette, currentColourIndex);
+        topColour = ColorFromPalette(context.palette.palette, currentColourIndex + increment);
+    } else if (timeInMillis % speed == 0) {
+        currentColourIndex += increment;
+        bottomColour = topColour;
+        topColour = ColorFromPalette(context.palette.palette, (currentColourIndex + increment) % 255);
+    }
+
+    auto stackProgress = (timeInMillis % speed) / static_cast<float>(speed);
+    auto stackOffset = effectArraySize - (stackProgress * effectArraySize);
 
     for (int i = 0; i < effectArraySize; i++) {
-        effectArray[i] = ColorFromPalette(
-            context.palette.palette,
-            progressOffset + (i * increment)
-        );
+        effectArray[i] = i < stackOffset ? bottomColour : topColour;
     }
 }

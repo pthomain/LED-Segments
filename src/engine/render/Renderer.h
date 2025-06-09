@@ -26,7 +26,7 @@
 #include "engine/displayspec/DisplaySpec.h"
 
 class Renderer {
-    const DisplaySpec &displaySpec;
+    std::shared_ptr<DisplaySpec> displaySpec;
 
     CRGB *outputArray = nullptr;
     CRGB *segmentArray = nullptr;
@@ -69,7 +69,7 @@ class Renderer {
     ) const;
 
 public:
-    explicit Renderer(const DisplaySpec &displaySpec, CRGB *outputArray);
+    explicit Renderer(std::shared_ptr<DisplaySpec> displaySpec, CRGB *outputArray);
 
     void changeEffect(
         const std::shared_ptr<Effect<CRGB> > &effect,

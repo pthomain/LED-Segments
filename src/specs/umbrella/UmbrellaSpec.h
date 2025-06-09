@@ -18,31 +18,37 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LED_SEGMENTS_GRADIENTEFFECT_H
-#define LED_SEGMENTS_GRADIENTEFFECT_H
+#ifndef UMBRELLASPEC_H
+#define UMBRELLASPEC_H
 
-#include "engine/effect/Effect.h"
+#include "UmbrellaLayoutConfig.h"
+#include "engine/displayspec/DisplaySpec.h"
+#include "engine/utils/Utils.h"
 
-class GradientEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<GradientEffect> {
-    const uint8_t start = random8(); //start hue
-    const float variation = static_cast<float>(random8(85)) / 100.0f; // 30% variation
+constexpr uint8_t NB_SPOKES = IS_DEBUG ? 6: 8;
+constexpr uint8_t LEDS_PER_SPOKE = IS_DEBUG ? 8 : 42;
 
-public:
-    explicit GradientEffect(const EffectContext &effectContext) : Effect(effectContext) {
+class UmbrellaSpec : public DisplaySpec {
+
+    public:
+    explicit UmbrellaSpec(): DisplaySpec(umbrellaLayoutCatalog()) {
     }
 
-    void fillArrayInternal(
-        CRGB *effectArray,
-        uint16_t effectArraySize,
+    uint16_t nbLeds() const override { return NB_SPOKES * LEDS_PER_SPOKE; }
+
+    uint16_t nbSegments(uint16_t layoutIndex) const override;
+
+    uint16_t segmentSize(uint16_t layoutIndex, uint16_t segmentIndex) const override;
+
+    void mapLeds(
+        uint16_t layoutIndex,
         uint16_t segmentIndex,
+        uint16_t pixelIndex,
         float progress,
-        unsigned long timeInMillis
-    ) override;
+        const std::function<void(uint16_t)> &onLedMapped
+    ) const override;
 
-    String name() const override { return "Gradient"; }
-    EffectType type() const override { return EffectType::EFFECT; }
-
-    static EffectFactory<CRGB> factory;
+    ~UmbrellaSpec() override = default;
 };
 
-#endif //LED_SEGMENTS_GRADIENTEFFECT_H
+#endif //UMBRELLASPEC_H

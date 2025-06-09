@@ -29,8 +29,9 @@ EffectFactory<CRGB> NoEffect::factory = [](
 void NoEffect::fillArrayInternal(
     CRGB *effectArray,
     uint16_t effectArraySize,
+    uint16_t segmentIndex,
     float progress,
-    unsigned long time
+    unsigned long timeElapsedInMillis
 ) {
     //NOOP
 };

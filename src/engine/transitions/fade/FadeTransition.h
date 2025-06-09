@@ -30,8 +30,9 @@ public:
     void fillArrayInternal(
         uint8_t *effectArray,
         uint16_t effectArraySize,
+        uint16_t segmentIndex,
         float progress,
-        unsigned long time
+        unsigned long timeElapsedInMillis
     ) override;
 
     String name() const override { return "Fade"; }

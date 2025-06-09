@@ -29,7 +29,7 @@ class DisplaySpec {
     void calculateMaxSegmentSize() {
         for (uint16_t layoutIndex = 0; layoutIndex < _catalog.nbLayouts(); layoutIndex++) {
             for (uint16_t segmentIndex = 0; segmentIndex < nbSegments(layoutIndex); segmentIndex++) {
-                _maxSegmentSize = max(_maxSegmentSize, nbPixels(layoutIndex, segmentIndex));
+                _maxSegmentSize = max(_maxSegmentSize, segmentSize(layoutIndex, segmentIndex));
             }
         }
     }
@@ -52,7 +52,7 @@ public:
 
     virtual uint16_t nbSegments(uint16_t layoutIndex) const = 0;
 
-    virtual uint16_t nbPixels(uint16_t layoutIndex, uint16_t segmentIndex) const = 0;
+    virtual uint16_t segmentSize(uint16_t layoutIndex, uint16_t segmentIndex) const = 0;
 
     virtual void mapLeds(
         uint16_t layoutIndex,

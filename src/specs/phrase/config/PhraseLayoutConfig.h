@@ -24,10 +24,13 @@
 #include "engine/displayspec/LayoutCatalog.h"
 #include "engine/effect/Effect.h"
 #include <effects/noise/NoiseEffect.h>
+#include <effects/stack/StackEffect.h>
+#include "effects/gradient/GradientEffect.h"
 #include "engine/overlay/none/NoOverlay.h"
 #include "engine/transitions/Transition.h"
 #include "engine/transitions/fade/FadeTransition.h"
 #include "overlays/sparkle/SparkleOverlay.h"
+#include "overlays/chase/ChaseOverlay.h"
 
 // Format is PIXELS_IN_SEGMENTS
 enum PhraseLayout {
@@ -49,7 +52,8 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > phraseEffects() {
         [](uint16_t layoutIndex) {
             return std::vector{
                 NoiseEffect::factory,
-                // GradientEffect::factory
+                // GradientEffect::factory,
+                // StackEffect::factory,
             };
         }
     );
@@ -64,6 +68,7 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > phraseOverlays() {
                 case LEDS_IN_WORDS:
                 case LEDS_IN_WHOLE: return std::vector{
                         SparkleOverlay::factory,
+                        // ChaseOverlay::factory,
                     };
                 default: return NO_OVERLAYS;
             }

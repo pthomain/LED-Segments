@@ -28,6 +28,7 @@
 #include <algorithm> // Required for std::remove and std::erase
 
 class Display {
+    CRGB *outputArray;
     const uint8_t minEffectDurationsInSecs;
     const uint8_t maxEffectDurationsInSecs;
     uint8_t currentEffectDurationsInSecs;
@@ -35,13 +36,19 @@ class Display {
     const uint8_t fps;
     const int16_t transitionDurationInMillis;
     const uint16_t refreshRateInMillis;
-    const DisplaySpec &displaySpec;
+    std::shared_ptr<DisplaySpec> displaySpec;
     const std::unique_ptr<Renderer> renderer;
     const std::vector<uint8_t> freePinsForEntropy;
 
+    const float chanceOfRainbow = 1.0f;
+    const Palette rainbowPalette = Palette(
+        Rainbow_gp,
+        "Rainbow"
+    );
+
     explicit Display(
         CRGB *outputArray,
-        const DisplaySpec &displaySpec,
+        std::unique_ptr<DisplaySpec> displaySpec,
         uint8_t brightness,
         uint8_t minEffectDurationsInSecs,
         uint8_t maxEffectDurationsInSecs,
@@ -57,7 +64,7 @@ class Display {
 public:
     template<int LED_PIN, EOrder RGB_ORDER>
     static Display *create(
-        const DisplaySpec &displaySpec,
+        std::unique_ptr<DisplaySpec> displaySpec,
         const uint8_t brightness = 50,
         const uint8_t minEffectDurationsInSecs = 3,
         const uint8_t maxEffectDurationsInSecs = 10,
@@ -71,13 +78,13 @@ public:
             freePinsForEntropy.end()
         );
 
-        CRGB *outputArray = new CRGB[displaySpec.nbLeds()];
-        CFastLED::addLeds<WS2812B, LED_PIN, RGB_ORDER>(outputArray, displaySpec.nbLeds())
+        CRGB *outputArray = new CRGB[displaySpec->nbLeds()];
+        CFastLED::addLeds<WS2812B, LED_PIN, RGB_ORDER>(outputArray, displaySpec->nbLeds())
                 .setCorrection(TypicalLEDStrip);
 
         return new Display(
             outputArray,
-            displaySpec,
+            std::move(displaySpec),
             brightness,
             minEffectDurationsInSecs,
             maxEffectDurationsInSecs,
@@ -89,7 +96,9 @@ public:
 
     void loop();
 
-    ~Display() = default;
+    ~Display() {
+        delete[] outputArray;
+    };
 };
 
 #endif //LED_SEGMENTS_DISPLAY_H

@@ -29,8 +29,9 @@ EffectFactory<uint8_t> FadeTransition::factory = [](
 void FadeTransition::fillArrayInternal(
     uint8_t *effectArray,
     uint16_t effectArraySize,
+    uint16_t segmentIndex,
     float progress,
-    unsigned long time
+    unsigned long timeElapsedInMillis
 ) {
     auto alpha = static_cast<uint8_t>(255.0f * progress);
     for (uint16_t i = 0; i < effectArraySize; i++) {

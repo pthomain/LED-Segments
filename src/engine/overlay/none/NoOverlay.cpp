@@ -30,8 +30,9 @@ EffectFactory<CRGB> NoOverlay::factory = [](
 void NoOverlay::fillArrayInternal(
     CRGB *effectArray,
     uint16_t effectArraySize,
+    uint16_t segmentIndex,
     float progress,
-    unsigned long time
+    unsigned long timeElapsedInMillis
 ) {
     for (uint16_t i = 0; i < effectArraySize; i++) {
         effectArray[i] = CRGB::White;

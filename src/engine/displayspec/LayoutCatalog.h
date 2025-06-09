@@ -79,7 +79,12 @@ public:
     }
 
     virtual String layoutName(uint16_t layoutIndex) const {
-        return _layoutNames.find(layoutIndex) == _layoutNames.end() ? UNKNOWN : _layoutNames.at(layoutIndex);
+        if (_layoutNames.find(layoutIndex) == _layoutNames.end()) {
+            Serial.println("Layout " + String(layoutIndex) + " not found");
+            return UNKNOWN;
+        }
+
+        return _layoutNames.at(layoutIndex);
     }
 
     EffectFactory<CRGB> randomEffectFactory(uint16_t layoutIndex) const;

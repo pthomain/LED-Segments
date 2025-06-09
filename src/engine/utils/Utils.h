@@ -27,14 +27,10 @@
 #include <Arduino.h>
 #include <vector>
 #include "FastLED.h"
+#include <functional>
 
-#define IS_DEBUG true
-
-static const std::vector<CRGBPalette16> PALETTES PROGMEM = std::vector<CRGBPalette16>{
-    Rainbow_gp,
-    // ForestColors_p,
-    // OceanColors_p,
-};
+#define IS_DEBUG false
+#define IS_UMBRELLA true
 
 static const std::vector<uint8_t> PRIMES PROGMEM = std::vector<uint8_t>{
     43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
@@ -59,7 +55,36 @@ static uint8_t normaliseNoise(uint8_t noise) {
 }
 
 inline bool probability(const float probability) {
+    if (probability == 0.0f) return false;
     return random16() < static_cast<uint32_t>(probability * 65535.0f);
+}
+
+static void mapLedInSnakeDisplay(
+    const uint16_t ledIndex,
+    const std::function<void(uint16_t)> &onLedMapped,
+    const uint8_t ledsPerRow = 8
+) {
+    const uint16_t rowIndex = ledIndex / ledsPerRow;
+    auto rowStart = rowIndex * ledsPerRow;
+    auto rowEnd = rowStart + ledsPerRow - 1;
+    auto relativeIndex = ledIndex - rowStart;
+    onLedMapped(rowEnd - relativeIndex);
+}
+
+inline void fillEffectPalette(
+    CRGB *effectArray,
+    uint16_t effectArraySize,
+    const CRGBPalette16 &effectPalette
+) {
+    fill_palette(
+        effectArray,
+        effectArraySize,
+        0,
+        max(1, 255 / effectArraySize),
+        effectPalette,
+        255,
+        LINEARBLEND
+    );
 }
 
 template<typename T>

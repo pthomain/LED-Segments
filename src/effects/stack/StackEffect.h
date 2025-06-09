@@ -18,17 +18,23 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LED_SEGMENTS_GRADIENTEFFECT_H
-#define LED_SEGMENTS_GRADIENTEFFECT_H
+#ifndef LED_SEGMENTS_STACKEFFECT_H
+#define LED_SEGMENTS_STACKEFFECT_H
 
 #include "engine/effect/Effect.h"
 
-class GradientEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<GradientEffect> {
+class StackEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<StackEffect> {
     const uint8_t start = random8(); //start hue
+    const uint16_t speed = random8(3, 10) * 100; //stack speed
     const float variation = static_cast<float>(random8(85)) / 100.0f; // 30% variation
 
+    uint16_t currentColourIndex = start;
+
+    CRGB bottomColour = 0;
+    CRGB topColour = 0;
+
 public:
-    explicit GradientEffect(const EffectContext &effectContext) : Effect(effectContext) {
+    explicit StackEffect(const EffectContext &effectContext) : Effect(effectContext) {
     }
 
     void fillArrayInternal(
@@ -36,13 +42,13 @@ public:
         uint16_t effectArraySize,
         uint16_t segmentIndex,
         float progress,
-        unsigned long timeInMillis
+        unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Gradient"; }
+    String name() const override { return "Stack"; }
     EffectType type() const override { return EffectType::EFFECT; }
 
     static EffectFactory<CRGB> factory;
 };
 
-#endif //LED_SEGMENTS_GRADIENTEFFECT_H
+#endif //LED_SEGMENTS_STACKEFFECT_H

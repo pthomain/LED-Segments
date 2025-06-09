@@ -27,6 +27,8 @@
 
 class EffectContext {
 public:
+    const uint16_t maxSegmentSize;
+    const uint16_t nbSegments;
     const uint16_t durationInFrames;
     const boolean isDisplayCircular;
     const uint16_t layoutIndex;
@@ -34,12 +36,16 @@ public:
     const Mirror mirror;
 
     EffectContext(
+        const uint16_t maxSegmentSize,
+        const uint16_t nbSegments,
         const uint16_t durationInFrames,
         const boolean isDisplayCircular,
         const uint16_t layoutIndex,
         Palette palette,
         const Mirror mirror
-    ) : durationInFrames(durationInFrames),
+    ) : maxSegmentSize(maxSegmentSize),
+        nbSegments(nbSegments),
+        durationInFrames(durationInFrames),
         isDisplayCircular(isDisplayCircular),
         layoutIndex(layoutIndex),
         palette(std::move(palette)),

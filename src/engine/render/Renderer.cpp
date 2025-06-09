@@ -49,43 +49,51 @@ void Renderer::applyEffectOrTransition(
     auto context = effect->context;
     auto layoutIndex = context.layoutIndex;
     auto mirror = context.mirror;
-    auto nbSegments = displaySpec.nbSegments(layoutIndex);
+    auto nbSegments = displaySpec->nbSegments(layoutIndex);
 
     for (auto segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
-        auto segmentSize = displaySpec.nbPixels(layoutIndex, segmentIndex);
+        auto segmentSize = displaySpec->segmentSize(layoutIndex, segmentIndex);
         uint16_t mirrorSize = getMirrorSize(mirror, segmentSize);
 
         effect->fillArray(
             segmentArray,
             mirrorSize,
+            segmentIndex,
             progress
         );
 
         applyMirror(mirror, segmentArray, segmentSize);
 
         for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
-            displaySpec.mapLeds(
+            displaySpec->mapLeds(
                 layoutIndex,
                 segmentIndex,
                 pixelIndex,
                 progress,
                 [&](uint16_t ledIndex) {
-                    outputArray[ledIndex] = mix(ledIndex, outputArray[ledIndex], segmentArray[pixelIndex]);
+                    if (ledIndex < displaySpec->nbLeds()) {
+                        outputArray[ledIndex] = mix(ledIndex, outputArray[ledIndex], segmentArray[pixelIndex]);
+                    } else {
+                        Serial.print("Invalid pixel index: ");
+                        Serial.println(ledIndex);
+                    }
                 }
             );
         }
     }
 }
 
-Renderer::Renderer(const DisplaySpec &displaySpec, CRGB *outputArray) : displaySpec(displaySpec),
-                                                                        outputArray(outputArray) {
-    segmentArray = new CRGB[displaySpec.maxSegmentSize()]();
-    segmentArray8 = new uint8_t[displaySpec.maxSegmentSize()]();
-    pendingOutputArray = new CRGB[displaySpec.nbLeds()]();
+Renderer::Renderer(
+    std::shared_ptr<DisplaySpec> displaySpec,
+    CRGB *outputArray
+) : displaySpec(displaySpec),
+    outputArray(outputArray) {
+    segmentArray = new CRGB[displaySpec->maxSegmentSize()]();
+    segmentArray8 = new uint8_t[displaySpec->maxSegmentSize()]();
+    pendingOutputArray = new CRGB[displaySpec->nbLeds()]();
 }
 
 Renderer::~Renderer() {
-    delete[] outputArray;
     delete[] segmentArray;
     delete[] segmentArray8;
     delete[] pendingOutputArray;
@@ -200,7 +208,7 @@ void Renderer::flattenEffectAndOverlay(
             if (overlay->type() == EffectType::OVERLAY_COLOUR) {
                 return toBeMixed == CRGB::White ? toBeMixed : existing;
             } else {
-                return existing; //TODO
+                return existing.nscale8_video(toBeMixed.getAverageLight());
             }
         },
         progress

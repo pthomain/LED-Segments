@@ -154,19 +154,13 @@ static std::vector<uint16_t> computeVariations() {
             addVariation(SEGMENT, direction, SPIRAL, inflexion);
         }
     }
-
     return variations;
 }
 
-//Prevents instantiation before setup() is called
-inline const std::vector<uint16_t> &variations() {
-    static const auto variations = computeVariations();
-    return variations;
-}
-
-static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > fibonacciEffects() {
+static std::map<uint16_t, std::vector<EffectFactory<CRGB> > >
+fibonacciEffects(const std::vector<uint16_t> &variations) {
     return mapLayoutIndex<EffectFactory<CRGB> >(
-        variations(),
+        variations,
         [](uint16_t layoutIndex) {
             return std::vector{
                 NoiseEffect::factory,
@@ -176,9 +170,10 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > fibonacciEffects()
     );
 }
 
-static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > fibonacciOverlays() {
+static std::map<uint16_t, std::vector<EffectFactory<CRGB> > >
+fibonacciOverlays(const std::vector<uint16_t> &variations) {
     return mapLayoutIndex<EffectFactory<CRGB> >(
-        variations(),
+        variations,
         [](uint16_t layoutIndex) {
             return std::vector{
                 SparkleOverlay::factory,
@@ -187,36 +182,37 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > fibonacciOverlays(
     );
 }
 
-static std::map<uint16_t, std::vector<Mirror> > fibonacciMirrors() {
+static std::map<uint16_t, std::vector<Mirror> > fibonacciMirrors(const std::vector<uint16_t> &variations) {
     return mapLayoutIndex<Mirror>(
-        variations(),
+        variations,
         [](uint16_t layoutIndex) {
             return ALL_MIRRORS;
         }
     );
 }
 
-static std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > fibonacciTransitions() {
+static std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > fibonacciTransitions(
+    const std::vector<uint16_t> &variations) {
     return mapLayoutIndex<EffectFactory<uint8_t> >(
-        variations(),
+        variations,
         [](uint16_t layoutIndex) {
             return ALL_TRANSITIONS;
         }
     );
 }
 
-static LayoutCatalog fibonacciLayoutCatalog() {
+static LayoutCatalog fibonacciLayoutCatalog(const std::vector<uint16_t> &variations) {
     auto names = std::map<uint16_t, String>();
-    for (auto variation: variations()) {
+    for (auto variation: variations) {
         names.insert(std::pair(variation, getLayoutName(variation)));
     }
     return LayoutCatalog(
-        variations().size(),
+        variations.size(),
         names,
-        fibonacciEffects(),
-        fibonacciOverlays(),
-        fibonacciTransitions(),
-        fibonacciMirrors()
+        fibonacciEffects(variations),
+        fibonacciOverlays(variations),
+        fibonacciTransitions(variations),
+        fibonacciMirrors(variations)
     );
 }
 

@@ -23,32 +23,38 @@
 
 #include "FastLED.h"
 
-enum class PaletteType {
-    GRADIENT, // used for effects using the given palette for complex gradients
-    DISCRETE, // used for effects using individual colours from the given palette
-    NONE // used for effects that don't use a palette
-};
-
 class Palette {
-    const CRGBPalette16 _palette;
-    const PaletteType _type;
-
 public:
+    const CRGBPalette16 palette;
+    const String name;
+
     Palette(
         const CRGBPalette16 &palette,
-        const PaletteType type
-    ) : _palette(palette), _type(type) {
-    }
-
-    const CRGBPalette16 &palette() const {
-        return _palette;
-    }
-
-    const PaletteType type() const {
-        return _type;
+        const String &name
+    ) : palette(palette), name(name) {
     }
 };
 
-static const Palette NO_PALETTE = Palette(CRGBPalette16(), PaletteType::NONE);
+static const Palette NO_PALETTE = Palette(CRGBPalette16(), "None");
+
+static const auto PALETTES = std::vector{
+    Palette(
+        CRGBPalette16{
+            0xff0066,
+            0x9900ff,
+            0x3333ff
+        },
+        "Aurora"
+    ),
+    Palette(
+        CRGBPalette16{
+            0xff7003,
+            0x17f702,
+            0xf3f702,
+            0xf70202
+        },
+        "Jamaica"
+    )
+};
 
 #endif //PALETTE_H

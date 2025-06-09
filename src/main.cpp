@@ -22,6 +22,7 @@
 #include "engine/utils/Utils.h"
 #include "specs/phrase/PhraseSpec.h"
 #include "specs/fibonacci/FibonacciSpec.h"
+#include "specs/umbrella/UmbrellaSpec.h"
 
 //TODO add stack highlight, each pixel stacks on the previous one + reverse
 //TODO add swipe effect, one colour slides over the previous one
@@ -30,10 +31,13 @@
 //TODO for each modifier, allow for highlight (75% brightness for other pixels based on seed%2)
 //TODO add a Composite effect that picks a different effect for each segment or the same effect but a different palette
 
-#define LED_PIN 9
-#define BRIGHTNESS 10
+#define LED_PIN D7 //Umbrella
+// #define LED_PIN 9
+#define BRIGHTNESS 153
+#define DEBUG_BRIGHTNESS 50
 #define MIN_EFFECT_DURATION_IN_SECONDS 5
-#define MAX_EFFECT_DURATION_IN_SECONDS 30
+#define MAX_EFFECT_DURATION_IN_SECONDS 20
+#define DEBUG_EFFECT_DURATION_IN_SECONDS 3
 
 Display *display;
 
@@ -43,13 +47,12 @@ void setup() {
         delay(2000);
     }
 
-    auto *displaySpec = new PhraseSpec();
     display = Display::create<LED_PIN, GRB>(
-        *displaySpec,
-        IS_DEBUG ? 10 : 128,
-        IS_DEBUG ? 5 : MIN_EFFECT_DURATION_IN_SECONDS,
-        IS_DEBUG ? 5 : MAX_EFFECT_DURATION_IN_SECONDS,
-        2000
+        std::make_unique<UmbrellaSpec>(),
+        IS_DEBUG ? DEBUG_BRIGHTNESS : BRIGHTNESS,
+        IS_DEBUG || IS_UMBRELLA ? DEBUG_EFFECT_DURATION_IN_SECONDS : MIN_EFFECT_DURATION_IN_SECONDS,
+        IS_DEBUG || IS_UMBRELLA ? DEBUG_EFFECT_DURATION_IN_SECONDS : MAX_EFFECT_DURATION_IN_SECONDS,
+        IS_UMBRELLA ? 500 : 2000
     );
 }
 

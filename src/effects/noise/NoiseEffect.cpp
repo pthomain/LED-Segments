@@ -31,10 +31,11 @@ EffectFactory<CRGB> NoiseEffect::factory = [](
 void NoiseEffect::fillArrayInternal(
     CRGB *effectArray,
     uint16_t effectArraySize,
+    uint16_t segmentIndex,
     float progress,
-    unsigned long time
+    unsigned long timeElapsedInMillis
 ) {
-    const uint8_t noise = inoise8(noiseScale, randomStart + time / 5);
+    const uint8_t noise = inoise8(noiseScale, randomStart + timeElapsedInMillis / 5);
     const uint8_t delta = max(1, 256 / (effectArraySize * paletteScale));
 
     fill_palette(
@@ -42,7 +43,7 @@ void NoiseEffect::fillArrayInternal(
         effectArraySize,
         normaliseNoise(noise),
         delta,
-        context.palette.palette(),
+        context.palette.palette,
         255,
         LINEARBLEND
     );

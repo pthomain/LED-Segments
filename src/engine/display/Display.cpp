@@ -26,47 +26,49 @@
 #include "engine/utils/seed/SeedGenerator.h"
 #include "engine/transitions/fade/FadeTransition.h"
 #include "engine/transitions/slide/SlideTransition.h"
+#include "overlays/chase/ChaseOverlay.h"
+#include "overlays/sparkle/SparkleOverlay.h"
 
 #define FASTLED_USE_PROGMEM 1
 #define ENTROPY_UPDATE_IN_SECONDS 5
 
 Display::Display(
     CRGB *outputArray,
-    const DisplaySpec &displaySpec,
+    std::unique_ptr<DisplaySpec> displaySpec,
     const uint8_t brightness,
     const uint8_t minEffectDurationsInSecs,
     const uint8_t maxEffectDurationsInSecs,
     const int16_t transitionDurationInMillis,
     const uint8_t fps,
     const std::vector<uint8_t> &freePinsForEntropy
-) : minEffectDurationsInSecs(min(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
+) : outputArray(outputArray),
+    minEffectDurationsInSecs(min(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
     maxEffectDurationsInSecs(max(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
     currentEffectDurationsInSecs(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
     fps(fps),
     transitionDurationInMillis(transitionDurationInMillis),
     refreshRateInMillis(fps == 0 ? 1000 : 1000 / fps),
     displaySpec(std::move(displaySpec)),
-    renderer(std::make_unique<Renderer>(displaySpec, outputArray)),
+    renderer(std::make_unique<Renderer>(this->displaySpec, outputArray)),
     freePinsForEntropy(freePinsForEntropy) {
     FastLED.setBrightness(brightness);
     FastLED.clear(true);
+    FastLED.show();
     addEntropy(freePinsForEntropy);
     changeEffect(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs));
     render();
 }
 
 void Display::changeEffect(uint8_t effectDurationsInSecs) {
-    const auto catalog = displaySpec.catalog();
-    const CRGBPalette16 &palette = PALETTES[random8(PALETTES.size())];
+    const auto catalog = displaySpec->catalog();
+    const Palette palette = probability(chanceOfRainbow) ? rainbowPalette : PALETTES[random8(PALETTES.size())];
+
     const uint16_t effectLayoutIndex = random16(catalog.nbLayouts());
 
     const auto effectFactory = catalog.randomEffectFactory(effectLayoutIndex);
     const auto effectMirror = catalog.randomMirror(effectLayoutIndex);
 
-    // auto [transitionLayoutIndex, transitionFactory] = catalog.randomTransition();
-    auto transitionLayoutIndex = 0;
-    auto transitionFactory = SlideTransition::factory;
-
+    auto [transitionLayoutIndex, transitionFactory] = catalog.randomTransition();
     const auto transitionMirror = catalog.randomMirror(transitionLayoutIndex);
 
     const auto [overlayLayoutIndex, overlayFactory] = catalog.randomOverlay();
@@ -75,24 +77,30 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
     auto transitionDurationInFrames = fps * transitionDurationInMillis / 1000;
 
     EffectContext effectContext(
+        displaySpec->maxSegmentSize(),
+        displaySpec->nbSegments(effectLayoutIndex),
         effectDurationInFrames,
-        displaySpec.isCircular(),
+        displaySpec->isCircular(),
         effectLayoutIndex,
-        Palette(palette, PaletteType::GRADIENT),
+        palette,
         effectMirror
     );
 
     EffectContext overlayContext(
+        displaySpec->maxSegmentSize(),
+        displaySpec->nbSegments(overlayLayoutIndex),
         effectDurationInFrames,
-        displaySpec.isCircular(),
+        displaySpec->isCircular(),
         overlayLayoutIndex,
         NO_PALETTE,
         Mirror::NONE //TODO maybe add mirror
     );
 
     EffectContext transitionContext(
+        displaySpec->maxSegmentSize(),
+        displaySpec->nbSegments(transitionLayoutIndex),
         transitionDurationInFrames,
-        displaySpec.isCircular(),
+        displaySpec->isCircular(),
         transitionLayoutIndex,
         NO_PALETTE,
         transitionMirror
@@ -109,6 +117,8 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
         Serial.println(effect->name());
         Serial.print("Effect mirror\t\t");
         Serial.println(getMirrorName(effectMirror));
+        Serial.print("Palette\t\t\t");
+        Serial.println(palette.name);
         Serial.print("Overlay\t\t\t");
         Serial.println(overlay->name());
         Serial.print("Overlay layout\t\t");

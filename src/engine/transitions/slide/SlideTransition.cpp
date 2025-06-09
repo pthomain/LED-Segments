@@ -29,8 +29,9 @@ EffectFactory<uint8_t> SlideTransition::factory = [](
 void SlideTransition::fillArrayInternal(
     uint8_t *effectArray,
     uint16_t effectArraySize,
+    uint16_t segmentIndex,
     float progress,
-    unsigned long time
+    unsigned long timeElapsedInMillis
 ) {
     uint16_t limit = constrain(round((float) effectArraySize * progress), 0, effectArraySize);
     for (uint16_t i = 0; i < effectArraySize; i++) {

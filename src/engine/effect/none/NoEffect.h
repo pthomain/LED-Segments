@@ -31,8 +31,9 @@ public:
     void fillArrayInternal(
         CRGB *effectArray,
         uint16_t effectArraySize,
+        uint16_t segmentIndex,
         float progress,
-        unsigned long time
+        unsigned long timeElapsedInMillis
     ) override;
 
     String name() const override { return "None"; }

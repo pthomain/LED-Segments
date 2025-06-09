@@ -36,7 +36,7 @@ uint16_t PhraseSpec::nbSegments(const uint16_t layoutIndex) const {
     }
 }
 
-uint16_t PhraseSpec::nbPixels(
+uint16_t PhraseSpec::segmentSize(
     const uint16_t layoutIndex,
     const uint16_t segmentIndex
 ) const {
@@ -78,23 +78,27 @@ void PhraseSpec::mapLeds(
     float progress,
     const std::function<void(uint16_t)> &onLedMapped
 ) const {
+    auto mapSingleLed = [&](uint16_t ledIndex, const std::function<void(uint16_t)> &onLedMapped) {
+        IS_DEBUG ? mapLedInSnakeDisplay(ledIndex, onLedMapped) : onLedMapped(ledIndex);
+    };
+
     auto mapRange = [&](uint16_t start, uint16_t end) {
         for (uint16_t i = start; i <= end; i++) {
-            mapLed(i, onLedMapped);
+            mapSingleLed(i, onLedMapped);
         }
     };
 
     switch (layoutIndex) {
         case LEDS_IN_LETTERS:
-            mapLed(LETTERS[segmentIndex][0] + pixelIndex, onLedMapped);
+            mapSingleLed(LETTERS[segmentIndex][0] + pixelIndex, onLedMapped);
             break;
 
         case LEDS_IN_WORDS:
-            mapLed(WORDS[segmentIndex][0] + pixelIndex, onLedMapped);
+            mapSingleLed(WORDS[segmentIndex][0] + pixelIndex, onLedMapped);
             break;
 
         case LEDS_IN_WHOLE:
-            mapLed(pixelIndex, onLedMapped);
+            mapSingleLed(pixelIndex, onLedMapped);
             break;
 
         case LETTERS_IN_WORDS: {
@@ -121,21 +125,4 @@ void PhraseSpec::mapLeds(
             mapRange(WORDS[pixelIndex][0], WORDS[pixelIndex][1]);
             break;
     };
-}
-
-void PhraseSpec::mapLed(
-    const uint16_t ledIndex,
-    const std::function<void(uint16_t)> &onLedMapped
-) const {
-    const uint8_t ledsPerRow = 8;
-    const uint16_t rowIndex = ledIndex / ledsPerRow;
-    if (IS_DEBUG && rowIndex % 2 == 1) {
-        //handle snake rows
-        auto rowStart = rowIndex * ledsPerRow;
-        auto rowEnd = rowStart + ledsPerRow - 1;
-        auto relativeIndex = ledIndex - rowStart;
-        onLedMapped(rowEnd - relativeIndex);
-    } else {
-        onLedMapped(ledIndex);
-    }
 }

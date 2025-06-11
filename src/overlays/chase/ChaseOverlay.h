@@ -22,22 +22,29 @@
 #define CHASEOVERLAY_H
 
 #include "engine/effect/Effect.h"
+#include "engine/utils/Utils.h"
 
 class ChaseOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<ChaseOverlay> {
+    const uint8_t minxSparksPerSegment = 1;
     const uint8_t maxSparksPerSegment = 5;
-    const uint8_t sparkIntervalDivider = 5;
+    const uint8_t sparksPerSegment = random8(minxSparksPerSegment, maxSparksPerSegment);
+
+    const uint8_t intervalBetweenSparks = 10;
     const uint8_t trailLength = 3;
 
     uint16_t leadingSparkPosition = 0;
     uint16_t *sparkIntervalCounterPerSegment;
     uint8_t *nbSparksForSegment;
 
+    // Whether the sparks bounce back and forth. Otherwise, new sparks get emitted at the start after they exit.
+    bool isBouncy = probability(0.75f);
+    bool isSwirling = probability(0.5f);
+
     std::vector<std::vector<bool> > forward;
     std::vector<std::vector<bool> > backward;
 
     bool *tempForward;
     bool *tempBackward;
-    bool isSwirling = false; //random8(1) == 0; //TODO
 
 public:
     explicit ChaseOverlay(const EffectContext &effectContext)

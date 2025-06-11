@@ -55,15 +55,6 @@ static const auto PALETTES = std::vector{
         },
         "Jamaica"
     ),
-    Palette(
-        CRGBPalette16{
-            0xff0000,
-            0xffffff,
-            0x0000ff,
-            0xffffff,
-        },
-        "France"
-    )
 };
 
 #endif //PALETTE_H

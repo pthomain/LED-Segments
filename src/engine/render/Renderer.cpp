@@ -75,7 +75,7 @@ void Renderer::applyEffectOrTransition(
                     if (ledIndex < displaySpec->nbLeds()) {
                         outputArray[ledIndex] = mix(ledIndex, outputArray[ledIndex], segmentArray[pixelIndex]);
                     } else {
-                        Serial.print("Invalid pixel index: ");
+                        Serial.print("Invalid LED index: ");
                         Serial.println(ledIndex);
                     }
                 }

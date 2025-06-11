@@ -25,11 +25,12 @@
 #include <vector>
 #include "effects/noise/NoiseEffect.h"
 #include "effects/gradient/GradientEffect.h"
-#include "effects/train/TrainEffect.h"
+#include "effects/swirl/SwirlEffect.h"
 #include "engine/displayspec/LayoutCatalog.h"
 #include "engine/effect/Effect.h"
 #include "engine/overlay/none/NoOverlay.h"
 #include "engine/transitions/Transition.h"
+#include "overlays/chase/ChaseOverlay.h"
 #include "overlays/sparkle/SparkleOverlay.h"
 
 enum UmbrellaLayout {
@@ -37,14 +38,14 @@ enum UmbrellaLayout {
     SPOKES_IN_WHOLE
 };
 
-static const std::vector<uint16_t> umbrellaLayouts = std::vector<uint16_t>{0, 1};
+static const std::vector<uint16_t> umbrellaLayouts = std::vector<uint16_t>{0}; //, 1};
 
 static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaEffects() {
     return mapLayoutIndex<EffectFactory<CRGB> >(
         umbrellaLayouts,
         [](uint16_t layoutIndex) {
             return std::vector{
-                TrainEffect::factory,
+                SwirlEffect::factory,
                 GradientEffect::factory,
                 NoiseEffect::factory,
             };
@@ -59,7 +60,8 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaOverlays()
             switch (layoutIndex) {
                 case LEDS_IN_SPOKE:
                     return std::vector{
-                        SparkleOverlay::factory
+                        ChaseOverlay::factory,
+                        SparkleOverlay::factory,
                     };
                 default: return NO_OVERLAYS;
             }
@@ -100,7 +102,7 @@ static LayoutCatalog umbrellaLayoutCatalog() {
         umbrellaOverlays(),
         umbrellaTransitions(),
         umbrellaMirrors(),
-        1.0f
+        0.30f
     );
 }
 

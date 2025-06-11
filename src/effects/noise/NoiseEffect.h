@@ -26,7 +26,7 @@
 class NoiseEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<NoiseEffect> {
 protected:
     const uint8_t noiseScale = random8(10, 20);
-    const uint8_t paletteScale = random8(1, 6);
+    const uint8_t paletteScale = random8(1, 5);
     const uint8_t noiseSpeed = random8(5, 100);
 
 public:

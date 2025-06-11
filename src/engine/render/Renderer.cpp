@@ -19,6 +19,7 @@
  */
 
 #include "Renderer.h"
+#include "engine/utils/Utils.h"
 
 template
 void Renderer::applyEffectOrTransition(
@@ -84,7 +85,7 @@ void Renderer::applyEffectOrTransition(
 }
 
 Renderer::Renderer(
-    std::shared_ptr<DisplaySpec> displaySpec,
+    const std::shared_ptr<DisplaySpec> &displaySpec,
     CRGB *outputArray
 ) : displaySpec(displaySpec),
     outputArray(outputArray) {
@@ -106,7 +107,12 @@ bool Renderer::validateEffect(
 ) {
     return effect && overlay && transition
            && effect->type() == EffectType::EFFECT
-           && (overlay->type() == EffectType::OVERLAY_ALPHA || overlay->type() == EffectType::OVERLAY_COLOUR)
+           && (
+               overlay->type() == EffectType::OVERLAY_SOURCE
+               || overlay->type() == EffectType::OVERLAY_SCREEN
+               || overlay->type() == EffectType::OVERLAY_MULTIPLY
+               || overlay->type() == EffectType::OVERLAY_INVERT
+           )
            && transition->type() == EffectType::TRANSITION;
 }
 
@@ -205,10 +211,10 @@ void Renderer::flattenEffectAndOverlay(
         segmentArray,
         effectOutputArray,
         [&](uint16_t, CRGB existing, CRGB toBeMixed) {
-            if (overlay->type() == EffectType::OVERLAY_COLOUR) {
-                return toBeMixed == CRGB::White ? toBeMixed : existing;
-            } else {
-                return existing.nscale8_video(toBeMixed.getAverageLight());
+            switch (overlay->type()) {
+                case EffectType::OVERLAY_SCREEN: return screen(existing, toBeMixed);
+                case EffectType::OVERLAY_MULTIPLY: return multiply(existing, toBeMixed);
+                default: return existing; //TODO
             }
         },
         progress

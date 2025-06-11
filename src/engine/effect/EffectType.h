@@ -23,8 +23,10 @@
 
 enum class EffectType {
     EFFECT,
-    OVERLAY_ALPHA,
-    OVERLAY_COLOUR,
+    OVERLAY_SOURCE,
+    OVERLAY_SCREEN,
+    OVERLAY_MULTIPLY,
+    OVERLAY_INVERT,
     TRANSITION
 };
 

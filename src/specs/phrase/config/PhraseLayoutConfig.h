@@ -68,7 +68,7 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > phraseOverlays() {
                 case LEDS_IN_WORDS:
                 case LEDS_IN_WHOLE: return std::vector{
                         SparkleOverlay::factory,
-                        // ChaseOverlay::factory,
+                        ChaseOverlay::factory,
                     };
                 default: return NO_OVERLAYS;
             }
@@ -124,7 +124,7 @@ static LayoutCatalog phraseLayoutCatalog() {
         phraseOverlays(),
         phraseTransitions(),
         phraseMirrors(),
-        1.0f
+        0.25f
     );
 }
 

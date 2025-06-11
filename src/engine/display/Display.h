@@ -40,7 +40,7 @@ class Display {
     const std::unique_ptr<Renderer> renderer;
     const std::vector<uint8_t> freePinsForEntropy;
 
-    const float chanceOfRainbow = 1.0f;
+    const float chanceOfRainbow = .75f;
     const Palette rainbowPalette = Palette(
         Rainbow_gp,
         "Rainbow"

@@ -37,7 +37,7 @@ public:
     ) override;
 
     String name() const override { return "None"; }
-    EffectType type() const override { return EffectType::OVERLAY_ALPHA; }
+    EffectType type() const override { return EffectType::OVERLAY_SOURCE; }
 
     static EffectFactory<CRGB> factory;
 };

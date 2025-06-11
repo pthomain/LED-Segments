@@ -18,15 +18,17 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LED_SEGMENTS_TRAINEFFECT_H
-#define LED_SEGMENTS_TRAINEFFECT_H
+#ifndef LED_SEGMENTS_SWIRLEFFECT_H
+#define LED_SEGMENTS_SWIRLEFFECT_H
 
 #include "engine/effect/Effect.h"
 
-class TrainEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<TrainEffect> {
+class SwirlEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<SwirlEffect> {
+
+    bool isReversed = random8(1) == 0;
 
 public:
-    explicit TrainEffect(const EffectContext &effectContext) : Effect(effectContext) {
+    explicit SwirlEffect(const EffectContext &effectContext) : Effect(effectContext) {
     }
 
     void fillArrayInternal(
@@ -37,10 +39,10 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Train"; }
+    String name() const override { return "Swirl"; }
     EffectType type() const override { return EffectType::EFFECT; }
 
     static EffectFactory<CRGB> factory;
 };
 
-#endif //LED_SEGMENTS_TRAINEFFECT_H
+#endif //LED_SEGMENTS_SWIRLEFFECT_H

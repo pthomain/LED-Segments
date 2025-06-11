@@ -43,18 +43,31 @@ void Effect<C>::fillArray(
     uint16_t segmentIndex,
     float progress
 ) {
-    if (!isArrayInitialised) {
-        memset(effectArray, 0, effectArraySize * sizeof(C));
-        isArrayInitialised = true;
+    if (effectArraySize == 0) {
+        Serial.println("Effect::fillArray: empty array");
+        return;
     }
+
+    unsigned long elapsedMillis;
+    if (isFirstFrame) {
+        start = millis();
+        elapsedMillis = 0;
+        isFirstFrame = false;
+    } else {
+        elapsedMillis = max(1, millis() - start);
+    }
+
+    memset(effectArray, 0, effectArraySize * sizeof(C));
 
     fillArrayInternal(
         effectArray,
         effectArraySize,
         segmentIndex,
         progress,
-        millis() - start
+        elapsedMillis
     );
 
-    frameIndex++;
+    if (segmentIndex == context.nbSegments -1) {
+        frameIndex++;
+    }
 };

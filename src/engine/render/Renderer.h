@@ -69,7 +69,7 @@ class Renderer {
     ) const;
 
 public:
-    explicit Renderer(std::shared_ptr<DisplaySpec> displaySpec, CRGB *outputArray);
+    explicit Renderer(const std::shared_ptr<DisplaySpec> &displaySpec, CRGB *outputArray);
 
     void changeEffect(
         const std::shared_ptr<Effect<CRGB> > &effect,

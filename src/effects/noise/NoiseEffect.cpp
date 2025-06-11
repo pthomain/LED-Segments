@@ -36,13 +36,13 @@ void NoiseEffect::fillArrayInternal(
     unsigned long timeElapsedInMillis
 ) {
     const uint8_t noise = inoise8(noiseScale, randomStart + timeElapsedInMillis / 5);
-    const uint8_t delta = max(1, 256 / (effectArraySize * paletteScale));
+    const uint8_t step = max(1, 255 / (effectArraySize * paletteScale));
 
     fill_palette(
         effectArray,
         effectArraySize,
         normaliseNoise(noise),
-        delta,
+        step,
         context.palette.palette,
         255,
         LINEARBLEND

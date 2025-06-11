@@ -36,6 +36,10 @@ enum class Mirror {
     REPEAT_REVERSE
 };
 
+static std::vector NO_MIRRORS = {
+    Mirror::NONE
+};
+
 static std::vector ALL_MIRRORS = {
     Mirror::NONE,
     Mirror::REVERSE,

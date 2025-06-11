@@ -35,54 +35,86 @@ void ChaseOverlay::fillArrayInternal(
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    return; //TODO fix this
-    unsigned long refreshInMillis = 1000 / speed;
-    auto lastSparkForSegment = timeElapsedInMillis - lastSparkTimeMillisForSegment[segmentIndex];
+    if (effectArraySize < 2) {
+        Serial.println("ChaseOverlay: effectArraySize < 2, skipping");
+        effectArray[0] = CRGB::White;
+        return;
+    }
 
-    memset(forward, false, sizeof(bool) * context.maxSegmentSize);
-    memset(backward, false, sizeof(bool) * context.maxSegmentSize);
-    memset(tempForward, false, sizeof(bool) * context.maxSegmentSize);
-    memset(tempBackward, false, sizeof(bool) * context.maxSegmentSize);
+    // Clear temp arrays
 
-    auto maxSparks = max(1, static_cast<uint16_t>(effectArraySize * sparkDensity));
+    memset(tempForward, 0, context.maxSegmentSize * sizeof(bool));
+    memset(tempBackward, 0, context.maxSegmentSize * sizeof(bool));
 
-    for (int i = 0; i < effectArraySize; i++) {
-        if (forward[i]) {
-            if (i == effectArraySize - 1) {
-                tempBackward[i] = true;
+    // Shift previous sparks back and forth
+
+    uint16_t lastIndex = effectArraySize - 1;
+
+    for (int pixelIndex = 0; pixelIndex < effectArraySize; pixelIndex++) {
+        if (forward[segmentIndex][pixelIndex]) {
+            if (pixelIndex == lastIndex) {
+                tempBackward[lastIndex - 1] = true;
             } else {
-                tempForward[i + 1] = true;
+                tempForward[pixelIndex + 1] = true;
             }
-            tempForward[i] = false;
-        }
-        if (backward[i]) {
-            if (i == 0) {
-                tempForward[i] = true;
-            } else {
-                tempBackward[i - 1] = true;
-            }
-            tempBackward[i] = false;
         }
     }
 
-    memcpy(forward, tempForward, sizeof(forward));
-    memcpy(backward, tempBackward, sizeof(backward));
+    for (int pixelIndex = lastIndex; pixelIndex >= 0; pixelIndex--) {
+        if (backward[segmentIndex][pixelIndex]) {
+            if (pixelIndex == 0) {
+                tempForward[1] = true;
+            } else {
+                tempBackward[pixelIndex - 1] = true;
+            }
+        }
+    }
 
-    uint16_t sparkCount = 0;
+    // Copy new shifted values to the real arrays
+
+    forward[segmentIndex].assign(tempForward, tempForward + effectArraySize);
+    backward[segmentIndex].assign(tempBackward, tempBackward + effectArraySize);
+
+    // Add new spark if needed
+
+    auto intervalBetweenSparks = (effectArraySize - maxSparksPerSegment) / sparkIntervalDivider;
+    auto segmentDelay = segmentIndex * intervalBetweenSparks;
+    sparkIntervalCounterPerSegment[segmentIndex] = (sparkIntervalCounterPerSegment[segmentIndex] + 1) % effectArraySize;
+
+    bool sparkIsOverdue = sparkIntervalCounterPerSegment[segmentIndex] % intervalBetweenSparks == 0;
+    bool hasRemainingSparks = nbSparksForSegment[segmentIndex] < maxSparksPerSegment;
+
+    bool isSegmentReadyToSwirl = segmentDelay <= leadingSparkPosition;
+    bool shouldAddSparkInThisFrame = !isSwirling || (isSwirling && isSegmentReadyToSwirl); //TODO
+
+    if (hasRemainingSparks && sparkIsOverdue && shouldAddSparkInThisFrame) {
+        forward[segmentIndex][0] = true;
+        nbSparksForSegment[segmentIndex] = nbSparksForSegment[segmentIndex] + 1;
+    }
+
+    // Update effect arrays with new sparks + update count
+
+    auto getAlpha = [&](uint16_t position, uint16_t trailIndex) {
+        auto relativePosition = static_cast<float>(abs(position - trailIndex));
+        auto maxPosition = static_cast<float>(trailLength + 1);
+        auto alpha = static_cast<uint8_t>(255.0f * (1.0f - (relativePosition / maxPosition)));
+        return CRGB{alpha, alpha, alpha};
+    };
+
     for (uint16_t position = 0; position < effectArraySize; position++) {
-        if (forward[position] || backward[position]) {
-            effectArray[position] = CRGB::White;
-            sparkCount++;
+        if (forward[segmentIndex][position]) {
+            for (int trailIndex = position; trailIndex >= 0 && position - trailIndex <= trailLength; trailIndex--) {
+                effectArray[trailIndex] = getAlpha(position, trailIndex);
+            }
+        }
+
+        if (backward[segmentIndex][position]) {
+            for (int trailIndex = position; trailIndex < effectArraySize && trailIndex - position <= trailLength;
+                 trailIndex++) {
+                effectArray[trailIndex] = getAlpha(position, trailIndex);
+            }
         }
     }
 
-    if (segmentIndex == 0) {
-        Serial.print("sparkCount ");
-        Serial.println(sparkCount);
-    }
-
-    if (lastSparkForSegment >= refreshInMillis && sparkCount < maxSparks) {
-        lastSparkTimeMillisForSegment[segmentIndex] = timeElapsedInMillis;
-        forward[0] = true;
-    }
+    leadingSparkPosition = (leadingSparkPosition + 1) % context.maxSegmentSize;
 }

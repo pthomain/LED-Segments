@@ -33,18 +33,17 @@ constexpr uint8_t PALETTE_SIZE = 16;
 
 template<typename C>
 class Effect {
-    const unsigned long start;
+    unsigned long start = 0L;
+    bool isFirstFrame = true;
 
 protected:
     uint8_t randomStart;
     uint16_t frameIndex = 0;
-    bool isArrayInitialised = false;
 
 public :
     const EffectContext context;
 
     explicit Effect(EffectContext effectContext) : context(std::move(effectContext)),
-                                                   start(millis()),
                                                    randomStart(random8()) {
     };
 

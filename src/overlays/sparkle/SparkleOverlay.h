@@ -39,7 +39,7 @@ public:
     ) override;
 
     String name() const override { return "Sparkle"; }
-    EffectType type() const override { return EffectType::OVERLAY_ALPHA; }
+    EffectType type() const override { return EffectType::OVERLAY_SCREEN; }
 
     static EffectFactory<CRGB> factory;
 };

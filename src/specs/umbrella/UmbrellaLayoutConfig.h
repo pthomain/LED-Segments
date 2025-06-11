@@ -38,7 +38,10 @@ enum UmbrellaLayout {
     SPOKES_IN_WHOLE
 };
 
-static const std::vector<uint16_t> umbrellaLayouts = std::vector<uint16_t>{0}; //, 1};
+static const std::vector<uint16_t> umbrellaLayouts = std::vector<uint16_t>{
+    LEDS_IN_SPOKE,
+    // SPOKES_IN_WHOLE
+};
 
 static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaEffects() {
     return mapLayoutIndex<EffectFactory<CRGB> >(
@@ -46,7 +49,6 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaEffects() 
         [](uint16_t layoutIndex) {
             return std::vector{
                 SwirlEffect::factory,
-                GradientEffect::factory,
                 NoiseEffect::factory,
             };
         }
@@ -83,10 +85,10 @@ static std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > umbrellaTransit
     return mapLayoutIndex<EffectFactory<uint8_t> >(
         umbrellaLayouts,
         [](uint16_t layoutIndex) {
-            switch (layoutIndex) {
-                case LEDS_IN_SPOKE: return std::vector{SlideTransition::factory};
-                default: return std::vector{FadeTransition::factory};
-            }
+            return std::vector{
+                SlideTransition::factory,
+                FadeTransition::factory
+            };
         }
     );
 }
@@ -102,7 +104,7 @@ static LayoutCatalog umbrellaLayoutCatalog() {
         umbrellaOverlays(),
         umbrellaTransitions(),
         umbrellaMirrors(),
-        0.30f
+        0.25f
     );
 }
 

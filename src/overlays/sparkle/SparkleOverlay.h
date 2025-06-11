@@ -24,7 +24,7 @@
 
 class SparkleOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<SparkleOverlay> {
     const float density = 0.005f;
-    const CRGB minBrightness = CRGB(50, 50, 50);
+    const CRGB minBrightness = CRGB(64, 64, 64);
 
 public:
     explicit SparkleOverlay(const EffectContext &effectContext) : Effect(effectContext) {
@@ -39,7 +39,7 @@ public:
     ) override;
 
     String name() const override { return "Sparkle"; }
-    EffectType type() const override { return EffectType::OVERLAY_SCREEN; }
+    EffectType type() const override { return EffectType::OVERLAY_MULTIPLY; }
 
     static EffectFactory<CRGB> factory;
 };

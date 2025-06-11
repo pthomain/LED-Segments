@@ -53,7 +53,11 @@ void ChaseOverlay::fillArrayInternal(
     for (int pixelIndex = 0; pixelIndex < effectArraySize; pixelIndex++) {
         if (forward[segmentIndex][pixelIndex]) {
             if (pixelIndex == lastIndex) {
-                tempBackward[lastIndex - 1] = true;
+                if (isBouncy) {
+                    tempBackward[lastIndex - 1] = true;
+                } else {
+                    nbSparksForSegment[segmentIndex] = nbSparksForSegment[segmentIndex] - 1;
+                }
             } else {
                 tempForward[pixelIndex + 1] = true;
             }
@@ -63,7 +67,11 @@ void ChaseOverlay::fillArrayInternal(
     for (int pixelIndex = lastIndex; pixelIndex >= 0; pixelIndex--) {
         if (backward[segmentIndex][pixelIndex]) {
             if (pixelIndex == 0) {
-                tempForward[1] = true;
+                if (isBouncy) {
+                    tempForward[1] = true;
+                } else {
+                    nbSparksForSegment[segmentIndex] = nbSparksForSegment[segmentIndex] - 1;
+                }
             } else {
                 tempBackward[pixelIndex - 1] = true;
             }
@@ -77,17 +85,21 @@ void ChaseOverlay::fillArrayInternal(
 
     // Add new spark if needed
 
-    auto intervalBetweenSparks = (effectArraySize - maxSparksPerSegment) / sparkIntervalDivider;
-    auto segmentDelay = segmentIndex * intervalBetweenSparks;
-    sparkIntervalCounterPerSegment[segmentIndex] = (sparkIntervalCounterPerSegment[segmentIndex] + 1) % effectArraySize;
+    const uint8_t swirlingInterval = true ? random8(0, context.nbSegments) : context.nbSegments;
+    const uint8_t swirlDistance = effectArraySize / swirlingInterval;
 
-    bool sparkIsOverdue = sparkIntervalCounterPerSegment[segmentIndex] % intervalBetweenSparks == 0;
-    bool hasRemainingSparks = nbSparksForSegment[segmentIndex] < maxSparksPerSegment;
+    auto distanceFromLeadingSpark = leadingSparkPosition - sparkIntervalCounterPerSegment[segmentIndex];
+    bool isSegmentReady = !isSwirling || distanceFromLeadingSpark >= swirlDistance * segmentIndex;
 
-    bool isSegmentReadyToSwirl = segmentDelay <= leadingSparkPosition;
-    bool shouldAddSparkInThisFrame = !isSwirling || (isSwirling && isSegmentReadyToSwirl); //TODO
+    bool sparkIsOverdue = isSegmentReady && sparkIntervalCounterPerSegment[segmentIndex] % intervalBetweenSparks == 0;
 
-    if (hasRemainingSparks && sparkIsOverdue && shouldAddSparkInThisFrame) {
+    if (isSegmentReady) {
+        sparkIntervalCounterPerSegment[segmentIndex] =
+                (sparkIntervalCounterPerSegment[segmentIndex] + 1) % effectArraySize;
+    }
+
+    bool hasRemainingSparks = nbSparksForSegment[segmentIndex] < sparksPerSegment;
+    if (hasRemainingSparks && isSegmentReady && sparkIsOverdue) {
         forward[segmentIndex][0] = true;
         nbSparksForSegment[segmentIndex] = nbSparksForSegment[segmentIndex] + 1;
     }
@@ -116,5 +128,5 @@ void ChaseOverlay::fillArrayInternal(
         }
     }
 
-    leadingSparkPosition = (leadingSparkPosition + 1) % context.maxSegmentSize;
+    if (leadingSparkPosition < context.nbSegments * swirlDistance) leadingSparkPosition++;
 }

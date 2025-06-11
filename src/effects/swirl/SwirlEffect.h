@@ -22,10 +22,11 @@
 #define LED_SEGMENTS_SWIRLEFFECT_H
 
 #include "engine/effect/Effect.h"
+#include "engine/utils/Utils.h"
 
 class SwirlEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<SwirlEffect> {
 
-    bool isReversed = random8(1) == 0;
+    bool isReversed = probability(0.5f);
 
 public:
     explicit SwirlEffect(const EffectContext &effectContext) : Effect(effectContext) {

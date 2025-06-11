@@ -24,12 +24,8 @@
 #include "specs/fibonacci/FibonacciSpec.h"
 #include "specs/umbrella/UmbrellaSpec.h"
 
-//TODO add stack highlight, each pixel stacks on the previous one + reverse
-//TODO add swipe effect, one colour slides over the previous one
-//TODO add word highlight modifier, increase luminosity on each word for a while
-//TODO add chase with trail modifier, like ping pong but with a trail
-//TODO for each modifier, allow for highlight (75% brightness for other pixels based on seed%2)
-//TODO add a Composite effect that picks a different effect for each segment or the same effect but a different palette
+//TODO add stack effect, each pixel stacks on the previous one + reverse
+//TODO add swipe effect, one colour slides over the previous one (divide palette by ~6)
 
 #define LED_PIN D7 //Umbrella
 // #define LED_PIN 9
@@ -52,7 +48,7 @@ void setup() {
         IS_DEBUG ? DEBUG_BRIGHTNESS : BRIGHTNESS,
         IS_DEBUG || IS_UMBRELLA ? DEBUG_EFFECT_DURATION_IN_SECONDS : MIN_EFFECT_DURATION_IN_SECONDS,
         IS_DEBUG || IS_UMBRELLA ? DEBUG_EFFECT_DURATION_IN_SECONDS : MAX_EFFECT_DURATION_IN_SECONDS,
-        IS_UMBRELLA ? 500 : 2000,
+        IS_UMBRELLA ? 1000 : 2000,
         30
     );
 }

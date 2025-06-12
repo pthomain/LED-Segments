@@ -44,7 +44,16 @@ enum PhraseLayout {
     LEDS_IN_WHOLE
 };
 
-static const std::vector<uint16_t> phraseLayouts = std::vector<uint16_t>{0, 1, 2, 3, 4, 5};
+static const std::vector<uint16_t> phraseLayouts = std::vector<uint16_t>{
+    LEDS_IN_LETTERS,
+
+    LETTERS_IN_WORDS,
+    LEDS_IN_WORDS,
+
+    WORDS_IN_WHOLE,
+    LETTERS_IN_WHOLE,
+    LEDS_IN_WHOLE
+};
 
 static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > phraseEffects() {
     return mapLayoutIndex<EffectFactory<CRGB> >(
@@ -111,7 +120,7 @@ static std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > phraseTransitio
 
 static LayoutCatalog phraseLayoutCatalog() {
     return LayoutCatalog(
-        phraseLayouts.size(),
+        phraseLayouts,
         {
             {LEDS_IN_LETTERS, "LEDS_IN_LETTERS"},
             {LEDS_IN_WORDS, "LEDS_IN_WORDS"},

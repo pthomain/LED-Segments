@@ -34,6 +34,7 @@
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/sparkle/SparkleOverlay.h"
 #include "overlays/dash/DashOverlay.h"
+#include "overlays/moire/MoireOverlay.h"
 
 enum UmbrellaLayout {
     LEDS_IN_SPOKE,
@@ -42,7 +43,10 @@ enum UmbrellaLayout {
 
 static const std::vector<uint16_t> umbrellaLayouts = std::vector<uint16_t>{
     LEDS_IN_SPOKE,
-    // SPOKES_IN_WHOLE
+    LEDS_IN_SPOKE,
+    LEDS_IN_SPOKE,
+    LEDS_IN_SPOKE,
+    SPOKES_IN_WHOLE
 };
 
 static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaEffects() {
@@ -65,6 +69,7 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaOverlays()
             switch (layoutIndex) {
                 case LEDS_IN_SPOKE:
                     return std::vector{
+                        // MoireOverlay::factory,
                         ChaseOverlay::factory,
                         DashOverlay::factory,
                         SparkleOverlay::factory,
@@ -80,7 +85,10 @@ static std::map<uint16_t, std::vector<Mirror> > umbrellaMirrors() {
     return mapLayoutIndex<Mirror>(
         umbrellaLayouts,
         [](uint16_t layoutIndex) {
-            return ALL_MIRRORS;
+            switch (layoutIndex) {
+                case LEDS_IN_SPOKE: return ALL_UNREPEATED_MIRRORS;
+                default: return NO_MIRRORS;
+            }
         }
     );
 }
@@ -99,7 +107,7 @@ static std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > umbrellaTransit
 
 static LayoutCatalog umbrellaLayoutCatalog() {
     return LayoutCatalog(
-        umbrellaLayouts.size(),
+        umbrellaLayouts,
         {
             {LEDS_IN_SPOKE, "LEDS_IN_SPOKE"},
             {SPOKES_IN_WHOLE, "SPOKES_IN_WHOLE"},
@@ -108,7 +116,7 @@ static LayoutCatalog umbrellaLayoutCatalog() {
         umbrellaOverlays(),
         umbrellaTransitions(),
         umbrellaMirrors(),
-        0.25f
+        1.0f //0.25f
     );
 }
 

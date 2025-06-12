@@ -63,8 +63,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
     const auto catalog = displaySpec->catalog();
     const Palette palette = probability(chanceOfRainbow) ? rainbowPalette : PALETTES[random8(PALETTES.size())];
 
-    const uint16_t effectLayoutIndex = random16(catalog.nbLayouts());
-
+    const uint16_t effectLayoutIndex = catalog.randomLayoutIndex();
     const auto effectFactory = catalog.randomEffectFactory(effectLayoutIndex);
     const auto effectMirror = catalog.randomMirror(effectLayoutIndex);
 

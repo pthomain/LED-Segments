@@ -26,6 +26,7 @@
 #include "effects/noise/NoiseEffect.h"
 #include "effects/gradient/GradientEffect.h"
 #include "effects/swirl/SwirlEffect.h"
+#include "effects/slide/SlideEffect.h"
 #include "engine/displayspec/LayoutCatalog.h"
 #include "engine/effect/Effect.h"
 #include "engine/overlay/none/NoOverlay.h"
@@ -50,6 +51,7 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaEffects() 
             return std::vector{
                 SwirlEffect::factory,
                 NoiseEffect::factory,
+                SlideEffect::factory,
             };
         }
     );
@@ -63,7 +65,7 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaOverlays()
                 case LEDS_IN_SPOKE:
                     return std::vector{
                         ChaseOverlay::factory,
-                        SparkleOverlay::factory,
+                        // SparkleOverlay::factory,
                     };
                 default: return NO_OVERLAYS;
             }
@@ -104,7 +106,7 @@ static LayoutCatalog umbrellaLayoutCatalog() {
         umbrellaOverlays(),
         umbrellaTransitions(),
         umbrellaMirrors(),
-        0.25f
+        0.5f
     );
 }
 

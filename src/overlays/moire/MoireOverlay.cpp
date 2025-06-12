@@ -18,36 +18,22 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "SwirlEffect.h"
-#include <functional>
-#include "engine/effect/Effect.h"
+#include "MoireOverlay.h"
+#include "crgb.h"
 #include "engine/utils/Utils.h"
 
-EffectFactory<CRGB> SwirlEffect::factory = [](
+EffectFactory<CRGB> MoireOverlay::factory = [](
     const EffectContext &effectContext
 ) -> std::unique_ptr<Effect> {
-    return std::make_unique<SwirlEffect>(effectContext);
+    return std::make_unique<MoireOverlay>(effectContext);
 };
 
-void SwirlEffect::fillArrayInternal(
+void MoireOverlay::fillArrayInternal(
     CRGB *effectArray,
     uint16_t effectArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-   const int8_t direction = isReversed ? -1 : 1;
-   const uint8_t step = segmentIndex * max(1, 255 / context.nbSegments);
-   const auto offset = static_cast<uint8_t>(timeElapsedInMillis / 4);
-   const uint8_t start = direction * (step + offset);
-
-    fill_palette(
-        effectArray,
-        effectArraySize,
-        start,
-        max(1, 255 / effectArraySize),
-        context.palette.palette,
-        255,
-        LINEARBLEND
-    );
+    //TODO
 }

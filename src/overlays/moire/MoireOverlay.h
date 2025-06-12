@@ -18,23 +18,15 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LED_SEGMENTS_STACKEFFECT_H
-#define LED_SEGMENTS_STACKEFFECT_H
+#ifndef MOIREOVERLAY_H
+#define MOIREOVERLAY_H
 
 #include "engine/effect/Effect.h"
 
-class StackEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<StackEffect> {
-    const uint8_t start = random8(); //start hue
-    const uint16_t speed = random8(3, 10) * 100; //stack speed
-    const float variation = static_cast<float>(random8(85)) / 100.0f; // 30% variation
-
-    uint16_t currentColourIndex = start;
-
-    CRGB bottomColour = 0;
-    CRGB topColour = 0;
+class MoireOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<MoireOverlay> {
 
 public:
-    explicit StackEffect(const EffectContext &effectContext) : Effect(effectContext) {
+    explicit MoireOverlay(const EffectContext &effectContext) : Effect(effectContext) {
     }
 
     void fillArrayInternal(
@@ -45,10 +37,10 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Stack"; }
-    EffectType type() const override { return EffectType::EFFECT; }
+    String name() const override { return "Moiré"; }
+    EffectType type() const override { return EffectType::OVERLAY_MULTIPLY; }
 
     static EffectFactory<CRGB> factory;
 };
 
-#endif //LED_SEGMENTS_STACKEFFECT_H
+#endif //MOIREOVERLAY_H

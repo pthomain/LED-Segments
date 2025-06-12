@@ -207,7 +207,7 @@ static LayoutCatalog fibonacciLayoutCatalog(const std::vector<uint16_t> &variati
         names.insert(std::pair(variation, getLayoutName(variation)));
     }
     return LayoutCatalog(
-        variations.size(),
+        variations,
         names,
         fibonacciEffects(variations),
         fibonacciOverlays(variations),

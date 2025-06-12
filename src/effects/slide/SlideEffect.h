@@ -36,10 +36,8 @@ public:
         : Effect(effectContext),
           bottomColourIndexForSegment(new uint8_t[nbColours]),
           headPositionForSegment(new uint16_t[context.nbSegments]) {
-        for (int i = 0; i < context.nbSegments; i++) {
-            headPositionForSegment[i] = 0;
-            bottomColourIndexForSegment[i] = 0;
-        }
+        memset(headPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
+        memset(bottomColourIndexForSegment, 0, context.nbSegments * sizeof(uint8_t));
     }
 
     void fillArrayInternal(

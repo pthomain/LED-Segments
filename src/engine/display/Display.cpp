@@ -110,7 +110,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
     auto overlay = overlayFactory(overlayContext);
     auto transition = transitionFactory(transitionContext);
 
-    if constexpr (IS_DEBUG || IS_UMBRELLA) {
+    if constexpr (IS_DEBUG) {
         Serial.print("Layout\t\t\t");
         Serial.println(catalog.layoutName(effectLayoutIndex));
         Serial.print("Effect\t\t\t");

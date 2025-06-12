@@ -18,15 +18,27 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef STACKOVERLAY_H
-#define STACKOVERLAY_H
+#ifndef DASHOVERLAY_H
+#define DASHOVERLAY_H
 
 #include "engine/effect/Effect.h"
 
-class StackOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<StackOverlay> {
+class DashOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<DashOverlay> {
+    uint16_t *headPositionForSegment;
+    uint16_t *tailPositionForSegment;
+
+    const uint8_t tailSpeed = random8(1, 4);
+    const uint8_t trailLength = 3;
+
+    bool isReversed = false;
 
 public:
-    explicit StackOverlay(const EffectContext &effectContext) : Effect(effectContext) {
+    explicit DashOverlay(const EffectContext &effectContext)
+        : Effect(effectContext),
+          headPositionForSegment(new uint16_t[context.nbSegments]),
+          tailPositionForSegment(new uint16_t[context.nbSegments]) {
+        memset(headPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
+        memset(tailPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
     }
 
     void fillArrayInternal(
@@ -37,10 +49,15 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Stack"; }
+    String name() const override { return "Dash"; }
     EffectType type() const override { return EffectType::OVERLAY_MULTIPLY; }
 
     static EffectFactory<CRGB> factory;
+
+    ~DashOverlay() override {
+        delete[] headPositionForSegment;
+        delete[] tailPositionForSegment;
+    }
 };
 
-#endif //STACKOVERLAY_H
+#endif //DASHOVERLAY_H

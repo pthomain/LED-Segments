@@ -65,9 +65,9 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaOverlays()
             switch (layoutIndex) {
                 case LEDS_IN_SPOKE:
                     return std::vector{
-                        // ChaseOverlay::factory,
+                        ChaseOverlay::factory,
                         DashOverlay::factory,
-                        // SparkleOverlay::factory,
+                        SparkleOverlay::factory,
                     };
                 default: return NO_OVERLAYS;
             }
@@ -108,7 +108,7 @@ static LayoutCatalog umbrellaLayoutCatalog() {
         umbrellaOverlays(),
         umbrellaTransitions(),
         umbrellaMirrors(),
-        1.0f//0.5f
+        0.25f
     );
 }
 

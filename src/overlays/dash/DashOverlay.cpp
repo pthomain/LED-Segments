@@ -45,14 +45,15 @@ void DashOverlay::fillArrayInternal(
         const uint16_t headThreshold = tailSpeed == 1
                                            ? 0
                                            : effectArraySize / tailSpeed;
-
         if (headPosition > 0) headPosition--;
 
         if (headPosition <= headThreshold && tailPosition > 0) {
             tailPosition -= min(tailSpeed, tailPosition);
         }
 
-        isReversed = headPosition == 0 && tailPosition == 0;
+        if (headPosition == 0 && tailPosition == 0) {
+            isReversed = false;
+        }
     } else {
         const uint16_t headThreshold = tailSpeed == 1
                                            ? lastIndex
@@ -64,7 +65,9 @@ void DashOverlay::fillArrayInternal(
             tailPosition += min(tailSpeed, lastIndex - tailPosition);
         }
 
-        isReversed = headPosition == lastIndex && tailPosition == lastIndex;
+        if (headPosition == lastIndex && tailPosition == lastIndex) {
+            isReversed = true;
+        }
     }
 
     for (uint16_t i = min(headPosition, tailPosition); i <= max(headPosition, tailPosition); i++) {

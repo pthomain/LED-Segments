@@ -33,6 +33,7 @@
 #include "engine/transitions/Transition.h"
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/sparkle/SparkleOverlay.h"
+#include "overlays/dash/DashOverlay.h"
 
 enum UmbrellaLayout {
     LEDS_IN_SPOKE,
@@ -64,7 +65,8 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaOverlays()
             switch (layoutIndex) {
                 case LEDS_IN_SPOKE:
                     return std::vector{
-                        ChaseOverlay::factory,
+                        // ChaseOverlay::factory,
+                        DashOverlay::factory,
                         // SparkleOverlay::factory,
                     };
                 default: return NO_OVERLAYS;
@@ -106,7 +108,7 @@ static LayoutCatalog umbrellaLayoutCatalog() {
         umbrellaOverlays(),
         umbrellaTransitions(),
         umbrellaMirrors(),
-        0.5f
+        1.0f//0.5f
     );
 }
 

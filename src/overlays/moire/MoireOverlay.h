@@ -22,11 +22,28 @@
 #define MOIREOVERLAY_H
 
 #include "engine/effect/Effect.h"
+#include "engine/utils/Utils.h"
 
 class MoireOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<MoireOverlay> {
 
+    const bool isInverted = probability(0.5f);
+    const bool isReversed = probability(0.5f);
+    const bool isDoubleSpiral = false;//probability(0.5f);
+
+    const CRGB frontColour = isInverted ? CRGB::White : CRGB::Black;
+    const CRGB backColour = isInverted ? CRGB::Black : CRGB::White;
+
+    const uint8_t headLength = 5;
+
+    uint16_t *headPositionForSegment;
+    CRGB *reverseArray;
+
 public:
-    explicit MoireOverlay(const EffectContext &effectContext) : Effect(effectContext) {
+    explicit MoireOverlay(const EffectContext &effectContext)
+        : Effect(effectContext),
+          reverseArray(new CRGB[context.maxSegmentSize]),
+          headPositionForSegment(new uint16_t[context.nbSegments]) {
+        memset(headPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
     }
 
     void fillArrayInternal(
@@ -41,6 +58,12 @@ public:
     EffectType type() const override { return EffectType::OVERLAY_MULTIPLY; }
 
     static EffectFactory<CRGB> factory;
+
+    MoireOverlay(const MoireOverlay &) = delete;
+
+    ~MoireOverlay() override {
+        delete[] headPositionForSegment;
+    }
 };
 
 #endif //MOIREOVERLAY_H

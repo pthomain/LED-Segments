@@ -35,8 +35,39 @@ void MoireOverlay::fillArrayInternal(
     float progress,
     unsigned long timeElapsedInMillis
 ) {
+    for (uint16_t i = 0; i < effectArraySize; i++) {
+        effectArray[i] = backColour;
+    }
+
+    const uint8_t distance = context.nbSegments * headLength;
+    const uint8_t start = segmentIndex * headLength;
+
+    auto &headIndex = headPositionForSegment[segmentIndex];
+
+    for (int32_t pixelIndex = 0; pixelIndex < effectArraySize; pixelIndex++) {
+        bool isHead = ((pixelIndex + headIndex) % distance) - start == 0;
+
+        if (isHead) {
+            for (uint8_t trailIndex = 0; trailIndex < headLength && pixelIndex; trailIndex++) {
+                int32_t index = pixelIndex + trailIndex;
+                if (index > 0 && index < effectArraySize) {
+                    effectArray[index] = frontColour;
+                    reverseArray[index] = frontColour;
+                }
+            }
+        }
+    }
+
+    if (isDoubleSpiral || isReversed) {
+        applyMirror(Mirror::REVERSE, effectArray, effectArraySize);
+
+        if (isDoubleSpiral) { //TODO fix this
+            for (uint16_t i = 0; i < effectArraySize; i++) {
+                effectArray[i] = multiply(effectArray[i], reverseArray[i]);
+            }
+        }
+    }
 
 
-
-    //TODO
+    headIndex = ++headIndex % distance;
 }

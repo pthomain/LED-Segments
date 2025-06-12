@@ -46,7 +46,7 @@ static const std::vector<uint16_t> umbrellaLayouts = std::vector<uint16_t>{
     LEDS_IN_SPOKE,
     LEDS_IN_SPOKE,
     LEDS_IN_SPOKE,
-    SPOKES_IN_WHOLE
+    // SPOKES_IN_WHOLE
 };
 
 static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaEffects() {
@@ -54,9 +54,10 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaEffects() 
         umbrellaLayouts,
         [](uint16_t layoutIndex) {
             return std::vector{
-                SwirlEffect::factory,
-                NoiseEffect::factory,
-                SlideEffect::factory,
+                GradientEffect::factory,
+                // SwirlEffect::factory,
+                // NoiseEffect::factory,
+                // SlideEffect::factory,
             };
         }
     );
@@ -69,10 +70,10 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaOverlays()
             switch (layoutIndex) {
                 case LEDS_IN_SPOKE:
                     return std::vector{
-                        // MoireOverlay::factory,
-                        ChaseOverlay::factory,
-                        DashOverlay::factory,
-                        SparkleOverlay::factory,
+                        MoireOverlay::factory,
+                        // ChaseOverlay::factory,
+                        // DashOverlay::factory,
+                        // SparkleOverlay::factory,
                     };
                 default: return NO_OVERLAYS;
             }
@@ -80,7 +81,7 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaOverlays()
     );
 }
 
-
+//TODO separate mirrors per effect type
 static std::map<uint16_t, std::vector<Mirror> > umbrellaMirrors() {
     return mapLayoutIndex<Mirror>(
         umbrellaLayouts,

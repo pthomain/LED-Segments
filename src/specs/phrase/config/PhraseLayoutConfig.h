@@ -24,7 +24,7 @@
 #include "engine/displayspec/LayoutCatalog.h"
 #include "engine/effect/Effect.h"
 #include <effects/noise/NoiseEffect.h>
-#include <effects/stack/StackEffect.h>
+#include <effects/slide/SlideEffect.h>
 #include "effects/gradient/GradientEffect.h"
 #include "engine/overlay/none/NoOverlay.h"
 #include "engine/transitions/Transition.h"
@@ -53,7 +53,7 @@ static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > phraseEffects() {
             return std::vector{
                 NoiseEffect::factory,
                 // GradientEffect::factory,
-                // StackEffect::factory,
+                // SlideEffect::factory,
             };
         }
     );

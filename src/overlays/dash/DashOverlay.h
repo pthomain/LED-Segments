@@ -28,7 +28,7 @@ class DashOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<DashOverla
     uint16_t *tailPositionForSegment;
     bool *isReversedForSegment;
 
-    const uint8_t tailSpeed = random8(1, 3);
+    const uint8_t tailSpeed = random8(1, 5);
 
 public:
     explicit DashOverlay(const EffectContext &effectContext)

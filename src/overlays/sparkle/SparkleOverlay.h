@@ -24,7 +24,7 @@
 
 class SparkleOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<SparkleOverlay> {
     const float density = 0.005f;
-    const CRGB minBrightness = CRGB(64, 64, 64);
+    const CRGB minBrightness = CRGB(127, 127, 127);
 
 public:
     explicit SparkleOverlay(const EffectContext &effectContext) : Effect(effectContext) {

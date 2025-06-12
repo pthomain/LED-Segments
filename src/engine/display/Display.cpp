@@ -73,6 +73,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
 
     const auto [overlayLayoutIndex, overlayFactory] = catalog.randomOverlay();
     const uint16_t effectDurationInFrames = effectDurationsInSecs * fps;
+    const auto overlayMirror = catalog.randomMirror(overlayLayoutIndex);
 
     auto transitionDurationInFrames = fps * transitionDurationInMillis / 1000;
 
@@ -93,7 +94,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
         displaySpec->isCircular(),
         overlayLayoutIndex,
         NO_PALETTE,
-        Mirror::NONE //TODO maybe add mirror
+        overlayMirror
     );
 
     EffectContext transitionContext(
@@ -110,7 +111,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
     auto overlay = overlayFactory(overlayContext);
     auto transition = transitionFactory(transitionContext);
 
-    if constexpr (IS_DEBUG) {
+    if constexpr (IS_DEBUG || IS_UMBRELLA) {
         Serial.print("Layout\t\t\t");
         Serial.println(catalog.layoutName(effectLayoutIndex));
         Serial.print("Effect\t\t\t");

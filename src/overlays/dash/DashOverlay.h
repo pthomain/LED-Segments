@@ -26,19 +26,19 @@
 class DashOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<DashOverlay> {
     uint16_t *headPositionForSegment;
     uint16_t *tailPositionForSegment;
+    bool *isReversedForSegment;
 
-    const uint8_t tailSpeed = random8(1, 4);
-    const uint8_t trailLength = 3;
-
-    bool isReversed = false;
+    const uint8_t tailSpeed = random8(1, 3);
 
 public:
     explicit DashOverlay(const EffectContext &effectContext)
         : Effect(effectContext),
           headPositionForSegment(new uint16_t[context.nbSegments]),
-          tailPositionForSegment(new uint16_t[context.nbSegments]) {
+          tailPositionForSegment(new uint16_t[context.nbSegments]),
+          isReversedForSegment(new bool[context.nbSegments]) {
         memset(headPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
         memset(tailPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
+        memset(isReversedForSegment, 0, context.nbSegments * sizeof(bool));
     }
 
     void fillArrayInternal(
@@ -57,6 +57,7 @@ public:
     ~DashOverlay() override {
         delete[] headPositionForSegment;
         delete[] tailPositionForSegment;
+        delete[] isReversedForSegment;
     }
 };
 

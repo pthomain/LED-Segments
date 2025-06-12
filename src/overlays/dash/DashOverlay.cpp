@@ -37,29 +37,37 @@ void DashOverlay::fillArrayInternal(
 ) {
     auto &headPosition = headPositionForSegment[segmentIndex];
     auto &tailPosition = tailPositionForSegment[segmentIndex];
-
-    const uint16_t headThreshold = tailSpeed == 1
-                                       ? effectArraySize - 1
-                                       : effectArraySize - (effectArraySize / tailSpeed) + 1;
+    auto &isReversed = isReversedForSegment[segmentIndex];
 
     const auto lastIndex = effectArraySize - 1;
 
-    if (headPosition < lastIndex) {
-        headPosition = headPosition + 1;
+    if (isReversed) {
+        const uint16_t headThreshold = tailSpeed == 1
+                                           ? 0
+                                           : effectArraySize / tailSpeed;
+
+        if (headPosition > 0) headPosition--;
+
+        if (headPosition <= headThreshold && tailPosition > 0) {
+            tailPosition -= min(tailSpeed, tailPosition);
+        }
+
+        isReversed = headPosition == 0 && tailPosition == 0;
+    } else {
+        const uint16_t headThreshold = tailSpeed == 1
+                                           ? lastIndex
+                                           : effectArraySize - (effectArraySize / tailSpeed) + 1;
+
+        if (headPosition < lastIndex) headPosition++;
+
+        if (headPosition >= headThreshold && tailPosition < lastIndex) {
+            tailPosition += min(tailSpeed, lastIndex - tailPosition);
+        }
+
+        isReversed = headPosition == lastIndex && tailPosition == lastIndex;
     }
 
-    if (headPosition >= headThreshold && tailPosition < lastIndex) {
-        const auto delta = min(tailSpeed, lastIndex - tailPosition);
-        tailPosition = tailPosition + delta;
-    }
-
-    if (headPosition == lastIndex && tailPosition == lastIndex) {
-        headPosition = 0;
-        tailPosition = 0;
-        isReversed = !isReversed;
-    }
-
-    for (uint16_t i = tailPosition; i <= headPosition; i++) {
+    for (uint16_t i = min(headPosition, tailPosition); i <= max(headPosition, tailPosition); i++) {
         effectArray[i] = CRGB::White;
     }
 }

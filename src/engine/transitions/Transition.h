@@ -21,6 +21,7 @@
 #ifndef LED_SEGMENTS_TRANSITION_H
 #define LED_SEGMENTS_TRANSITION_H
 
+#include "engine/mirror/MirrorUtils.h"
 #include "engine/transitions/fade/FadeTransition.h"
 #include "engine/transitions/none/NoTransition.h"
 #include "engine/transitions/slide/SlideTransition.h"
@@ -31,9 +32,19 @@ enum class Transition {
     SLIDE
 };
 
-const std::vector ALL_TRANSITIONS = {
-    FadeTransition::factory,
-    SlideTransition::factory
+const std::pair<WeightedEffects<uint8_t>, MirrorSelector<uint8_t> > ALL_TRANSITIONS = {
+    WeightedEffects<uint8_t>{
+        {FadeTransition::factory, 1},
+        {SlideTransition::factory, 1}
+    },
+    allIntMirrors
+};
+
+const std::pair<WeightedEffects<uint8_t>, MirrorSelector<uint8_t> > FADE_TRANSITION = {
+    {
+        {FadeTransition::factory, 1}
+    },
+    allIntMirrors
 };
 
 static String getTransitionName(Transition transition) {
@@ -45,7 +56,7 @@ static String getTransitionName(Transition transition) {
     }
 }
 
-static std::map<Transition, EffectFactory<uint8_t>> transitionfactories = {
+static std::map<Transition, EffectFactory<uint8_t> > transitionfactories = {
     {Transition::NONE, NoTransition::factory},
     {Transition::FADE, FadeTransition::factory},
     {Transition::SLIDE, SlideTransition::factory}

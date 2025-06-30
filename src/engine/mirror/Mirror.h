@@ -23,8 +23,6 @@
 #ifndef LED_SEGMENTS_MIRROR_H
 #define LED_SEGMENTS_MIRROR_H
 
-#include <vector>
-
 #include "FastLED.h"
 
 enum class Mirror {
@@ -34,27 +32,6 @@ enum class Mirror {
     EDGE,
     REPEAT,
     REPEAT_REVERSE
-};
-
-static std::vector NO_MIRRORS = {
-    Mirror::NONE
-};
-
-static std::vector ALL_MIRRORS = {
-    Mirror::NONE,
-    Mirror::REVERSE,
-    Mirror::CENTRE,
-    Mirror::EDGE,
-    //repeated mirrors are useful for circular displays, less so for linear ones
-    Mirror::REPEAT,
-    Mirror::REPEAT_REVERSE
-};
-
-static std::vector ALL_UNREPEATED_MIRRORS = {
-    Mirror::NONE,
-    Mirror::REVERSE,
-    Mirror::CENTRE,
-    Mirror::EDGE
 };
 
 uint16_t getMirrorSize(Mirror mirror, uint16_t effectArraySize);

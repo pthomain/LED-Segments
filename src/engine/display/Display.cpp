@@ -26,6 +26,7 @@
 #include "engine/utils/seed/SeedGenerator.h"
 #include "engine/transitions/fade/FadeTransition.h"
 #include "engine/transitions/slide/SlideTransition.h"
+#include "engine/utils/MemoryFree.h"
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/sparkle/SparkleOverlay.h"
 
@@ -60,20 +61,41 @@ Display::Display(
 }
 
 void Display::changeEffect(uint8_t effectDurationsInSecs) {
+    Serial.println(freeMemoryXiao());
+
     const auto catalog = displaySpec->catalog();
     const Palette palette = probability(chanceOfRainbow) ? rainbowPalette : PALETTES[random8(PALETTES.size())];
 
-    const uint16_t effectLayoutIndex = catalog.randomLayoutIndex();
-    const auto effectFactory = catalog.randomEffectFactory(effectLayoutIndex);
-    const auto effectMirror = catalog.randomMirror(effectLayoutIndex);
+    const auto [effectLayoutIndex, effectFactory, effectMirror] = catalog.randomEffect();
+    const auto [transitionLayoutIndex, transitionFactory, transitionMirror] = catalog.randomTransition();
+    const auto [overlayLayoutIndex, overlayFactory, overlayMirror] = catalog.randomOverlay();
 
-    auto [transitionLayoutIndex, transitionFactory] = catalog.randomTransition();
-    const auto transitionMirror = catalog.randomMirror(transitionLayoutIndex);
+    if constexpr (IS_DEBUG) {
+        Serial.print("Layout\t\t\t");
+        Serial.println(catalog.layoutName(effectLayoutIndex));
+        Serial.print("Palette\t\t\t");
+        Serial.println(palette.name);
 
-    const auto [overlayLayoutIndex, overlayFactory] = catalog.randomOverlay();
+        Serial.print("Effect\t\t\t");
+        Serial.println(effect->name());
+        Serial.print("Effect mirror\t\t");
+        Serial.println(getMirrorName(effectMirror));
+        Serial.print("Overlay\t\t\t");
+        Serial.println(overlay->name());
+        Serial.print("Overlay layout\t\t");
+        Serial.println(catalog.layoutName(overlayLayoutIndex));
+        Serial.print("Transition\t\t");
+        Serial.println(transition->name());
+
+        Serial.print("Transition layout\t");
+        Serial.println(catalog.layoutName(transitionLayoutIndex));
+        Serial.print("Transition mirror\t");
+        Serial.println(getMirrorName(transitionMirror));
+        Serial.println("---");
+    }
+
+
     const uint16_t effectDurationInFrames = effectDurationsInSecs * fps;
-    const auto overlayMirror = catalog.randomMirror(overlayLayoutIndex);
-
     auto transitionDurationInFrames = fps * transitionDurationInMillis / 1000;
 
     EffectContext effectContext(
@@ -109,28 +131,6 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
     auto effect = effectFactory(effectContext);
     auto overlay = overlayFactory(overlayContext);
     auto transition = transitionFactory(transitionContext);
-
-    if constexpr (IS_DEBUG || IS_UMBRELLA) {
-        Serial.print("Layout\t\t\t");
-        Serial.println(catalog.layoutName(effectLayoutIndex));
-        Serial.print("Effect\t\t\t");
-        Serial.println(effect->name());
-        Serial.print("Effect mirror\t\t");
-        Serial.println(getMirrorName(effectMirror));
-        Serial.print("Palette\t\t\t");
-        Serial.println(palette.name);
-        Serial.print("Overlay\t\t\t");
-        Serial.println(overlay->name());
-        Serial.print("Overlay layout\t\t");
-        Serial.println(catalog.layoutName(overlayLayoutIndex));
-        Serial.print("Transition\t\t");
-        Serial.println(transition->name());
-        Serial.print("Transition layout\t");
-        Serial.println(catalog.layoutName(transitionLayoutIndex));
-        Serial.print("Transition mirror\t");
-        Serial.println(getMirrorName(transitionMirror));
-        Serial.println("---");
-    }
 
     renderer->changeEffect(std::move(effect), std::move(overlay), std::move(transition));
 

@@ -32,20 +32,7 @@ constexpr uint8_t MAX_CYCLE_SPEED = 15;
 constexpr uint8_t PALETTE_SIZE = 16;
 
 template<typename C>
-class Effect {
-    unsigned long start = 0L;
-    bool isFirstFrame = true;
-
-protected:
-    uint8_t randomStart;
-    uint16_t frameIndex = 0;
-
-public :
-    const EffectContext context;
-
-    explicit Effect(EffectContext effectContext) : context(std::move(effectContext)),
-                                                   randomStart(random8()) {
-    };
+class BaseEffect {
 
     void fillArray(
         C *effectArray,
@@ -62,6 +49,36 @@ public :
         unsigned long timeInMillis
     ) = 0;
 
+};
+
+template<typename Child, typename C>
+class Effect : BaseEffect<C> {
+    unsigned long start = 0L;
+    bool isFirstFrame = true;
+
+protected:
+    uint8_t randomStart;
+    uint16_t frameIndex = 0;
+
+public :
+    static constexpr const char *_name = Child::name();
+    static constexpr EffectType _type = Child::type();
+
+    const EffectContext context;
+
+    explicit Effect(EffectContext effectContext) : context(std::move(effectContext)),
+                                                   randomStart(random8()) {
+        static_assert(
+            std::is_same<decltype(Child::name()), const char *>::value,
+            "Child class must implement static constexpr const char* name()"
+        );
+
+        static_assert(
+            std::is_same<decltype(Child::type()), EffectType>::value,
+            "Child class must implement static constexpr const type()"
+        );
+    };
+
     virtual String name() const = 0;
 
     virtual EffectType type() const = 0;
@@ -77,10 +94,20 @@ public :
     };
 };
 
-template<typename C>
-using EffectFactory = std::function<std::unique_ptr<Effect<C> >(const EffectContext &effectContext)>;
+template<typename E, typename C>
+using EffectAndName = std::pair<std::unique_ptr<Effect<E, C> >, const char *>;
 
 template<typename C>
-static const std::vector<EffectFactory<C> > NO_EFFECTS = std::vector<EffectFactory<C> >{};
+class EffectFactory {
+public:
+    virtual std::pair<std::unique_ptr<BaseEffect<C> >, const char *> create(const EffectContext &context) = 0;
+    virtual ~EffectFactory() = default;
+};
+
+template<typename E, typename C>
+using WeightedEffects = std::vector<std::pair<EffectFactory<E, C>, uint8_t> >;
+
+template<typename E, typename C>
+static const WeightedEffects<E, C> NO_EFFECTS = {};
 
 #endif //EFFECTS_H

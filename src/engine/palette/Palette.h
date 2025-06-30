@@ -21,6 +21,7 @@
 #ifndef PALETTE_H
 #define PALETTE_H
 
+#include <vector>
 #include "FastLED.h"
 
 class Palette {

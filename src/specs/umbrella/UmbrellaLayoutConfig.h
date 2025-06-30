@@ -21,8 +21,6 @@
 #ifndef UMBRELLALAYOUTCONFIG_H
 #define UMBRELLALAYOUTCONFIG_H
 
-#include <map>
-#include <vector>
 #include "effects/noise/NoiseEffect.h"
 #include "effects/gradient/GradientEffect.h"
 #include "effects/swirl/SwirlEffect.h"
@@ -32,7 +30,6 @@
 #include "engine/overlay/none/NoOverlay.h"
 #include "engine/transitions/Transition.h"
 #include "overlays/chase/ChaseOverlay.h"
-#include "overlays/sparkle/SparkleOverlay.h"
 #include "overlays/dash/DashOverlay.h"
 #include "overlays/moire/MoireOverlay.h"
 
@@ -41,69 +38,46 @@ enum UmbrellaLayout {
     SPOKES_IN_WHOLE
 };
 
-static const std::vector<uint16_t> umbrellaLayouts = std::vector<uint16_t>{
+static const std::vector<uint16_t> umbrellaLayouts = {
     LEDS_IN_SPOKE,
-    LEDS_IN_SPOKE,
-    LEDS_IN_SPOKE,
-    LEDS_IN_SPOKE,
-    // SPOKES_IN_WHOLE
+    SPOKES_IN_WHOLE
 };
 
-static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaEffects() {
-    return mapLayoutIndex<EffectFactory<CRGB> >(
-        umbrellaLayouts,
-        [](uint16_t layoutIndex) {
-            return std::vector{
-                GradientEffect::factory,
-                // SwirlEffect::factory,
-                // NoiseEffect::factory,
-                // SlideEffect::factory,
+static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > umbrellaEffectSelector(uint16_t layoutIndex) {
+    return {
+        {
+            {GradientEffect::factory, 1},
+            {SwirlEffect::factory, 1},
+            {NoiseEffect::factory, 1},
+            {SlideEffect::factory, 1}
+        },
+        allCRGBMirrors
+    };
+}
+
+static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > umbrellaOverlaySelector(uint16_t layoutIndex) {
+    switch (layoutIndex) {
+        case LEDS_IN_SPOKE:
+            return {
+                {
+                    {MoireOverlay::factory, 1},
+                    {ChaseOverlay::factory, 1},
+                    {DashOverlay::factory, 1},
+                },
+                allCRGBMirrors
             };
-        }
-    );
+        default: return NO_OVERLAYS;
+    }
 }
 
-static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > umbrellaOverlays() {
-    return mapLayoutIndex<EffectFactory<CRGB> >(
-        umbrellaLayouts,
-        [](uint16_t layoutIndex) {
-            switch (layoutIndex) {
-                case LEDS_IN_SPOKE:
-                    return std::vector{
-                        MoireOverlay::factory,
-                        // ChaseOverlay::factory,
-                        // DashOverlay::factory,
-                        // SparkleOverlay::factory,
-                    };
-                default: return NO_OVERLAYS;
-            }
-        }
-    );
-}
-
-//TODO separate mirrors per effect type
-static std::map<uint16_t, std::vector<Mirror> > umbrellaMirrors() {
-    return mapLayoutIndex<Mirror>(
-        umbrellaLayouts,
-        [](uint16_t layoutIndex) {
-            switch (layoutIndex) {
-                case LEDS_IN_SPOKE: return ALL_UNREPEATED_MIRRORS;
-                default: return NO_MIRRORS;
-            }
-        }
-    );
-}
-
-static std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > umbrellaTransitions() {
-    return mapLayoutIndex<EffectFactory<uint8_t> >(
-        umbrellaLayouts,
-        [](uint16_t layoutIndex) {
-            return std::vector{
-                SlideTransition::factory,
-                FadeTransition::factory
-            };
-        }
-    );
+static std::pair<WeightedEffects<uint8_t>, MirrorSelector<uint8_t> > umbrellaTransitionSelector(uint16_t layoutIndex) {
+    return {
+        {
+            {SlideTransition::factory, 1},
+            {FadeTransition::factory, 1},
+        },
+        allIntMirrors
+    };
 }
 
 static LayoutCatalog umbrellaLayoutCatalog() {
@@ -113,11 +87,9 @@ static LayoutCatalog umbrellaLayoutCatalog() {
             {LEDS_IN_SPOKE, "LEDS_IN_SPOKE"},
             {SPOKES_IN_WHOLE, "SPOKES_IN_WHOLE"},
         },
-        umbrellaEffects(),
-        umbrellaOverlays(),
-        umbrellaTransitions(),
-        umbrellaMirrors(),
-        1.0f //0.25f
+        umbrellaEffectSelector,
+        umbrellaOverlaySelector,
+        umbrellaTransitionSelector
     );
 }
 

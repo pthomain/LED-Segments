@@ -58,7 +58,7 @@ std::pair<uint16_t, uint8_t> FibonacciSpec::radialToSpiralIndex(
         spiralPixelIndex = (radialIndex * 2) + 1;
     }
 
-    return std::pair(segmentStart, spiralPixelIndex);
+    return {segmentStart, spiralPixelIndex};
 }
 
 uint8_t FibonacciSpec::getLedOffset(const uint8_t spiralPixelIndex) const {

@@ -26,11 +26,14 @@
 #include <effects/noise/NoiseEffect.h>
 #include <effects/slide/SlideEffect.h>
 #include "effects/gradient/GradientEffect.h"
+#include "effects/swirl/SwirlEffect.h"
 #include "engine/overlay/none/NoOverlay.h"
 #include "engine/transitions/Transition.h"
 #include "engine/transitions/fade/FadeTransition.h"
 #include "overlays/sparkle/SparkleOverlay.h"
 #include "overlays/chase/ChaseOverlay.h"
+#include "overlays/dash/DashOverlay.h"
+#include "overlays/moire/MoireOverlay.h"
 
 // Format is PIXELS_IN_SEGMENTS
 enum PhraseLayout {
@@ -55,67 +58,56 @@ static const std::vector<uint16_t> phraseLayouts = std::vector<uint16_t>{
     LEDS_IN_WHOLE
 };
 
-static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > phraseEffects() {
-    return mapLayoutIndex<EffectFactory<CRGB> >(
-        phraseLayouts,
-        [](uint16_t layoutIndex) {
-            return std::vector{
-                NoiseEffect::factory,
-                // GradientEffect::factory,
-                // SlideEffect::factory,
+static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > phraseEffectSelector(uint16_t layoutIndex) {
+    switch (layoutIndex) {
+        case LEDS_IN_LETTERS:
+        case LETTERS_IN_WORDS:
+        case LEDS_IN_WORDS:
+        case WORDS_IN_WHOLE:
+        case LETTERS_IN_WHOLE:
+        case LEDS_IN_WHOLE:
+        default:
+            return {
+                {
+                    {GradientEffect::factory, 1},
+                    {SwirlEffect::factory, 1},
+                    {NoiseEffect::factory, 1},
+                    {SlideEffect::factory, 1}
+                },
+                allCRGBMirrors
             };
-        }
-    );
-}
+    }
+};
 
-static std::map<uint16_t, std::vector<EffectFactory<CRGB> > > phraseOverlays() {
-    return mapLayoutIndex<EffectFactory<CRGB> >(
-        phraseLayouts,
-        [](uint16_t layoutIndex) {
-            switch (layoutIndex) {
-                case LEDS_IN_LETTERS:
-                case LEDS_IN_WORDS:
-                case LEDS_IN_WHOLE: return std::vector{
-                        SparkleOverlay::factory,
-                        ChaseOverlay::factory,
-                    };
-                default: return NO_OVERLAYS;
-            }
-        }
-    );
-}
+static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > phraseOverlaySelector(uint16_t layoutIndex) {
+    switch (layoutIndex) {
+        case LEDS_IN_LETTERS:
+        case LEDS_IN_WORDS:
+        case LEDS_IN_WHOLE:
+        case LETTERS_IN_WHOLE:
+            return {
+                {
+                    {MoireOverlay::factory, 1},
+                    {ChaseOverlay::factory, 1},
+                    {DashOverlay::factory, 1},
+                    {NoOverlay::factory, 5},
+                },
+                allCRGBMirrors
+            };
 
-static std::map<uint16_t, std::vector<Mirror> > phraseMirrors() {
-    return mapLayoutIndex<Mirror>(
-        phraseLayouts,
-        [](uint16_t layoutIndex) {
-            switch (layoutIndex) {
-                case LEDS_IN_LETTERS:
-                case LEDS_IN_WORDS:
-                case LEDS_IN_WHOLE:
-                case LETTERS_IN_WHOLE:
-                case LETTERS_IN_WORDS: return ALL_UNREPEATED_MIRRORS;
+        default: return NO_OVERLAYS;
+    }
+};
 
-                default: return std::vector{Mirror::NONE, Mirror::REVERSE};
-            }
-        }
-    );
-}
+static std::pair<WeightedEffects<uint8_t>, MirrorSelector<uint8_t> > phraseTransitionSelector(uint16_t layoutIndex) {
+    switch (layoutIndex) {
+        case LEDS_IN_LETTERS:
+        case LEDS_IN_WORDS:
+        case LEDS_IN_WHOLE:
+        case LETTERS_IN_WHOLE: return ALL_TRANSITIONS;
 
-static std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > phraseTransitions() {
-    return mapLayoutIndex<EffectFactory<uint8_t> >(
-        phraseLayouts,
-        [](uint16_t layoutIndex) {
-            switch (layoutIndex) {
-                case LEDS_IN_LETTERS:
-                case LEDS_IN_WORDS:
-                case LEDS_IN_WHOLE:
-                case LETTERS_IN_WHOLE: return ALL_TRANSITIONS;
-
-                default: return std::vector{FadeTransition::factory};
-            }
-        }
-    );
+        default: return FADE_TRANSITION;
+    }
 }
 
 static LayoutCatalog phraseLayoutCatalog() {
@@ -129,11 +121,9 @@ static LayoutCatalog phraseLayoutCatalog() {
             {LETTERS_IN_WHOLE, "LETTERS_IN_WHOLE"},
             {WORDS_IN_WHOLE, "WORDS_IN_WHOLE"},
         },
-        phraseEffects(),
-        phraseOverlays(),
-        phraseTransitions(),
-        phraseMirrors(),
-        0.25f
+        phraseEffectSelector,
+        phraseOverlaySelector,
+        phraseTransitionSelector
     );
 }
 

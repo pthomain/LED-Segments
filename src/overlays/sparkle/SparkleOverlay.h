@@ -22,7 +22,7 @@
 #define SPARKLEOVERLAY_H
 #include "engine/effect/Effect.h"
 
-class SparkleOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<SparkleOverlay> {
+class SparkleOverlay : public Effect<SparkleOverlay, CRGB>{
     const float density = 0.005f;
     const CRGB minBrightness = CRGB(127, 127, 127);
 
@@ -38,10 +38,21 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Sparkle"; }
-    EffectType type() const override { return EffectType::OVERLAY_MULTIPLY; }
+    static constexpr const char *name() { return "SparkleOverlay"; }
+    static constexpr EffectType type() { return EffectType::OVERLAY_MULTIPLY; }
 
-    static EffectFactory<CRGB> factory;
+    static const EffectFactory<CRGB>& factory;
+};
+
+class SparkleOverlayFactory : public EffectFactory<CRGB> {
+public:
+    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
+        return std::make_unique<SparkleOverlay>(context);
+    }
+
+    const char *name() const override {
+        return SparkleOverlay::name();
+    }
 };
 
 #endif //SPARKLEOVERLAY_H

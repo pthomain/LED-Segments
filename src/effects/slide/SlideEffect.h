@@ -23,7 +23,7 @@
 
 #include "engine/effect/Effect.h"
 
-class SlideEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<SlideEffect> {
+class SlideEffect : public Effect<SlideEffect, CRGB> {
     const uint8_t nbColours = 4;
     const uint8_t step = 255 / nbColours;
     const uint8_t start = random8();
@@ -48,15 +48,26 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Slide"; }
-    EffectType type() const override { return EffectType::EFFECT; }
-
-    ~SlideEffect() override {
+    ~SlideEffect() {
         delete[] bottomColourIndexForSegment;
         delete[] headPositionForSegment;
     }
 
-    static EffectFactory<CRGB> factory;
+    static constexpr const char *name() { return "SlideEffect"; }
+    static constexpr EffectType type() { return EffectType::EFFECT; }
+
+    static const EffectFactory<CRGB>& factory;
+};
+
+class SlideEffectFactory : public EffectFactory<CRGB> {
+public:
+    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
+        return std::make_unique<SlideEffect>(context);
+    }
+
+    const char *name() const override {
+        return SlideEffect::name();
+    }
 };
 
 #endif //LED_SEGMENTS_SLIDEEFFECT_H

@@ -23,7 +23,7 @@
 
 #include "engine/effect/Effect.h"
 
-class DashOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<DashOverlay> {
+class DashOverlay : public Effect<DashOverlay, CRGB> {
     uint16_t *headPositionForSegment;
     uint16_t *tailPositionForSegment;
     bool *isReversedForSegment;
@@ -49,15 +49,26 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Dash"; }
-    EffectType type() const override { return EffectType::OVERLAY_MULTIPLY; }
+    static constexpr const char *name() { return "DashOverlay"; }
+    static constexpr EffectType type() { return EffectType::OVERLAY_MULTIPLY; }
 
-    static EffectFactory<CRGB> factory;
+    static const EffectFactory<CRGB>& factory;
 
-    ~DashOverlay() override {
+    ~DashOverlay() {
         delete[] headPositionForSegment;
         delete[] tailPositionForSegment;
         delete[] isReversedForSegment;
+    }
+};
+
+class DashOverlayFactory : public EffectFactory<CRGB> {
+public:
+    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
+        return std::make_unique<DashOverlay>(context);
+    }
+
+    const char *name() const override {
+        return DashOverlay::name();
     }
 };
 

@@ -21,11 +21,8 @@
 #include "crgb.h"
 #include "NoOverlay.h"
 
-EffectFactory<CRGB> NoOverlay::factory = [](
-    const EffectContext &effectContext
-) -> std::unique_ptr<Effect> {
-    return std::make_unique<NoOverlay>(effectContext);
-};
+static const NoOverlayFactory factoryInstance;
+const EffectFactory<CRGB> &NoOverlay::factory = factoryInstance;
 
 void NoOverlay::fillArrayInternal(
     CRGB *effectArray,

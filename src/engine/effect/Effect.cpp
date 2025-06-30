@@ -20,24 +20,8 @@
 
 #include "Effect.h"
 
-template
-void Effect<CRGB>::fillArray(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
-    uint16_t segmentIndex,
-    float progress
-);
-
-template
-void Effect<uint8_t>::fillArray(
-    uint8_t *effectArray,
-    uint16_t effectArraySize,
-    uint16_t segmentIndex,
-    float progress
-);
-
 template<typename C>
-void Effect<C>::fillArray(
+void BaseEffect<C>::fillArray(
     C *effectArray,
     uint16_t effectArraySize,
     uint16_t segmentIndex,
@@ -67,7 +51,7 @@ void Effect<C>::fillArray(
         elapsedMillis
     );
 
-    if (segmentIndex == context.nbSegments -1) {
+    if (segmentIndex == context.nbSegments - 1) {
         frameIndex++;
     }
 };

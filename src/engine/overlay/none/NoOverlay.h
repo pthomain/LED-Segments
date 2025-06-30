@@ -24,7 +24,7 @@
 #include "engine/effect/Effect.h"
 #include "engine/mirror/MirrorUtils.h"
 
-class NoOverlay : public Effect<NoOverlay, CRGB>, public Effect<NoOverlay, CRGB>::Factory<NoOverlay> {
+class NoOverlay : public Effect<NoOverlay, CRGB> {
 public:
     explicit NoOverlay(const EffectContext &effectContext) : Effect(effectContext) {
     }
@@ -37,15 +37,21 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    static constexpr const char* name() { return "NoOverlay"; }
+    static constexpr const char *name() { return "NoOverlay"; }
     static constexpr EffectType type() { return EffectType::OVERLAY_SOURCE; }
 
-    static EffectFactory<NoOverlay, CRGB> factory;
+    static const EffectFactory<CRGB>& factory;
 };
 
-static const std::pair<WeightedEffects<NoOverlay, CRGB>, MirrorSelector<NoOverlay, CRGB> > NO_OVERLAYS = {
-    WeightedEffects<NoOverlay, CRGB>{{NoOverlay::factory, 1}},
-    noMirrors
+class NoOverlayFactory : public EffectFactory<CRGB> {
+public:
+    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
+        return std::make_unique<NoOverlay>(context);
+    }
+
+    const char *name() const override {
+        return NoOverlay::name();
+    }
 };
 
 #endif //NOOVERLAY_H

@@ -20,11 +20,8 @@
 
 #include "NoEffect.h"
 
-EffectFactory<CRGB> NoEffect::factory = [](
-    const EffectContext &effectContext
-) -> std::unique_ptr<Effect> {
-    return std::make_unique<NoEffect>(effectContext);
-};
+static const NoEffectFactory factoryInstance;
+const EffectFactory<CRGB> &NoEffect::factory = factoryInstance;
 
 void NoEffect::fillArrayInternal(
     CRGB *effectArray,

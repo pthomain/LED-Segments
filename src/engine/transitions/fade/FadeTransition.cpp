@@ -20,11 +20,8 @@
 
 #include "FadeTransition.h"
 
-EffectFactory<uint8_t> FadeTransition::factory = [](
-    const EffectContext &effectContext
-) -> std::unique_ptr<Effect> {
-    return std::make_unique<FadeTransition>(effectContext);
-};
+static const FadeTransitionFactory factoryInstance;
+const EffectFactory<uint8_t> &FadeTransition::factory = factoryInstance;
 
 void FadeTransition::fillArrayInternal(
     uint8_t *effectArray,

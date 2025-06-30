@@ -22,11 +22,8 @@
 #include "crgb.h"
 #include "engine/utils/Utils.h"
 
-EffectFactory<CRGB> MoireOverlay::factory = [](
-    const EffectContext &effectContext
-) -> std::unique_ptr<Effect> {
-    return std::make_unique<MoireOverlay>(effectContext);
-};
+static const MoireOverlayFactory factoryInstance;
+const EffectFactory<CRGB> &MoireOverlay::factory = factoryInstance;
 
 void MoireOverlay::fillArrayInternal(
     CRGB *effectArray,
@@ -67,7 +64,6 @@ void MoireOverlay::fillArrayInternal(
             }
         }
     }
-
 
     headIndex = ++headIndex % distance;
 }

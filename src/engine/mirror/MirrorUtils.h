@@ -23,18 +23,18 @@
 #ifndef LED_SEGMENTS_MIRRORUTILS_H
 #define LED_SEGMENTS_MIRRORUTILS_H
 
+#include <map>
+
 using WeightedMirrors = std::map<Mirror, uint8_t>;
 
-template<typename E, typename C>
-using MirrorSelector = std::function<WeightedMirrors(const EffectFactory<E, C> &effectFactory)>;
+template<typename C>
+using MirrorSelector = std::function<WeightedMirrors(const EffectFactory<C> &effectFactory)>;
 
-template<typename E>
-inline WeightedMirrors noMirrors(const EffectFactory<E, CRGB> &effectFactory) {
+inline WeightedMirrors noMirrors(const EffectFactory<CRGB> &effectFactory) {
     return std::map<Mirror, uint8_t>{{Mirror::NONE, 1}};
 }
 
-template<typename E>
-inline WeightedMirrors unrepeatedMirrors(const EffectFactory<E, CRGB> &effectFactory) {
+inline WeightedMirrors unrepeatedMirrors(const EffectFactory<CRGB> &effectFactory) {
     return std::map<Mirror, uint8_t>{
         {Mirror::NONE, 1},
         {Mirror::REVERSE, 1},
@@ -43,8 +43,7 @@ inline WeightedMirrors unrepeatedMirrors(const EffectFactory<E, CRGB> &effectFac
     };
 }
 
-template<typename E>
-inline WeightedMirrors allCRGBMirrors(const EffectFactory<E, CRGB> &effectFactory) {
+inline WeightedMirrors allCRGBMirrors(const EffectFactory<CRGB> &effectFactory) {
     return std::map<Mirror, uint8_t>{
         {Mirror::NONE, 1},
         {Mirror::REVERSE, 1},
@@ -56,8 +55,7 @@ inline WeightedMirrors allCRGBMirrors(const EffectFactory<E, CRGB> &effectFactor
     };
 }
 
-template<typename E>
-inline WeightedMirrors allIntMirrors(const EffectFactory<E, uint8_t> &effectFactory) {
+inline WeightedMirrors allIntMirrors(const EffectFactory<uint8_t> &effectFactory) {
     return std::map<Mirror, uint8_t>{
         {Mirror::NONE, 1},
         {Mirror::REVERSE, 1},

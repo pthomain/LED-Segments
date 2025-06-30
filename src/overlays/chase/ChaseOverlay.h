@@ -24,7 +24,7 @@
 #include "engine/effect/Effect.h"
 #include "engine/utils/Utils.h"
 
-class ChaseOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<ChaseOverlay> {
+class ChaseOverlay : public Effect<ChaseOverlay, CRGB> {
     const uint8_t minxSparksPerSegment = 1;
     const uint8_t maxSparksPerSegment = 5;
     const uint8_t sparksPerSegment = random8(minxSparksPerSegment, maxSparksPerSegment);
@@ -76,17 +76,28 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Chase"; }
-    EffectType type() const override { return EffectType::OVERLAY_MULTIPLY; }
+    static constexpr const char *name() { return "ChaseOverlay"; }
+    static constexpr EffectType type() { return EffectType::OVERLAY_MULTIPLY; }
 
-    ~ChaseOverlay() override {
+    ~ChaseOverlay() {
         delete[] sparkIntervalCounterPerSegment;
         delete[] nbSparksForSegment;
         delete[] tempForward;
         delete[] tempBackward;
     }
 
-    static EffectFactory<CRGB> factory;
+    static const EffectFactory<CRGB>& factory;
+};
+
+class ChaseOverlayFactory : public EffectFactory<CRGB> {
+public:
+    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
+        return std::make_unique<ChaseOverlay>(context);
+    }
+
+    const char *name() const override {
+        return ChaseOverlay::name();
+    }
 };
 
 #endif //CHASEOVERLAY_H

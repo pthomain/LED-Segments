@@ -22,7 +22,7 @@
 #define FADETRANSITION_H
 #include "engine/effect/Effect.h"
 
-class FadeTransition : public Effect<uint8_t>, public Effect<uint8_t>::Factory<FadeTransition> {
+class FadeTransition : public Effect<FadeTransition, uint8_t> {
 public:
     explicit FadeTransition(const EffectContext &effectContext) : Effect(effectContext) {
     }
@@ -35,10 +35,21 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Fade"; }
-    EffectType type() const override { return EffectType::TRANSITION; }
+    static constexpr const char *name() { return "FadeTransition"; }
+    static constexpr EffectType type() { return EffectType::TRANSITION; }
 
-    static EffectFactory<uint8_t> factory;
+    static const EffectFactory<uint8_t>& factory;
+};
+
+class FadeTransitionFactory : public EffectFactory<uint8_t> {
+public:
+    std::unique_ptr<BaseEffect<uint8_t> > create(const EffectContext &context) const override {
+        return std::make_unique<FadeTransition>(context);
+    }
+
+    const char *name() const override {
+        return FadeTransition::name();
+    }
 };
 
 #endif //FADETRANSITION_H

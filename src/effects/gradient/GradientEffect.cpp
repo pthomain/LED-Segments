@@ -20,11 +20,8 @@
 
 #include "GradientEffect.h"
 
-EffectFactory<CRGB> GradientEffect::factory = [](
-    const EffectContext &effectContext
-) -> std::unique_ptr<Effect> {
-    return std::make_unique<GradientEffect>(effectContext);
-};
+static const GradientEffectFactory factoryInstance;
+const EffectFactory<CRGB> &GradientEffect::factory = factoryInstance;
 
 void GradientEffect::fillArrayInternal(
     CRGB *effectArray,

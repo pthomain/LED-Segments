@@ -19,11 +19,12 @@
  */
 
 #include "Renderer.h"
+#include "engine/effect/BaseEffect.h"
 #include "engine/utils/Utils.h"
 
 template
 void Renderer::applyEffectOrTransition(
-    const std::shared_ptr<Effect<CRGB> > &effect,
+    const std::shared_ptr<BaseEffect<CRGB> > &effect,
     CRGB *segmentArray,
     CRGB *outputArray,
     std::function<CRGB(uint16_t ledIndex, CRGB existing, CRGB toBeMixed)> mix,
@@ -32,7 +33,7 @@ void Renderer::applyEffectOrTransition(
 
 template
 void Renderer::applyEffectOrTransition(
-    const std::shared_ptr<Effect<uint8_t> > &effect,
+    const std::shared_ptr<BaseEffect<uint8_t> > &effect,
     uint8_t *segmentArray,
     CRGB *outputArray,
     std::function<CRGB(uint16_t ledIndex, CRGB existing, uint8_t toBeMixed)> mix,
@@ -41,7 +42,7 @@ void Renderer::applyEffectOrTransition(
 
 template<typename C>
 void Renderer::applyEffectOrTransition(
-    const std::shared_ptr<Effect<C> > &effect,
+    const std::shared_ptr<BaseEffect<C> > &effect,
     C *segmentArray,
     CRGB *outputArray,
     std::function<CRGB(uint16_t ledIndex, CRGB existing, C toBeMixed)> mix,
@@ -51,7 +52,7 @@ void Renderer::applyEffectOrTransition(
     auto layoutIndex = context.layoutIndex;
     auto mirror = context.mirror;
 
-    if (effect->name() == "Chase" || effect->name() == "Moiré") {
+    if (effect->effectName() == "ChaseOverlay" || effect->effectName() == "MoireOverlay") {
         mirror = Mirror::NONE; //TODO find a better way to handle this
     }
 
@@ -106,25 +107,25 @@ Renderer::~Renderer() {
 }
 
 bool Renderer::validateEffect(
-    const std::shared_ptr<Effect<CRGB> > &effect,
-    const std::shared_ptr<Effect<CRGB> > &overlay,
-    const std::shared_ptr<Effect<uint8_t> > &transition
+    const std::shared_ptr<BaseEffect<CRGB> > &effect,
+    const std::shared_ptr<BaseEffect<CRGB> > &overlay,
+    const std::shared_ptr<BaseEffect<uint8_t> > &transition
 ) {
     return effect && overlay && transition
-           && effect->type() == EffectType::EFFECT
+           && effect->effectType() == EffectType::EFFECT
            && (
-               overlay->type() == EffectType::OVERLAY_SOURCE
-               || overlay->type() == EffectType::OVERLAY_SCREEN
-               || overlay->type() == EffectType::OVERLAY_MULTIPLY
-               || overlay->type() == EffectType::OVERLAY_INVERT
+               overlay->effectType() == EffectType::OVERLAY_SOURCE
+               || overlay->effectType() == EffectType::OVERLAY_SCREEN
+               || overlay->effectType() == EffectType::OVERLAY_MULTIPLY
+               || overlay->effectType() == EffectType::OVERLAY_INVERT
            )
-           && transition->type() == EffectType::TRANSITION;
+           && transition->effectType() == EffectType::TRANSITION;
 }
 
 void Renderer::changeEffect(
-    const std::shared_ptr<Effect<CRGB> > &effect,
-    const std::shared_ptr<Effect<CRGB> > &overlay,
-    const std::shared_ptr<Effect<uint8_t> > &transition
+    const std::shared_ptr<BaseEffect<CRGB> > &effect,
+    const std::shared_ptr<BaseEffect<CRGB> > &overlay,
+    const std::shared_ptr<BaseEffect<uint8_t> > &transition
 ) {
     if (!validateEffect(effect, overlay, transition)) return;
 
@@ -198,8 +199,8 @@ void Renderer::render() {
 }
 
 void Renderer::flattenEffectAndOverlay(
-    const std::shared_ptr<Effect<CRGB> > &effect,
-    const std::shared_ptr<Effect<CRGB> > &overlay,
+    const std::shared_ptr<BaseEffect<CRGB> > &effect,
+    const std::shared_ptr<BaseEffect<CRGB> > &overlay,
     float progress,
     CRGB *effectOutputArray
 ) const {
@@ -216,7 +217,7 @@ void Renderer::flattenEffectAndOverlay(
         segmentArray,
         effectOutputArray,
         [&](uint16_t, CRGB existing, CRGB toBeMixed) {
-            switch (overlay->type()) {
+            switch (overlay->effectType()) {
                 case EffectType::OVERLAY_SCREEN: return screen(existing, toBeMixed);
                 case EffectType::OVERLAY_MULTIPLY: return multiply(existing, toBeMixed);
                 default: return existing; //TODO

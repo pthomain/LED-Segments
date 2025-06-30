@@ -23,7 +23,7 @@
 
 #include "engine/effect/Effect.h"
 
-class GradientEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<GradientEffect> {
+class GradientEffect : public Effect<GradientEffect, CRGB> {
     const uint8_t start = random8(); //start hue
     const float variation = static_cast<float>(random8(85)) / 100.0f; // 30% variation
 
@@ -39,10 +39,21 @@ public:
         unsigned long timeInMillis
     ) override;
 
-    String name() const override { return "Gradient"; }
-    EffectType type() const override { return EffectType::EFFECT; }
+    static constexpr const char *name() { return "GradientEffect"; }
+    static constexpr EffectType type() { return EffectType::EFFECT; }
 
-    static EffectFactory<CRGB> factory;
+    static const EffectFactory<CRGB>& factory;
+};
+
+class GradientEffectFactory : public EffectFactory<CRGB> {
+public:
+    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
+        return std::make_unique<GradientEffect>(context);
+    }
+
+    const char *name() const override {
+        return GradientEffect::name();
+    }
 };
 
 #endif //LED_SEGMENTS_GRADIENTEFFECT_H

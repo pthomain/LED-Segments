@@ -20,11 +20,8 @@
 
 #include "SlideTransition.h"
 
-EffectFactory<uint8_t> SlideTransition::factory = [](
-    const EffectContext &effectContext
-) -> std::unique_ptr<Effect> {
-    return std::make_unique<SlideTransition>(effectContext);
-};
+static const SlideTransitionFactory factoryInstance;
+const EffectFactory<uint8_t> &SlideTransition::factory = factoryInstance;
 
 void SlideTransition::fillArrayInternal(
     uint8_t *effectArray,

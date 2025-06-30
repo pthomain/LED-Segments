@@ -58,7 +58,7 @@ static const std::vector<uint16_t> phraseLayouts = std::vector<uint16_t>{
     LEDS_IN_WHOLE
 };
 
-static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > phraseEffectSelector(uint16_t layoutIndex) {
+static EffectAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutIndex) {
     switch (layoutIndex) {
         case LEDS_IN_LETTERS:
         case LETTERS_IN_WORDS:
@@ -69,17 +69,17 @@ static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > phraseEffectSelec
         default:
             return {
                 {
-                    {GradientEffect::factory, 1},
-                    {SwirlEffect::factory, 1},
-                    {NoiseEffect::factory, 1},
-                    {SlideEffect::factory, 1}
+                    {&GradientEffect::factory, 1},
+                    {&SwirlEffect::factory, 1},
+                    {&NoiseEffect::factory, 1},
+                    {&SlideEffect::factory, 1}
                 },
                 allCRGBMirrors
             };
     }
 };
 
-static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > phraseOverlaySelector(uint16_t layoutIndex) {
+static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutIndex) {
     switch (layoutIndex) {
         case LEDS_IN_LETTERS:
         case LEDS_IN_WORDS:
@@ -87,19 +87,19 @@ static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > phraseOverlaySele
         case LETTERS_IN_WHOLE:
             return {
                 {
-                    {MoireOverlay::factory, 1},
-                    {ChaseOverlay::factory, 1},
-                    {DashOverlay::factory, 1},
-                    {NoOverlay::factory, 5},
+                    {&MoireOverlay::factory, 1},
+                    {&ChaseOverlay::factory, 1},
+                    {&DashOverlay::factory, 1},
+                    {&NoOverlay::factory, 5},
                 },
                 allCRGBMirrors
             };
 
-        default: return NO_OVERLAYS;
+        default: return {};
     }
 };
 
-static std::pair<WeightedEffects<uint8_t>, MirrorSelector<uint8_t> > phraseTransitionSelector(uint16_t layoutIndex) {
+static EffectAndMirrors<uint8_t> phraseTransitionSelector(uint16_t layoutIndex) {
     switch (layoutIndex) {
         case LEDS_IN_LETTERS:
         case LEDS_IN_WORDS:

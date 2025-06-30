@@ -32,17 +32,17 @@ enum class Transition {
     SLIDE
 };
 
-const std::pair<WeightedEffects<uint8_t>, MirrorSelector<uint8_t> > ALL_TRANSITIONS = {
+const EffectAndMirrors<uint8_t> ALL_TRANSITIONS = {
     WeightedEffects<uint8_t>{
-        {FadeTransition::factory, 1},
-        {SlideTransition::factory, 1}
+        {&FadeTransition::factory, 1},
+        {&SlideTransition::factory, 1}
     },
     allIntMirrors
 };
 
-const std::pair<WeightedEffects<uint8_t>, MirrorSelector<uint8_t> > FADE_TRANSITION = {
+const EffectAndMirrors<uint8_t> FADE_TRANSITION = {
     {
-        {FadeTransition::factory, 1}
+        {&FadeTransition::factory, 1}
     },
     allIntMirrors
 };
@@ -56,10 +56,10 @@ static String getTransitionName(Transition transition) {
     }
 }
 
-static std::map<Transition, EffectFactory<uint8_t> > transitionfactories = {
-    {Transition::NONE, NoTransition::factory},
-    {Transition::FADE, FadeTransition::factory},
-    {Transition::SLIDE, SlideTransition::factory}
+static std::map<Transition, const EffectFactory<uint8_t>*> transitionfactories = {
+    {Transition::NONE, &NoTransition::factory},
+    {Transition::FADE, &FadeTransition::factory},
+    {Transition::SLIDE, &SlideTransition::factory}
 };
 
 #endif //LED_SEGMENTS_TRANSITION_H

@@ -27,6 +27,7 @@
 #include <vector>
 #include <engine/effect/Effect.h>
 #include <engine/mirror/Mirror.h>
+#include <engine/mirror/MirrorUtils.h>
 #include "engine/utils/Utils.h"
 
 static const String UNKNOWN = "UNKNOWN";
@@ -35,55 +36,47 @@ static const String OVERLAY_ENTRY = "overlay";
 static const String MIRROR_ENTRY = "mirror";
 static const String TRANSITION_ENTRY = "transition";
 
+template<typename E, typename C>
+using EffectSelector = std::function<std::pair<WeightedEffects<E, C>, MirrorSelector<E, C> >(uint16_t layoutIndex)>;
+
 class LayoutCatalog {
-    const std::vector<uint16_t> _weightedLayouts;
-    const std::set<uint16_t> _uniqueLayouts;
+    const std::vector<uint16_t> _uniqueLayouts;
     const std::map<uint16_t, String> _layoutNames;
-    const std::map<uint16_t, std::vector<EffectFactory<CRGB> > > _effects;
-    const std::map<uint16_t, std::vector<EffectFactory<CRGB> > > _overlays;
-    const std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > _transitions;
-    const std::map<uint16_t, std::vector<Mirror> > _mirrors;
-    const float probabilityOfOverlay;
 
-    template<typename T>
-    T randomMapEntryForLayout(
+    const EffectSelector<CRGB> _effects;
+    const EffectSelector<CRGB> _overlays;
+    const EffectSelector<uint8_t> _transitions;
+
+    template<typename E, typename T>
+    std::tuple<uint16_t, EffectFactory<T>, Mirror> randomEntry(
         const String &entryType,
-        uint16_t layoutIndex,
-        const std::map<uint16_t, std::vector<T> > &map,
-        T defaultValue
+        const EffectSelector<E, T> &effectSelector,
+        const std::tuple<uint16_t, EffectFactory<T>, Mirror> &defaultValue
     ) const;
 
     template<typename T>
-    std::pair<uint16_t, T> randomLayoutSpecificEntry(
-        const String &entryType,
-        const std::map<uint16_t, std::vector<T> > &map,
-        std::pair<uint16_t, T> defaultValue
-    ) const;
+    std::vector<T> &removeDuplicates(std::vector<T> &vec) {
+        std::sort(vec.begin(), vec.end());
+        auto last = std::unique(vec.begin(), vec.end());
+        vec.erase(last, vec.end());
+        return vec;
+    }
 
 public:
     explicit LayoutCatalog(
-        std::vector<uint16_t> weightedLayouts,
+        std::vector<uint16_t> uniqueLayouts,
         std::map<uint16_t, String> layoutNames,
-        std::map<uint16_t, std::vector<EffectFactory<CRGB> > > effects,
-        std::map<uint16_t, std::vector<EffectFactory<CRGB> > > overlays,
-        std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > transitions,
-        std::map<uint16_t, std::vector<Mirror> > mirrors,
-        const float probabilityOfOverlay = 0.0f
-    ) : _weightedLayouts(std::move(weightedLayouts)),
-        _uniqueLayouts(_weightedLayouts.begin(), _weightedLayouts.end()),
+        EffectSelector<CRGB> effects,
+        EffectSelector<CRGB> overlays,
+        EffectSelector<uint8_t> transitions
+    ) : _uniqueLayouts(std::move(removeDuplicates(uniqueLayouts))),
         _layoutNames(std::move(layoutNames)),
         _effects(std::move(effects)),
         _overlays(std::move(overlays)),
-        _transitions(std::move(transitions)),
-        _mirrors(std::move(mirrors)),
-        probabilityOfOverlay(probabilityOfOverlay) {
+        _transitions(std::move(transitions)) {
     }
 
-    uint16_t randomLayoutIndex() const {
-        return _weightedLayouts.at(random16(_weightedLayouts.size()));
-    }
-
-    std::set<uint16_t> uniqueLayouts() const {
+    std::vector<uint16_t> uniqueLayouts() const {
         return _uniqueLayouts;
     }
 
@@ -96,13 +89,11 @@ public:
         return _layoutNames.at(layoutIndex);
     }
 
-    EffectFactory<CRGB> randomEffectFactory(uint16_t layoutIndex) const;
+    std::tuple<uint16_t, EffectFactory<CRGB>, Mirror> randomEffect() const;
 
-    Mirror randomMirror(uint16_t layoutIndex) const;
+    std::tuple<uint16_t, EffectFactory<CRGB>, Mirror> randomOverlay() const;
 
-    std::pair<uint16_t, EffectFactory<uint8_t> > randomTransition() const;
-
-    std::pair<uint16_t, EffectFactory<CRGB> > randomOverlay() const;
+    std::tuple<uint16_t, EffectFactory<uint8_t>, Mirror> randomTransition() const;
 
     virtual ~LayoutCatalog() = default;
 };

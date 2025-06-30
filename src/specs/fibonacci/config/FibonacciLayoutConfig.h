@@ -26,9 +26,14 @@
 #include "WString.h"
 #include "engine/utils/Utils.h"
 #include <effects/noise/NoiseEffect.h>
+#include <effects/gradient/GradientEffect.h>
+#include <effects/swirl/SwirlEffect.h>
+#include <effects/slide/SlideEffect.h>
 #include <engine/displayspec/LayoutCatalog.h>
 #include "engine/transitions/Transition.h"
-#include "overlays/sparkle/SparkleOverlay.h"
+#include "overlays/dash/DashOverlay.h"
+#include "overlays/moire/MoireOverlay.h"
+#include "overlays/chase/ChaseOverlay.h"
 
 const uint16_t TOTAL_FIBONACCI_LEDS = 324;
 const uint8_t NB_LEDS_IN_SPIRAL = 27;
@@ -135,9 +140,8 @@ static std::vector<uint16_t> computeVariations() {
             static_cast<Alignment>(alignment),
             static_cast<Inflexion>(inflexion)
         ));
-        unsigned int lastIndex = variations.size() - 1;
-
         if constexpr (IS_DEBUG) {
+            uint8_t lastIndex = variations.size() - 1;
             Serial.println(String(lastIndex) + ": " + String(getLayoutName(variations.at(lastIndex))));
         }
     };
@@ -157,48 +161,32 @@ static std::vector<uint16_t> computeVariations() {
     return variations;
 }
 
-static std::map<uint16_t, std::vector<EffectFactory<CRGB> > >
-fibonacciEffects(const std::vector<uint16_t> &variations) {
-    return mapLayoutIndex<EffectFactory<CRGB> >(
-        variations,
-        [](uint16_t layoutIndex) {
-            return std::vector{
-                NoiseEffect::factory,
-                // GradientEffect::factory
-            };
-        }
-    );
+static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > fibonacciEffectSelector(uint16_t layoutIndex) {
+    return {
+        {
+            {GradientEffect::factory, 1},
+            {SwirlEffect::factory, 1},
+            {NoiseEffect::factory, 1},
+            {SlideEffect::factory, 1}
+        },
+        allCRGBMirrors
+    };
 }
 
-static std::map<uint16_t, std::vector<EffectFactory<CRGB> > >
-fibonacciOverlays(const std::vector<uint16_t> &variations) {
-    return mapLayoutIndex<EffectFactory<CRGB> >(
-        variations,
-        [](uint16_t layoutIndex) {
-            return std::vector{
-                SparkleOverlay::factory,
-            };
-        }
-    );
+static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > fibonacciOverlaySelector(uint16_t layoutIndex) {
+    return {
+        {
+            {MoireOverlay::factory, 1},
+            {ChaseOverlay::factory, 1},
+            {DashOverlay::factory, 1},
+        },
+        allCRGBMirrors
+    };
 }
 
-static std::map<uint16_t, std::vector<Mirror> > fibonacciMirrors(const std::vector<uint16_t> &variations) {
-    return mapLayoutIndex<Mirror>(
-        variations,
-        [](uint16_t layoutIndex) {
-            return ALL_MIRRORS;
-        }
-    );
-}
-
-static std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > fibonacciTransitions(
-    const std::vector<uint16_t> &variations) {
-    return mapLayoutIndex<EffectFactory<uint8_t> >(
-        variations,
-        [](uint16_t layoutIndex) {
-            return ALL_TRANSITIONS;
-        }
-    );
+static std::pair<WeightedEffects<uint8_t>, MirrorSelector<uint8_t> >
+fibonacciTransitionSelector(uint16_t layoutIndex) {
+    return ALL_TRANSITIONS;
 }
 
 static LayoutCatalog fibonacciLayoutCatalog(const std::vector<uint16_t> &variations) {
@@ -209,10 +197,9 @@ static LayoutCatalog fibonacciLayoutCatalog(const std::vector<uint16_t> &variati
     return LayoutCatalog(
         variations,
         names,
-        fibonacciEffects(variations),
-        fibonacciOverlays(variations),
-        fibonacciTransitions(variations),
-        fibonacciMirrors(variations)
+        fibonacciEffectSelector,
+        fibonacciOverlaySelector,
+        fibonacciTransitionSelector
     );
 }
 

@@ -27,9 +27,9 @@
 //TODO add stack effect, each pixel stacks on the previous one + reverse
 //TODO add swipe effect, one colour slides over the previous one (divide palette by ~6)
 
-#define LED_PIN D7 //Umbrella
-// #define LED_PIN 9
-#define BRIGHTNESS 96
+// #define LED_PIN D7 //Umbrella
+#define LED_PIN 9
+#define BRIGHTNESS 255
 #define DEBUG_BRIGHTNESS 50
 #define MIN_EFFECT_DURATION_IN_SECONDS 5
 #define MAX_EFFECT_DURATION_IN_SECONDS 10
@@ -44,7 +44,7 @@ void setup() {
     }
 
     display = Display::create<LED_PIN, GRB>(
-        std::make_unique<UmbrellaSpec>(),
+        std::make_unique<PhraseSpec>(),
         IS_DEBUG ? DEBUG_BRIGHTNESS : BRIGHTNESS,
         IS_DEBUG ? DEBUG_EFFECT_DURATION_IN_SECONDS : MIN_EFFECT_DURATION_IN_SECONDS,
         IS_DEBUG ? DEBUG_EFFECT_DURATION_IN_SECONDS : MAX_EFFECT_DURATION_IN_SECONDS,

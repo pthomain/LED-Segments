@@ -29,7 +29,7 @@
 #include "FastLED.h"
 #include <functional>
 
-#define IS_DEBUG false
+#define IS_DEBUG true
 #define IS_UMBRELLA true
 
 static const std::vector<uint8_t> PRIMES PROGMEM = std::vector<uint8_t>{
@@ -114,6 +114,14 @@ static CRGB screen(const CRGB &base, const CRGB &overlay) {
 template<typename T>
 static bool contains(const std::vector<T> &vector, const T &value) {
     return std::find(vector.begin(), vector.end(), value) != vector.end();
+}
+
+extern "C" char *sbrk(int incr);
+
+inline int freeMemoryXiao() {
+    char stack_dummy = 0;
+    char *heap_end = sbrk(0);
+    return &stack_dummy - heap_end;
 }
 
 #endif //UTILS_H

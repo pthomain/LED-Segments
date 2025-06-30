@@ -24,115 +24,97 @@
 #include "engine/transitions/none/NoTransition.h"
 #include "engine/utils/Utils.h"
 
-template
-std::map<uint16_t, std::vector<EffectFactory<CRGB> > > mapLayoutIndex<EffectFactory<CRGB> >(
-    const std::vector<uint16_t> &,
-    const std::function<std::vector<EffectFactory<CRGB> >(uint16_t)> &
-);
-
-template
-std::map<uint16_t, std::vector<EffectFactory<uint8_t> > > mapLayoutIndex<EffectFactory<uint8_t> >(
-    const std::vector<uint16_t> &,
-    const std::function<std::vector<EffectFactory<uint8_t> >(uint16_t)> &
-);
-
-template
-std::map<uint16_t, std::vector<Mirror> > mapLayoutIndex<Mirror>(
-    const std::vector<uint16_t> &,
-    const std::function<std::vector<Mirror>(uint16_t)> &
-);
-
 template<typename T>
-std::map<uint16_t, std::vector<T> > mapLayoutIndex(
-    const std::vector<uint16_t> &layoutIndexes,
-    const std::function<std::vector<T>(uint16_t)> &mapper
-) {
-    std::map<uint16_t, std::vector<T> > map;
-    for (const auto layoutIndex: layoutIndexes) {
-        map[layoutIndex] = mapper(layoutIndex);
-    }
-    return map;
-}
-
-template<typename T>
-std::pair<uint16_t, T> LayoutCatalog::randomLayoutSpecificEntry(
+std::tuple<uint16_t, EffectFactory<T>, Mirror> LayoutCatalog::randomEntry(
     const String &entryType,
-    const std::map<uint16_t, std::vector<T> > &map,
-    const std::pair<uint16_t, T> defaultValue
+    const EffectSelector<T> &effectSelector,
+    const std::tuple<uint16_t, EffectFactory<T>, Mirror> &defaultValue
 ) const {
-    if (map.empty()) {
-        if constexpr (IS_DEBUG) {
-            Serial.print("No entries in ");
-            Serial.print(entryType);
-            Serial.println(" map");
+    // Select a random layout
+    auto iterator = _uniqueLayouts.begin();
+    std::advance(iterator, random8(_uniqueLayouts.size()));
+    const uint16_t randomLayoutIndex = *iterator;
+
+    // Select effects and mirrors for the selected layout
+    const auto [effects, effectMirrorSelector] = effectSelector(randomLayoutIndex);
+
+    // Calculate the total weigEht of all effects for that layout
+    uint16_t totalEffectWeight = 0;
+    for (const auto &[_, effectWeight]: effects) {
+        totalEffectWeight += effectWeight;
+    }
+
+    // Pick random values for effect
+    uint16_t randomEffectValue = random16(totalEffectWeight);
+
+    //Find effect that matches the randomEffectValue
+    for (auto const &[effectFactory, effectWeight]: effects) {
+        // We found a matching effect
+        if (randomEffectValue < effectWeight) {
+            std::map<Mirror, uint8_t> effectMirrors = effectMirrorSelector(effectFactory);
+
+            // For the selected effect, calculate the associated mirror weights
+            uint16_t totalMirrorWeight = 0;
+            for (const auto &[_, mirrorWeight]: effectMirrors) {
+                totalMirrorWeight += mirrorWeight;
+            }
+
+            uint16_t randomMirrorValue = random16(totalMirrorWeight);
+
+            //Find mirror that matches the randomMirrorValue
+            for (const auto &[mirror, mirrorWeight]: effectMirrors) {
+                // We found a matching effect, return layout index, effect and mirror
+                if (randomMirrorValue < mirrorWeight) {
+                    return {randomLayoutIndex, effectFactory, mirror};
+                }
+
+                randomMirrorValue -= mirrorWeight;
+            }
+
+            // If no mirror was found, return the default value
+            if constexpr (IS_DEBUG) {
+                Serial.print("Could not find a valid mirror with value ");
+                Serial.print(randomMirrorValue);
+                Serial.print(" for layout ");
+                Serial.println(layoutName(randomLayoutIndex));
+            }
+            return {randomLayoutIndex, effectFactory, Mirror::NONE};
         }
-        return defaultValue;
+
+        randomEffectValue -= effectWeight;
     }
 
-    auto iterator = map.begin();
-    std::advance(iterator, random8(map.size()));
-
-    const uint16_t randomLayoutIndex = iterator->first;
-    const std::vector<T> &entries = iterator->second;
-
-    if (entries.empty()) {
-        if constexpr (IS_DEBUG) {
-            Serial.print("No ");
-            Serial.print(entryType);
-            Serial.print(" values provided for layout ");
-            Serial.println(randomLayoutIndex);
-        }
-        return defaultValue;
+    // If no effect was found, return the default value
+    if constexpr (IS_DEBUG) {
+        Serial.print("Could not find a valid effect with value ");
+        Serial.print(randomEffectValue);
+        Serial.print(" for layout ");
+        Serial.println(layoutName(randomLayoutIndex));
     }
 
-    const T &entry = entries.at(random8(entries.size()));
-    return {randomLayoutIndex, entry};
+    return defaultValue;
 }
 
-template<typename T>
-T LayoutCatalog::randomMapEntryForLayout(
-    const String &entryType,
-    uint16_t layoutIndex,
-    const std::map<uint16_t, std::vector<T> > &map,
-    T defaultValue
-) const {
-    if (map.empty() || map.find(layoutIndex) == map.end()) {
-        if constexpr (IS_DEBUG) {
-            Serial.print("No entries in ");
-            Serial.print(entryType);
-            Serial.println(" map");
-        }
-        return defaultValue;
-    }
-
-    auto &entry = map.at(layoutIndex);
-    if (entry.empty()) {
-        if constexpr (IS_DEBUG) {
-            Serial.print("No ");
-            Serial.print(entryType);
-            Serial.println(" values provided for layout ");
-            Serial.println(layoutIndex);
-        }
-        return defaultValue;
-    }
-    return entry.at(random8(entry.size()));
+std::tuple<uint16_t, EffectFactory<CRGB>, Mirror> LayoutCatalog::randomEffect() const {
+    return randomEntry(
+        EFFECT_ENTRY,
+        _effects,
+        std::tuple<uint16_t, EffectFactory<CRGB>, Mirror>{0, NoEffect::factory, Mirror::NONE}
+    );
 }
 
-EffectFactory<CRGB> LayoutCatalog::randomEffectFactory(uint16_t layoutIndex) const {
-    return randomMapEntryForLayout(EFFECT_ENTRY, layoutIndex, _effects, NoEffect::factory);
+std::tuple<uint16_t, EffectFactory<uint8_t>, Mirror> LayoutCatalog::randomTransition() const {
+    return randomEntry(
+        TRANSITION_ENTRY,
+        _transitions,
+        std::tuple<uint16_t, EffectFactory<uint8_t>, Mirror>{0, NoTransition::factory, Mirror::NONE}
+    );
 }
 
-Mirror LayoutCatalog::randomMirror(uint16_t layoutIndex) const {
-    return randomMapEntryForLayout(MIRROR_ENTRY, layoutIndex, _mirrors, Mirror::NONE);
-}
-
-std::pair<uint16_t, EffectFactory<uint8_t> > LayoutCatalog::randomTransition() const {
-    return randomLayoutSpecificEntry(TRANSITION_ENTRY, _transitions, {0, NoTransition::factory});
-}
-
-std::pair<uint16_t, EffectFactory<CRGB> > LayoutCatalog::randomOverlay() const {
-    if (probability(probabilityOfOverlay)) {
-        return randomLayoutSpecificEntry(OVERLAY_ENTRY, _overlays, {0, NoOverlay::factory});
-    }
-    return {0, NoOverlay::factory};
+std::tuple<uint16_t, EffectFactory<CRGB>, Mirror> LayoutCatalog::randomOverlay() const {
+    return randomEntry(
+        OVERLAY_ENTRY,
+        _overlays,
+        std::tuple<uint16_t, EffectFactory<CRGB>, Mirror>{0, NoOverlay::factory, Mirror::NONE}
+    );
 }

@@ -24,7 +24,7 @@
 #include "engine/effect/Effect.h"
 #include "engine/effect/EffectType.h"
 
-class NoTransition : public Effect<uint8_t>, public Effect<uint8_t>::Factory<NoTransition> {
+class NoTransition : public Effect<NoTransition, uint8_t> {
 public:
     explicit NoTransition(const EffectContext &effectContext) : Effect(effectContext) {
     }
@@ -37,10 +37,21 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "None"; }
-    EffectType type() const override { return EffectType::TRANSITION; }
+    static constexpr const char *name() { return "NoTransition"; }
+    static constexpr EffectType type() { return EffectType::TRANSITION; }
 
-    static EffectFactory<uint8_t> factory;
+    static const EffectFactory<uint8_t> &factory;
+};
+
+class NoTransitionFactory : public EffectFactory<uint8_t> {
+public:
+    std::unique_ptr<BaseEffect<uint8_t> > create(const EffectContext &context) const override {
+        return std::make_unique<NoTransition>(context);
+    }
+
+    const char *name() const override {
+        return NoTransition::name();
+    }
 };
 
 #endif //NOTRANSITION_H

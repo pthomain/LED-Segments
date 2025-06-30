@@ -22,11 +22,8 @@
 #include "crgb.h"
 #include "engine/utils/Utils.h"
 
-EffectFactory<CRGB> SparkleOverlay::factory = [](
-    const EffectContext &effectContext
-) -> std::unique_ptr<Effect> {
-    return std::make_unique<SparkleOverlay>(effectContext);
-};
+static const SparkleOverlayFactory factoryInstance;
+const EffectFactory<CRGB> &SparkleOverlay::factory = factoryInstance;
 
 void SparkleOverlay::fillArrayInternal(
     CRGB *effectArray,

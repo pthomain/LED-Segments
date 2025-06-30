@@ -24,7 +24,7 @@
 #include "engine/effect/Effect.h"
 #include "engine/effect/EffectType.h"
 
-class SlideTransition : public Effect<uint8_t>, public Effect<uint8_t>::Factory<SlideTransition> {
+class SlideTransition : public Effect<SlideTransition, uint8_t>{
 public:
     explicit SlideTransition(const EffectContext &effectContext) : Effect(effectContext) {
     }
@@ -37,10 +37,21 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Slide"; }
-    EffectType type() const override { return EffectType::TRANSITION; }
+    static constexpr const char *name() { return "SlideTransition"; }
+    static constexpr EffectType type() { return EffectType::TRANSITION; }
 
-    static EffectFactory<uint8_t> factory;
+    static const EffectFactory<uint8_t>& factory;
+};
+
+class SlideTransitionFactory : public EffectFactory<uint8_t> {
+public:
+    std::unique_ptr<BaseEffect<uint8_t> > create(const EffectContext &context) const override {
+        return std::make_unique<SlideTransition>(context);
+    }
+
+    const char *name() const override {
+        return SlideTransition::name();
+    }
 };
 
 #endif //SLIDETRANSITION_H

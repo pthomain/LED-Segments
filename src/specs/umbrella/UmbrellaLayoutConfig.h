@@ -43,38 +43,38 @@ static const std::vector<uint16_t> umbrellaLayouts = {
     SPOKES_IN_WHOLE
 };
 
-static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > umbrellaEffectSelector(uint16_t layoutIndex) {
+static EffectAndMirrors<CRGB> umbrellaEffectSelector(uint16_t layoutIndex) {
     return {
         {
-            {GradientEffect::factory, 1},
-            {SwirlEffect::factory, 1},
-            {NoiseEffect::factory, 1},
-            {SlideEffect::factory, 1}
+            {&GradientEffect::factory, 1},
+            {&SwirlEffect::factory, 1},
+            {&NoiseEffect::factory, 1},
+            {&SlideEffect::factory, 1}
         },
         allCRGBMirrors
     };
 }
 
-static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > umbrellaOverlaySelector(uint16_t layoutIndex) {
+static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutIndex) {
     switch (layoutIndex) {
         case LEDS_IN_SPOKE:
             return {
                 {
-                    {MoireOverlay::factory, 1},
-                    {ChaseOverlay::factory, 1},
-                    {DashOverlay::factory, 1},
+                    {&MoireOverlay::factory, 1},
+                    {&ChaseOverlay::factory, 1},
+                    {&DashOverlay::factory, 1},
                 },
                 allCRGBMirrors
             };
-        default: return NO_OVERLAYS;
+        default: return {};
     }
 }
 
-static std::pair<WeightedEffects<uint8_t>, MirrorSelector<uint8_t> > umbrellaTransitionSelector(uint16_t layoutIndex) {
+static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutIndex) {
     return {
         {
-            {SlideTransition::factory, 1},
-            {FadeTransition::factory, 1},
+            {&SlideTransition::factory, 1},
+            {&FadeTransition::factory, 1},
         },
         allIntMirrors
     };

@@ -23,11 +23,8 @@
 #include "engine/effect/Effect.h"
 #include "engine/utils/Utils.h"
 
-EffectFactory<CRGB> SwirlEffect::factory = [](
-    const EffectContext &effectContext
-) -> std::unique_ptr<Effect> {
-    return std::make_unique<SwirlEffect>(effectContext);
-};
+static const SwirlEffectFactory factoryInstance;
+const EffectFactory<CRGB> &SwirlEffect::factory = factoryInstance;
 
 void SwirlEffect::fillArrayInternal(
     CRGB *effectArray,

@@ -25,10 +25,9 @@
 #include "engine/utils/Utils.h"
 
 template<typename T>
-std::tuple<uint16_t, EffectFactory<T>, Mirror> LayoutCatalog::randomEntry(
-    const String &entryType,
+RandomEffect<T> LayoutCatalog::randomEntry(
     const EffectSelector<T> &effectSelector,
-    const std::tuple<uint16_t, EffectFactory<T>, Mirror> &defaultValue
+    const EffectFactory<T> &defaultValue
 ) const {
     // Select a random layout
     auto iterator = _uniqueLayouts.begin();
@@ -48,10 +47,10 @@ std::tuple<uint16_t, EffectFactory<T>, Mirror> LayoutCatalog::randomEntry(
     uint16_t randomEffectValue = random16(totalEffectWeight);
 
     //Find effect that matches the randomEffectValue
-    for (auto const &[effectFactory, effectWeight]: effects) {
+    for (const auto &[effectFactory, effectWeight]: effects) {
         // We found a matching effect
         if (randomEffectValue < effectWeight) {
-            std::map<Mirror, uint8_t> effectMirrors = effectMirrorSelector(effectFactory);
+            std::map<Mirror, uint8_t> effectMirrors = effectMirrorSelector(*effectFactory);
 
             // For the selected effect, calculate the associated mirror weights
             uint16_t totalMirrorWeight = 0;
@@ -65,7 +64,7 @@ std::tuple<uint16_t, EffectFactory<T>, Mirror> LayoutCatalog::randomEntry(
             for (const auto &[mirror, mirrorWeight]: effectMirrors) {
                 // We found a matching effect, return layout index, effect and mirror
                 if (randomMirrorValue < mirrorWeight) {
-                    return {randomLayoutIndex, effectFactory, mirror};
+                    return RandomEffect<T>(randomLayoutIndex, *effectFactory, mirror);
                 }
 
                 randomMirrorValue -= mirrorWeight;
@@ -78,7 +77,7 @@ std::tuple<uint16_t, EffectFactory<T>, Mirror> LayoutCatalog::randomEntry(
                 Serial.print(" for layout ");
                 Serial.println(layoutName(randomLayoutIndex));
             }
-            return {randomLayoutIndex, effectFactory, Mirror::NONE};
+            return {randomLayoutIndex, *effectFactory, Mirror::NONE};
         }
 
         randomEffectValue -= effectWeight;
@@ -92,29 +91,17 @@ std::tuple<uint16_t, EffectFactory<T>, Mirror> LayoutCatalog::randomEntry(
         Serial.println(layoutName(randomLayoutIndex));
     }
 
-    return defaultValue;
+    return RandomEffect<T>{0, defaultValue, Mirror::NONE};
 }
 
-std::tuple<uint16_t, EffectFactory<CRGB>, Mirror> LayoutCatalog::randomEffect() const {
-    return randomEntry(
-        EFFECT_ENTRY,
-        _effects,
-        std::tuple<uint16_t, EffectFactory<CRGB>, Mirror>{0, NoEffect::factory, Mirror::NONE}
-    );
+RandomEffect<CRGB> LayoutCatalog::randomEffect() const {
+    return randomEntry(_effects, NoEffect::factory);
 }
 
-std::tuple<uint16_t, EffectFactory<uint8_t>, Mirror> LayoutCatalog::randomTransition() const {
-    return randomEntry(
-        TRANSITION_ENTRY,
-        _transitions,
-        std::tuple<uint16_t, EffectFactory<uint8_t>, Mirror>{0, NoTransition::factory, Mirror::NONE}
-    );
+RandomEffect<uint8_t> LayoutCatalog::randomTransition() const {
+    return randomEntry(_transitions, NoTransition::factory);
 }
 
-std::tuple<uint16_t, EffectFactory<CRGB>, Mirror> LayoutCatalog::randomOverlay() const {
-    return randomEntry(
-        OVERLAY_ENTRY,
-        _overlays,
-        std::tuple<uint16_t, EffectFactory<CRGB>, Mirror>{0, NoOverlay::factory, Mirror::NONE}
-    );
+RandomEffect<CRGB> LayoutCatalog::randomOverlay() const {
+    return randomEntry(_overlays, NoOverlay::factory);
 }

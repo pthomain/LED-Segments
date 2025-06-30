@@ -23,6 +23,7 @@
 #define EFFECTS_H
 
 #include <memory>
+#include "BaseEffect.h"
 #include "EffectContext.h"
 #include "functional"
 #include "engine/effect/EffectType.h"
@@ -31,43 +32,19 @@ constexpr uint8_t MIN_CYCLE_SPEED = 5;
 constexpr uint8_t MAX_CYCLE_SPEED = 15;
 constexpr uint8_t PALETTE_SIZE = 16;
 
-template<typename C>
-class BaseEffect {
-
-    void fillArray(
-        C *effectArray,
-        uint16_t effectArraySize,
-        uint16_t segmentIndex,
-        float progress
-    );
-
-    virtual void fillArrayInternal(
+template<typename Child, typename C>
+class Effect : public BaseEffect<C> {
+protected:
+    void fillArrayInternal(
         C *effectArray,
         uint16_t effectArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeInMillis
-    ) = 0;
-
-};
-
-template<typename Child, typename C>
-class Effect : BaseEffect<C> {
-    unsigned long start = 0L;
-    bool isFirstFrame = true;
-
-protected:
-    uint8_t randomStart;
-    uint16_t frameIndex = 0;
+    ) override;
 
 public :
-    static constexpr const char *_name = Child::name();
-    static constexpr EffectType _type = Child::type();
-
-    const EffectContext context;
-
-    explicit Effect(EffectContext effectContext) : context(std::move(effectContext)),
-                                                   randomStart(random8()) {
+    explicit Effect(const EffectContext &effectContext) : BaseEffect<C>(effectContext) {
         static_assert(
             std::is_same<decltype(Child::name()), const char *>::value,
             "Child class must implement static constexpr const char* name()"
@@ -79,35 +56,24 @@ public :
         );
     };
 
-    virtual String name() const = 0;
+    const char *effectName() override {
+        return name();
+    }
 
-    virtual EffectType type() const = 0;
+    EffectType effectType() override {
+        return type();
+    }
 
-    virtual ~Effect() = default;
+    static const char *name() {
+        return Child::name();
+    }
 
-    template<typename E>
-    class Factory {
-    public:
-        static std::unique_ptr<Effect> createEffect(const EffectContext &context) {
-            return std::make_unique<E>(context);
-        }
-    };
+    static EffectType type() {
+        return Child::type();
+    }
 };
 
 template<typename E, typename C>
 using EffectAndName = std::pair<std::unique_ptr<Effect<E, C> >, const char *>;
-
-template<typename C>
-class EffectFactory {
-public:
-    virtual std::pair<std::unique_ptr<BaseEffect<C> >, const char *> create(const EffectContext &context) = 0;
-    virtual ~EffectFactory() = default;
-};
-
-template<typename E, typename C>
-using WeightedEffects = std::vector<std::pair<EffectFactory<E, C>, uint8_t> >;
-
-template<typename E, typename C>
-static const WeightedEffects<E, C> NO_EFFECTS = {};
 
 #endif //EFFECTS_H

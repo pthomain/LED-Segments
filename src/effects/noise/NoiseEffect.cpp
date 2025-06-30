@@ -22,11 +22,8 @@
 #include <functional>
 #include "engine/utils/Utils.h"
 
-EffectFactory<CRGB> NoiseEffect::factory = [](
-    const EffectContext &effectContext
-) -> std::unique_ptr<Effect> {
-    return std::make_unique<NoiseEffect>(effectContext);
-};
+static const NoiseEffectFactory factoryInstance;
+const EffectFactory<CRGB> &NoiseEffect::factory = factoryInstance;
 
 void NoiseEffect::fillArrayInternal(
     CRGB *effectArray,

@@ -22,11 +22,8 @@
 #include "crgb.h"
 #include "engine/utils/Utils.h"
 
-EffectFactory<CRGB> DashOverlay::factory = [](
-    const EffectContext &effectContext
-) -> std::unique_ptr<Effect> {
-    return std::make_unique<DashOverlay>(effectContext);
-};
+static const DashOverlayFactory factoryInstance;
+const EffectFactory<CRGB> &DashOverlay::factory = factoryInstance;
 
 void DashOverlay::fillArrayInternal(
     CRGB *effectArray,

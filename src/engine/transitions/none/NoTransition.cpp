@@ -20,11 +20,8 @@
 
 #include "NoTransition.h"
 
-EffectFactory<uint8_t> NoTransition::factory = [](
-    const EffectContext &effectContext
-) -> std::unique_ptr<Effect> {
-    return std::make_unique<NoTransition>(effectContext);
-};
+static const NoTransitionFactory factoryInstance;
+const EffectFactory<uint8_t> &NoTransition::factory = factoryInstance;
 
 void NoTransition::fillArrayInternal(
     uint8_t *effectArray,

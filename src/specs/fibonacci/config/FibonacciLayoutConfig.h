@@ -161,31 +161,30 @@ static std::vector<uint16_t> computeVariations() {
     return variations;
 }
 
-static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > fibonacciEffectSelector(uint16_t layoutIndex) {
+static EffectAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutIndex) {
     return {
         {
-            {GradientEffect::factory, 1},
-            {SwirlEffect::factory, 1},
-            {NoiseEffect::factory, 1},
-            {SlideEffect::factory, 1}
+            {&GradientEffect::factory, 1},
+            {&SwirlEffect::factory, 1},
+            {&NoiseEffect::factory, 1},
+            {&SlideEffect::factory, 1}
         },
         allCRGBMirrors
     };
 }
 
-static std::pair<WeightedEffects<CRGB>, MirrorSelector<CRGB> > fibonacciOverlaySelector(uint16_t layoutIndex) {
+static EffectAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutIndex) {
     return {
         {
-            {MoireOverlay::factory, 1},
-            {ChaseOverlay::factory, 1},
-            {DashOverlay::factory, 1},
+            {&MoireOverlay::factory, 1},
+            {&ChaseOverlay::factory, 1},
+            {&DashOverlay::factory, 1},
         },
         allCRGBMirrors
     };
 }
 
-static std::pair<WeightedEffects<uint8_t>, MirrorSelector<uint8_t> >
-fibonacciTransitionSelector(uint16_t layoutIndex) {
+static EffectAndMirrors<uint8_t> fibonacciTransitionSelector(uint16_t layoutIndex) {
     return ALL_TRANSITIONS;
 }
 

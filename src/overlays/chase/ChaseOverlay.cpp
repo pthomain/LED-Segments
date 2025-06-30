@@ -22,11 +22,8 @@
 #include "crgb.h"
 #include "engine/utils/Utils.h"
 
-EffectFactory<CRGB> ChaseOverlay::factory = [](
-    const EffectContext &effectContext
-) -> std::unique_ptr<Effect> {
-    return std::make_unique<ChaseOverlay>(effectContext);
-};
+static const ChaseOverlayFactory factoryInstance;
+const EffectFactory<CRGB> &ChaseOverlay::factory = factoryInstance;
 
 void ChaseOverlay::fillArrayInternal(
     CRGB *effectArray,

@@ -23,7 +23,7 @@
 
 #include "engine/effect/Effect.h"
 
-class NoiseEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<NoiseEffect> {
+class NoiseEffect : public Effect<NoiseEffect, CRGB> {
 protected:
     const uint8_t noiseScale = random8(10, 20);
     const uint8_t paletteScale = random8(2, 6);
@@ -41,10 +41,21 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Noise"; }
-    EffectType type() const override { return EffectType::EFFECT; }
+    static constexpr const char *name() { return "NoiseEffect"; }
+    static constexpr EffectType type() { return EffectType::EFFECT; }
 
-    static EffectFactory<CRGB> factory;
+    static const EffectFactory<CRGB> &factory;
+};
+
+class NoiseEffectFactory : public EffectFactory<CRGB> {
+public:
+    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
+        return std::make_unique<NoiseEffect>(context);
+    }
+
+    const char *name() const override {
+        return NoiseEffect::name();
+    }
 };
 
 #endif //LED_SEGMENTS_NOISEEFFECT_H

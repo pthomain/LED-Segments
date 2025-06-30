@@ -24,8 +24,7 @@
 #include "engine/effect/Effect.h"
 #include "engine/utils/Utils.h"
 
-class SwirlEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<SwirlEffect> {
-
+class SwirlEffect : public Effect<SwirlEffect, CRGB> {
     bool isReversed = probability(0.5f);
 
 public:
@@ -40,10 +39,21 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Swirl"; }
-    EffectType type() const override { return EffectType::EFFECT; }
+    static constexpr const char* name() { return "SwirlEffect"; }
+    static constexpr EffectType type() { return EffectType::EFFECT; }
 
-    static EffectFactory<CRGB> factory;
+    static const EffectFactory<CRGB>& factory;
+};
+
+class SwirlEffectFactory : public EffectFactory<CRGB> {
+public:
+    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
+        return std::make_unique<SwirlEffect>(context);
+    }
+
+    const char *name() const override {
+        return SwirlEffect::name();
+    }
 };
 
 #endif //LED_SEGMENTS_SWIRLEFFECT_H

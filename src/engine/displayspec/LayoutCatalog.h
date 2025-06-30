@@ -31,13 +31,15 @@
 #include "engine/utils/Utils.h"
 
 static const String UNKNOWN = "UNKNOWN";
-static const String EFFECT_ENTRY = "effect";
-static const String OVERLAY_ENTRY = "overlay";
-static const String MIRROR_ENTRY = "mirror";
-static const String TRANSITION_ENTRY = "transition";
 
-template<typename E, typename C>
-using EffectSelector = std::function<std::pair<WeightedEffects<E, C>, MirrorSelector<E, C> >(uint16_t layoutIndex)>;
+template<typename C>
+using EffectAndMirrors = std::pair<WeightedEffects<C>, MirrorSelector<C> >;
+
+template<typename C>
+using EffectSelector = std::function<EffectAndMirrors<C>(uint16_t layoutIndex)>;
+
+template<typename C>
+using RandomEffect = std::tuple<uint16_t, const EffectFactory<C> &, Mirror>;
 
 class LayoutCatalog {
     const std::vector<uint16_t> _uniqueLayouts;
@@ -47,11 +49,10 @@ class LayoutCatalog {
     const EffectSelector<CRGB> _overlays;
     const EffectSelector<uint8_t> _transitions;
 
-    template<typename E, typename T>
-    std::tuple<uint16_t, EffectFactory<T>, Mirror> randomEntry(
-        const String &entryType,
-        const EffectSelector<E, T> &effectSelector,
-        const std::tuple<uint16_t, EffectFactory<T>, Mirror> &defaultValue
+    template<typename T>
+    RandomEffect<T> randomEntry(
+        const EffectSelector<T> &effectSelector,
+        const EffectFactory<T> &defaultValue
     ) const;
 
     template<typename T>
@@ -89,11 +90,11 @@ public:
         return _layoutNames.at(layoutIndex);
     }
 
-    std::tuple<uint16_t, EffectFactory<CRGB>, Mirror> randomEffect() const;
+    RandomEffect<CRGB> randomEffect() const;
 
-    std::tuple<uint16_t, EffectFactory<CRGB>, Mirror> randomOverlay() const;
+    RandomEffect<CRGB> randomOverlay() const;
 
-    std::tuple<uint16_t, EffectFactory<uint8_t>, Mirror> randomTransition() const;
+    RandomEffect<uint8_t> randomTransition() const;
 
     virtual ~LayoutCatalog() = default;
 };

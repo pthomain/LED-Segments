@@ -24,7 +24,7 @@
 #include "engine/effect/Effect.h"
 #include "engine/utils/Utils.h"
 
-class MoireOverlay : public Effect<CRGB>, public Effect<CRGB>::Factory<MoireOverlay> {
+class MoireOverlay : public Effect<MoireOverlay, CRGB> {
 
     const bool isInverted = probability(0.5f);
     const bool isReversed = probability(0.5f);
@@ -54,15 +54,30 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "Moiré"; }
-    EffectType type() const override { return EffectType::OVERLAY_MULTIPLY; }
+    static constexpr const char *name() { return "MoireOverlay"; }
+    static constexpr EffectType type() { return EffectType::OVERLAY_MULTIPLY; }
 
-    static EffectFactory<CRGB> factory;
+    static const EffectFactory<CRGB>& factory;
 
+    // Explicitly deletes the copy constructor for the MoireOverlay class.
+    // This prevents objects of this class from being copied, which is important here
+    // because the class manages resources (dynamic arrays) that should not be shallow-copied.
+    // Attempting to copy a MoireOverlay object will result in a compile-time error.
     MoireOverlay(const MoireOverlay &) = delete;
 
-    ~MoireOverlay() override {
+    ~MoireOverlay() {
         delete[] headPositionForSegment;
+    }
+};
+
+class MoireOverlayFactory : public EffectFactory<CRGB> {
+public:
+    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
+        return std::make_unique<MoireOverlay>(context);
+    }
+
+    const char *name() const override {
+        return MoireOverlay::name();
     }
 };
 

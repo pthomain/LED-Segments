@@ -23,7 +23,7 @@
 
 #include "engine/effect/Effect.h"
 
-class NoEffect : public Effect<CRGB>, public Effect<CRGB>::Factory<NoEffect> {
+class NoEffect : public Effect<NoEffect, CRGB> {
 public:
     explicit NoEffect(const EffectContext &effectContext) : Effect(effectContext) {
     }
@@ -36,10 +36,21 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    String name() const override { return "None"; }
-    EffectType type() const override { return EffectType::EFFECT; }
+    static constexpr const char *name() { return "NoEffect"; }
+    static constexpr EffectType type() { return EffectType::EFFECT; }
 
-    static EffectFactory<CRGB> factory;
+    static const EffectFactory<CRGB> &factory;
+};
+
+class NoEffectFactory : public EffectFactory<CRGB> {
+public:
+    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
+        return std::make_unique<NoEffect>(context);
+    }
+
+    const char *name() const override {
+        return NoEffect::name();
+    }
 };
 
 #endif //NOEFFECT_H

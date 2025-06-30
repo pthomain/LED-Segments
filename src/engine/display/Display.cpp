@@ -77,15 +77,15 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
         Serial.println(palette.name);
 
         Serial.print("Effect\t\t\t");
-        Serial.println(effect->name());
+        Serial.println(effectFactory.name());
         Serial.print("Effect mirror\t\t");
         Serial.println(getMirrorName(effectMirror));
         Serial.print("Overlay\t\t\t");
-        Serial.println(overlay->name());
+        Serial.println(overlayFactory.name());
         Serial.print("Overlay layout\t\t");
         Serial.println(catalog.layoutName(overlayLayoutIndex));
         Serial.print("Transition\t\t");
-        Serial.println(transition->name());
+        Serial.println(transitionFactory.name());
 
         Serial.print("Transition layout\t");
         Serial.println(catalog.layoutName(transitionLayoutIndex));
@@ -94,11 +94,10 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
         Serial.println("---");
     }
 
-
     const uint16_t effectDurationInFrames = effectDurationsInSecs * fps;
     auto transitionDurationInFrames = fps * transitionDurationInMillis / 1000;
 
-    EffectContext effectContext(
+    const auto effectContext = EffectContext(
         displaySpec->maxSegmentSize(),
         displaySpec->nbSegments(effectLayoutIndex),
         effectDurationInFrames,
@@ -108,7 +107,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
         effectMirror
     );
 
-    EffectContext overlayContext(
+    const auto overlayContext = EffectContext(
         displaySpec->maxSegmentSize(),
         displaySpec->nbSegments(overlayLayoutIndex),
         effectDurationInFrames,
@@ -118,7 +117,7 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
         overlayMirror
     );
 
-    EffectContext transitionContext(
+    const auto transitionContext = EffectContext(
         displaySpec->maxSegmentSize(),
         displaySpec->nbSegments(transitionLayoutIndex),
         transitionDurationInFrames,
@@ -128,9 +127,9 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
         transitionMirror
     );
 
-    auto effect = effectFactory(effectContext);
-    auto overlay = overlayFactory(overlayContext);
-    auto transition = transitionFactory(transitionContext);
+    auto effect = effectFactory.create(effectContext);
+    auto overlay = overlayFactory.create(overlayContext);
+    auto transition = transitionFactory.create(transitionContext);
 
     renderer->changeEffect(std::move(effect), std::move(overlay), std::move(transition));
 

@@ -31,7 +31,5 @@ void FadeTransition::fillArrayInternal(
     unsigned long timeElapsedInMillis
 ) {
     auto alpha = static_cast<uint8_t>(255.0f * progress);
-    for (uint16_t i = 0; i < effectArraySize; i++) {
-        effectArray[i] = alpha;
-    }
+    memset(effectArray, alpha, effectArraySize * sizeof(CRGB));
 }

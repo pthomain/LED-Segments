@@ -41,7 +41,6 @@ public:
 
     static constexpr const char *name() { return "GradientEffect"; }
     static constexpr EffectType type() { return EffectType::EFFECT; }
-
     static const EffectFactory<CRGB>& factory;
 };
 

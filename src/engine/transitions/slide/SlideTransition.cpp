@@ -31,7 +31,6 @@ void SlideTransition::fillArrayInternal(
     unsigned long timeElapsedInMillis
 ) {
     uint16_t limit = constrain(round((float) effectArraySize * progress), 0, effectArraySize);
-    for (uint16_t i = 0; i < effectArraySize; i++) {
-        effectArray[i] = i < limit ? 255 : 0;
-    }
+    memset(effectArray, CRGB::White, limit * sizeof(CRGB));
+    memset(effectArray + limit, CRGB::Black, (effectArraySize - limit) * sizeof(CRGB));
 }

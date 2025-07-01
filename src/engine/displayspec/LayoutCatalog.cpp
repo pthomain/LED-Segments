@@ -67,30 +67,17 @@ RandomEffect<T> LayoutCatalog::randomEntry(
                     return RandomEffect<T>(randomLayoutIndex, *effectFactory, mirror);
                 }
 
-                randomMirrorValue -= mirrorWeight;
+                randomMirrorValue -= min(randomMirrorValue, mirrorWeight);
             }
 
             // If no mirror was found, return the default value
-            if constexpr (IS_DEBUG) {
-                Serial.print("Could not find a valid mirror with value ");
-                Serial.print(randomMirrorValue);
-                Serial.print(" for layout ");
-                Serial.println(layoutName(randomLayoutIndex));
-            }
             return {randomLayoutIndex, *effectFactory, Mirror::NONE};
         }
 
-        randomEffectValue -= effectWeight;
+        randomEffectValue -= min(randomEffectValue, effectWeight);
     }
 
     // If no effect was found, return the default value
-    if constexpr (IS_DEBUG) {
-        Serial.print("Could not find a valid effect with value ");
-        Serial.print(randomEffectValue);
-        Serial.print(" for layout ");
-        Serial.println(layoutName(randomLayoutIndex));
-    }
-
     return RandomEffect<T>{0, defaultValue, Mirror::NONE};
 }
 

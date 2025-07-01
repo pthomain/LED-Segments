@@ -39,7 +39,6 @@ public:
 
     static constexpr const char *name() { return "NoOverlay"; }
     static constexpr EffectType type() { return EffectType::OVERLAY_SOURCE; }
-
     static const EffectFactory<CRGB>& factory;
 };
 

@@ -61,10 +61,8 @@ public:
         memset(nbSparksForSegment, 0, sizeof(uint8_t) * context.nbSegments);
 
         for (int i = 0; i < context.nbSegments; i++) {
-            for (int j = 0; j < context.maxSegmentSize; j++) {
-                forward[i].push_back(false);
-                backward[i].push_back(false);
-            }
+            forward[i].resize(context.maxSegmentSize, false);
+            backward[i].resize(context.maxSegmentSize, false);
         }
     }
 
@@ -76,17 +74,16 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    static constexpr const char *name() { return "ChaseOverlay"; }
-    static constexpr EffectType type() { return EffectType::OVERLAY_MULTIPLY; }
-
-    ~ChaseOverlay() {
+    ~ChaseOverlay() override {
         delete[] sparkIntervalCounterPerSegment;
         delete[] nbSparksForSegment;
         delete[] tempForward;
         delete[] tempBackward;
     }
 
-    static const EffectFactory<CRGB>& factory;
+    static constexpr const char *name() { return "ChaseOverlay"; }
+    static constexpr EffectType type() { return EffectType::OVERLAY_MULTIPLY; }
+    static const EffectFactory<CRGB> &factory;
 };
 
 class ChaseOverlayFactory : public EffectFactory<CRGB> {

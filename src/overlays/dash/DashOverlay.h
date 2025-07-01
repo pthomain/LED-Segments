@@ -49,16 +49,15 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    static constexpr const char *name() { return "DashOverlay"; }
-    static constexpr EffectType type() { return EffectType::OVERLAY_MULTIPLY; }
-
-    static const EffectFactory<CRGB>& factory;
-
-    ~DashOverlay() {
+    ~DashOverlay() override {
         delete[] headPositionForSegment;
         delete[] tailPositionForSegment;
         delete[] isReversedForSegment;
     }
+
+    static constexpr const char *name() { return "DashOverlay"; }
+    static constexpr EffectType type() { return EffectType::OVERLAY_MULTIPLY; }
+    static const EffectFactory<CRGB>& factory;
 };
 
 class DashOverlayFactory : public EffectFactory<CRGB> {

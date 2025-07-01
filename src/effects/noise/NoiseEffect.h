@@ -43,7 +43,6 @@ public:
 
     static constexpr const char *name() { return "NoiseEffect"; }
     static constexpr EffectType type() { return EffectType::EFFECT; }
-
     static const EffectFactory<CRGB> &factory;
 };
 

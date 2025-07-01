@@ -31,21 +31,40 @@ void SlideEffect::fillArrayInternal(
     float progress,
     unsigned long timeInMillis
 ) {
-    const auto bottomColourIndex = bottomColourIndexForSegment[segmentIndex];
-    const auto topColourIndex = (bottomColourIndex + 1) % nbColours;
     const auto headPosition = headPositionForSegment[segmentIndex];
 
-    auto topColourStart = CHSV(start + topColourIndex * (255 / nbColours), 255, 255);
-    auto topColourEnd = CHSV(start + 127 + topColourIndex * (255 / nbColours), 255, 255);
+    const uint8_t bottomColourIndex = segmentIndex % nbColours;
+    const uint8_t topColourIndex = (bottomColourIndex + 1) % nbColours;
 
-    auto bottomColourStart = CHSV(start + bottomColourIndex * (255 / nbColours), 255, 255);
-    auto bottomColourEnd = CHSV(start + 127 + bottomColourIndex * (255 / nbColours), 255, 255);
+    const auto bottomColour = colourIndexForSegment[bottomColourIndex];
+    const auto topColour = colourIndexForSegment[topColourIndex];
 
-    fill_gradient(effectArray, 0, bottomColourStart, effectArraySize - 1, bottomColourEnd, TGradientDirectionCode::SHORTEST_HUES);
-    fill_gradient(effectArray, 0, topColourStart, headPosition, topColourEnd, TGradientDirectionCode::SHORTEST_HUES);
+    auto topColourStart = CHSV(start + topColour * (255 / nbColours), 255, 255);
+    auto topColourEnd = CHSV(start + 127 + topColour * (255 / nbColours), 255, 255);
+
+    auto bottomColourStart = CHSV(start + bottomColour * (255 / nbColours), 255, 255);
+    auto bottomColourEnd = CHSV(start + 127 + bottomColour * (255 / nbColours), 255, 255);
+
+    fill_gradient(
+        effectArray,
+        0,
+        bottomColourStart,
+        effectArraySize - 1,
+        bottomColourEnd,
+        SHORTEST_HUES
+    );
+
+    fill_gradient(
+        effectArray,
+        0,
+        topColourStart,
+        headPosition,
+        topColourEnd,
+        SHORTEST_HUES
+    );
 
     if (headPosition == effectArraySize - 1) {
-        bottomColourIndexForSegment[segmentIndex] = topColourIndex;
+        colourIndexForSegment[bottomColourIndex] = topColour;
         headPositionForSegment[segmentIndex] = 0;
     } else {
         headPositionForSegment[segmentIndex] = (timeInMillis / 50) % effectArraySize;

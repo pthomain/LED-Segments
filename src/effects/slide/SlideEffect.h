@@ -28,16 +28,16 @@ class SlideEffect : public Effect<SlideEffect, CRGB> {
     const uint8_t step = 255 / nbColours;
     const uint8_t start = random8();
 
-    uint8_t *bottomColourIndexForSegment;
+    uint8_t *colourIndexForSegment;
     uint16_t *headPositionForSegment;
 
 public:
     explicit SlideEffect(const EffectContext &effectContext)
         : Effect(effectContext),
-          bottomColourIndexForSegment(new uint8_t[nbColours]),
+          colourIndexForSegment(new uint8_t[nbColours]),
           headPositionForSegment(new uint16_t[context.nbSegments]) {
+        memset(colourIndexForSegment, 0, nbColours * sizeof(uint8_t));
         memset(headPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
-        memset(bottomColourIndexForSegment, 0, context.nbSegments * sizeof(uint8_t));
     }
 
     void fillArrayInternal(
@@ -48,15 +48,14 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    ~SlideEffect() {
-        delete[] bottomColourIndexForSegment;
+    ~SlideEffect() override {
+        delete[] colourIndexForSegment;
         delete[] headPositionForSegment;
     }
 
     static constexpr const char *name() { return "SlideEffect"; }
     static constexpr EffectType type() { return EffectType::EFFECT; }
-
-    static const EffectFactory<CRGB>& factory;
+    static const EffectFactory<CRGB> &factory;
 };
 
 class SlideEffectFactory : public EffectFactory<CRGB> {

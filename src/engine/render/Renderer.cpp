@@ -22,6 +22,16 @@
 #include "engine/effect/BaseEffect.h"
 #include "engine/utils/Utils.h"
 
+Renderer::Renderer(
+    const std::shared_ptr<DisplaySpec> &displaySpec,
+    CRGB *outputArray
+) : displaySpec(displaySpec),
+    outputArray(outputArray) {
+    segmentArray = new CRGB[displaySpec->maxSegmentSize()]();
+    segmentArray8 = new uint8_t[displaySpec->maxSegmentSize()]();
+    pendingOutputArray = new CRGB[displaySpec->nbLeds()]();
+}
+
 template
 void Renderer::applyEffectOrTransition(
     const std::shared_ptr<BaseEffect<CRGB> > &effect,
@@ -88,16 +98,6 @@ void Renderer::applyEffectOrTransition(
             );
         }
     }
-}
-
-Renderer::Renderer(
-    const std::shared_ptr<DisplaySpec> &displaySpec,
-    CRGB *outputArray
-) : displaySpec(displaySpec),
-    outputArray(outputArray) {
-    segmentArray = new CRGB[displaySpec->maxSegmentSize()]();
-    segmentArray8 = new uint8_t[displaySpec->maxSegmentSize()]();
-    pendingOutputArray = new CRGB[displaySpec->nbLeds()]();
 }
 
 Renderer::~Renderer() {

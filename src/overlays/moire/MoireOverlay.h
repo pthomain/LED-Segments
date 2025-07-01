@@ -54,20 +54,20 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    static constexpr const char *name() { return "MoireOverlay"; }
-    static constexpr EffectType type() { return EffectType::OVERLAY_MULTIPLY; }
-
-    static const EffectFactory<CRGB>& factory;
-
     // Explicitly deletes the copy constructor for the MoireOverlay class.
     // This prevents objects of this class from being copied, which is important here
     // because the class manages resources (dynamic arrays) that should not be shallow-copied.
     // Attempting to copy a MoireOverlay object will result in a compile-time error.
     MoireOverlay(const MoireOverlay &) = delete;
 
-    ~MoireOverlay() {
+    ~MoireOverlay() override {
         delete[] headPositionForSegment;
+        delete[] reverseArray;
     }
+
+    static constexpr const char *name() { return "MoireOverlay"; }
+    static constexpr EffectType type() { return EffectType::OVERLAY_MULTIPLY; }
+    static const EffectFactory<CRGB>& factory;
 };
 
 class MoireOverlayFactory : public EffectFactory<CRGB> {

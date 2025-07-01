@@ -31,7 +31,5 @@ void NoOverlay::fillArrayInternal(
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    for (uint16_t i = 0; i < effectArraySize; i++) {
-        effectArray[i] = CRGB::White;
-    }
+    if (isFirstFrame) memset(effectArray, CRGB::White, effectArraySize * sizeof(CRGB));
 };

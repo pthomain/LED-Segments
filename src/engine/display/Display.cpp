@@ -24,11 +24,6 @@
 #include "engine/overlay/none/NoOverlay.h"
 #include "engine/utils/Utils.h"
 #include "engine/utils/seed/SeedGenerator.h"
-#include "engine/transitions/fade/FadeTransition.h"
-#include "engine/transitions/slide/SlideTransition.h"
-#include "engine/utils/MemoryFree.h"
-#include "overlays/chase/ChaseOverlay.h"
-#include "overlays/sparkle/SparkleOverlay.h"
 
 #define FASTLED_USE_PROGMEM 1
 #define ENTROPY_UPDATE_IN_SECONDS 5
@@ -61,32 +56,34 @@ Display::Display(
 }
 
 void Display::changeEffect(uint8_t effectDurationsInSecs) {
-    Serial.println(freeMemoryXiao());
+    const auto &catalog = displaySpec->catalog();
+    const Palette &palette = probability(chanceOfRainbow) ? rainbowPalette : PALETTES[random8(PALETTES.size())];
 
-    const auto catalog = displaySpec->catalog();
-    const Palette palette = probability(chanceOfRainbow) ? rainbowPalette : PALETTES[random8(PALETTES.size())];
-
-    const auto [effectLayoutIndex, effectFactory, effectMirror] = catalog.randomEffect();
-    const auto [transitionLayoutIndex, transitionFactory, transitionMirror] = catalog.randomTransition();
-    const auto [overlayLayoutIndex, overlayFactory, overlayMirror] = catalog.randomOverlay();
+    const auto &[effectLayoutIndex, effectFactory, effectMirror] = catalog.randomEffect();
+    const auto &[transitionLayoutIndex, transitionFactory, transitionMirror] = catalog.randomTransition();
+    const auto &[overlayLayoutIndex, overlayFactory, overlayMirror] = catalog.randomOverlay();
 
     if constexpr (IS_DEBUG) {
-        Serial.print("Layout\t\t\t");
-        Serial.println(catalog.layoutName(effectLayoutIndex));
+        Serial.println("---");
         Serial.print("Palette\t\t\t");
         Serial.println(palette.name);
-
+        Serial.println("-");
         Serial.print("Effect\t\t\t");
         Serial.println(effectFactory.name());
+        Serial.print("Effect layout\t\t");
+        Serial.println(catalog.layoutName(effectLayoutIndex));
         Serial.print("Effect mirror\t\t");
         Serial.println(getMirrorName(effectMirror));
+        Serial.println("-");
         Serial.print("Overlay\t\t\t");
         Serial.println(overlayFactory.name());
         Serial.print("Overlay layout\t\t");
         Serial.println(catalog.layoutName(overlayLayoutIndex));
+        Serial.print("Overlay mirror\t\t");
+        Serial.println(getMirrorName(overlayMirror));
+        Serial.println("-");
         Serial.print("Transition\t\t");
         Serial.println(transitionFactory.name());
-
         Serial.print("Transition layout\t");
         Serial.println(catalog.layoutName(transitionLayoutIndex));
         Serial.print("Transition mirror\t");

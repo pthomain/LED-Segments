@@ -40,7 +40,6 @@ public:
 
     static constexpr const char *name() { return "SparkleOverlay"; }
     static constexpr EffectType type() { return EffectType::OVERLAY_MULTIPLY; }
-
     static const EffectFactory<CRGB>& factory;
 };
 

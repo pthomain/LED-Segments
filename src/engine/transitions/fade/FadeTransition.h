@@ -37,7 +37,6 @@ public:
 
     static constexpr const char *name() { return "FadeTransition"; }
     static constexpr EffectType type() { return EffectType::TRANSITION; }
-
     static const EffectFactory<uint8_t>& factory;
 };
 

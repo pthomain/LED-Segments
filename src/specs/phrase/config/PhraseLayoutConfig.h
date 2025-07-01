@@ -47,7 +47,7 @@ enum PhraseLayout {
     LEDS_IN_WHOLE
 };
 
-static const std::vector<uint16_t> phraseLayouts = std::vector<uint16_t>{
+static const auto phraseLayouts = std::set<uint16_t>{
     LEDS_IN_LETTERS,
 
     LETTERS_IN_WORDS,
@@ -85,14 +85,19 @@ static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutIndex) {
         case LEDS_IN_WORDS:
         case LEDS_IN_WHOLE:
         case LETTERS_IN_WHOLE:
-            return {
+            return EffectAndMirrors<CRGB>{
                 {
                     {&MoireOverlay::factory, 1},
                     {&ChaseOverlay::factory, 1},
                     {&DashOverlay::factory, 1},
                     {&NoOverlay::factory, 5},
                 },
-                allCRGBMirrors
+                [](const EffectFactory<CRGB> &overlayFactory) {
+                    if (overlayFactory.name() == "ChaseOverlay" || overlayFactory.name() == "MoireOverlay") {
+                        return WeightedMirrors{}; //No mirrors for these overlays
+                    }
+                    return allCRGBMirrors(overlayFactory);
+                }
             };
 
         default: return {};

@@ -38,7 +38,7 @@ enum UmbrellaLayout {
     SPOKES_IN_WHOLE
 };
 
-static const std::vector<uint16_t> umbrellaLayouts = {
+static const std::set<uint16_t> umbrellaLayouts = {
     LEDS_IN_SPOKE,
     SPOKES_IN_WHOLE
 };

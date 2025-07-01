@@ -62,10 +62,6 @@ void Renderer::applyEffectOrTransition(
     auto layoutIndex = context.layoutIndex;
     auto mirror = context.mirror;
 
-    if (effect->effectName() == "ChaseOverlay" || effect->effectName() == "MoireOverlay") {
-        mirror = Mirror::NONE; //TODO find a better way to handle this
-    }
-
     auto nbSegments = displaySpec->nbSegments(layoutIndex);
 
     for (auto segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {

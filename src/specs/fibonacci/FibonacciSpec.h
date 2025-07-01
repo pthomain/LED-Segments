@@ -52,7 +52,9 @@ class FibonacciSpec : public DisplaySpec {
     uint8_t getLedPadding(uint8_t pixelIndex) const;
 
 public :
-    explicit FibonacciSpec() : variations(computeVariations()), DisplaySpec(fibonacciLayoutCatalog(variations)) {
+    explicit FibonacciSpec()
+        : variations(computeVariations()),
+          DisplaySpec(fibonacciLayoutCatalog(std::set<uint16_t>(variations.begin(), variations.end()))) {
     };
 
     uint16_t nbLeds() const override { return TOTAL_FIBONACCI_LEDS; }

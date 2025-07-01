@@ -188,7 +188,7 @@ static EffectAndMirrors<uint8_t> fibonacciTransitionSelector(uint16_t layoutInde
     return ALL_TRANSITIONS;
 }
 
-static LayoutCatalog fibonacciLayoutCatalog(const std::vector<uint16_t> &variations) {
+static LayoutCatalog fibonacciLayoutCatalog(const std::set<uint16_t> &variations) {
     auto names = std::map<uint16_t, String>();
     for (auto variation: variations) {
         names.insert(std::pair(variation, getLayoutName(variation)));

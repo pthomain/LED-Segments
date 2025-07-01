@@ -30,12 +30,8 @@ using WeightedMirrors = std::map<Mirror, uint8_t>;
 template<typename C>
 using MirrorSelector = std::function<WeightedMirrors(const EffectFactory<C> &effectFactory)>;
 
-inline WeightedMirrors noMirrors(const EffectFactory<CRGB> &effectFactory) {
-    return std::map<Mirror, uint8_t>{{Mirror::NONE, 1}};
-}
-
 inline WeightedMirrors unrepeatedMirrors(const EffectFactory<CRGB> &effectFactory) {
-    return std::map<Mirror, uint8_t>{
+    return {
         {Mirror::NONE, 1},
         {Mirror::REVERSE, 1},
         {Mirror::CENTRE, 1},
@@ -44,7 +40,7 @@ inline WeightedMirrors unrepeatedMirrors(const EffectFactory<CRGB> &effectFactor
 }
 
 inline WeightedMirrors allCRGBMirrors(const EffectFactory<CRGB> &effectFactory) {
-    return std::map<Mirror, uint8_t>{
+    return {
         {Mirror::NONE, 1},
         {Mirror::REVERSE, 1},
         {Mirror::CENTRE, 1},
@@ -56,7 +52,7 @@ inline WeightedMirrors allCRGBMirrors(const EffectFactory<CRGB> &effectFactory) 
 }
 
 inline WeightedMirrors allIntMirrors(const EffectFactory<uint8_t> &effectFactory) {
-    return std::map<Mirror, uint8_t>{
+    return {
         {Mirror::NONE, 1},
         {Mirror::REVERSE, 1},
         {Mirror::CENTRE, 1},

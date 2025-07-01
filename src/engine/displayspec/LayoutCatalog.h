@@ -55,22 +55,14 @@ class LayoutCatalog {
         const EffectFactory<T> &defaultValue
     ) const;
 
-    template<typename T>
-    std::vector<T> &removeDuplicates(std::vector<T> &vec) {
-        std::sort(vec.begin(), vec.end());
-        auto last = std::unique(vec.begin(), vec.end());
-        vec.erase(last, vec.end());
-        return vec;
-    }
-
 public:
     explicit LayoutCatalog(
-        std::vector<uint16_t> uniqueLayouts,
+        std::set<uint16_t> uniqueLayouts,
         std::map<uint16_t, String> layoutNames,
         EffectSelector<CRGB> effects,
         EffectSelector<CRGB> overlays,
         EffectSelector<uint8_t> transitions
-    ) : _uniqueLayouts(std::move(removeDuplicates(uniqueLayouts))),
+    ) : _uniqueLayouts(uniqueLayouts.begin(), uniqueLayouts.end()),
         _layoutNames(std::move(layoutNames)),
         _effects(std::move(effects)),
         _overlays(std::move(overlays)),

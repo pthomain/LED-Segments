@@ -31,7 +31,7 @@ uint16_t FibonacciSpec::nbSegments(const uint16_t layoutIndex) const {
 }
 
 uint16_t FibonacciSpec::segmentSize(const uint16_t layoutIndex, const uint16_t segmentIndex) const {
-    const auto variation = variations[layoutIndex];
+    const auto variation = weightedLayouts[layoutIndex].first;
     const auto pixelUnit = getPixelUnit(variation);
     const auto alignment = getAlignment(variation);
 
@@ -187,7 +187,7 @@ void FibonacciSpec::mapLeds(
     float progress,
     const std::function<void(uint16_t)> &onLedMapped
 ) const {
-    const auto variation = variations[layoutIndex];
+    const auto variation = weightedLayouts[layoutIndex].first;
     const auto inflexion = getInflexion(variation);
     uint8_t inflexionPoint;
 

@@ -125,8 +125,8 @@ static String getLayoutName(const uint16_t variation) {
     return String(pixelUnit == PIXEL ? "PIXEL" : "SEGMENT") + alignmentName + inflexionName + directionName;
 }
 
-static std::vector<uint16_t> computeVariations() {
-    auto variations = std::vector<uint16_t>();
+static std::vector<WeightedLayouts> computeLayouts() {
+    auto variations = std::vector<WeightedLayouts>();
 
     auto addVariation = [&](
         uint8_t pixelUnit,
@@ -134,15 +134,17 @@ static std::vector<uint16_t> computeVariations() {
         uint8_t alignment,
         uint8_t inflexion
     ) {
-        variations.push_back(getLayout(
+        uint16_t layoutIndex = getLayout(
             static_cast<PixelUnit>(pixelUnit),
             static_cast<Direction>(direction),
             static_cast<Alignment>(alignment),
             static_cast<Inflexion>(inflexion)
-        ));
+        );
+        variations.emplace_back(layoutIndex, 1);
+
         if constexpr (IS_DEBUG) {
             uint8_t lastIndex = variations.size() - 1;
-            Serial.println(String(lastIndex) + ": " + String(getLayoutName(variations.at(lastIndex))));
+            Serial.println(String(lastIndex) + ": " + String(getLayoutName(variations.at(lastIndex).first)));
         }
     };
 
@@ -188,13 +190,13 @@ static EffectAndMirrors<uint8_t> fibonacciTransitionSelector(uint16_t layoutInde
     return ALL_TRANSITIONS;
 }
 
-static LayoutCatalog fibonacciLayoutCatalog(const std::set<uint16_t> &variations) {
+static LayoutCatalog fibonacciLayoutCatalog(const std::vector<WeightedLayouts> &layouts) {
     auto names = std::map<uint16_t, String>();
-    for (auto variation: variations) {
-        names.insert(std::pair(variation, getLayoutName(variation)));
+    for (auto [layoutIndex, _]: layouts) {
+        names.insert(std::pair(layoutIndex, getLayoutName(layoutIndex)));
     }
     return LayoutCatalog(
-        variations,
+        layouts,
         names,
         fibonacciEffectSelector,
         fibonacciOverlaySelector,

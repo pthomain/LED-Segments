@@ -38,9 +38,9 @@ enum UmbrellaLayout {
     SPOKES_IN_WHOLE
 };
 
-static const std::set<uint16_t> umbrellaLayouts = {
-    LEDS_IN_SPOKE,
-    SPOKES_IN_WHOLE
+static const std::vector<WeightedLayouts> umbrellaLayouts = {
+    {LEDS_IN_SPOKE, 1},
+    {SPOKES_IN_WHOLE, 7}
 };
 
 static EffectAndMirrors<CRGB> umbrellaEffectSelector(uint16_t layoutIndex) {

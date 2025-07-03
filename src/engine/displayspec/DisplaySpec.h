@@ -27,7 +27,7 @@ class DisplaySpec {
     uint16_t _maxSegmentSize = 0;
 
     void calculateMaxSegmentSize() {
-        for (auto layoutIndex: _catalog.uniqueLayouts()) {
+        for (auto layoutIndex: _catalog.layouts()) {
             for (uint16_t segmentIndex = 0; segmentIndex < nbSegments(layoutIndex); segmentIndex++) {
                 _maxSegmentSize = max(_maxSegmentSize, segmentSize(layoutIndex, segmentIndex));
             }

@@ -22,7 +22,7 @@
 #define SLIDETRANSITION_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/EffectType.h"
+#include "engine/effect/EffectOperation.h"
 
 class SlideTransition : public Effect<SlideTransition, uint8_t>{
 public:
@@ -38,7 +38,7 @@ public:
     ) override;
 
     static constexpr const char *name() { return "SlideTransition"; }
-    static constexpr EffectType type() { return EffectType::TRANSITION; }
+    static constexpr EffectOperation operation() { return EffectOperation::TRANSITION; }
     static const EffectFactory<uint8_t>& factory;
 };
 

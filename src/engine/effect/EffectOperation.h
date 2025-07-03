@@ -23,11 +23,30 @@
 
 enum class EffectType {
     EFFECT,
+    OVERLAY,
+    TRANSITION
+};
+
+enum class EffectOperation {
+    EFFECT,
     OVERLAY_SOURCE,
     OVERLAY_SCREEN,
     OVERLAY_MULTIPLY,
     OVERLAY_INVERT,
     TRANSITION
 };
+
+inline String effectTypeName(EffectType effectType) {
+    switch (effectType) {
+        case EffectType::EFFECT:
+            return "EFFECT";
+        case EffectType::OVERLAY:
+            return "OVERLAY";
+        case EffectType::TRANSITION:
+            return "TRANSITION";
+        default:
+            return "UNKNOWN";
+    }
+}
 
 #endif //EFFECTTYPE_H

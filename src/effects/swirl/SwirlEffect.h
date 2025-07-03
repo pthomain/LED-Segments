@@ -40,7 +40,7 @@ public:
     ) override;
 
     static constexpr const char* name() { return "SwirlEffect"; }
-    static constexpr EffectType type() { return EffectType::EFFECT; }
+    static constexpr EffectOperation operation() { return EffectOperation::EFFECT; }
     static const EffectFactory<CRGB>& factory;
 };
 

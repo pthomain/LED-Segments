@@ -25,8 +25,6 @@
 #include "engine/displayspec/DisplaySpec.h"
 
 class FibonacciSpec : public DisplaySpec {
-    const std::vector<WeightedLayouts> weightedLayouts;
-
     void mapPixel(
         uint16_t variation,
         uint16_t segmentIndex,
@@ -52,20 +50,19 @@ class FibonacciSpec : public DisplaySpec {
     uint8_t getLedPadding(uint8_t pixelIndex) const;
 
 public :
-    explicit FibonacciSpec(): weightedLayouts(computeLayouts()),
-                              DisplaySpec(fibonacciLayoutCatalog(weightedLayouts)) {
-    };
+    explicit FibonacciSpec(): DisplaySpec(fibonacciLayoutCatalog()) {
+    }
 
     uint16_t nbLeds() const override { return TOTAL_FIBONACCI_LEDS; }
 
     bool isCircular() const override { return true; }
 
-    uint16_t nbSegments(uint16_t layoutIndex) const override;
+    uint16_t nbSegments(uint16_t layoutId) const override;
 
-    uint16_t segmentSize(uint16_t layoutIndex, uint16_t segmentIndex) const override;
+    uint16_t segmentSize(uint16_t layoutId, uint16_t segmentIndex) const override;
 
     void mapLeds(
-        uint16_t layoutIndex,
+        uint16_t layoutId,
         uint16_t segmentIndex,
         uint16_t pixelIndex,
         float progress,

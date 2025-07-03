@@ -84,7 +84,7 @@ static Inflexion getInflexion(uint8_t layout) {
     return static_cast<Inflexion>((layout & INFLEXION_MASK) >> 3);
 }
 
-static uint8_t getLayout(
+static uint8_t getLayoutId(
     PixelUnit pixelUnit,
     Direction direction,
     Alignment alignment,
@@ -125,8 +125,8 @@ static String getLayoutName(const uint16_t variation) {
     return String(pixelUnit == PIXEL ? "PIXEL" : "SEGMENT") + alignmentName + inflexionName + directionName;
 }
 
-static std::vector<WeightedLayouts> computeLayouts() {
-    auto variations = std::vector<WeightedLayouts>();
+static std::set<uint16_t> fibonacciLayoutIds() {
+    auto layoutIds = std::set<uint16_t>();
 
     auto addVariation = [&](
         uint8_t pixelUnit,
@@ -134,17 +134,17 @@ static std::vector<WeightedLayouts> computeLayouts() {
         uint8_t alignment,
         uint8_t inflexion
     ) {
-        uint16_t layoutIndex = getLayout(
+        uint16_t layoutId = getLayoutId(
             static_cast<PixelUnit>(pixelUnit),
             static_cast<Direction>(direction),
             static_cast<Alignment>(alignment),
             static_cast<Inflexion>(inflexion)
         );
-        variations.emplace_back(layoutIndex, 1);
+        layoutIds.insert(layoutId);
 
         if constexpr (IS_DEBUG) {
-            uint8_t lastIndex = variations.size() - 1;
-            Serial.println(String(lastIndex) + ": " + String(getLayoutName(variations.at(lastIndex).first)));
+            uint8_t lastIndex = layoutIds.size() - 1;
+            Serial.println(String(lastIndex) + ": " + String(getLayoutName(layoutId)));
         }
     };
 
@@ -160,10 +160,26 @@ static std::vector<WeightedLayouts> computeLayouts() {
             addVariation(SEGMENT, direction, SPIRAL, inflexion);
         }
     }
-    return variations;
+
+    return layoutIds;
 }
 
-static EffectAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutIndex) {
+static std::vector<WeightedLayout> fibonacciLayoutSelector(EffectType effectType) {
+    auto ids = fibonacciLayoutIds();
+    std::vector<WeightedLayout> result;
+    result.reserve(ids.size());
+
+    std::transform(
+        ids.begin(),
+        ids.end(),
+        std::back_inserter(result),
+        [](uint16_t id) { return WeightedLayout{id, 1}; }
+    );
+
+    return result;
+}
+
+static EffectAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutId) {
     return {
         {
             {&GradientEffect::factory, 1},
@@ -175,7 +191,7 @@ static EffectAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutIndex) {
     };
 }
 
-static EffectAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutIndex) {
+static EffectAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutId) {
     return {
         {
             {&MoireOverlay::factory, 1},
@@ -186,18 +202,21 @@ static EffectAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutIndex) {
     };
 }
 
-static EffectAndMirrors<uint8_t> fibonacciTransitionSelector(uint16_t layoutIndex) {
+static EffectAndMirrors<uint8_t> fibonacciTransitionSelector(uint16_t layoutId) {
     return ALL_TRANSITIONS;
 }
 
-static LayoutCatalog fibonacciLayoutCatalog(const std::vector<WeightedLayouts> &layouts) {
+static LayoutCatalog fibonacciLayoutCatalog() {
+    auto layoutIds = fibonacciLayoutIds();
     auto names = std::map<uint16_t, String>();
-    for (auto [layoutIndex, _]: layouts) {
-        names.insert(std::pair(layoutIndex, getLayoutName(layoutIndex)));
+    for (auto layoutId: layoutIds) {
+        names.insert(std::pair(layoutId, getLayoutName(layoutId)));
     }
+
     return LayoutCatalog(
-        layouts,
+        layoutIds,
         names,
+        fibonacciLayoutSelector,
         fibonacciEffectSelector,
         fibonacciOverlaySelector,
         fibonacciTransitionSelector

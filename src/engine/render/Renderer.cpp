@@ -59,13 +59,13 @@ void Renderer::applyEffectOrTransition(
     float progress
 ) const {
     auto context = effect->context;
-    auto layoutIndex = context.layoutIndex;
+    auto layoutId = context.layoutId;
     auto mirror = context.mirror;
 
-    auto nbSegments = displaySpec->nbSegments(layoutIndex);
+    auto nbSegments = displaySpec->nbSegments(layoutId);
 
     for (auto segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
-        auto segmentSize = displaySpec->segmentSize(layoutIndex, segmentIndex);
+        auto segmentSize = displaySpec->segmentSize(layoutId, segmentIndex);
         uint16_t mirrorSize = getMirrorSize(mirror, segmentSize);
 
         effect->fillArray(
@@ -79,7 +79,7 @@ void Renderer::applyEffectOrTransition(
 
         for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
             displaySpec->mapLeds(
-                layoutIndex,
+                layoutId,
                 segmentIndex,
                 pixelIndex,
                 progress,
@@ -108,14 +108,14 @@ bool Renderer::validateEffect(
     const std::shared_ptr<BaseEffect<uint8_t> > &transition
 ) {
     return effect && overlay && transition
-           && effect->effectType() == EffectType::EFFECT
+           && effect->effectOperation() == EffectOperation::EFFECT
            && (
-               overlay->effectType() == EffectType::OVERLAY_SOURCE
-               || overlay->effectType() == EffectType::OVERLAY_SCREEN
-               || overlay->effectType() == EffectType::OVERLAY_MULTIPLY
-               || overlay->effectType() == EffectType::OVERLAY_INVERT
+               overlay->effectOperation() == EffectOperation::OVERLAY_SOURCE
+               || overlay->effectOperation() == EffectOperation::OVERLAY_SCREEN
+               || overlay->effectOperation() == EffectOperation::OVERLAY_MULTIPLY
+               || overlay->effectOperation() == EffectOperation::OVERLAY_INVERT
            )
-           && transition->effectType() == EffectType::TRANSITION;
+           && transition->effectOperation() == EffectOperation::TRANSITION;
 }
 
 void Renderer::changeEffect(
@@ -213,9 +213,9 @@ void Renderer::flattenEffectAndOverlay(
         segmentArray,
         effectOutputArray,
         [&](uint16_t, CRGB existing, CRGB toBeMixed) {
-            switch (overlay->effectType()) {
-                case EffectType::OVERLAY_SCREEN: return screen(existing, toBeMixed);
-                case EffectType::OVERLAY_MULTIPLY: return multiply(existing, toBeMixed);
+            switch (overlay->effectOperation()) {
+                case EffectOperation::OVERLAY_SCREEN: return screen(existing, toBeMixed);
+                case EffectOperation::OVERLAY_MULTIPLY: return multiply(existing, toBeMixed);
                 default: return existing; //TODO
             }
         },

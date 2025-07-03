@@ -51,7 +51,7 @@ void SlideEffect::fillArrayInternal(
         bottomColourStart,
         effectArraySize - 1,
         bottomColourEnd,
-        SHORTEST_HUES
+        TGradientDirectionCode::SHORTEST_HUES
     );
 
     fill_gradient(
@@ -60,7 +60,7 @@ void SlideEffect::fillArrayInternal(
         topColourStart,
         headPosition,
         topColourEnd,
-        SHORTEST_HUES
+        TGradientDirectionCode::SHORTEST_HUES
     );
 
     if (headPosition == effectArraySize - 1) {

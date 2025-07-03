@@ -45,17 +45,28 @@ enum PhraseLayout {
     WORDS_IN_WHOLE
 };
 
-static const std::vector<WeightedLayouts> phraseLayouts = {
-    {LEDS_IN_LETTERS, 4},
-    {LEDS_IN_WORDS, 2},
-    {LEDS_IN_WHOLE, 1},
-    {LETTERS_IN_WORDS, 2},
-    {LETTERS_IN_WHOLE, 4},
-    {WORDS_IN_WHOLE, 3}
+static const std::set<uint16_t> phraseLayouts = {
+    LEDS_IN_LETTERS,
+    LEDS_IN_WORDS,
+    LEDS_IN_WHOLE,
+    LETTERS_IN_WORDS,
+    LETTERS_IN_WHOLE,
+    WORDS_IN_WHOLE
 };
 
-static EffectAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutIndex) {
-    switch (layoutIndex) {
+inline std::vector<WeightedLayout> phraseLayoutSelector(EffectType effectType) {
+    return {
+        {LEDS_IN_LETTERS, 4},
+        {LEDS_IN_WORDS, 2},
+        {LEDS_IN_WHOLE, 1},
+        {LETTERS_IN_WORDS, 2},
+        {LETTERS_IN_WHOLE, 4},
+        {WORDS_IN_WHOLE, 3}
+    };
+}
+
+static EffectAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutId) {
+    switch (layoutId) {
         case LEDS_IN_LETTERS:
         case LETTERS_IN_WORDS:
         case LEDS_IN_WORDS:
@@ -75,8 +86,8 @@ static EffectAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutIndex) {
     }
 };
 
-static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutIndex) {
-    switch (layoutIndex) {
+static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutId) {
+    switch (layoutId) {
         case LEDS_IN_LETTERS:
         case LEDS_IN_WORDS:
         case LEDS_IN_WHOLE:
@@ -101,8 +112,8 @@ static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutIndex) {
     }
 };
 
-static EffectAndMirrors<uint8_t> phraseTransitionSelector(uint16_t layoutIndex) {
-    switch (layoutIndex) {
+static EffectAndMirrors<uint8_t> phraseTransitionSelector(uint16_t layoutId) {
+    switch (layoutId) {
         case LEDS_IN_LETTERS:
         case LEDS_IN_WORDS:
         case LEDS_IN_WHOLE:
@@ -123,6 +134,7 @@ static LayoutCatalog phraseLayoutCatalog() {
             {LETTERS_IN_WHOLE, "LETTERS_IN_WHOLE"},
             {WORDS_IN_WHOLE, "WORDS_IN_WHOLE"},
         },
+        phraseLayoutSelector,
         phraseEffectSelector,
         phraseOverlaySelector,
         phraseTransitionSelector

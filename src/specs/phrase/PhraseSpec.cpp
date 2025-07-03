@@ -22,8 +22,8 @@
 #include "functional"
 #include "engine/utils/Utils.h"
 
-uint16_t PhraseSpec::nbSegments(const uint16_t layoutIndex) const {
-    switch (layoutIndex) {
+uint16_t PhraseSpec::nbSegments(const uint16_t layoutId) const {
+    switch (layoutId) {
         case LEDS_IN_LETTERS:
             return NB_LETTERS;
 
@@ -37,10 +37,10 @@ uint16_t PhraseSpec::nbSegments(const uint16_t layoutIndex) const {
 }
 
 uint16_t PhraseSpec::segmentSize(
-    const uint16_t layoutIndex,
+    const uint16_t layoutId,
     const uint16_t segmentIndex
 ) const {
-    switch (layoutIndex) {
+    switch (layoutId) {
         case LEDS_IN_LETTERS:
             return LETTERS[segmentIndex][1] - LETTERS[segmentIndex][0] + 1;
 
@@ -72,7 +72,7 @@ uint16_t PhraseSpec::segmentSize(
 
 
 void PhraseSpec::mapLeds(
-    uint16_t layoutIndex,
+    uint16_t layoutId,
     uint16_t segmentIndex,
     uint16_t pixelIndex,
     float progress,
@@ -88,7 +88,7 @@ void PhraseSpec::mapLeds(
         }
     };
 
-    switch (layoutIndex) {
+    switch (layoutId) {
         case LEDS_IN_LETTERS:
             mapSingleLed(LETTERS[segmentIndex][0] + pixelIndex, onLedMapped);
             break;

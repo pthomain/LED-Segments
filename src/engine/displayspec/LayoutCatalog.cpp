@@ -29,28 +29,50 @@
 
 template<typename T>
 uint8_t LayoutCatalog::pickRandomWeight(
+    EffectType effectType,
+    const String &weightType,
     const std::vector<std::pair<T, uint8_t> > &weightedItems
 ) const {
     uint16_t totalWeight = 0;
     for (const auto &[_, weight]: weightedItems) {
         totalWeight += weight;
     }
-    return random16(totalWeight);
+
+    auto result = random16(totalWeight);
+    Serial.print(effectTypeName(effectType));
+    Serial.print(" ");
+    Serial.print(weightType);
+    Serial.print(" total: ");
+    Serial.print(totalWeight);
+    Serial.print(" result: ");
+    Serial.println(result);
+
+    return result;
 }
 
 template<typename T>
-T LayoutCatalog::pickRandomWeightedItem(
+T LayoutCatalog::shuffleAndPickRandomWeightedItem(
+    EffectType effectType,
+    const String &weightType,
     const std::vector<std::pair<T, uint8_t> > &weightedItems,
     const T &defaultValue
 ) const {
-    uint16_t randomWeight = pickRandomWeight(weightedItems);
+    uint16_t randomWeight = pickRandomWeight(effectType, weightType, weightedItems);
 
-    //Find item that matches the random weight
-    for (const auto &[item, itemWeight]: weightedItems) {
+    // Weighted items are shuffled to ensure that items with the same weights have equal chances to be picked.
+    // Fisher-Yates shuffle is used since it's more efficient on Arduino.
+    std::vector<std::pair<T, uint8_t> > shuffledItems = weightedItems;
+    for (size_t i = shuffledItems.size() - 1; i > 0; --i) {
+        size_t j = random16(i + 1);
+        std::swap(shuffledItems[i], shuffledItems[j]);
+    }
+
+    // Find item that matches the random weight
+    for (const auto &[item, itemWeight]: shuffledItems) {
         // Return matching item
         if (randomWeight < itemWeight) return item;
 
-        //else continue
+        // else continue
         randomWeight -= min(randomWeight, itemWeight);
     }
 
@@ -60,36 +82,58 @@ T LayoutCatalog::pickRandomWeightedItem(
 
 template<typename T>
 RandomEffect<T> LayoutCatalog::randomEntry(
+    EffectType effectType,
     const EffectSelector<T> &effectSelector,
     const EffectFactory<T> &defaultEffectFactory
 ) const {
-    uint16_t randomLayoutIndex = pickRandomWeightedItem(_weightedLayouts, uint16_t{0});
+    uint16_t randomLayoutIndex = shuffleAndPickRandomWeightedItem(
+        effectType,
+        "layout",
+        _layoutSelector(effectType),
+        uint16_t{0}
+    );
+
+    if (randomLayoutIndex == UINT16_MAX) {
+        Serial.println("NO " + effectTypeName(effectType) + " layout found");
+        return RandomEffect<T>{UINT16_MAX, defaultEffectFactory, Mirror::NONE};
+    }
+
+    Serial.println(
+        effectTypeName(effectType) + " random layout index: " + String(randomLayoutIndex) + " " + layoutName(
+            randomLayoutIndex));
 
     const auto &[effects, effectMirrorSelector] = effectSelector(randomLayoutIndex);
-    uint16_t randomEffectWeight = pickRandomWeight(effects);
+    uint16_t randomEffectWeight = pickRandomWeight(effectType, "effect", effects);
+
+    Serial.println(effectTypeName(effectType) + " random effect weight: " + String(randomEffectWeight));
 
     for (const auto &[effectFactory, effectWeight]: effects) {
         if (randomEffectWeight < effectWeight) {
+            Serial.println(
+                "Found " + effectTypeName(effectType) + " for layout index: " + String(randomLayoutIndex) + " " +
+                layoutName(
+                    randomLayoutIndex));
             auto effectMirrors = effectMirrorSelector(*effectFactory);
-            auto randomMirror = pickRandomWeightedItem(effectMirrors, Mirror::NONE);
+            auto randomMirror = shuffleAndPickRandomWeightedItem(effectType, "mirror", effectMirrors, Mirror::NONE);
 
-            return RandomEffect<T>{randomLayoutIndex, *effectFactory , randomMirror};
+            return RandomEffect<T>{randomLayoutIndex, *effectFactory, randomMirror};
         }
         randomEffectWeight -= min(randomEffectWeight, effectWeight);
     }
 
+    Serial.println("NO " + effectTypeName(effectType) + " found for layout index: " + layoutName(randomLayoutIndex));
     // If no effect was found, return the default value
     return RandomEffect<T>{0, defaultEffectFactory, Mirror::NONE};
 }
 
 RandomEffect<CRGB> LayoutCatalog::randomEffect() const {
-    return randomEntry(_effects, NoEffect::factory);
+    return randomEntry(EffectType::EFFECT, _effects, NoEffect::factory);
 }
 
 RandomEffect<uint8_t> LayoutCatalog::randomTransition() const {
-    return randomEntry(_transitions, NoTransition::factory);
+    return randomEntry(EffectType::TRANSITION, _transitions, NoTransition::factory);
 }
 
 RandomEffect<CRGB> LayoutCatalog::randomOverlay() const {
-    return randomEntry(_overlays, NoOverlay::factory);
+    return randomEntry(EffectType::OVERLAY, _overlays, NoOverlay::factory);
 }

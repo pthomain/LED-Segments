@@ -38,12 +38,26 @@ enum UmbrellaLayout {
     SPOKES_IN_WHOLE
 };
 
-static const std::vector<WeightedLayouts> umbrellaLayouts = {
-    {LEDS_IN_SPOKE, 1},
-    {SPOKES_IN_WHOLE, 7}
+static const std::set<uint16_t> umbrellaLayoutIds = {
+    {LEDS_IN_SPOKE, SPOKES_IN_WHOLE}
 };
 
-static EffectAndMirrors<CRGB> umbrellaEffectSelector(uint16_t layoutIndex) {
+static const std::vector<WeightedLayout> umbrellaLayoutSelector(EffectType effectType) {
+    switch (effectType) {
+        case EffectType::EFFECT:
+            return {
+                {LEDS_IN_SPOKE, 1},
+                {SPOKES_IN_WHOLE, 1}
+            };
+
+        case EffectType::OVERLAY:
+        case EffectType::TRANSITION:
+        default:
+            return {{LEDS_IN_SPOKE, 1}};
+    }
+};
+
+static EffectAndMirrors<CRGB> umbrellaEffectSelector(uint16_t layoutId) {
     return {
         {
             {&GradientEffect::factory, 1},
@@ -55,8 +69,8 @@ static EffectAndMirrors<CRGB> umbrellaEffectSelector(uint16_t layoutIndex) {
     };
 }
 
-static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutIndex) {
-    switch (layoutIndex) {
+static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
+    switch (layoutId) {
         case LEDS_IN_SPOKE:
             return {
                 {
@@ -64,13 +78,19 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutIndex) {
                     {&ChaseOverlay::factory, 1},
                     {&DashOverlay::factory, 1},
                 },
-                allCRGBMirrors
+                [](const EffectFactory<CRGB> &overlayFactory) {
+                    if (overlayFactory.name() == MoireOverlay::name()) {
+                        return WeightedMirrors{}; //No mirrors for this overlay
+                    }
+                    return allCRGBMirrors(overlayFactory);
+                }
             };
-        default: return {};
+
+        default: return {}; //No mirrors for SPOKES_IN_WHOLE
     }
 }
 
-static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutIndex) {
+static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutId) {
     return {
         {
             {&SlideTransition::factory, 1},
@@ -82,11 +102,12 @@ static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutIndex
 
 static LayoutCatalog umbrellaLayoutCatalog() {
     return LayoutCatalog(
-        umbrellaLayouts,
+        umbrellaLayoutIds,
         {
             {LEDS_IN_SPOKE, "LEDS_IN_SPOKE"},
             {SPOKES_IN_WHOLE, "SPOKES_IN_WHOLE"},
         },
+        umbrellaLayoutSelector,
         umbrellaEffectSelector,
         umbrellaOverlaySelector,
         umbrellaTransitionSelector

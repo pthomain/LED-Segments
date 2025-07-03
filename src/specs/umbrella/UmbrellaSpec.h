@@ -36,12 +36,12 @@ class UmbrellaSpec : public DisplaySpec {
 
     uint16_t nbLeds() const override { return NB_SPOKES * LEDS_PER_SPOKE; }
 
-    uint16_t nbSegments(uint16_t layoutIndex) const override;
+    uint16_t nbSegments(uint16_t layoutId) const override;
 
-    uint16_t segmentSize(uint16_t layoutIndex, uint16_t segmentIndex) const override;
+    uint16_t segmentSize(uint16_t layoutId, uint16_t segmentIndex) const override;
 
     void mapLeds(
-        uint16_t layoutIndex,
+        uint16_t layoutId,
         uint16_t segmentIndex,
         uint16_t pixelIndex,
         float progress,

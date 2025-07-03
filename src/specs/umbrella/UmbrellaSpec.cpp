@@ -20,30 +20,32 @@
 
 #include "UmbrellaSpec.h"
 
-uint16_t UmbrellaSpec::nbSegments(uint16_t layoutIndex) const {
-    switch (layoutIndex) {
+uint16_t UmbrellaSpec::nbSegments(uint16_t layoutId) const {
+    switch (layoutId) {
         case LEDS_IN_SPOKE: return NB_SPOKES;
         case SPOKES_IN_WHOLE: return 1; //WHOLE segment
         default: {
-            Serial.println("UmbrellaSpec::nbSegments: Unknown layoutIndex");
+            Serial.print("UmbrellaSpec::nbSegments: Unknown layoutId ");
+            Serial.println(layoutId);
             return 0; //This should not happen
         }
     }
 }
 
-uint16_t UmbrellaSpec::segmentSize(uint16_t layoutIndex, uint16_t segmentIndex) const {
-    switch (layoutIndex) {
+uint16_t UmbrellaSpec::segmentSize(uint16_t layoutId, uint16_t segmentIndex) const {
+    switch (layoutId) {
         case LEDS_IN_SPOKE: return LEDS_PER_SPOKE;
         case SPOKES_IN_WHOLE: return NB_SPOKES;
         default: {
-            Serial.println("UmbrellaSpec::nbPixels: Unknown layoutIndex");
+            Serial.print("UmbrellaSpec::nbPixels: Unknown layoutId ");
+            Serial.println(layoutId);
             return 0; //This should not happen
         }
     }
 }
 
 void UmbrellaSpec::mapLeds(
-    uint16_t layoutIndex,
+    uint16_t layoutId,
     uint16_t segmentIndex,
     uint16_t pixelIndex,
     float progress,
@@ -53,7 +55,7 @@ void UmbrellaSpec::mapLeds(
         IS_DEBUG ? mapLedInSnakeDisplay(ledIndex, onLedMapped) : onLedMapped(ledIndex);
     };
 
-    switch (layoutIndex) {
+    switch (layoutId) {
         case LEDS_IN_SPOKE: mapSingleLed(segmentIndex * LEDS_PER_SPOKE + pixelIndex, onLedMapped);
             break;
 

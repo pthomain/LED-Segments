@@ -54,7 +54,7 @@ public:
     }
 
     static constexpr const char *name() { return "SlideEffect"; }
-    static constexpr EffectType type() { return EffectType::EFFECT; }
+    static constexpr EffectOperation operation() { return EffectOperation::EFFECT; }
     static const EffectFactory<CRGB> &factory;
 };
 

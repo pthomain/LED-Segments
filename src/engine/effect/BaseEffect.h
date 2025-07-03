@@ -21,9 +21,11 @@
 #ifndef BASEEFFECT_H
 #define BASEEFFECT_H
 
+#include <utility>
+
 #include "functional"
 #include "EffectContext.h"
-#include "EffectType.h"
+#include "EffectOperation.h"
 
 template<typename C>
 class BaseEffect {
@@ -51,13 +53,13 @@ public:
         float progress
     );
 
-    explicit BaseEffect(const EffectContext &context) : context(context),
-                                                        randomStart(random8()) {
+    explicit BaseEffect(EffectContext context) : context(std::move(context)),
+                                                 randomStart(random8()) {
     }
 
     virtual const char *effectName() = 0;
 
-    virtual EffectType effectType() = 0;
+    virtual EffectOperation effectOperation() = 0;
 
     virtual ~BaseEffect() = default;
 };

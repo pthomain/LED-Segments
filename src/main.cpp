@@ -33,7 +33,7 @@
 #define DEBUG_BRIGHTNESS 50
 #define MIN_EFFECT_DURATION_IN_SECONDS 5
 #define MAX_EFFECT_DURATION_IN_SECONDS 10
-#define DEBUG_EFFECT_DURATION_IN_SECONDS 3
+#define DEBUG_EFFECT_DURATION_IN_SECONDS 30
 
 Display *display;
 
@@ -44,11 +44,11 @@ void setup() {
     }
 
     display = Display::create<LED_PIN, GRB>(
-        std::make_unique<PhraseSpec>(),
+        std::make_unique<UmbrellaSpec>(),
         IS_DEBUG ? DEBUG_BRIGHTNESS : BRIGHTNESS,
         IS_DEBUG ? DEBUG_EFFECT_DURATION_IN_SECONDS : MIN_EFFECT_DURATION_IN_SECONDS,
         IS_DEBUG ? DEBUG_EFFECT_DURATION_IN_SECONDS : MAX_EFFECT_DURATION_IN_SECONDS,
-        IS_UMBRELLA ? 1000 : 2000,
+        IS_UMBRELLA ? 500 : 2000,
         30
     );
 }

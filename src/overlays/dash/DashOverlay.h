@@ -56,7 +56,7 @@ public:
     }
 
     static constexpr const char *name() { return "DashOverlay"; }
-    static constexpr EffectType type() { return EffectType::OVERLAY_MULTIPLY; }
+    static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_MULTIPLY; }
     static const EffectFactory<CRGB>& factory;
 };
 

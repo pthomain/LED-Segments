@@ -26,7 +26,7 @@
 #include "BaseEffect.h"
 #include "EffectContext.h"
 #include "functional"
-#include "engine/effect/EffectType.h"
+#include "engine/effect/EffectOperation.h"
 
 constexpr uint8_t MIN_CYCLE_SPEED = 5;
 constexpr uint8_t MAX_CYCLE_SPEED = 15;
@@ -34,15 +34,6 @@ constexpr uint8_t PALETTE_SIZE = 16;
 
 template<typename Child, typename C>
 class Effect : public BaseEffect<C> {
-protected:
-    void fillArrayInternal(
-        C *effectArray,
-        uint16_t effectArraySize,
-        uint16_t segmentIndex,
-        float progress,
-        unsigned long timeInMillis
-    ) override;
-
 public :
     explicit Effect(const EffectContext &effectContext) : BaseEffect<C>(effectContext) {
         static_assert(
@@ -51,8 +42,8 @@ public :
         );
 
         static_assert(
-            std::is_same<decltype(Child::type()), EffectType>::value,
-            "Child class must implement static constexpr const type()"
+            std::is_same<decltype(Child::operation()), EffectOperation>::value,
+            "Child class must implement static constexpr const operation()"
         );
     };
 
@@ -60,16 +51,16 @@ public :
         return name();
     }
 
-    EffectType effectType() override {
-        return type();
+    EffectOperation effectOperation() override {
+        return operation();
     }
 
     static const char *name() {
         return Child::name();
     }
 
-    static EffectType type() {
-        return Child::type();
+    static EffectOperation operation() {
+        return Child::operation();
     }
 };
 

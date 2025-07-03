@@ -27,9 +27,9 @@ class DisplaySpec {
     uint16_t _maxSegmentSize = 0;
 
     void calculateMaxSegmentSize() {
-        for (auto layoutIndex: _catalog.layouts()) {
-            for (uint16_t segmentIndex = 0; segmentIndex < nbSegments(layoutIndex); segmentIndex++) {
-                _maxSegmentSize = max(_maxSegmentSize, segmentSize(layoutIndex, segmentIndex));
+        for (auto layoutId: _catalog.layoutIds) {
+            for (uint16_t segmentIndex = 0; segmentIndex < nbSegments(layoutId); segmentIndex++) {
+                _maxSegmentSize = max(_maxSegmentSize, segmentSize(layoutId, segmentIndex));
             }
         }
     }
@@ -50,12 +50,12 @@ public:
         return _maxSegmentSize;
     };
 
-    virtual uint16_t nbSegments(uint16_t layoutIndex) const = 0;
+    virtual uint16_t nbSegments(uint16_t layoutId) const = 0;
 
-    virtual uint16_t segmentSize(uint16_t layoutIndex, uint16_t segmentIndex) const = 0;
+    virtual uint16_t segmentSize(uint16_t layoutId, uint16_t segmentIndex) const = 0;
 
     virtual void mapLeds(
-        uint16_t layoutIndex,
+        uint16_t layoutId,
         uint16_t segmentIndex,
         uint16_t pixelIndex,
         float progress,

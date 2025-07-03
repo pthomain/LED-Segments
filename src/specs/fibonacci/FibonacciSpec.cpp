@@ -22,7 +22,7 @@
 #include "config/FibonacciLayoutConfig.h"
 #include "engine/utils/Utils.h"
 
-uint16_t FibonacciSpec::nbSegments(const uint16_t layoutIndex) const {
+uint16_t FibonacciSpec::nbSegments(const uint16_t layoutId) const {
     //same effect applied to all segments, pixels are used as an optimisation
     //since all segments have the same size (might change later)
     //direction, inflexion and alignment are not meaningful when using PIXEL with this optimisation
@@ -30,10 +30,9 @@ uint16_t FibonacciSpec::nbSegments(const uint16_t layoutIndex) const {
     return 1;
 }
 
-uint16_t FibonacciSpec::segmentSize(const uint16_t layoutIndex, const uint16_t segmentIndex) const {
-    const auto variation = weightedLayouts[layoutIndex].first;
-    const auto pixelUnit = getPixelUnit(variation);
-    const auto alignment = getAlignment(variation);
+uint16_t FibonacciSpec::segmentSize(const uint16_t layoutId, const uint16_t segmentIndex) const {
+    const auto pixelUnit = getPixelUnit(layoutId);
+    const auto alignment = getAlignment(layoutId);
 
     if (alignment == SPIRAL) {
         return pixelUnit == PIXEL ? NB_SPIRAL_PIXELS : NB_SPIRAL_SEGMENTS;
@@ -181,14 +180,13 @@ void FibonacciSpec::mapPixelUnit(
 };
 
 void FibonacciSpec::mapLeds(
-    uint16_t layoutIndex,
+    uint16_t layoutId,
     uint16_t segmentIndex,
     uint16_t pixelIndex,
     float progress,
     const std::function<void(uint16_t)> &onLedMapped
 ) const {
-    const auto variation = weightedLayouts[layoutIndex].first;
-    const auto inflexion = getInflexion(variation);
+    const auto inflexion = getInflexion(layoutId);
     uint8_t inflexionPoint;
 
     switch (inflexion) {
@@ -205,7 +203,7 @@ void FibonacciSpec::mapLeds(
     }
 
     mapPixelUnit(
-        variation,
+        layoutId,
         pixelIndex, //optimisation for spirals, each segment is considered a pixel
         inflexionPoint,
         onLedMapped

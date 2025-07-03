@@ -32,6 +32,8 @@
 
 static const String UNKNOWN = "UNKNOWN";
 
+using WeightedLayouts = std::pair<uint16_t, uint8_t>;
+
 template<typename C>
 using EffectAndMirrors = std::pair<WeightedEffects<C>, MirrorSelector<C> >;
 
@@ -42,35 +44,41 @@ template<typename C>
 using RandomEffect = std::tuple<uint16_t, const EffectFactory<C> &, Mirror>;
 
 class LayoutCatalog {
-    const std::vector<uint16_t> _uniqueLayouts;
     const std::map<uint16_t, String> _layoutNames;
 
     const EffectSelector<CRGB> _effects;
     const EffectSelector<CRGB> _overlays;
     const EffectSelector<uint8_t> _transitions;
+    const std::vector<WeightedLayouts> _weightedLayouts;
+
+    std::vector<uint16_t> _layouts;
 
     template<typename T>
     RandomEffect<T> randomEntry(
         const EffectSelector<T> &effectSelector,
-        const EffectFactory<T> &defaultValue
+        const EffectFactory<T> &defaultEffectFactory
     ) const;
+
 
 public:
     explicit LayoutCatalog(
-        std::set<uint16_t> uniqueLayouts,
-        std::map<uint16_t, String> layoutNames,
+        const std::vector<WeightedLayouts> &layouts,
+        const std::map<uint16_t, String> &layoutNames,
         EffectSelector<CRGB> effects,
         EffectSelector<CRGB> overlays,
         EffectSelector<uint8_t> transitions
-    ) : _uniqueLayouts(uniqueLayouts.begin(), uniqueLayouts.end()),
-        _layoutNames(std::move(layoutNames)),
+    ) : _weightedLayouts(layouts),
+        _layoutNames(layoutNames),
         _effects(std::move(effects)),
         _overlays(std::move(overlays)),
         _transitions(std::move(transitions)) {
+        for (const auto &[layoutIndex, _]: layouts) {
+            _layouts.emplace_back(layoutIndex);
+        }
     }
 
-    std::vector<uint16_t> uniqueLayouts() const {
-        return _uniqueLayouts;
+    std::vector<uint16_t> layouts() const {
+        return _layouts;
     }
 
     virtual String layoutName(uint16_t layoutIndex) const {

@@ -25,7 +25,7 @@
 #include "engine/displayspec/DisplaySpec.h"
 
 class FibonacciSpec : public DisplaySpec {
-    const std::vector<uint16_t> variations;
+    const std::vector<WeightedLayouts> weightedLayouts;
 
     void mapPixel(
         uint16_t variation,
@@ -52,9 +52,8 @@ class FibonacciSpec : public DisplaySpec {
     uint8_t getLedPadding(uint8_t pixelIndex) const;
 
 public :
-    explicit FibonacciSpec()
-        : variations(computeVariations()),
-          DisplaySpec(fibonacciLayoutCatalog(std::set<uint16_t>(variations.begin(), variations.end()))) {
+    explicit FibonacciSpec(): weightedLayouts(computeLayouts()),
+                              DisplaySpec(fibonacciLayoutCatalog(weightedLayouts)) {
     };
 
     uint16_t nbLeds() const override { return TOTAL_FIBONACCI_LEDS; }

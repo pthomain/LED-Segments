@@ -38,24 +38,20 @@
 // Format is PIXELS_IN_SEGMENTS
 enum PhraseLayout {
     LEDS_IN_LETTERS,
-
-    LETTERS_IN_WORDS,
     LEDS_IN_WORDS,
-
-    WORDS_IN_WHOLE,
+    LEDS_IN_WHOLE,
+    LETTERS_IN_WORDS,
     LETTERS_IN_WHOLE,
-    LEDS_IN_WHOLE
+    WORDS_IN_WHOLE
 };
 
-static const auto phraseLayouts = std::set<uint16_t>{
-    LEDS_IN_LETTERS,
-
-    LETTERS_IN_WORDS,
-    LEDS_IN_WORDS,
-
-    WORDS_IN_WHOLE,
-    LETTERS_IN_WHOLE,
-    LEDS_IN_WHOLE
+static const std::vector<WeightedLayouts> phraseLayouts = {
+    {LEDS_IN_LETTERS, 4},
+    {LEDS_IN_WORDS, 2},
+    {LEDS_IN_WHOLE, 1},
+    {LETTERS_IN_WORDS, 2},
+    {LETTERS_IN_WHOLE, 4},
+    {WORDS_IN_WHOLE, 3}
 };
 
 static EffectAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutIndex) {
@@ -93,7 +89,8 @@ static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutIndex) {
                     {&NoOverlay::factory, 5},
                 },
                 [](const EffectFactory<CRGB> &overlayFactory) {
-                    if (overlayFactory.name() == "ChaseOverlay" || overlayFactory.name() == "MoireOverlay") {
+                    if (overlayFactory.name() == ChaseOverlay::name()
+                        || overlayFactory.name() == MoireOverlay::name()) {
                         return WeightedMirrors{}; //No mirrors for these overlays
                     }
                     return allCRGBMirrors(overlayFactory);

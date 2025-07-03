@@ -21,84 +21,65 @@
 #include "LayoutCatalog.h"
 #include <engine/effect/none/NoEffect.h>
 #include <engine/overlay/none/NoOverlay.h>
+
+#include "effects/gradient/GradientEffect.h"
 #include "engine/transitions/none/NoTransition.h"
 #include "engine/utils/Utils.h"
+#include "overlays/chase/ChaseOverlay.h"
+
+template<typename T>
+uint8_t LayoutCatalog::pickRandomWeight(
+    const std::vector<std::pair<T, uint8_t> > &weightedItems
+) const {
+    uint16_t totalWeight = 0;
+    for (const auto &[_, weight]: weightedItems) {
+        totalWeight += weight;
+    }
+    return random16(totalWeight);
+}
+
+template<typename T>
+T LayoutCatalog::pickRandomWeightedItem(
+    const std::vector<std::pair<T, uint8_t> > &weightedItems,
+    const T &defaultValue
+) const {
+    uint16_t randomWeight = pickRandomWeight(weightedItems);
+
+    //Find item that matches the random weight
+    for (const auto &[item, itemWeight]: weightedItems) {
+        // Return matching item
+        if (randomWeight < itemWeight) return item;
+
+        //else continue
+        randomWeight -= min(randomWeight, itemWeight);
+    }
+
+    // If no item was found, return the default value
+    return defaultValue;
+}
 
 template<typename T>
 RandomEffect<T> LayoutCatalog::randomEntry(
     const EffectSelector<T> &effectSelector,
-    const EffectFactory<T> &defaultValue
+    const EffectFactory<T> &defaultEffectFactory
 ) const {
-    // // Select a random layout
-    // auto iterator = _uniqueLayouts.begin();
-    // std::advance(iterator, random8(_uniqueLayouts.size()));
+    uint16_t randomLayoutIndex = pickRandomWeightedItem(_weightedLayouts, uint16_t{0});
 
-    // Calculate the total weight of all layouts
-    uint16_t totalLayoutWeight = 0;
-    for (const auto &[_, layoutWeight]: _weightedLayouts) {
-        totalLayoutWeight += layoutWeight;
-    }
+    const auto &[effects, effectMirrorSelector] = effectSelector(randomLayoutIndex);
+    uint16_t randomEffectWeight = pickRandomWeight(effects);
 
-    // Pick random weight for layout
-    uint16_t randomLayoutWeight = random16(totalLayoutWeight);
-
-    uint16_t randomLayoutIndex = 0;
-
-    //Find layout that matches randomLayoutWeight
-    for (const auto &[layoutIndex, layoutWeight]: _weightedLayouts) {
-        // We found a matching effect
-        if (randomLayoutWeight < layoutWeight) {
-            randomLayoutIndex = layoutIndex;
-            break;
-        }
-        randomLayoutWeight -= min(randomLayoutWeight, layoutWeight);
-    }
-
-    // Select effects and mirrors for the selected layout
-    const auto [effects, effectMirrorSelector] = effectSelector(randomLayoutIndex);
-
-    // Calculate the total weight of all effects for that layout
-    uint16_t totalEffectWeight = 0;
-    for (const auto &[_, effectWeight]: effects) {
-        totalEffectWeight += effectWeight;
-    }
-
-    // Pick random weight for effect
-    uint16_t randomEffectWeight = random16(totalEffectWeight);
-
-    //Find effect that matches randomEffectWeight
     for (const auto &[effectFactory, effectWeight]: effects) {
-        // We found a matching effect
         if (randomEffectWeight < effectWeight) {
-            std::map<Mirror, uint8_t> effectMirrors = effectMirrorSelector(*effectFactory);
+            auto effectMirrors = effectMirrorSelector(*effectFactory);
+            auto randomMirror = pickRandomWeightedItem(effectMirrors, Mirror::NONE);
 
-            // For the selected effect, calculate the associated mirror weights
-            uint16_t totalMirrorWeight = 0;
-            for (const auto &[_, mirrorWeight]: effectMirrors) {
-                totalMirrorWeight += mirrorWeight;
-            }
-
-            uint16_t randomMirrorWeight = random16(totalMirrorWeight);
-
-            //Find mirror that matches randomMirrorWeight
-            for (const auto &[mirror, mirrorWeight]: effectMirrors) {
-                // We found a matching effect, return layout index, effect and mirror
-                if (randomMirrorWeight < mirrorWeight) {
-                    return RandomEffect<T>(randomLayoutIndex, *effectFactory, mirror);
-                }
-
-                randomMirrorWeight -= min(randomMirrorWeight, mirrorWeight);
-            }
-
-            // If no mirror was found, return the default value
-            return {randomLayoutIndex, *effectFactory, Mirror::NONE};
+            return RandomEffect<T>{randomLayoutIndex, *effectFactory , randomMirror};
         }
-
         randomEffectWeight -= min(randomEffectWeight, effectWeight);
     }
 
     // If no effect was found, return the default value
-    return RandomEffect<T>{0, defaultValue, Mirror::NONE};
+    return RandomEffect<T>{0, defaultEffectFactory, Mirror::NONE};
 }
 
 RandomEffect<CRGB> LayoutCatalog::randomEffect() const {

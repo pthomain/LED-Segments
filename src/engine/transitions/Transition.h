@@ -56,7 +56,7 @@ static String getTransitionName(Transition transition) {
     }
 }
 
-static std::map<Transition, const EffectFactory<uint8_t>*> transitionfactories = {
+static std::map<Transition, const EffectFactory<uint8_t> *> transitionFactories = {
     {Transition::NONE, &NoTransition::factory},
     {Transition::FADE, &FadeTransition::factory},
     {Transition::SLIDE, &SlideTransition::factory}

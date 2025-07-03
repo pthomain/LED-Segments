@@ -25,7 +25,7 @@
 
 #include <map>
 
-using WeightedMirrors = std::map<Mirror, uint8_t>;
+using WeightedMirrors = std::vector<std::pair<Mirror, uint8_t>>;
 
 template<typename C>
 using MirrorSelector = std::function<WeightedMirrors(const EffectFactory<C> &effectFactory)>;

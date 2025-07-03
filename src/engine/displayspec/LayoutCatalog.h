@@ -59,6 +59,16 @@ class LayoutCatalog {
         const EffectFactory<T> &defaultEffectFactory
     ) const;
 
+    template<typename T>
+    uint8_t pickRandomWeight(
+        const std::vector<std::pair<T, uint8_t> > &weightedItems
+    ) const;
+
+    template<typename T>
+    T pickRandomWeightedItem(
+        const std::vector<std::pair<T, uint8_t> > &weightedItems,
+        const T &defaultValue
+    ) const;
 
 public:
     explicit LayoutCatalog(

@@ -36,6 +36,7 @@ public:
     }
 };
 
+static const Palette RAINBOW_PALETTE = Palette(Rainbow_gp, "Rainbow");
 static const Palette NO_PALETTE = Palette(CRGBPalette16(), "None");
 
 static const auto PALETTES = std::vector{

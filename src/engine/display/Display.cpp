@@ -31,33 +31,24 @@
 Display::Display(
     CRGB *outputArray,
     std::unique_ptr<DisplaySpec> displaySpec,
-    const uint8_t brightness,
-    const uint8_t minEffectDurationsInSecs,
-    const uint8_t maxEffectDurationsInSecs,
-    const int16_t transitionDurationInMillis,
-    const uint8_t fps,
     const std::vector<uint8_t> &freePinsForEntropy
 ) : outputArray(outputArray),
-    minEffectDurationsInSecs(min(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
-    maxEffectDurationsInSecs(max(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
-    currentEffectDurationsInSecs(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
-    fps(fps),
-    transitionDurationInMillis(transitionDurationInMillis),
-    refreshRateInMillis(fps == 0 ? 1000 : 1000 / fps),
-    displaySpec(std::move(displaySpec)),
-    renderer(std::make_unique<Renderer>(this->displaySpec, outputArray)),
+    _displaySpec(std::move(displaySpec)),
+    renderer(std::make_unique<Renderer>(_displaySpec, outputArray)),
     freePinsForEntropy(freePinsForEntropy) {
-    FastLED.setBrightness(brightness);
+    FastLED.setBrightness(_displaySpec->brightness);
     FastLED.clear(true);
     FastLED.show();
     addEntropy(freePinsForEntropy);
-    changeEffect(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs));
+    changeEffect(random8(_displaySpec->minEffectDurationsInSecs, _displaySpec->maxEffectDurationsInSecs));
     render();
 }
 
 void Display::changeEffect(uint8_t effectDurationsInSecs) {
-    const auto &catalog = displaySpec->catalog();
-    const Palette &palette = probability(chanceOfRainbow) ? rainbowPalette : PALETTES[random8(PALETTES.size())];
+    const auto &catalog = _displaySpec->catalog;
+    const Palette &palette = probability(_displaySpec->chanceOfRainbow)
+                                 ? RAINBOW_PALETTE
+                                 : PALETTES[random8(PALETTES.size())];
 
     const auto &[effectLayoutId, effectFactory, effectMirror] = catalog.randomEffect();
     const auto &[transitionLayoutId, transitionFactory, transitionMirror] = catalog.randomTransition();
@@ -91,34 +82,34 @@ void Display::changeEffect(uint8_t effectDurationsInSecs) {
         Serial.println("---");
     }
 
-    const uint16_t effectDurationInFrames = effectDurationsInSecs * fps;
-    auto transitionDurationInFrames = fps * transitionDurationInMillis / 1000;
+    const uint16_t effectDurationInFrames = effectDurationsInSecs * _displaySpec->fps;
+    auto transitionDurationInFrames = _displaySpec->fps * _displaySpec->transitionDurationInMillis / 1000;
 
     const auto effectContext = EffectContext(
-        displaySpec->maxSegmentSize(),
-        displaySpec->nbSegments(effectLayoutId),
+        _displaySpec->maxSegmentSize(),
+        _displaySpec->nbSegments(effectLayoutId),
         effectDurationInFrames,
-        displaySpec->isCircular(),
+        _displaySpec->isCircular,
         effectLayoutId,
         palette,
         effectMirror
     );
 
     const auto overlayContext = EffectContext(
-        displaySpec->maxSegmentSize(),
-        displaySpec->nbSegments(overlayLayoutId),
+        _displaySpec->maxSegmentSize(),
+        _displaySpec->nbSegments(overlayLayoutId),
         effectDurationInFrames,
-        displaySpec->isCircular(),
+        _displaySpec->isCircular,
         overlayLayoutId,
         NO_PALETTE,
         overlayMirror
     );
 
     const auto transitionContext = EffectContext(
-        displaySpec->maxSegmentSize(),
-        displaySpec->nbSegments(transitionLayoutId),
+        _displaySpec->maxSegmentSize(),
+        _displaySpec->nbSegments(transitionLayoutId),
         transitionDurationInFrames,
-        displaySpec->isCircular(),
+        _displaySpec->isCircular,
         transitionLayoutId,
         NO_PALETTE,
         transitionMirror
@@ -141,10 +132,10 @@ void Display::render() const {
 
 void Display::loop() {
     if (millis() - lastChangeTime >= currentEffectDurationsInSecs * 1000) {
-        changeEffect(random8(minEffectDurationsInSecs, maxEffectDurationsInSecs));
+        changeEffect(random8(_displaySpec->minEffectDurationsInSecs, _displaySpec->maxEffectDurationsInSecs));
     }
 
-    EVERY_N_MILLISECONDS(refreshRateInMillis) {
+    EVERY_N_MILLISECONDS(_displaySpec->refreshRateInMillis) {
         render();
     }
 

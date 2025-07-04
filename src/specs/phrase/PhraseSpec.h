@@ -32,9 +32,13 @@
 #include "specs/phrase/config/PhraseLayoutConfig.h"
 
 class PhraseSpec : public DisplaySpec {
-
 public :
-    explicit PhraseSpec(): DisplaySpec(phraseLayoutCatalog()) {
+    explicit PhraseSpec(): DisplaySpec(
+        phraseLayoutCatalog(),
+        IS_DEBUG ? 50 : 255,
+        IS_DEBUG ? 3 : 5,
+        IS_DEBUG ? 3 : 10
+    ) {
     }
 
     uint16_t nbLeds() const override { return NB_LEDS; }

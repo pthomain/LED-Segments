@@ -27,23 +27,45 @@ class DisplaySpec {
     uint16_t _maxSegmentSize = 0;
 
     void calculateMaxSegmentSize() {
-        for (auto layoutId: _catalog.layoutIds) {
+        for (auto layoutId: catalog.layoutIds) {
             for (uint16_t segmentIndex = 0; segmentIndex < nbSegments(layoutId); segmentIndex++) {
                 _maxSegmentSize = max(_maxSegmentSize, segmentSize(layoutId, segmentIndex));
             }
         }
     }
 
-protected:
-    const LayoutCatalog _catalog;
-
 public:
-    explicit DisplaySpec(const LayoutCatalog &catalog): _catalog(catalog) {
+    const LayoutCatalog catalog;
+    const uint8_t brightness;
+    const uint8_t minEffectDurationsInSecs;
+    const uint8_t maxEffectDurationsInSecs;
+    const uint8_t fps;
+    const int16_t transitionDurationInMillis;
+    const uint16_t refreshRateInMillis;
+    const float chanceOfRainbow;
+    const uint8_t isCircular;
+
+    explicit DisplaySpec(
+        const LayoutCatalog &catalog,
+        const uint8_t brightness = 50,
+        const uint8_t minEffectDurationsInSecs = 3,
+        const uint8_t maxEffectDurationsInSecs = 10,
+        const int16_t transitionDurationInMillis = 1000, //use < 1 to disable
+        const float chanceOfRainbow = .75f,
+        const uint8_t fps = 30,
+        const uint8_t isCircular = false
+    ): catalog(catalog),
+       brightness(brightness),
+       minEffectDurationsInSecs(min(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
+       maxEffectDurationsInSecs(max(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
+       transitionDurationInMillis(transitionDurationInMillis),
+       refreshRateInMillis(1000 / max(1, fps)),
+       chanceOfRainbow(chanceOfRainbow),
+       fps(max(1, fps)),
+       isCircular(isCircular) {
     }
 
     virtual uint16_t nbLeds() const = 0;
-
-    virtual bool isCircular() const { return false; }
 
     uint16_t maxSegmentSize() const {
         if (_maxSegmentSize == 0) const_cast<DisplaySpec *>(this)->calculateMaxSegmentSize();
@@ -61,10 +83,6 @@ public:
         float progress,
         const std::function<void(uint16_t)> &onLedMapped
     ) const = 0;
-
-    const LayoutCatalog &catalog() const {
-        return _catalog;
-    }
 
     virtual ~DisplaySpec() = default;
 };

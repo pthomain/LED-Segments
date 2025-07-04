@@ -23,6 +23,7 @@
 
 #include "engine/effect/Effect.h"
 #include "engine/utils/Utils.h"
+#include "engine/utils/Weights.h"
 
 class MoireOverlay : public Effect<MoireOverlay, CRGB> {
 
@@ -67,7 +68,7 @@ public:
 
     static constexpr const char *name() { return "MoireOverlay"; }
     static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_MULTIPLY; }
-    static const EffectFactory<CRGB>& factory;
+    static EffectFactoryRef<CRGB> factory;
 };
 
 class MoireOverlayFactory : public EffectFactory<CRGB> {

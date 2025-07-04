@@ -22,7 +22,7 @@
 #include "NoOverlay.h"
 
 static const NoOverlayFactory factoryInstance;
-const EffectFactory<CRGB> &NoOverlay::factory = factoryInstance;
+EffectFactoryRef<CRGB> NoOverlay::factory = &factoryInstance;
 
 void NoOverlay::fillArrayInternal(
     CRGB *effectArray,

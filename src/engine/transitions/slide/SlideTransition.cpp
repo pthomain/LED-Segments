@@ -20,8 +20,10 @@
 
 #include "SlideTransition.h"
 
+#include "engine/utils/Weights.h"
+
 static const SlideTransitionFactory factoryInstance;
-const EffectFactory<uint8_t> &SlideTransition::factory = factoryInstance;
+EffectFactoryRef<uint8_t> SlideTransition::factory = &factoryInstance;
 
 void SlideTransition::fillArrayInternal(
     uint8_t *effectArray,

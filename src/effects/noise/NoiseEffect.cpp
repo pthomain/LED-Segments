@@ -21,9 +21,10 @@
 #include "NoiseEffect.h"
 #include <functional>
 #include "engine/utils/Utils.h"
+#include "engine/utils/Weights.h"
 
 static const NoiseEffectFactory factoryInstance;
-const EffectFactory<CRGB> &NoiseEffect::factory = factoryInstance;
+EffectFactoryRef<CRGB> NoiseEffect::factory = &factoryInstance;
 
 void NoiseEffect::fillArrayInternal(
     CRGB *effectArray,

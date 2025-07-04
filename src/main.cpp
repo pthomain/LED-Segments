@@ -24,16 +24,14 @@
 #include "specs/fibonacci/FibonacciSpec.h"
 #include "specs/umbrella/UmbrellaSpec.h"
 
-//TODO add stack effect, each pixel stacks on the previous one + reverse
-//TODO add swipe effect, one colour slides over the previous one (divide palette by ~6)
-
-// #define LED_PIN D7 //Umbrella
-#define LED_PIN 9
+#define LED_PIN D7 //Umbrella
+// #define LED_PIN 9
 #define BRIGHTNESS 255
 #define DEBUG_BRIGHTNESS 50
 #define MIN_EFFECT_DURATION_IN_SECONDS 5
 #define MAX_EFFECT_DURATION_IN_SECONDS 10
-#define DEBUG_EFFECT_DURATION_IN_SECONDS 30
+#define DEBUG_EFFECT_DURATION_IN_SECONDS 3
+#define IS_UMBRELLA true
 
 Display *display;
 

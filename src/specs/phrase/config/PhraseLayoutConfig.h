@@ -29,8 +29,7 @@
 #include "effects/swirl/SwirlEffect.h"
 #include "engine/overlay/none/NoOverlay.h"
 #include "engine/transitions/Transition.h"
-#include "engine/transitions/fade/FadeTransition.h"
-#include "overlays/sparkle/SparkleOverlay.h"
+#include "engine/utils/Weights.h"
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/dash/DashOverlay.h"
 #include "overlays/moire/MoireOverlay.h"
@@ -54,7 +53,7 @@ static const std::set<uint16_t> phraseLayouts = {
     WORDS_IN_WHOLE
 };
 
-inline std::vector<WeightedLayout> phraseLayoutSelector(EffectType effectType) {
+inline WeightedLayouts phraseLayoutSelector(EffectType effectType) {
     return {
         {LEDS_IN_LETTERS, 4},
         {LEDS_IN_WORDS, 2},
@@ -76,10 +75,10 @@ static EffectAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutId) {
         default:
             return {
                 {
-                    {&GradientEffect::factory, 1},
-                    {&SwirlEffect::factory, 1},
-                    {&NoiseEffect::factory, 1},
-                    {&SlideEffect::factory, 1}
+                    {GradientEffect::factory, 1},
+                    {SwirlEffect::factory, 1},
+                    {NoiseEffect::factory, 1},
+                    {SlideEffect::factory, 1}
                 },
                 allCRGBMirrors
             };
@@ -94,14 +93,14 @@ static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutId) {
         case LETTERS_IN_WHOLE:
             return EffectAndMirrors<CRGB>{
                 {
-                    {&MoireOverlay::factory, 1},
-                    {&ChaseOverlay::factory, 1},
-                    {&DashOverlay::factory, 1},
-                    {&NoOverlay::factory, 5},
+                    {MoireOverlay::factory, 1},
+                    {ChaseOverlay::factory, 1},
+                    {DashOverlay::factory, 1},
+                    {NoOverlay::factory, 5},
                 },
-                [](const EffectFactory<CRGB> &overlayFactory) {
-                    if (overlayFactory.name() == ChaseOverlay::name()
-                        || overlayFactory.name() == MoireOverlay::name()) {
+                [](EffectFactoryRef<CRGB> overlayFactory) {
+                    if (overlayFactory->name() == ChaseOverlay::name()
+                        || overlayFactory->name() == MoireOverlay::name()) {
                         return WeightedMirrors{}; //No mirrors for these overlays
                     }
                     return allCRGBMirrors(overlayFactory);

@@ -22,6 +22,7 @@
 #define LED_SEGMENTS_GRADIENTEFFECT_H
 
 #include "engine/effect/Effect.h"
+#include "engine/utils/Weights.h"
 
 class GradientEffect : public Effect<GradientEffect, CRGB> {
     const uint8_t start = random8(); //start hue
@@ -41,7 +42,7 @@ public:
 
     static constexpr const char *name() { return "GradientEffect"; }
     static constexpr EffectOperation operation() { return EffectOperation::EFFECT; }
-    static const EffectFactory<CRGB>& factory;
+    static EffectFactoryRef<CRGB> factory;
 };
 
 class GradientEffectFactory : public EffectFactory<CRGB> {

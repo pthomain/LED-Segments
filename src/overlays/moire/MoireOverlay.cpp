@@ -21,9 +21,10 @@
 #include "MoireOverlay.h"
 #include "crgb.h"
 #include "engine/utils/Utils.h"
+#include "engine/utils/Weights.h"
 
 static const MoireOverlayFactory factoryInstance;
-const EffectFactory<CRGB> &MoireOverlay::factory = factoryInstance;
+EffectFactoryRef<CRGB> MoireOverlay::factory = &factoryInstance;
 
 void MoireOverlay::fillArrayInternal(
     CRGB *effectArray,

@@ -29,8 +29,7 @@
 #include "FastLED.h"
 #include <functional>
 
-#define IS_DEBUG true
-#define IS_UMBRELLA true
+#define IS_DEBUG false
 
 static const std::vector<uint8_t> PRIMES PROGMEM = std::vector<uint8_t>{
     43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
@@ -56,6 +55,7 @@ static uint8_t normaliseNoise(uint8_t noise) {
 
 inline bool probability(const float probability) {
     if (probability == 0.0f) return false;
+    if (probability >= 1.0f) return true;
     return random16() < static_cast<uint32_t>(probability * 65535.0f);
 }
 

@@ -23,6 +23,7 @@
 
 #include "engine/effect/Effect.h"
 #include "engine/effect/EffectOperation.h"
+#include "engine/utils/Weights.h"
 
 class NoTransition : public Effect<NoTransition, uint8_t> {
 public:
@@ -39,7 +40,7 @@ public:
 
     static constexpr const char *name() { return "NoTransition"; }
     static constexpr EffectOperation operation() { return EffectOperation::TRANSITION; }
-    static const EffectFactory<uint8_t> &factory;
+    static EffectFactoryRef<uint8_t> factory;
 };
 
 class NoTransitionFactory : public EffectFactory<uint8_t> {

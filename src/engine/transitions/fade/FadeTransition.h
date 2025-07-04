@@ -20,7 +20,9 @@
 
 #ifndef FADETRANSITION_H
 #define FADETRANSITION_H
+
 #include "engine/effect/Effect.h"
+#include "engine/utils/Weights.h"
 
 class FadeTransition : public Effect<FadeTransition, uint8_t> {
 public:
@@ -37,7 +39,7 @@ public:
 
     static constexpr const char *name() { return "FadeTransition"; }
     static constexpr EffectOperation operation() { return EffectOperation::TRANSITION; }
-    static const EffectFactory<uint8_t>& factory;
+    static EffectFactoryRef<uint8_t> factory;
 };
 
 class FadeTransitionFactory : public EffectFactory<uint8_t> {

@@ -42,7 +42,7 @@ uint16_t FibonacciSpec::segmentSize(const uint16_t layoutId, const uint16_t segm
     }
 }
 
-std::pair<uint16_t, uint8_t> FibonacciSpec::radialToSpiralIndex(
+WeightedLayout FibonacciSpec::radialToSpiralIndex(
     const uint8_t segmentIndex,
     const uint8_t radialIndex
 ) const {

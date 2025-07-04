@@ -22,6 +22,7 @@
 #define LED_SEGMENTS_NOISEEFFECT_H
 
 #include "engine/effect/Effect.h"
+#include "engine/utils/Weights.h"
 
 class NoiseEffect : public Effect<NoiseEffect, CRGB> {
 protected:
@@ -43,7 +44,7 @@ public:
 
     static constexpr const char *name() { return "NoiseEffect"; }
     static constexpr EffectOperation operation() { return EffectOperation::EFFECT; }
-    static const EffectFactory<CRGB> &factory;
+    static EffectFactoryRef<CRGB> factory;
 };
 
 class NoiseEffectFactory : public EffectFactory<CRGB> {

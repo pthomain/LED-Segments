@@ -22,6 +22,7 @@
 #define LED_SEGMENTS_SLIDEEFFECT_H
 
 #include "engine/effect/Effect.h"
+#include "engine/utils/Weights.h"
 
 class SlideEffect : public Effect<SlideEffect, CRGB> {
     const uint8_t nbColours = 4;
@@ -55,7 +56,7 @@ public:
 
     static constexpr const char *name() { return "SlideEffect"; }
     static constexpr EffectOperation operation() { return EffectOperation::EFFECT; }
-    static const EffectFactory<CRGB> &factory;
+    static EffectFactoryRef<CRGB> factory;
 };
 
 class SlideEffectFactory : public EffectFactory<CRGB> {

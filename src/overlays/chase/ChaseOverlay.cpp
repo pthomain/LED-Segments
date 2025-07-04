@@ -21,9 +21,10 @@
 #include "ChaseOverlay.h"
 #include "crgb.h"
 #include "engine/utils/Utils.h"
+#include "engine/utils/Weights.h"
 
 static const ChaseOverlayFactory factoryInstance;
-const EffectFactory<CRGB> &ChaseOverlay::factory = factoryInstance;
+EffectFactoryRef<CRGB> ChaseOverlay::factory = &factoryInstance;
 
 void ChaseOverlay::fillArrayInternal(
     CRGB *effectArray,
@@ -82,7 +83,7 @@ void ChaseOverlay::fillArrayInternal(
 
     // Add new spark if needed
 
-    const uint8_t swirlingInterval = true ? random8(0, context.nbSegments) : context.nbSegments;
+    const uint8_t swirlingInterval = isSwirling ? random8(0, context.nbSegments) : context.nbSegments;
     const uint8_t swirlDistance = effectArraySize / swirlingInterval;
 
     auto distanceFromLeadingSpark = leadingSparkPosition - sparkIntervalCounterPerSegment[segmentIndex];

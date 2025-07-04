@@ -26,12 +26,6 @@
 
 #define LED_PIN D7 //Umbrella
 // #define LED_PIN 9
-#define BRIGHTNESS 255
-#define DEBUG_BRIGHTNESS 50
-#define MIN_EFFECT_DURATION_IN_SECONDS 5
-#define MAX_EFFECT_DURATION_IN_SECONDS 10
-#define DEBUG_EFFECT_DURATION_IN_SECONDS 3
-#define IS_UMBRELLA true
 
 Display *display;
 
@@ -42,12 +36,7 @@ void setup() {
     }
 
     display = Display::create<LED_PIN, GRB>(
-        std::make_unique<UmbrellaSpec>(),
-        IS_DEBUG ? DEBUG_BRIGHTNESS : BRIGHTNESS,
-        IS_DEBUG ? DEBUG_EFFECT_DURATION_IN_SECONDS : MIN_EFFECT_DURATION_IN_SECONDS,
-        IS_DEBUG ? DEBUG_EFFECT_DURATION_IN_SECONDS : MAX_EFFECT_DURATION_IN_SECONDS,
-        IS_UMBRELLA ? 500 : 2000,
-        30
+        std::make_unique<UmbrellaSpec>()
     );
 }
 

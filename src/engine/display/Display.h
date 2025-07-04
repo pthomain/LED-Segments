@@ -22,38 +22,24 @@
 #define LED_SEGMENTS_DISPLAY_H
 
 #include "FastLED.h"
+#include "engine/utils/Utils.h"
 #include "engine/effect/Effect.h"
 #include "engine/displayspec/DisplaySpec.h"
 #include "engine/render/Renderer.h"
 #include <algorithm> // Required for std::remove and std::erase
 
 class Display {
-    CRGB *outputArray;
-    const uint8_t minEffectDurationsInSecs;
-    const uint8_t maxEffectDurationsInSecs;
-    uint8_t currentEffectDurationsInSecs;
-    uint32_t lastChangeTime = 0;
-    const uint8_t fps;
-    const int16_t transitionDurationInMillis;
-    const uint16_t refreshRateInMillis;
-    std::shared_ptr<DisplaySpec> displaySpec;
+    std::shared_ptr<DisplaySpec> _displaySpec;
     const std::unique_ptr<Renderer> renderer;
     const std::vector<uint8_t> freePinsForEntropy;
 
-    const float chanceOfRainbow = .75f;
-    const Palette rainbowPalette = Palette(
-        Rainbow_gp,
-        "Rainbow"
-    );
+    CRGB *outputArray;
+    uint32_t lastChangeTime = 0;
+    uint8_t currentEffectDurationsInSecs = 0;
 
     explicit Display(
         CRGB *outputArray,
         std::unique_ptr<DisplaySpec> displaySpec,
-        uint8_t brightness,
-        uint8_t minEffectDurationsInSecs,
-        uint8_t maxEffectDurationsInSecs,
-        int16_t transitionDurationInMillis,
-        uint8_t fps,
         const std::vector<uint8_t> &freePinsForEntropy
     );
 
@@ -65,13 +51,8 @@ public:
     template<int LED_PIN, EOrder RGB_ORDER>
     static Display *create(
         std::unique_ptr<DisplaySpec> displaySpec,
-        const uint8_t brightness = 50,
-        const uint8_t minEffectDurationsInSecs = 3,
-        const uint8_t maxEffectDurationsInSecs = 10,
-        const int16_t transitionDurationInMillis = 1000, //use < 1 to disable
-        const uint8_t fps = 30,
         //change if any of those pins are already in use or unavailable on the board
-        std::vector<unsigned char> freePinsForEntropy = std::vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+        std::vector<uint8_t> freePinsForEntropy = std::vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
     ) {
         freePinsForEntropy.erase(
             std::remove(freePinsForEntropy.begin(), freePinsForEntropy.end(), static_cast<uint8_t>(LED_PIN)),
@@ -85,11 +66,6 @@ public:
         return new Display(
             outputArray,
             std::move(displaySpec),
-            brightness,
-            minEffectDurationsInSecs,
-            maxEffectDurationsInSecs,
-            transitionDurationInMillis,
-            fps,
             freePinsForEntropy
         );
     }

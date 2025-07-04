@@ -55,8 +55,6 @@ public :
 
     uint16_t nbLeds() const override { return TOTAL_FIBONACCI_LEDS; }
 
-    bool isCircular() const override { return true; }
-
     uint16_t nbSegments(uint16_t layoutId) const override;
 
     uint16_t segmentSize(uint16_t layoutId, uint16_t segmentIndex) const override;

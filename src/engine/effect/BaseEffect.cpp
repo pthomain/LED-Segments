@@ -28,7 +28,7 @@ void BaseEffect<C>::fillArray(
     float progress
 ) {
     if (effectArraySize == 0) {
-        Serial.println("Effect::fillArray: empty array");
+        Serial.println("BaseEffect::fillArray: empty array");
         return;
     }
 

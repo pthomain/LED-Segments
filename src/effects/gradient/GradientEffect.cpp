@@ -19,9 +19,10 @@
  */
 
 #include "GradientEffect.h"
+#include "engine/utils/Weights.h"
 
 static const GradientEffectFactory factoryInstance;
-const EffectFactory<CRGB> &GradientEffect::factory = factoryInstance;
+EffectFactoryRef<CRGB> GradientEffect::factory = &factoryInstance;
 
 void GradientEffect::fillArrayInternal(
     CRGB *effectArray,

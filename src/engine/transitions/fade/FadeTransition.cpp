@@ -20,8 +20,10 @@
 
 #include "FadeTransition.h"
 
+#include "engine/utils/Weights.h"
+
 static const FadeTransitionFactory factoryInstance;
-const EffectFactory<uint8_t> &FadeTransition::factory = factoryInstance;
+EffectFactoryRef<uint8_t> FadeTransition::factory = &factoryInstance;
 
 void FadeTransition::fillArrayInternal(
     uint8_t *effectArray,

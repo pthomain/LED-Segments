@@ -20,8 +20,10 @@
 
 #include "NoEffect.h"
 
+#include "engine/utils/Weights.h"
+
 static const NoEffectFactory factoryInstance;
-const EffectFactory<CRGB> &NoEffect::factory = factoryInstance;
+EffectFactoryRef<CRGB> NoEffect::factory = &factoryInstance;
 
 void NoEffect::fillArrayInternal(
     CRGB *effectArray,

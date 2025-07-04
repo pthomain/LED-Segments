@@ -39,7 +39,7 @@ public:
 
     static constexpr const char *name() { return "NoOverlay"; }
     static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_SOURCE; }
-    static const EffectFactory<CRGB>& factory;
+    static EffectFactoryRef<CRGB> factory;
 };
 
 class NoOverlayFactory : public EffectFactory<CRGB> {

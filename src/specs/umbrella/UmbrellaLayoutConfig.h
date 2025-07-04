@@ -32,6 +32,7 @@
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/dash/DashOverlay.h"
 #include "overlays/moire/MoireOverlay.h"
+#include "overlays/sparkle/SparkleOverlay.h"
 
 enum UmbrellaLayout {
     LEDS_IN_SPOKE,
@@ -42,11 +43,11 @@ static const std::set<uint16_t> umbrellaLayoutIds = {
     {LEDS_IN_SPOKE, SPOKES_IN_WHOLE}
 };
 
-static const std::vector<WeightedLayout> umbrellaLayoutSelector(EffectType effectType) {
+static const WeightedLayouts umbrellaLayoutSelector(EffectType effectType) {
     switch (effectType) {
         case EffectType::EFFECT:
             return {
-                {LEDS_IN_SPOKE, 1},
+                {LEDS_IN_SPOKE, 4},
                 {SPOKES_IN_WHOLE, 1}
             };
 
@@ -58,43 +59,58 @@ static const std::vector<WeightedLayout> umbrellaLayoutSelector(EffectType effec
 };
 
 static EffectAndMirrors<CRGB> umbrellaEffectSelector(uint16_t layoutId) {
-    return {
-        {
-            {&GradientEffect::factory, 1},
-            {&SwirlEffect::factory, 1},
-            {&NoiseEffect::factory, 1},
-            {&SlideEffect::factory, 1}
-        },
-        allCRGBMirrors
-    };
+    if (layoutId == LEDS_IN_SPOKE) {
+        return {
+            {
+                {SwirlEffect::factory, 3},
+                {NoiseEffect::factory, 2},
+                {SlideEffect::factory, 1}
+            },
+            allCRGBMirrors
+        };
+    } else {
+        return {
+            {
+                {SwirlEffect::factory, 1},
+            },
+            [](EffectFactoryRef<CRGB> effectFactory) {
+                return WeightedMirrors{
+                    {Mirror::NONE, 1},
+                    {Mirror::REVERSE, 1}
+                };
+            }
+        };
+    }
 }
 
 static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
-    switch (layoutId) {
-        case LEDS_IN_SPOKE:
-            return {
-                {
-                    {&MoireOverlay::factory, 1},
-                    {&ChaseOverlay::factory, 1},
-                    {&DashOverlay::factory, 1},
-                },
-                [](const EffectFactory<CRGB> &overlayFactory) {
-                    if (overlayFactory.name() == MoireOverlay::name()) {
-                        return WeightedMirrors{}; //No mirrors for this overlay
-                    }
-                    return allCRGBMirrors(overlayFactory);
+    if (layoutId == LEDS_IN_SPOKE) {
+        return {
+            {
+                {MoireOverlay::factory, 3},
+                {ChaseOverlay::factory, 3},
+                {DashOverlay::factory, 2},
+                {SparkleOverlay::factory, 1},
+                {NoOverlay::factory, 1},
+            },
+            [](EffectFactoryRef<CRGB> overlayFactory) {
+                if (overlayFactory->name() == MoireOverlay::name()) {
+                    return WeightedMirrors{}; //No mirrors for this overlay
                 }
-            };
-
-        default: return {}; //No mirrors for SPOKES_IN_WHOLE
+                return allCRGBMirrors(overlayFactory);
+            }
+        };
     }
+
+    return {}; //No overlays for SPOKES_IN_WHOLE
 }
 
 static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutId) {
     return {
         {
-            {&SlideTransition::factory, 1},
-            {&FadeTransition::factory, 1},
+            //TODO the first 4 pixels of the first segment flash white when using transitions
+            // {SlideTransition::factory, 1},
+            {NoTransition::factory, 1},
         },
         allIntMirrors
     };

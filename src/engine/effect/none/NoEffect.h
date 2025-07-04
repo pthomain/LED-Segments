@@ -22,6 +22,7 @@
 #define NOEFFECT_H
 
 #include "engine/effect/Effect.h"
+#include "engine/utils/Weights.h"
 
 class NoEffect : public Effect<NoEffect, CRGB> {
 public:
@@ -38,7 +39,7 @@ public:
 
     static constexpr const char *name() { return "NoEffect"; }
     static constexpr EffectOperation operation() { return EffectOperation::EFFECT; }
-    static const EffectFactory<CRGB> &factory;
+    static EffectFactoryRef<CRGB> factory;
 };
 
 class NoEffectFactory : public EffectFactory<CRGB> {

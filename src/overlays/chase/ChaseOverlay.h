@@ -23,6 +23,7 @@
 
 #include "engine/effect/Effect.h"
 #include "engine/utils/Utils.h"
+#include "engine/utils/Weights.h"
 
 class ChaseOverlay : public Effect<ChaseOverlay, CRGB> {
     const uint8_t minxSparksPerSegment = 1;
@@ -83,7 +84,7 @@ public:
 
     static constexpr const char *name() { return "ChaseOverlay"; }
     static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_MULTIPLY; }
-    static const EffectFactory<CRGB> &factory;
+    static EffectFactoryRef<CRGB> factory;
 };
 
 class ChaseOverlayFactory : public EffectFactory<CRGB> {

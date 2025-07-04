@@ -164,9 +164,9 @@ static std::set<uint16_t> fibonacciLayoutIds() {
     return layoutIds;
 }
 
-static std::vector<WeightedLayout> fibonacciLayoutSelector(EffectType effectType) {
+static WeightedLayouts fibonacciLayoutSelector(EffectType effectType) {
     auto ids = fibonacciLayoutIds();
-    std::vector<WeightedLayout> result;
+    WeightedLayouts result;
     result.reserve(ids.size());
 
     std::transform(
@@ -182,10 +182,10 @@ static std::vector<WeightedLayout> fibonacciLayoutSelector(EffectType effectType
 static EffectAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutId) {
     return {
         {
-            {&GradientEffect::factory, 1},
-            {&SwirlEffect::factory, 1},
-            {&NoiseEffect::factory, 1},
-            {&SlideEffect::factory, 1}
+            {GradientEffect::factory, 1},
+            {SwirlEffect::factory, 1},
+            {NoiseEffect::factory, 1},
+            {SlideEffect::factory, 1}
         },
         allCRGBMirrors
     };
@@ -194,9 +194,9 @@ static EffectAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutId) {
 static EffectAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutId) {
     return {
         {
-            {&MoireOverlay::factory, 1},
-            {&ChaseOverlay::factory, 1},
-            {&DashOverlay::factory, 1},
+            {MoireOverlay::factory, 1},
+            {ChaseOverlay::factory, 1},
+            {DashOverlay::factory, 1},
         },
         allCRGBMirrors
     };

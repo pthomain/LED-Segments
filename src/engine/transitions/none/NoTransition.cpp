@@ -20,8 +20,10 @@
 
 #include "NoTransition.h"
 
+#include "engine/utils/Weights.h"
+
 static const NoTransitionFactory factoryInstance;
-const EffectFactory<uint8_t> &NoTransition::factory = factoryInstance;
+EffectFactoryRef<uint8_t> NoTransition::factory = &factoryInstance;
 
 void NoTransition::fillArrayInternal(
     uint8_t *effectArray,

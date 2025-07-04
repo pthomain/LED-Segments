@@ -30,9 +30,7 @@
 #include <engine/mirror/MirrorUtils.h>
 #include "engine/utils/Utils.h"
 
-using WeightedLayout = std::pair<uint16_t, uint8_t>;
-
-using LayoutSelector = std::function<std::vector<WeightedLayout>(EffectType effectType)>;
+using LayoutSelector = std::function<WeightedLayouts(EffectType effectType)>;
 
 template<typename C>
 using EffectAndMirrors = std::pair<WeightedEffects<C>, MirrorSelector<C> >;
@@ -41,7 +39,7 @@ template<typename C>
 using EffectSelector = std::function<EffectAndMirrors<C>(uint16_t layoutId)>;
 
 template<typename C>
-using RandomEffect = std::tuple<uint16_t, const EffectFactory<C> &, Mirror>;
+using RandomEffect = std::tuple<uint16_t, EffectFactoryRef<C>, Mirror>;
 
 class LayoutCatalog {
     const std::map<uint16_t, String> _layoutNames;
@@ -54,22 +52,7 @@ class LayoutCatalog {
     RandomEffect<T> randomEntry(
         EffectType effectType,
         const EffectSelector<T> &effectSelector,
-        const EffectFactory<T> &defaultEffectFactory
-    ) const;
-
-    template<typename T>
-    uint8_t pickRandomWeight(
-        EffectType effectType,
-        const String &weightType,
-        const std::vector<std::pair<T, uint8_t> > &weightedItems
-    ) const;
-
-    template<typename T>
-    T shuffleAndPickRandomWeightedItem(
-        EffectType effectType,
-        const String &weightType,
-        const std::vector<std::pair<T, uint8_t> > &weightedItems,
-        const T &defaultValue
+        EffectFactoryRef<T> defaultEffectFactory
     ) const;
 
 public:
@@ -108,8 +91,8 @@ public:
 };
 
 template<typename T>
-std::map<uint16_t, std::vector<T> > mapLayoutIndex(
-    const std::vector<uint16_t> &layoutIdes,
+std::map<uint16_t, std::vector<T> > mapLayoutId(
+    const std::vector<uint16_t> &layoutIds,
     const std::function<std::vector<T>(uint16_t)> &mapper
 );
 

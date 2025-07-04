@@ -40,7 +40,7 @@ class FibonacciSpec : public DisplaySpec {
         const std::function<void(uint16_t)> &onLedMapped
     ) const;
 
-    std::pair<uint16_t, uint8_t> radialToSpiralIndex(
+    WeightedLayout radialToSpiralIndex(
         uint8_t segmentIndex,
         uint8_t radialIndex
     ) const;

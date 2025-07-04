@@ -74,9 +74,6 @@ public:
     virtual ~EffectFactory() = default;
 };
 
-template<typename C>
-using WeightedEffects = std::vector<std::pair<const EffectFactory<C> *, uint8_t> >;
-
 template class BaseEffect<CRGB>;
 template class BaseEffect<uint8_t>;
 

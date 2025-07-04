@@ -21,9 +21,10 @@
 #include "SparkleOverlay.h"
 #include "crgb.h"
 #include "engine/utils/Utils.h"
+#include "engine/utils/Weights.h"
 
 static const SparkleOverlayFactory factoryInstance;
-const EffectFactory<CRGB> &SparkleOverlay::factory = factoryInstance;
+EffectFactoryRef<CRGB> SparkleOverlay::factory = &factoryInstance;
 
 void SparkleOverlay::fillArrayInternal(
     CRGB *effectArray,

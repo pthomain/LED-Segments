@@ -20,9 +20,10 @@
 
 #include "SlideEffect.h"
 #include "colorutils.h"
+#include "engine/utils/Weights.h"
 
 static const SlideEffectFactory factoryInstance;
-const EffectFactory<CRGB> &SlideEffect::factory = factoryInstance;
+EffectFactoryRef<CRGB> SlideEffect::factory = &factoryInstance;
 
 void SlideEffect::fillArrayInternal(
     CRGB *effectArray,

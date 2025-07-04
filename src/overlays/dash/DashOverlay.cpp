@@ -21,9 +21,10 @@
 #include "DashOverlay.h"
 #include "crgb.h"
 #include "engine/utils/Utils.h"
+#include "engine/utils/Weights.h"
 
 static const DashOverlayFactory factoryInstance;
-const EffectFactory<CRGB> &DashOverlay::factory = factoryInstance;
+EffectFactoryRef<CRGB> DashOverlay::factory = &factoryInstance;
 
 void DashOverlay::fillArrayInternal(
     CRGB *effectArray,

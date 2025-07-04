@@ -23,6 +23,7 @@
 
 #include "engine/effect/Effect.h"
 #include "engine/utils/Utils.h"
+#include "engine/utils/Weights.h"
 
 class SwirlEffect : public Effect<SwirlEffect, CRGB> {
     bool isReversed = probability(0.5f);
@@ -41,7 +42,7 @@ public:
 
     static constexpr const char* name() { return "SwirlEffect"; }
     static constexpr EffectOperation operation() { return EffectOperation::EFFECT; }
-    static const EffectFactory<CRGB>& factory;
+    static EffectFactoryRef<CRGB> factory;
 };
 
 class SwirlEffectFactory : public EffectFactory<CRGB> {

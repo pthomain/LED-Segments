@@ -19,12 +19,12 @@
  */
 
 #include "SwirlEffect.h"
-#include <functional>
 #include "engine/effect/Effect.h"
 #include "engine/utils/Utils.h"
+#include "engine/utils/Weights.h"
 
 static const SwirlEffectFactory factoryInstance;
-const EffectFactory<CRGB> &SwirlEffect::factory = factoryInstance;
+EffectFactoryRef<CRGB> SwirlEffect::factory = &factoryInstance;
 
 void SwirlEffect::fillArrayInternal(
     CRGB *effectArray,

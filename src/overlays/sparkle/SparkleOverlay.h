@@ -21,6 +21,7 @@
 #ifndef SPARKLEOVERLAY_H
 #define SPARKLEOVERLAY_H
 #include "engine/effect/Effect.h"
+#include "engine/utils/Weights.h"
 
 class SparkleOverlay : public Effect<SparkleOverlay, CRGB>{
     const float density = 0.005f;
@@ -40,7 +41,7 @@ public:
 
     static constexpr const char *name() { return "SparkleOverlay"; }
     static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_MULTIPLY; }
-    static const EffectFactory<CRGB>& factory;
+    static EffectFactoryRef<CRGB> factory;
 };
 
 class SparkleOverlayFactory : public EffectFactory<CRGB> {

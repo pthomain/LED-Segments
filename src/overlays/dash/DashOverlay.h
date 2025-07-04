@@ -22,6 +22,7 @@
 #define DASHOVERLAY_H
 
 #include "engine/effect/Effect.h"
+#include "engine/utils/Weights.h"
 
 class DashOverlay : public Effect<DashOverlay, CRGB> {
     uint16_t *headPositionForSegment;
@@ -57,7 +58,7 @@ public:
 
     static constexpr const char *name() { return "DashOverlay"; }
     static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_MULTIPLY; }
-    static const EffectFactory<CRGB>& factory;
+    static EffectFactoryRef<CRGB> factory;
 };
 
 class DashOverlayFactory : public EffectFactory<CRGB> {

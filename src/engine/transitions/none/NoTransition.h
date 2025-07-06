@@ -22,6 +22,7 @@
 #define NOTRANSITION_H
 
 #include "engine/effect/Effect.h"
+#include "engine/effect/EffectFactory.h"
 #include "engine/effect/EffectOperation.h"
 #include "engine/utils/Weights.h"
 
@@ -39,7 +40,7 @@ public:
     ) override;
 
     static constexpr const char *name() { return "NoTransition"; }
-    static constexpr EffectOperation operation() { return EffectOperation::TRANSITION; }
+    static constexpr WeightedOperations operations() { return just(EffectOperation::TRANSITION); }
     static EffectFactoryRef<uint8_t> factory;
 };
 

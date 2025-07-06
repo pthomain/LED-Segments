@@ -22,6 +22,7 @@
 #define CHASEOVERLAY_H
 
 #include "engine/effect/Effect.h"
+#include "engine/effect/EffectFactory.h"
 #include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
@@ -48,24 +49,7 @@ class ChaseOverlay : public Effect<ChaseOverlay, CRGB> {
     bool *tempBackward;
 
 public:
-    explicit ChaseOverlay(const EffectContext &effectContext)
-        : Effect(effectContext),
-          sparkIntervalCounterPerSegment(new uint16_t[context.nbSegments]),
-          nbSparksForSegment(new uint8_t[context.nbSegments]),
-          forward(std::vector<std::vector<bool> >(context.nbSegments)),
-          backward(std::vector<std::vector<bool> >(context.nbSegments)),
-          tempForward(new bool[context.maxSegmentSize]),
-          tempBackward(new bool[context.maxSegmentSize]) {
-        memset(tempForward, 0, sizeof(bool) * context.maxSegmentSize);
-        memset(tempBackward, 0, sizeof(bool) * context.maxSegmentSize);
-        memset(sparkIntervalCounterPerSegment, 0, sizeof(uint16_t) * context.nbSegments);
-        memset(nbSparksForSegment, 0, sizeof(uint8_t) * context.nbSegments);
-
-        for (int i = 0; i < context.nbSegments; i++) {
-            forward[i].resize(context.maxSegmentSize, false);
-            backward[i].resize(context.maxSegmentSize, false);
-        }
-    }
+    explicit ChaseOverlay(const EffectContext &effectContext);
 
     void fillArrayInternal(
         CRGB *effectArray,
@@ -83,7 +67,14 @@ public:
     }
 
     static constexpr const char *name() { return "ChaseOverlay"; }
-    static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_MULTIPLY; }
+
+    static constexpr WeightedOperations operations() {
+        return {
+            {EffectOperation::OVERLAY_MULTIPLY, 4},
+            {EffectOperation::OVERLAY_INVERT, 1}
+        };
+    }
+
     static EffectFactoryRef<CRGB> factory;
 };
 

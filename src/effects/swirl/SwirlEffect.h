@@ -22,6 +22,7 @@
 #define LED_SEGMENTS_SWIRLEFFECT_H
 
 #include "engine/effect/Effect.h"
+#include "engine/effect/EffectFactory.h"
 #include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
@@ -41,7 +42,7 @@ public:
     ) override;
 
     static constexpr const char* name() { return "SwirlEffect"; }
-    static constexpr EffectOperation operation() { return EffectOperation::EFFECT; }
+    static constexpr WeightedOperations operations() { return just(EffectOperation::EFFECT); }
     static EffectFactoryRef<CRGB> factory;
 };
 

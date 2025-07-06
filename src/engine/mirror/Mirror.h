@@ -81,9 +81,6 @@ void applyMirror(
     uint16_t effectArraySize
 );
 
-template<typename C>
-bool isOverlay(const std::shared_ptr<BaseEffect<C> > &effect);
-
 EffectOperation mixOperation(EffectOperation operation);
 
 #endif //LED_SEGMENTS_MIRROR_H

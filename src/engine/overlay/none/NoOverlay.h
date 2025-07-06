@@ -22,7 +22,7 @@
 #define NOOVERLAY_H
 
 #include "engine/effect/Effect.h"
-#include "engine/mirror/MirrorUtils.h"
+#include "engine/effect/EffectFactory.h"
 
 class NoOverlay : public Effect<NoOverlay, CRGB> {
 public:
@@ -38,7 +38,7 @@ public:
     ) override;
 
     static constexpr const char *name() { return "NoOverlay"; }
-    static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_MULTIPLY; }
+    static constexpr WeightedOperations operations() { return just(EffectOperation::OVERLAY_MULTIPLY); }
     static EffectFactoryRef<CRGB> factory;
 };
 

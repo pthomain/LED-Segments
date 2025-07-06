@@ -22,9 +22,7 @@
 #define WEIGHTS_H
 #include <cstdint>
 #include <utility>
-
 #include "Utils.h"
-#include "engine/effect/BaseEffect.h"
 
 template<typename T>
 using WeightedItem = std::pair<T, uint8_t>;
@@ -32,17 +30,24 @@ using WeightedItem = std::pair<T, uint8_t>;
 using WeightedLayout = WeightedItem<uint16_t>;
 using WeightedLayouts = std::vector<WeightedLayout>;
 
-template<typename T>
-using EffectFactoryRef = const EffectFactory<T> *;
-
-template<typename T>
-using WeightedEffect = WeightedItem<EffectFactoryRef<T> >;
-
-template<typename T>
-using WeightedEffects = std::vector<WeightedEffect<T> >;
-
 using WeightedMirror = WeightedItem<Mirror>;
 using WeightedMirrors = std::vector<WeightedMirror>;
+
+using WeightedOperations = std::vector<WeightedItem<EffectOperation>>;
+
+template<typename T>
+std::vector<WeightedItem<T>> just(T item) {
+    return { {item, 1} };
+}
+
+template
+std::vector<WeightedItem<uint8_t> > just(uint8_t item);
+
+template
+std::vector<WeightedItem<CRGB> > just(CRGB item);
+
+template
+std::vector<WeightedItem<EffectOperation> > just(EffectOperation item);
 
 template<typename T>
 static T pickRandomWeightedItem(
@@ -51,17 +56,9 @@ static T pickRandomWeightedItem(
 ) {
     if (weightedItems.empty()) return defaultValue;
 
-    // Weighted items are shuffled to ensure that items with the same weights have equal chances to be picked.
-    // Fisher-Yates shuffle is used since it's more efficient on Arduino.
-    std::vector<WeightedItem<T> > shuffledItems = weightedItems;
-    for (size_t i = shuffledItems.size() - 1; i > 0; --i) {
-        size_t j = random16(i + 1);
-        std::swap(shuffledItems[i], shuffledItems[j]);
-    }
-
     // Calculate total weight
     uint16_t totalWeight = 0;
-    for (const auto &[_, weight]: shuffledItems) {
+    for (const auto &[_, weight]: weightedItems) {
         totalWeight += weight;
     }
 
@@ -72,7 +69,7 @@ static T pickRandomWeightedItem(
     // Iterate through shuffled list until the compounded weight reaches the target weight
     uint8_t weightCounter = 0;
 
-    for (const auto &[item, weight]: shuffledItems) {
+    for (const auto &[item, weight]: weightedItems) {
         weightCounter += weight;
         if (weightCounter >= targetWeight) return item;
     }

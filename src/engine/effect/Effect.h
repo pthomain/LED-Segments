@@ -25,8 +25,7 @@
 #include <memory>
 #include "BaseEffect.h"
 #include "EffectContext.h"
-#include "functional"
-#include "engine/effect/EffectOperation.h"
+#include "engine/utils/Weights.h"
 
 constexpr uint8_t MIN_CYCLE_SPEED = 5;
 constexpr uint8_t MAX_CYCLE_SPEED = 15;
@@ -42,8 +41,8 @@ public :
         );
 
         static_assert(
-            std::is_same<decltype(Child::operation()), EffectOperation>::value,
-            "Child class must implement static constexpr const operation()"
+            std::is_same<decltype(Child::operations()), WeightedOperations>::value,
+            "Child class must implement static constexpr const WeightedOperations operations()"
         );
     };
 
@@ -51,16 +50,16 @@ public :
         return name();
     }
 
-    EffectOperation effectOperation() override {
-        return operation();
+    WeightedOperations effectOperations() override {
+        return operations();
     }
 
     static const char *name() {
         return Child::name();
     }
 
-    static EffectOperation operation() {
-        return Child::operation();
+    static WeightedOperations operations() {
+        return Child::operations();
     }
 };
 

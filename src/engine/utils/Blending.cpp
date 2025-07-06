@@ -20,7 +20,7 @@
 
 #include "Blending.h"
 
-uint8_t multiply( uint8_t base,  uint8_t overlay) {
+uint8_t multiply(uint8_t base, uint8_t overlay) {
     return static_cast<uint16_t>(base * overlay) / 255;
 }
 
@@ -32,7 +32,7 @@ CRGB multiply(const CRGB &base, const CRGB &overlay) {
     };
 }
 
-uint8_t screen( uint8_t base,  uint8_t overlay) {
+uint8_t screen(uint8_t base, uint8_t overlay) {
     return 255 - static_cast<uint16_t>((255 - base) * (255 - overlay)) / 255;
 }
 
@@ -49,9 +49,11 @@ uint8_t invert(uint8_t base, uint8_t overlay) {
 }
 
 CRGB invert(const CRGB &base, const CRGB &overlay) {
-    return {
-        invert(base.r, overlay.r),
-        invert(base.g, overlay.g),
-        invert(base.b, overlay.b)
-    };
+    if (overlay == CRGB::Black) {
+        return base;
+    }
+
+    CHSV hsv = rgb2hsv_approximate(base);
+    hsv.h += 128;
+    return hsv;
 }

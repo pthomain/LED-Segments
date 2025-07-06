@@ -52,7 +52,7 @@ void UmbrellaSpec::mapLeds(
     const std::function<void(uint16_t)> &onLedMapped
 ) const {
     auto mapSingleLed = [&](uint16_t ledIndex, const std::function<void(uint16_t)> &onLedMapped) {
-        IS_DEBUG ? mapLedInSnakeDisplay(ledIndex, onLedMapped) : onLedMapped(ledIndex);
+        onLedMapped(ledIndex);
     };
 
     switch (layoutId) {

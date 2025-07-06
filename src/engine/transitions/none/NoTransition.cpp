@@ -32,7 +32,5 @@ void NoTransition::fillArrayInternal(
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    for (uint16_t i = 0; i < effectArraySize; i++) {
-        effectArray[i] = progress < 0.5f ? 0 : 255;
-    }
+    memset(effectArray, progress < 0.5f ? 0 : 255, effectArraySize * sizeof(uint8_t));
 }

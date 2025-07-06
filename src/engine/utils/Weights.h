@@ -77,15 +77,6 @@ static T pickRandomWeightedItem(
         if (weightCounter >= targetWeight) return item;
     }
 
-    // This should never happen
-    if constexpr (IS_DEBUG) {
-        Serial.print("No item found for targetWeight ");
-        Serial.print(targetWeight);
-        Serial.print(" totalWeight ");
-        Serial.print(totalWeight);
-        Serial.println(" returning default value");
-    }
-
     return defaultValue;
 }
 #endif //WEIGHTS_H

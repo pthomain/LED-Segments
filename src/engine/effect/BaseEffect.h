@@ -22,8 +22,6 @@
 #define BASEEFFECT_H
 
 #include <utility>
-
-#include "functional"
 #include "EffectContext.h"
 #include "EffectOperation.h"
 

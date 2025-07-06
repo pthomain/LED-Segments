@@ -25,16 +25,16 @@
 #include "engine/displayspec/DisplaySpec.h"
 #include "engine/utils/Utils.h"
 
-constexpr uint8_t NB_SPOKES = IS_DEBUG ? 16 : 8;
-constexpr uint8_t LEDS_PER_SPOKE = IS_DEBUG ? 8 : 42;
+constexpr uint8_t NB_SPOKES = 8;
+constexpr uint8_t LEDS_PER_SPOKE = 42;
 
 class UmbrellaSpec : public DisplaySpec {
 public:
     explicit UmbrellaSpec(): DisplaySpec(
         umbrellaLayoutCatalog(),
         IS_DEBUG ? 50 : 128,
-        IS_DEBUG ? 2 : 3,
-        IS_DEBUG ? 2 : 6,
+        IS_DEBUG ? 3 : 3,
+        IS_DEBUG ? 3 : 6,
         500
     ) {
     }

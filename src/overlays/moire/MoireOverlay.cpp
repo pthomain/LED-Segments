@@ -56,15 +56,5 @@ void MoireOverlay::fillArrayInternal(
         }
     }
 
-    if (isDoubleSpiral || isReversed) {
-        applyMirror(Mirror::REVERSE, effectArray, effectArraySize);
-
-        if (isDoubleSpiral) { //TODO fix this
-            for (uint16_t i = 0; i < effectArraySize; i++) {
-                effectArray[i] = multiply(effectArray[i], reverseArray[i]);
-            }
-        }
-    }
-
     headIndex = ++headIndex % distance;
 }

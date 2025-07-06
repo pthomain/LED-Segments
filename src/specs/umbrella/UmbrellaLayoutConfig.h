@@ -43,7 +43,7 @@ static const std::set<uint16_t> umbrellaLayoutIds = {
     {LEDS_IN_SPOKE, SPOKES_IN_WHOLE}
 };
 
-static const WeightedLayouts umbrellaLayoutSelector(EffectType effectType) {
+static WeightedLayouts umbrellaLayoutSelector(EffectType effectType) {
     switch (effectType) {
         case EffectType::EFFECT:
             return {
@@ -94,10 +94,43 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
                 {NoOverlay::factory, 1},
             },
             [](EffectFactoryRef<CRGB> overlayFactory) {
-                if (overlayFactory->name() == MoireOverlay::name()) {
-                    return WeightedMirrors{}; //No mirrors for this overlay
+                if (
+                    overlayFactory->name() == MoireOverlay::name()
+                    || overlayFactory->name() == ChaseOverlay::name()
+                ) {
+                    return WeightedMirrors{
+                        {Mirror::NONE, 2},
+                        {Mirror::REVERSE, 2},
+                        {Mirror::CENTRE, 2},
+                        {Mirror::EDGE, 2},
+
+                        {Mirror::REPEAT, 1},
+                        {Mirror::REPEAT_REVERSE, 1},
+
+                        {Mirror::OVERLAY_REVERSE, 1},
+                        {Mirror::OVERLAY_REPEAT_2, 1},
+                        {Mirror::OVERLAY_REPEAT_3, 1},
+                        {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
+                        {Mirror::OVERLAY_REPEAT_3_REVERSE, 1},
+                    };
                 }
-                return allCRGBMirrors(overlayFactory);
+
+                if (overlayFactory->name() == DashOverlay::name()) {
+                    return WeightedMirrors{
+                        {Mirror::NONE, 2},
+                        {Mirror::REVERSE, 2},
+                        {Mirror::CENTRE, 2},
+                        {Mirror::EDGE, 2},
+
+                        {Mirror::REPEAT, 1},
+                        {Mirror::REPEAT_REVERSE, 1},
+
+                        {Mirror::OVERLAY_REVERSE, 1},
+                        {Mirror::OVERLAY_REPEAT_2, 1},
+                    };
+                }
+
+                return noCRGBMirrors(overlayFactory);
             }
         };
     }
@@ -108,11 +141,10 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
 static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutId) {
     return {
         {
-            //TODO the first 4 pixels of the first segment flash white when using transitions
-            // {SlideTransition::factory, 1},
-            {NoTransition::factory, 1},
+            {FadeTransition::factory, 1},
+            // {NoTransition::factory, 1},
         },
-        allIntMirrors
+        noIntMirrors
     };
 }
 

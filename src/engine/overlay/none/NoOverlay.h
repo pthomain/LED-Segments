@@ -38,7 +38,7 @@ public:
     ) override;
 
     static constexpr const char *name() { return "NoOverlay"; }
-    static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_SOURCE; }
+    static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_MULTIPLY; }
     static EffectFactoryRef<CRGB> factory;
 };
 

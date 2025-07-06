@@ -28,12 +28,12 @@ enum class EffectType {
 };
 
 enum class EffectOperation {
-    EFFECT,
-    OVERLAY_SOURCE,
-    OVERLAY_SCREEN,
-    OVERLAY_MULTIPLY,
-    OVERLAY_INVERT,
-    TRANSITION
+    EFFECT,             //default for effects, always uses source (CRGB)
+    OVERLAY_SOURCE,     //only useful for Overlay::NONE (CRGB)
+    OVERLAY_SCREEN,     //blends using screen mode (CRGB)
+    OVERLAY_MULTIPLY,   //blends using multiply mode (CRGB grayscale) //TODO enforce
+    OVERLAY_INVERT,     //inverts colours by 180 degrees (boolean: CRGB::Black = false, any other value = true)
+    TRANSITION          //default for transitions, always uses multiply (uint8_t)
 };
 
 inline String effectTypeName(EffectType effectType) {

@@ -87,30 +87,6 @@ inline void fillEffectPalette(
     );
 }
 
-static uint8_t multiply(const uint8_t base, const uint8_t overlay) {
-    return static_cast<uint16_t>(base * overlay) / 255;
-}
-
-static CRGB multiply(const CRGB &base, const CRGB &overlay) {
-    return {
-        multiply(base.r, overlay.r),
-        multiply(base.g, overlay.g),
-        multiply(base.b, overlay.b)
-    };
-}
-
-static uint8_t screen(const uint8_t base, const uint8_t overlay) {
-    return 255 - static_cast<uint16_t>((255 - base) * (255 - overlay)) / 255;
-}
-
-static CRGB screen(const CRGB &base, const CRGB &overlay) {
-    return {
-        screen(base.r, overlay.r),
-        screen(base.g, overlay.g),
-        screen(base.b, overlay.b)
-    };
-}
-
 template<typename T>
 static bool contains(const std::vector<T> &vector, const T &value) {
     return std::find(vector.begin(), vector.end(), value) != vector.end();

@@ -28,8 +28,6 @@
 class MoireOverlay : public Effect<MoireOverlay, CRGB> {
 
     const bool isInverted = probability(0.5f);
-    const bool isReversed = probability(0.5f);
-    const bool isDoubleSpiral = false;//probability(0.5f);
 
     const CRGB frontColour = isInverted ? CRGB::White : CRGB::Black;
     const CRGB backColour = isInverted ? CRGB::Black : CRGB::White;
@@ -67,6 +65,8 @@ public:
     }
 
     static constexpr const char *name() { return "MoireOverlay"; }
+
+    //TODO return weighted operations with OVERLAY_INVERT
     static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_MULTIPLY; }
     static EffectFactoryRef<CRGB> factory;
 };

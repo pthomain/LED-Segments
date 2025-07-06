@@ -30,11 +30,15 @@
 template<typename C>
 using MirrorSelector = std::function<WeightedMirrors(EffectFactoryRef<C> effectFactory)>;
 
-inline WeightedMirrors noMirrors(EffectFactoryRef<CRGB> effectFactory) {
+inline WeightedMirrors noCRGBMirrors(EffectFactoryRef<CRGB> effectFactory) {
     return {};
 }
 
-inline WeightedMirrors unrepeatedMirrors(EffectFactoryRef<CRGB> effectFactory) {
+inline WeightedMirrors noIntMirrors(EffectFactoryRef<uint8_t> effectFactory) {
+    return {};
+}
+
+inline WeightedMirrors unrepeatedCRGBMirrors(EffectFactoryRef<CRGB> effectFactory) {
     return {
         {Mirror::NONE, 1},
         {Mirror::REVERSE, 1},

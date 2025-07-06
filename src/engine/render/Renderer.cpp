@@ -20,6 +20,7 @@
 
 #include "Renderer.h"
 #include "engine/effect/BaseEffect.h"
+#include "engine/utils/Blending.h"
 #include "engine/utils/Utils.h"
 
 Renderer::Renderer(
@@ -75,7 +76,7 @@ void Renderer::applyEffectOrTransition(
             progress
         );
 
-        applyMirror(mirror, segmentArray, segmentSize);
+        applyMirror(effect, mirror, segmentArray, segmentSize);
 
         for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
             displaySpec->mapLeds(
@@ -213,11 +214,7 @@ void Renderer::flattenEffectAndOverlay(
         segmentArray,
         effectOutputArray,
         [&](uint16_t, CRGB existing, CRGB toBeMixed) {
-            switch (overlay->effectOperation()) {
-                case EffectOperation::OVERLAY_SCREEN: return screen(existing, toBeMixed);
-                case EffectOperation::OVERLAY_MULTIPLY: return multiply(existing, toBeMixed);
-                default: return existing; //TODO
-            }
+            return mix(existing, toBeMixed, overlay->effectOperation());
         },
         progress
     );

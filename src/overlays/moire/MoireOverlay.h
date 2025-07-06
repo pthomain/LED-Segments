@@ -22,11 +22,10 @@
 #define MOIREOVERLAY_H
 
 #include "engine/effect/Effect.h"
+#include "engine/effect/EffectFactory.h"
 #include "engine/utils/Utils.h"
-#include "engine/utils/Weights.h"
 
 class MoireOverlay : public Effect<MoireOverlay, CRGB> {
-
     const bool isInverted = probability(0.5f);
 
     const CRGB frontColour = isInverted ? CRGB::White : CRGB::Black;
@@ -66,8 +65,13 @@ public:
 
     static constexpr const char *name() { return "MoireOverlay"; }
 
-    //TODO return weighted operations with OVERLAY_INVERT
-    static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_MULTIPLY; }
+    static constexpr WeightedOperations operations() {
+        return {
+            {EffectOperation::OVERLAY_MULTIPLY, 4},
+            {EffectOperation::OVERLAY_INVERT, 1}
+        };
+    }
+
     static EffectFactoryRef<CRGB> factory;
 };
 

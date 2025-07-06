@@ -86,7 +86,14 @@ void applyMirror(
         }
         break;
 
-        default: if (!isOverlay(effect)) return;
+        default: {
+            auto effectOperation = effect->effectOperation();
+            bool isOverlay = effectOperation == EffectOperation::OVERLAY_SCREEN
+                             || effectOperation == EffectOperation::OVERLAY_MULTIPLY
+                             || effectOperation == EffectOperation::OVERLAY_INVERT;
+
+            if (!isOverlay) return;
+        }
     }
 
     auto overlayRepeat = [&](uint16_t x) {
@@ -164,14 +171,6 @@ void applyMirror(
     }
 }
 
-template<typename C>
-bool isOverlay(const std::shared_ptr<BaseEffect<C> > &effect) {
-    auto operation = effect->effectOperation();
-    return operation == EffectOperation::OVERLAY_SCREEN
-           || operation == EffectOperation::OVERLAY_MULTIPLY
-           || operation == EffectOperation::OVERLAY_INVERT;
-}
-
 uint16_t getMirrorSize(
     Mirror mirror,
     uint16_t effectArraySize
@@ -247,9 +246,3 @@ void applyMirror(
     uint8_t *effectArray,
     uint16_t effectArraySize
 );
-
-template
-bool isOverlay(const std::shared_ptr<BaseEffect<CRGB> > &effect);
-
-template
-bool isOverlay(const std::shared_ptr<BaseEffect<uint8_t> > &effect);

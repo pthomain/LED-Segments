@@ -22,7 +22,6 @@
 #define LED_SEGMENTS_RENDERER_H
 
 #include "FastLED.h"
-#include "engine/effect/Effect.h"
 #include "engine/displayspec/DisplaySpec.h"
 
 class Renderer {

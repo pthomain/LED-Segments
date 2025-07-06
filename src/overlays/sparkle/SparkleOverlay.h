@@ -20,7 +20,9 @@
 
 #ifndef SPARKLEOVERLAY_H
 #define SPARKLEOVERLAY_H
+
 #include "engine/effect/Effect.h"
+#include "engine/effect/EffectFactory.h"
 #include "engine/utils/Weights.h"
 
 class SparkleOverlay : public Effect<SparkleOverlay, CRGB>{
@@ -40,7 +42,7 @@ public:
     ) override;
 
     static constexpr const char *name() { return "SparkleOverlay"; }
-    static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_MULTIPLY; }
+    static constexpr WeightedOperations operations() { return just(EffectOperation::OVERLAY_MULTIPLY); }
     static EffectFactoryRef<CRGB> factory;
 };
 

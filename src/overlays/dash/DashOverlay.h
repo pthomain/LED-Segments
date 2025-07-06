@@ -22,6 +22,7 @@
 #define DASHOVERLAY_H
 
 #include "engine/effect/Effect.h"
+#include "engine/effect/EffectFactory.h"
 #include "engine/utils/Weights.h"
 
 class DashOverlay : public Effect<DashOverlay, CRGB> {
@@ -57,7 +58,14 @@ public:
     }
 
     static constexpr const char *name() { return "DashOverlay"; }
-    static constexpr EffectOperation operation() { return EffectOperation::OVERLAY_MULTIPLY; }
+
+    static constexpr WeightedOperations operations() {
+        return {
+            {EffectOperation::OVERLAY_MULTIPLY, 4},
+            {EffectOperation::OVERLAY_INVERT, 1}
+        };
+    }
+
     static EffectFactoryRef<CRGB> factory;
 };
 

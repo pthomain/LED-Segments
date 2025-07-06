@@ -153,7 +153,12 @@ void Renderer::render() {
     float effectProgress = min(1.0f, effectFrameIndex / effectDurationInFrames);
     effectFrameIndex++;
 
-    flattenEffectAndOverlay(effect, overlay, effectProgress, outputArray);
+    flattenEffectAndOverlay(
+        effect,
+        overlay,
+        effectProgress,
+        outputArray
+    );
 
     //Return if no transition is running
     if (transitionStep <= 0) return;
@@ -164,7 +169,12 @@ void Renderer::render() {
     float pendingEffectProgress = min(1.0f, pendingEffectFrameIndex / pendingEffectDurationInFrames);
     pendingEffectFrameIndex++;
 
-    flattenEffectAndOverlay(pendingEffect, pendingOverlay, pendingEffectProgress, pendingOutputArray);
+    flattenEffectAndOverlay(
+        pendingEffect,
+        pendingOverlay,
+        pendingEffectProgress,
+        pendingOutputArray
+    );
 
     //Render transition in transitionOutputArray
     const float transitionPercent = 1.0f - (transitionStep / transitionDurationInFrames);
@@ -214,7 +224,11 @@ void Renderer::flattenEffectAndOverlay(
         segmentArray,
         effectOutputArray,
         [&](uint16_t, CRGB existing, CRGB toBeMixed) {
-            return mix(existing, toBeMixed, overlay->effectOperation());
+            return mix(
+                existing,
+                toBeMixed,
+                overlay->effectOperation()
+            );
         },
         progress
     );

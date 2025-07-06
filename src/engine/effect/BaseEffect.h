@@ -23,7 +23,7 @@
 
 #include <utility>
 #include "EffectContext.h"
-#include "EffectOperation.h"
+#include "engine/utils/Weights.h"
 
 template<typename C>
 class BaseEffect {
@@ -41,6 +41,9 @@ protected:
         unsigned long timeInMillis
     ) = 0;
 
+    EffectOperation _effectOperation = EffectOperation::EFFECT;
+    bool _effectOperationInitialised = false;
+
 public:
     const EffectContext context;
 
@@ -51,25 +54,27 @@ public:
         float progress
     );
 
-    explicit BaseEffect(EffectContext context) : context(std::move(context)),
-                                                 randomStart(random8()) {
+    explicit BaseEffect(EffectContext context)
+        : context(std::move(context)),
+          randomStart(random8()) {
     }
 
     virtual const char *effectName() = 0;
 
-    virtual EffectOperation effectOperation() = 0;
+    virtual WeightedOperations effectOperations() = 0;
+
+    EffectOperation effectOperation() {
+        if (!_effectOperationInitialised) {
+            _effectOperation = pickRandomWeightedItem(
+                effectOperations(),
+                EffectOperation::EFFECT
+            );
+            _effectOperationInitialised = true;
+        }
+        return _effectOperation;
+    }
 
     virtual ~BaseEffect() = default;
-};
-
-template<typename C>
-class EffectFactory {
-public:
-    virtual std::unique_ptr<BaseEffect<C> > create(const EffectContext &context) const = 0;
-
-    virtual const char *name() const = 0;
-
-    virtual ~EffectFactory() = default;
 };
 
 template class BaseEffect<CRGB>;

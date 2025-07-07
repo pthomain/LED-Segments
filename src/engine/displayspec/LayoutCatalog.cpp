@@ -21,9 +21,9 @@
 #include "LayoutCatalog.h"
 
 #include <string>
-#include <engine/effect/none/NoEffect.h>
-#include <engine/overlay/none/NoOverlay.h>
-#include "engine/transitions/none/NoTransition.h"
+#include <effects/none/NoEffect.h>
+#include <overlays/none/NoOverlay.h>
+#include "transitions/none/NoTransition.h"
 #include "engine/utils/Utils.h"
 
 template<typename T>

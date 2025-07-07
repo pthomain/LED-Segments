@@ -30,7 +30,7 @@
 #include <effects/swirl/SwirlEffect.h>
 #include <effects/slide/SlideEffect.h>
 #include <engine/displayspec/LayoutCatalog.h>
-#include "engine/transitions/Transition.h"
+#include "transitions/Transition.h"
 #include "overlays/dash/DashOverlay.h"
 #include "overlays/moire/MoireOverlay.h"
 #include "overlays/chase/ChaseOverlay.h"

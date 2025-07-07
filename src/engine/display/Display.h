@@ -23,54 +23,169 @@
 
 #include "FastLED.h"
 #include "engine/utils/Utils.h"
-#include "engine/effect/Effect.h"
 #include "engine/displayspec/DisplaySpec.h"
 #include "engine/render/Renderer.h"
 #include <algorithm> // Required for std::remove and std::erase
+#include <type_traits>
+#include "engine/overlay/none/NoOverlay.h"
+#include "engine/utils/seed/SeedGenerator.h"
 
+#define FASTLED_USE_PROGMEM 1
+#define ENTROPY_UPDATE_IN_SECONDS 5
+
+template<typename, typename = void>
+struct has_led_pin : std::false_type {
+};
+
+template<typename, typename = void>
+struct has_rgb_order : std::false_type {
+};
+
+template<typename T>
+struct has_led_pin<T, std::void_t<decltype(T::LED_PIN)> > : std::true_type {
+};
+
+template<typename T>
+struct has_rgb_order<T, std::void_t<decltype(T::RGB_ORDER)> > : std::true_type {
+};
+
+template<typename SPEC>
 class Display {
-    std::shared_ptr<DisplaySpec> _displaySpec;
+    static_assert(std::is_base_of_v<DisplaySpec, SPEC>, "Template parameter SPEC must be a subclass of DisplaySpec");
+    static_assert(has_led_pin<SPEC>::value, "SPEC must provide a static constexpr int LED_PIN");
+    static_assert(has_rgb_order<SPEC>::value, "SPEC must provide a static constexpr EOrder RGB_ORDER");
+    std::shared_ptr<SPEC> _displaySpec;
+    CRGB *outputArray;
     const std::unique_ptr<Renderer> renderer;
     const std::vector<uint8_t> freePinsForEntropy;
 
-    CRGB *outputArray;
+public:
     uint32_t lastChangeTime = 0;
     uint8_t currentEffectDurationsInSecs = 0;
 
     explicit Display(
-        CRGB *outputArray,
-        std::unique_ptr<DisplaySpec> displaySpec,
-        const std::vector<uint8_t> &freePinsForEntropy
-    );
-
-    void changeEffect(uint8_t effectDurationsInSecs);
-
-    void render() const;
-
-public:
-    template<int LED_PIN, EOrder RGB_ORDER>
-    static Display *create(
-        std::unique_ptr<DisplaySpec> displaySpec,
         //change if any of those pins are already in use or unavailable on the board
         std::vector<uint8_t> freePinsForEntropy = std::vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-    ) {
+    ) : _displaySpec(std::unique_ptr<SPEC>(new SPEC())),
+        outputArray(new CRGB[_displaySpec->nbLeds()]),
+        renderer(std::make_unique<Renderer>(_displaySpec, outputArray)),
+        freePinsForEntropy(freePinsForEntropy) {
         freePinsForEntropy.erase(
-            std::remove(freePinsForEntropy.begin(), freePinsForEntropy.end(), static_cast<uint8_t>(LED_PIN)),
+            std::remove(freePinsForEntropy.begin(), freePinsForEntropy.end(), static_cast<uint8_t>(SPEC::LED_PIN)),
             freePinsForEntropy.end()
         );
 
-        CRGB *outputArray = new CRGB[displaySpec->nbLeds()];
-        CFastLED::addLeds<WS2812B, LED_PIN, RGB_ORDER>(outputArray, displaySpec->nbLeds())
+        CFastLED::addLeds<WS2812B, SPEC::LED_PIN, SPEC::RGB_ORDER>(outputArray, _displaySpec->nbLeds())
                 .setCorrection(TypicalLEDStrip);
 
-        return new Display(
-            outputArray,
-            std::move(displaySpec),
-            freePinsForEntropy
-        );
+        FastLED.setBrightness(_displaySpec->brightness);
+        FastLED.clear(true);
+        FastLED.show();
+
+        addEntropy(freePinsForEntropy);
+        changeEffect(random8(_displaySpec->minEffectDurationsInSecs, _displaySpec->maxEffectDurationsInSecs));
+        render();
     }
 
-    void loop();
+    void changeEffect(uint8_t effectDurationsInSecs) {
+        const auto &catalog = _displaySpec->catalog;
+        const Palette &palette = probability(_displaySpec->chanceOfRainbow)
+                                     ? RAINBOW_PALETTE
+                                     : PALETTES[random8(PALETTES.size())];
+
+        const auto &[effectLayoutId, effectFactory, effectMirror] = catalog.randomEffect();
+        const auto &[transitionLayoutId, transitionFactory, transitionMirror] = catalog.randomTransition();
+        const auto &[overlayLayoutId, overlayFactory, overlayMirror] = catalog.randomOverlay();
+
+        if constexpr (IS_DEBUG) {
+            Serial.println("---");
+            Serial.print("Palette			");
+            Serial.println(palette.name);
+            Serial.println("-");
+            Serial.print("Effect			");
+            Serial.println(effectFactory->name());
+            Serial.print("Effect layout		");
+            Serial.println(catalog.layoutName(effectLayoutId));
+            Serial.print("Effect mirror		");
+            Serial.println(getMirrorName(effectMirror));
+            Serial.println("-");
+            Serial.print("Overlay			");
+            Serial.println(overlayFactory->name());
+            Serial.print("Overlay layout		");
+            Serial.println(catalog.layoutName(overlayLayoutId));
+            Serial.print("Overlay mirror		");
+            Serial.println(getMirrorName(overlayMirror));
+            Serial.println("-");
+            Serial.print("Transition		");
+            Serial.println(transitionFactory->name());
+            Serial.print("Transition layout	");
+            Serial.println(catalog.layoutName(transitionLayoutId));
+            Serial.print("Transition mirror	");
+            Serial.println(getMirrorName(transitionMirror));
+            Serial.println("---");
+        }
+
+        const uint16_t effectDurationInFrames = effectDurationsInSecs * _displaySpec->fps;
+        auto transitionDurationInFrames = _displaySpec->fps * _displaySpec->transitionDurationInMillis / 1000;
+
+        const auto effectContext = EffectContext(
+            _displaySpec->maxSegmentSize(),
+            _displaySpec->nbSegments(effectLayoutId),
+            effectDurationInFrames,
+            _displaySpec->isCircular,
+            effectLayoutId,
+            palette,
+            effectMirror
+        );
+
+        const auto overlayContext = EffectContext(
+            _displaySpec->maxSegmentSize(),
+            _displaySpec->nbSegments(overlayLayoutId),
+            effectDurationInFrames,
+            _displaySpec->isCircular,
+            overlayLayoutId,
+            NO_PALETTE,
+            overlayMirror
+        );
+
+        const auto transitionContext = EffectContext(
+            _displaySpec->maxSegmentSize(),
+            _displaySpec->nbSegments(transitionLayoutId),
+            transitionDurationInFrames,
+            _displaySpec->isCircular,
+            transitionLayoutId,
+            NO_PALETTE,
+            transitionMirror
+        );
+
+        auto effect = effectFactory->create(effectContext);
+        auto overlay = overlayFactory->create(overlayContext);
+        auto transition = transitionFactory->create(transitionContext);
+
+        renderer->changeEffect(std::move(effect), std::move(overlay), std::move(transition));
+
+        currentEffectDurationsInSecs = effectDurationsInSecs;
+        lastChangeTime = millis();
+    }
+
+    void render() const {
+        renderer->render();
+        FastLED.show();
+    }
+
+    void loop() {
+        if (millis() - lastChangeTime >= currentEffectDurationsInSecs * 1000) {
+            changeEffect(random8(_displaySpec->minEffectDurationsInSecs, _displaySpec->maxEffectDurationsInSecs));
+        }
+
+        EVERY_N_MILLISECONDS(_displaySpec->refreshRateInMillis) {
+            render();
+        }
+
+        EVERY_N_SECONDS(ENTROPY_UPDATE_IN_SECONDS) {
+            addEntropy(freePinsForEntropy);
+        }
+    }
 
     ~Display() {
         delete[] outputArray;

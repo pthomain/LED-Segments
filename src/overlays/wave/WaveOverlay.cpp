@@ -46,7 +46,8 @@ void WaveOverlay::fillArrayInternal(
 
     phase += scrollingSpeed;
 
-    uint16_t x = (static_cast<uint32_t>(segmentIndex) * nbWaves * 65536L / context.nbSegments) + phase;
+    uint32_t index = isClockwise ? context.nbSegments - segmentIndex : segmentIndex;
+    uint16_t x = (index * nbWaves * 65536L / context.nbSegments) + phase;
 
     //Sine value in range -32768 to +32767
     int16_t sineVal = map(sin16(x), -32768, 32767, 0, amplitude);

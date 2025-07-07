@@ -53,7 +53,6 @@ void ChaseOverlay::fillArrayInternal(
     unsigned long timeElapsedInMillis
 ) {
     if (effectArraySize < 2) {
-        Serial.println("ChaseOverlay: effectArraySize < 2, skipping");
         effectArray[0] = CRGB::White;
         return;
     }

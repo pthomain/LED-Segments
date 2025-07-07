@@ -137,8 +137,10 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
                         {Mirror::CENTRE, 3},
                         {Mirror::EDGE, 3},
                         {Mirror::REPEAT, 2},
+
                         {Mirror::REPEAT_REVERSE, 2},
                         {Mirror::OVERLAY_REVERSE, 1},
+
                         {Mirror::OVERLAY_REPEAT_2, 1},
                         {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
                     };

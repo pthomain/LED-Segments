@@ -38,7 +38,7 @@ void MoireOverlay::fillArrayInternal(
     }
 
     const uint8_t distance = context.nbSegments * headLength;
-    const uint8_t start = segmentIndex * headLength;
+    const uint8_t start = (isClockwise ? context.nbSegments - segmentIndex : segmentIndex) * headLength;
 
     auto &headIndex = headPositionForSegment[segmentIndex];
 

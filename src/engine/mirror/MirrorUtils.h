@@ -23,7 +23,7 @@
 #ifndef LED_SEGMENTS_MIRRORUTILS_H
 #define LED_SEGMENTS_MIRRORUTILS_H
 
-#include "engine/effect/EffectFactory.h"
+#include "engine/effect/BaseEffectFactory.h"
 #include "engine/utils/Weights.h"
 
 template<typename C>

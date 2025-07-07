@@ -22,7 +22,7 @@
 #define DASHOVERLAY_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/EffectFactory.h"
+#include "engine/effect/BaseEffectFactory.h"
 #include "engine/utils/Weights.h"
 
 class DashOverlay : public Effect<DashOverlay, CRGB> {
@@ -69,15 +69,6 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class DashOverlayFactory : public EffectFactory<CRGB> {
-public:
-    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
-        return std::make_unique<DashOverlay>(context);
-    }
-
-    const char *name() const override {
-        return DashOverlay::name();
-    }
-};
+class DashOverlayFactory : public EffectFactory<DashOverlay, CRGB> {};
 
 #endif //DASHOVERLAY_H

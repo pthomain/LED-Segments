@@ -22,7 +22,7 @@
 #define FADETRANSITION_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/EffectFactory.h"
+#include "engine/effect/BaseEffectFactory.h"
 #include "engine/utils/Weights.h"
 
 class FadeTransition : public Effect<FadeTransition, uint8_t> {
@@ -43,15 +43,6 @@ public:
     static EffectFactoryRef<uint8_t> factory;
 };
 
-class FadeTransitionFactory : public EffectFactory<uint8_t> {
-public:
-    std::unique_ptr<BaseEffect<uint8_t> > create(const EffectContext &context) const override {
-        return std::make_unique<FadeTransition>(context);
-    }
-
-    const char *name() const override {
-        return FadeTransition::name();
-    }
-};
+class FadeTransitionFactory : public EffectFactory<FadeTransition, uint8_t> {};
 
 #endif //FADETRANSITION_H

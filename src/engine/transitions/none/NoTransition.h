@@ -22,7 +22,7 @@
 #define NOTRANSITION_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/EffectFactory.h"
+#include "engine/effect/BaseEffectFactory.h"
 #include "engine/effect/EffectOperation.h"
 #include "engine/utils/Weights.h"
 
@@ -44,15 +44,6 @@ public:
     static EffectFactoryRef<uint8_t> factory;
 };
 
-class NoTransitionFactory : public EffectFactory<uint8_t> {
-public:
-    std::unique_ptr<BaseEffect<uint8_t> > create(const EffectContext &context) const override {
-        return std::make_unique<NoTransition>(context);
-    }
-
-    const char *name() const override {
-        return NoTransition::name();
-    }
-};
+class NoTransitionFactory : public EffectFactory<NoTransition, uint8_t> {};
 
 #endif //NOTRANSITION_H

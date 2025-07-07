@@ -22,7 +22,7 @@
 #define SPARKLEOVERLAY_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/EffectFactory.h"
+#include "engine/effect/BaseEffectFactory.h"
 #include "engine/utils/Weights.h"
 
 class SparkleOverlay : public Effect<SparkleOverlay, CRGB>{
@@ -46,15 +46,6 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class SparkleOverlayFactory : public EffectFactory<CRGB> {
-public:
-    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
-        return std::make_unique<SparkleOverlay>(context);
-    }
-
-    const char *name() const override {
-        return SparkleOverlay::name();
-    }
-};
+class SparkleOverlayFactory : public EffectFactory<SparkleOverlay, CRGB> {};
 
 #endif //SPARKLEOVERLAY_H

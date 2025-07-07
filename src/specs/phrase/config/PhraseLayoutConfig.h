@@ -99,8 +99,8 @@ static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutId) {
                     {NoOverlay::factory, 5},
                 },
                 [](EffectFactoryRef<CRGB> overlayFactory) {
-                    if (overlayFactory->name() == ChaseOverlay::name()
-                        || overlayFactory->name() == MoireOverlay::name()) {
+                    if (overlayFactory->is<ChaseOverlay>()
+                        || overlayFactory->is<MoireOverlay>()) {
                         return WeightedMirrors{}; //No mirrors for these overlays
                     }
                     return allCRGBMirrors(overlayFactory);

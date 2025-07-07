@@ -22,7 +22,7 @@
 #define LED_SEGMENTS_NOISEEFFECT_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/EffectFactory.h"
+#include "engine/effect/BaseEffectFactory.h"
 #include "engine/utils/Weights.h"
 
 class NoiseEffect : public Effect<NoiseEffect, CRGB> {
@@ -48,15 +48,6 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class NoiseEffectFactory : public EffectFactory<CRGB> {
-public:
-    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
-        return std::make_unique<NoiseEffect>(context);
-    }
-
-    const char *name() const override {
-        return NoiseEffect::name();
-    }
-};
+class NoiseEffectFactory : public EffectFactory<NoiseEffect, CRGB> {};
 
 #endif //LED_SEGMENTS_NOISEEFFECT_H

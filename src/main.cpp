@@ -24,20 +24,13 @@
 #include "specs/fibonacci/FibonacciSpec.h"
 #include "specs/umbrella/UmbrellaSpec.h"
 
-#define LED_PIN D7 //Umbrella
-// #define LED_PIN 9
-
-Display *display;
+auto *display = new Display<UmbrellaSpec>();
 
 void setup() {
     if constexpr (IS_DEBUG) {
         Serial.begin(9600);
         delay(2000);
     }
-
-    display = Display::create<LED_PIN, GRB>(
-        std::make_unique<UmbrellaSpec>()
-    );
 }
 
 void loop() {

@@ -30,6 +30,10 @@ constexpr uint8_t LEDS_PER_SPOKE = 42;
 
 class UmbrellaSpec : public DisplaySpec {
 public:
+
+    static constexpr int LED_PIN = D7;
+    static constexpr EOrder RGB_ORDER = GRB;
+
     explicit UmbrellaSpec(): DisplaySpec(
         umbrellaLayoutCatalog(),
         IS_DEBUG ? 50 : 128,

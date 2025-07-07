@@ -50,6 +50,10 @@ class FibonacciSpec : public DisplaySpec {
     uint8_t getLedPadding(uint8_t pixelIndex) const;
 
 public :
+
+    static constexpr int LED_PIN = 9;
+    static constexpr EOrder RGB_ORDER = GRB;
+
     explicit FibonacciSpec(): DisplaySpec(fibonacciLayoutCatalog()) {
     }
 

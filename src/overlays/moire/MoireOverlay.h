@@ -22,7 +22,7 @@
 #define MOIREOVERLAY_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/EffectFactory.h"
+#include "engine/effect/BaseEffectFactory.h"
 #include "engine/utils/Utils.h"
 
 class MoireOverlay : public Effect<MoireOverlay, CRGB> {
@@ -75,15 +75,6 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class MoireOverlayFactory : public EffectFactory<CRGB> {
-public:
-    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
-        return std::make_unique<MoireOverlay>(context);
-    }
-
-    const char *name() const override {
-        return MoireOverlay::name();
-    }
-};
+class MoireOverlayFactory : public EffectFactory<MoireOverlay, CRGB> {};
 
 #endif //MOIREOVERLAY_H

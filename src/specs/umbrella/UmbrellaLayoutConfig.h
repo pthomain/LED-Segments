@@ -95,8 +95,8 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
             },
             [](EffectFactoryRef<CRGB> overlayFactory) {
                 if (
-                    overlayFactory->name() == MoireOverlay::name()
-                    || overlayFactory->name() == ChaseOverlay::name()
+                    overlayFactory->is<MoireOverlay>()
+                    || overlayFactory->is<ChaseOverlay>()
                 ) {
                     return WeightedMirrors{
                         {Mirror::NONE, 2},
@@ -115,7 +115,7 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
                     };
                 }
 
-                if (overlayFactory->name() == DashOverlay::name()) {
+                if (overlayFactory->is<DashOverlay>()) {
                     return WeightedMirrors{
                         {Mirror::NONE, 2},
                         {Mirror::REVERSE, 2},

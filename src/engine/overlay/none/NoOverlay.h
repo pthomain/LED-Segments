@@ -22,7 +22,7 @@
 #define NOOVERLAY_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/EffectFactory.h"
+#include "engine/effect/BaseEffectFactory.h"
 
 class NoOverlay : public Effect<NoOverlay, CRGB> {
 public:
@@ -42,15 +42,6 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class NoOverlayFactory : public EffectFactory<CRGB> {
-public:
-    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
-        return std::make_unique<NoOverlay>(context);
-    }
-
-    const char *name() const override {
-        return NoOverlay::name();
-    }
-};
+class NoOverlayFactory : public EffectFactory<NoOverlay, CRGB> {};
 
 #endif //NOOVERLAY_H

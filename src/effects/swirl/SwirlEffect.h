@@ -22,7 +22,7 @@
 #define LED_SEGMENTS_SWIRLEFFECT_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/EffectFactory.h"
+#include "engine/effect/BaseEffectFactory.h"
 #include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
@@ -46,15 +46,6 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class SwirlEffectFactory : public EffectFactory<CRGB> {
-public:
-    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
-        return std::make_unique<SwirlEffect>(context);
-    }
-
-    const char *name() const override {
-        return SwirlEffect::name();
-    }
-};
+class SwirlEffectFactory : public EffectFactory<SwirlEffect, CRGB> {};
 
 #endif //LED_SEGMENTS_SWIRLEFFECT_H

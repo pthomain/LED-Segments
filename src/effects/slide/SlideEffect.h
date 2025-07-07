@@ -22,7 +22,7 @@
 #define LED_SEGMENTS_SLIDEEFFECT_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/EffectFactory.h"
+#include "engine/effect/BaseEffectFactory.h"
 
 class SlideEffect : public Effect<SlideEffect, CRGB> {
     const uint8_t nbColours = 4;
@@ -59,15 +59,6 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class SlideEffectFactory : public EffectFactory<CRGB> {
-public:
-    std::unique_ptr<BaseEffect<CRGB> > create(const EffectContext &context) const override {
-        return std::make_unique<SlideEffect>(context);
-    }
-
-    const char *name() const override {
-        return SlideEffect::name();
-    }
-};
+class SlideEffectFactory : public EffectFactory<SlideEffect, CRGB> {};
 
 #endif //LED_SEGMENTS_SLIDEEFFECT_H

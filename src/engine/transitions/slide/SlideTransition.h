@@ -22,7 +22,7 @@
 #define SLIDETRANSITION_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/EffectFactory.h"
+#include "engine/effect/BaseEffectFactory.h"
 #include "engine/effect/EffectOperation.h"
 
 class SlideTransition : public Effect<SlideTransition, uint8_t>{
@@ -43,15 +43,6 @@ public:
     static EffectFactoryRef<uint8_t> factory;
 };
 
-class SlideTransitionFactory : public EffectFactory<uint8_t> {
-public:
-    std::unique_ptr<BaseEffect<uint8_t> > create(const EffectContext &context) const override {
-        return std::make_unique<SlideTransition>(context);
-    }
-
-    const char *name() const override {
-        return SlideTransition::name();
-    }
-};
+class SlideTransitionFactory : public EffectFactory<SlideTransition, uint8_t> {};
 
 #endif //SLIDETRANSITION_H

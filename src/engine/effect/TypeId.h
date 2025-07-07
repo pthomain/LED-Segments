@@ -18,28 +18,30 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef EFFECTFACTORY_H
-#define EFFECTFACTORY_H
+#ifndef TYPEID_H
+#define TYPEID_H
 
-#include "BaseEffect.h"
+#include <cstdint>
 
-template<typename C>
-class EffectFactory {
+// A lightweight, RTTI-free type identification system.
+namespace TypeInfo {
+    using ID = uintptr_t;
+
+    // Returns the next available unique ID.
+    inline ID next() {
+        static ID next_id = 0;
+        return next_id++;
+    }
+}
+
+// Template to get a unique, static ID for any given type T.
+template<typename T>
+class TypeId {
 public:
-    virtual std::unique_ptr<BaseEffect<C> > create(const EffectContext &context) const = 0;
-
-    virtual const char *name() const = 0;
-
-    virtual ~EffectFactory() = default;
+    static TypeInfo::ID id() {
+        static TypeInfo::ID id_value = TypeInfo::next();
+        return id_value;
+    }
 };
 
-template<typename T>
-using EffectFactoryRef = const EffectFactory<T> *;
-
-template<typename T>
-using WeightedEffect = WeightedItem<EffectFactoryRef<T> >;
-
-template<typename T>
-using WeightedEffects = std::vector<WeightedEffect<T> >;
-
-#endif //EFFECTFACTORY_H
+#endif //TYPEID_H

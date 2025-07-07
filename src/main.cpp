@@ -24,7 +24,7 @@
 #include "specs/fibonacci/FibonacciSpec.h"
 #include "specs/umbrella/UmbrellaSpec.h"
 
-auto *display = new Display<UmbrellaSpec>();
+auto display = Display<UmbrellaSpec>();
 
 void setup() {
     if constexpr (IS_DEBUG) {
@@ -34,5 +34,5 @@ void setup() {
 }
 
 void loop() {
-    display->loop();
+    display.loop();
 }

@@ -38,8 +38,9 @@ public:
         umbrellaLayoutCatalog(),
         IS_DEBUG ? 50 : 128,
         IS_DEBUG ? 3 : 3,
-        IS_DEBUG ? 3 : 6,
-        500
+        IS_DEBUG ? 3 : 8,
+        1000,
+        1.0f
     ) {
     }
 

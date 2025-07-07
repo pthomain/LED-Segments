@@ -18,21 +18,38 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "SlideTransition.h"
-
+#include "WaveOverlay.h"
+#include "engine/effect/Effect.h"
+#include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
-static const SlideTransitionFactory factoryInstance;
-EffectFactoryRef<uint8_t> SlideTransition::factory = &factoryInstance;
+static const WaveOverlayFactory factoryInstance;
+EffectFactoryRef<CRGB> WaveOverlay::factory = &factoryInstance;
 
-void SlideTransition::fillArrayInternal(
-    uint8_t *effectArray,
+void WaveOverlay::fillArrayInternal(
+    CRGB *effectArray,
     uint16_t effectArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    uint16_t limit = constrain(round((float) effectArraySize * progress), 0, effectArraySize);
-    memset(effectArray, CRGB::White, limit * sizeof(uint8_t));
-    memset(effectArray + limit, CRGB::Black, (effectArraySize - limit) * sizeof(uint8_t));
+    memset(effectArray, CRGB::White, effectArraySize * sizeof(CRGB));
+
+    uint8_t ceiling = effectArraySize;
+    uint8_t floor = effectArraySize / 1;
+
+    uint8_t amplitude = beatsin16(
+        bpm,
+        floor,
+        ceiling
+    );
+
+    phase += scrollingSpeed;
+
+    uint16_t x = (static_cast<uint32_t>(segmentIndex) * nbWaves * 65536L / context.nbSegments) + phase;
+
+    //Sine value in range -32768 to +32767
+    int16_t sineVal = map(sin16(x), -32768, 32767, 0, amplitude);
+
+    memset(effectArray, CRGB::Black, sineVal * sizeof(CRGB));
 }

@@ -33,6 +33,7 @@
 #include "overlays/dash/DashOverlay.h"
 #include "overlays/moire/MoireOverlay.h"
 #include "overlays/sparkle/SparkleOverlay.h"
+#include "overlays/wave/WaveOverlay.h"
 
 enum UmbrellaLayout {
     LEDS_IN_SPOKE,
@@ -62,7 +63,7 @@ static EffectAndMirrors<CRGB> umbrellaEffectSelector(uint16_t layoutId) {
     if (layoutId == LEDS_IN_SPOKE) {
         return {
             {
-                {SwirlEffect::factory, 3},
+                {SwirlEffect::factory, 2},
                 {NoiseEffect::factory, 2},
                 {SlideEffect::factory, 1}
             },
@@ -87,11 +88,10 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
     if (layoutId == LEDS_IN_SPOKE) {
         return {
             {
-                {MoireOverlay::factory, 3},
-                {ChaseOverlay::factory, 3},
+                {MoireOverlay::factory, 4},
+                {ChaseOverlay::factory, 4},
+                {WaveOverlay::factory, 3},
                 {DashOverlay::factory, 2},
-                {SparkleOverlay::factory, 1},
-                {NoOverlay::factory, 1},
             },
             [](EffectFactoryRef<CRGB> overlayFactory) {
                 if (
@@ -130,6 +130,20 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
                     };
                 }
 
+                if (overlayFactory->is<WaveOverlay>()) {
+                    return WeightedMirrors{
+                        {Mirror::NONE, 3},
+                        {Mirror::REVERSE, 3},
+                        {Mirror::CENTRE, 3},
+                        {Mirror::EDGE, 3},
+                        {Mirror::REPEAT, 2},
+                        {Mirror::REPEAT_REVERSE, 2},
+                        {Mirror::OVERLAY_REVERSE, 1},
+                        {Mirror::OVERLAY_REPEAT_2, 1},
+                        {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
+                    };
+                }
+
                 return noCRGBMirrors(overlayFactory);
             }
         };
@@ -140,10 +154,7 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
 
 static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutId) {
     return {
-        {
-            {FadeTransition::factory, 1},
-            // {NoTransition::factory, 1},
-        },
+        just(SlideTransition::factory),
         noIntMirrors
     };
 }

@@ -22,9 +22,9 @@
 #define LED_SEGMENTS_TRANSITION_H
 
 #include "engine/mirror/MirrorUtils.h"
-#include "engine/transitions/fade/FadeTransition.h"
-#include "engine/transitions/none/NoTransition.h"
-#include "engine/transitions/slide/SlideTransition.h"
+#include "transitions/fade/FadeTransition.h"
+#include "transitions/none/NoTransition.h"
+#include "transitions/slide/SlideTransition.h"
 
 enum class Transition {
     NONE,

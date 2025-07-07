@@ -27,7 +27,7 @@
 #include "engine/render/Renderer.h"
 #include <algorithm> // Required for std::remove and std::erase
 #include <type_traits>
-#include "engine/overlay/none/NoOverlay.h"
+#include "overlays/none/NoOverlay.h"
 #include "engine/utils/seed/SeedGenerator.h"
 
 #define FASTLED_USE_PROGMEM 1

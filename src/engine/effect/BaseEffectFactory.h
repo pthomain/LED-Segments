@@ -22,7 +22,7 @@
 #define EFFECTFACTORY_H
 
 #include "BaseEffect.h"
-#include "TypeId.h"
+#include "../utils/TypeId.h"
 
 template<typename C>
 class BaseEffectFactory {

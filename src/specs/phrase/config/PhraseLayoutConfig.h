@@ -27,8 +27,8 @@
 #include <effects/slide/SlideEffect.h>
 #include "effects/gradient/GradientEffect.h"
 #include "effects/swirl/SwirlEffect.h"
-#include "engine/overlay/none/NoOverlay.h"
-#include "engine/transitions/Transition.h"
+#include "overlays/none/NoOverlay.h"
+#include "transitions/Transition.h"
 #include "engine/utils/Weights.h"
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/dash/DashOverlay.h"

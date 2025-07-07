@@ -26,6 +26,8 @@
 #include "engine/utils/Utils.h"
 
 class MoireOverlay : public Effect<MoireOverlay, CRGB> {
+
+    const bool isClockwise = probability(0.5f);
     const bool isInverted = probability(0.5f);
 
     const CRGB frontColour = isInverted ? CRGB::White : CRGB::Black;

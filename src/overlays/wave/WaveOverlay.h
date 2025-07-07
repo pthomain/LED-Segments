@@ -28,6 +28,7 @@
 
 class WaveOverlay : public Effect<WaveOverlay, CRGB> {
 
+    const bool isClockwise = probability(0.5f);
     const uint16_t scrollingSpeed = random8(2, 4) * 64;
     const uint8_t bpm = random(1, 5) * 5;
     const uint8_t nbWaves = random8(1, 8);

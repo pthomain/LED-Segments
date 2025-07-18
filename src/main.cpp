@@ -24,15 +24,17 @@
 #include "specs/fibonacci/FibonacciSpec.h"
 #include "specs/umbrella/UmbrellaSpec.h"
 
-auto display = Display<UmbrellaSpec>();
+using SPEC = PhraseSpec;
+Display<SPEC> *display;
 
 void setup() {
     if constexpr (IS_DEBUG) {
         Serial.begin(9600);
         delay(2000);
     }
+    display = new Display<SPEC>(); //must be instantiated in this method
 }
 
 void loop() {
-    display.loop();
+    display->loop();
 }

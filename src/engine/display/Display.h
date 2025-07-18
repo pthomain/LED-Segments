@@ -57,7 +57,6 @@ class Display {
     std::shared_ptr<SPEC> _displaySpec;
     CRGB *outputArray;
     const std::unique_ptr<Renderer> renderer;
-    const std::vector<uint8_t> freePinsForEntropy;
 
 public:
     uint32_t lastChangeTime = 0;
@@ -65,24 +64,22 @@ public:
 
     explicit Display(
         //change if any of those pins are already in use or unavailable on the board
-        std::vector<uint8_t> freePinsForEntropy = std::vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+        std::vector<uint8_t> freePinsForEntropy = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
     ) : _displaySpec(std::unique_ptr<SPEC>(new SPEC())),
         outputArray(new CRGB[_displaySpec->nbLeds()]),
-        renderer(std::make_unique<Renderer>(_displaySpec, outputArray)),
-        freePinsForEntropy(freePinsForEntropy) {
+        renderer(std::make_unique<Renderer>(_displaySpec, outputArray)){
         freePinsForEntropy.erase(
-            std::remove(freePinsForEntropy.begin(), freePinsForEntropy.end(), static_cast<uint8_t>(SPEC::LED_PIN)),
+            std::remove(freePinsForEntropy.begin(), freePinsForEntropy.end(), SPEC::LED_PIN),
             freePinsForEntropy.end()
         );
+        addEntropy(freePinsForEntropy);
 
         CFastLED::addLeds<WS2812B, SPEC::LED_PIN, SPEC::RGB_ORDER>(outputArray, _displaySpec->nbLeds())
                 .setCorrection(TypicalLEDStrip);
-
         FastLED.setBrightness(_displaySpec->brightness);
         FastLED.clear(true);
         FastLED.show();
 
-        addEntropy(freePinsForEntropy);
         changeEffect(random8(_displaySpec->minEffectDurationsInSecs, _displaySpec->maxEffectDurationsInSecs));
         render();
     }
@@ -180,10 +177,6 @@ public:
 
         EVERY_N_MILLISECONDS(_displaySpec->refreshRateInMillis) {
             render();
-        }
-
-        EVERY_N_SECONDS(ENTROPY_UPDATE_IN_SECONDS) {
-            addEntropy(freePinsForEntropy);
         }
     }
 

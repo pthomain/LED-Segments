@@ -37,12 +37,12 @@ public :
     explicit Effect(const EffectContext &effectContext) : BaseEffect<C>(effectContext) {
         static_assert(
             std::is_same<decltype(Child::name()), const char *>::value,
-            "Child class must implement static constexpr const char* name()"
+            "Child class must implement static const char* name()"
         );
 
         static_assert(
             std::is_same<decltype(Child::operations()), WeightedOperations>::value,
-            "Child class must implement static constexpr const WeightedOperations operations()"
+            "Child class must implement static WeightedOperations operations()"
         );
     };
 

@@ -42,7 +42,7 @@ public:
     ) override;
 
     static constexpr const char *name() { return "SparkleOverlay"; }
-    static constexpr WeightedOperations operations() { return just(EffectOperation::OVERLAY_MULTIPLY); }
+    static WeightedOperations operations() { return just(EffectOperation::OVERLAY_MULTIPLY); }
     static EffectFactoryRef<CRGB> factory;
 };
 

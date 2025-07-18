@@ -21,7 +21,7 @@
 #ifndef LED_SEGMENTS_FIBONACCIDISPLAY_H
 #define LED_SEGMENTS_FIBONACCIDISPLAY_H
 
-#include "config/FibonacciLayoutConfig.h"
+#include "FibonacciLayoutConfig.h"
 #include "engine/displayspec/DisplaySpec.h"
 
 class FibonacciSpec : public DisplaySpec {

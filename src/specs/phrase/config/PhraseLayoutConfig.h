@@ -33,6 +33,7 @@
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/dash/DashOverlay.h"
 #include "overlays/moire/MoireOverlay.h"
+#include "overlays/wave/WaveOverlay.h"
 
 // Format is PIXELS_IN_SEGMENTS
 enum PhraseLayout {
@@ -44,7 +45,7 @@ enum PhraseLayout {
     WORDS_IN_WHOLE
 };
 
-static const std::set<uint16_t> phraseLayouts = {
+inline const std::set<uint16_t> phraseLayouts = {
     LEDS_IN_LETTERS,
     LEDS_IN_WORDS,
     LEDS_IN_WHOLE,
@@ -53,14 +54,14 @@ static const std::set<uint16_t> phraseLayouts = {
     WORDS_IN_WHOLE
 };
 
-inline WeightedLayouts phraseLayoutSelector(EffectType effectType) {
+static WeightedLayouts phraseLayoutSelector(EffectType effectType) {
     return {
-        {LEDS_IN_LETTERS, 4},
-        {LEDS_IN_WORDS, 2},
+        // {LEDS_IN_LETTERS, 4},
+        // {LEDS_IN_WORDS, 2},
         {LEDS_IN_WHOLE, 1},
-        {LETTERS_IN_WORDS, 2},
-        {LETTERS_IN_WHOLE, 4},
-        {WORDS_IN_WHOLE, 3}
+        // {LETTERS_IN_WORDS, 2},
+        // {LETTERS_IN_WHOLE, 4},
+        // {WORDS_IN_WHOLE, 3}
     };
 }
 
@@ -75,12 +76,12 @@ static EffectAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutId) {
         default:
             return {
                 {
-                    {GradientEffect::factory, 1},
+                    // {GradientEffect::factory, 1},
                     {SwirlEffect::factory, 1},
-                    {NoiseEffect::factory, 1},
-                    {SlideEffect::factory, 1}
+                    // {NoiseEffect::factory, 1},
+                    // {SlideEffect::factory, 1}
                 },
-                allCRGBMirrors
+                noCRGBMirrors // allCRGBMirrors
             };
     }
 };
@@ -93,17 +94,38 @@ static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutId) {
         case LETTERS_IN_WHOLE:
             return EffectAndMirrors<CRGB>{
                 {
-                    {MoireOverlay::factory, 1},
-                    {ChaseOverlay::factory, 1},
-                    {DashOverlay::factory, 1},
+                    // {MoireOverlay::factory, 1},
+                    // {ChaseOverlay::factory, 1},
+                    // {WaveOverlay::factory, 1},
+                    // {DashOverlay::factory, 1},
                     {NoOverlay::factory, 5},
                 },
                 [](EffectFactoryRef<CRGB> overlayFactory) {
-                    if (overlayFactory->is<ChaseOverlay>()
-                        || overlayFactory->is<MoireOverlay>()) {
-                        return WeightedMirrors{}; //No mirrors for these overlays
-                    }
-                    return allCRGBMirrors(overlayFactory);
+                    // if (overlayFactory->is<ChaseOverlay>()
+                    //     || overlayFactory->is<MoireOverlay>()) {
+                    //     return noCRGBMirrors(overlayFactory);
+                    // }
+                    //
+                    // if (overlayFactory->is<DashOverlay>()) {
+                    //     return WeightedMirrors{
+                    //         {Mirror::NONE, 2},
+                    //         {Mirror::REVERSE, 2},
+                    //         {Mirror::CENTRE, 2},
+                    //         {Mirror::EDGE, 2},
+                    //
+                    //         {Mirror::REPEAT, 1},
+                    //         {Mirror::REPEAT_REVERSE, 1},
+                    //
+                    //         {Mirror::OVERLAY_REVERSE, 1},
+                    //         {Mirror::OVERLAY_REPEAT_2, 1},
+                    //         {Mirror::OVERLAY_REPEAT_3, 1},
+                    //         {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
+                    //         {Mirror::OVERLAY_REPEAT_3_REVERSE, 1},
+                        // };
+                    // }
+                    // return allCRGBMirrors(overlayFactory);
+
+                    return noCRGBMirrors(overlayFactory);
                 }
             };
 
@@ -122,7 +144,7 @@ static EffectAndMirrors<uint8_t> phraseTransitionSelector(uint16_t layoutId) {
     }
 }
 
-static LayoutCatalog phraseLayoutCatalog() {
+inline LayoutCatalog phraseLayoutCatalog() {
     return LayoutCatalog(
         phraseLayouts,
         {

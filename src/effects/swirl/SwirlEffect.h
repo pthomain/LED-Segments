@@ -42,7 +42,7 @@ public:
     ) override;
 
     static constexpr const char* name() { return "SwirlEffect"; }
-    static constexpr WeightedOperations operations() { return just(EffectOperation::EFFECT); }
+    static WeightedOperations operations() { return just(EffectOperation::EFFECT); }
     static EffectFactoryRef<CRGB> factory;
 };
 

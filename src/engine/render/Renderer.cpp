@@ -131,7 +131,6 @@ void Renderer::changeEffect(
         this->overlay = overlay;
         this->transition = transition;
     } else {
-        //TODO handle case when effect is changed during transition
         transitionDurationInFrames = static_cast<float>(transition->context.durationInFrames);
         transitionStep = transitionDurationInFrames;
         pendingEffectFrameIndex = 0;

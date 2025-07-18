@@ -65,8 +65,11 @@ uint16_t PhraseSpec::segmentSize(
         case WORDS_IN_WHOLE:
             return NB_WORDS;
 
-        default:
+        default: {
+            Serial.print("PhraseSpec::segmentSize: Unknown layoutId ");
+            Serial.println(layoutId);
             return 0; //This should not happen
+        }
     }
 }
 
@@ -123,6 +126,10 @@ void PhraseSpec::mapLeds(
 
         case WORDS_IN_WHOLE:
             mapRange(WORDS[pixelIndex][0], WORDS[pixelIndex][1]);
+            break;
+        default:
+            Serial.print("PhraseSpec::mapLeds: Unknown layoutId ");
+            Serial.println(layoutId);
             break;
     };
 }

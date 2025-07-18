@@ -40,7 +40,7 @@ public:
     ) override;
 
     static constexpr const char *name() { return "NoTransition"; }
-    static constexpr WeightedOperations operations() { return just(EffectOperation::TRANSITION); }
+    static WeightedOperations operations() { return just(EffectOperation::TRANSITION); }
     static EffectFactoryRef<uint8_t> factory;
 };
 

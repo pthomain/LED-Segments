@@ -44,7 +44,14 @@ const EffectAndMirrors<uint8_t> FADE_TRANSITION = {
     {
         {FadeTransition::factory, 1}
     },
-    allIntMirrors
+    noIntMirrors
+};
+
+const EffectAndMirrors<uint8_t> NO_TRANSITION = {
+    {
+        {NoTransition::factory, 1}
+    },
+    noIntMirrors
 };
 
 static String getTransitionName(Transition transition) {

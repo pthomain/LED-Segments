@@ -48,7 +48,7 @@ public:
 
     static constexpr const char *name() { return "WaveOverlay"; }
 
-    static constexpr WeightedOperations operations() {
+    static WeightedOperations operations() {
         return {
             {EffectOperation::OVERLAY_MULTIPLY, 4},
             {EffectOperation::OVERLAY_INVERT, 1}

@@ -151,7 +151,7 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
         };
     }
 
-    return {}; //No overlays for SPOKES_IN_WHOLE
+    return {{}, noMirrors<CRGB>}; //No overlays for SPOKES_IN_WHOLE
 }
 
 static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutId) {

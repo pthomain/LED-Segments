@@ -26,13 +26,14 @@
 #include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
+//TODO add extra parameters to map in EffectContext
 class ChaseOverlay : public Effect<ChaseOverlay, CRGB> {
     const uint8_t minxSparksPerSegment = 1;
-    const uint8_t maxSparksPerSegment = 5;
+    const uint8_t maxSparksPerSegment = 1; //5;
     const uint8_t sparksPerSegment = random8(minxSparksPerSegment, maxSparksPerSegment);
 
-    const uint8_t intervalBetweenSparks = 10;
-    const uint8_t trailLength = 3;
+    const uint8_t intervalBetweenSparks = 3; //10;
+    const uint8_t trailLength = 2; //3;
 
     uint16_t leadingSparkPosition = 0;
     uint16_t *sparkIntervalCounterPerSegment;
@@ -40,7 +41,7 @@ class ChaseOverlay : public Effect<ChaseOverlay, CRGB> {
 
     // Whether the sparks bounce back and forth. Otherwise, new sparks get emitted at the start after they exit.
     bool isBouncy = probability(0.75f);
-    bool isSwirling = probability(0.5f);
+    bool isSwirling = false; //probability(0.5f);
 
     std::vector<std::vector<bool> > forward;
     std::vector<std::vector<bool> > backward;

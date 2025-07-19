@@ -67,7 +67,7 @@ static EffectAndMirrors<CRGB> umbrellaEffectSelector(uint16_t layoutId) {
                 {NoiseEffect::factory, 2},
                 {SlideEffect::factory, 1}
             },
-            allCRGBMirrors
+            allMirrors<CRGB>
         };
     } else {
         return {
@@ -146,7 +146,7 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
                     };
                 }
 
-                return noCRGBMirrors(overlayFactory);
+                return noMirrors(overlayFactory);
             }
         };
     }
@@ -157,7 +157,7 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
 static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutId) {
     return {
         just(SlideTransition::factory),
-        noIntMirrors
+        noMirrors<uint8_t>
     };
 }
 

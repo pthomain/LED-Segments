@@ -29,45 +29,66 @@
 template<typename C>
 using MirrorSelector = std::function<WeightedMirrors(EffectFactoryRef<C> effectFactory)>;
 
-inline WeightedMirrors noCRGBMirrors(EffectFactoryRef<CRGB> effectFactory) {
+template<typename C>
+WeightedMirrors noMirrors(EffectFactoryRef<C> effectFactory) {
     return {};
 }
 
-inline WeightedMirrors noIntMirrors(EffectFactoryRef<uint8_t> effectFactory) {
-    return {};
+template<typename C>
+WeightedMirrors undividedMirrors(EffectFactoryRef<C> effectFactory) {
+    return {
+            {Mirror::NONE, 1},
+            {Mirror::REVERSE, 1},
+        };
 }
 
-inline WeightedMirrors unrepeatedCRGBMirrors(EffectFactoryRef<CRGB> effectFactory) {
+template<typename C>
+WeightedMirrors unrepeatedMirrors(EffectFactoryRef<C> effectFactory) {
     return {
-        {Mirror::NONE, 1},
-        {Mirror::REVERSE, 1},
-        {Mirror::CENTRE, 1},
-        {Mirror::EDGE, 1}
+            {Mirror::NONE, 1},
+            {Mirror::REVERSE, 1},
+            {Mirror::CENTRE, 1},
+            {Mirror::EDGE, 1}
     };
 }
 
-inline WeightedMirrors allCRGBMirrors(EffectFactoryRef<CRGB> effectFactory) {
+template<typename C>
+WeightedMirrors allMirrors(EffectFactoryRef<C> effectFactory) {
     return {
-        {Mirror::NONE, 1},
-        {Mirror::REVERSE, 1},
-        {Mirror::CENTRE, 1},
-        {Mirror::EDGE, 1},
-        //repeated mirrors are useful for circular displays, less so for linear ones
-        {Mirror::REPEAT, 1},
-        {Mirror::REPEAT_REVERSE, 1}
+            {Mirror::NONE, 1},
+            {Mirror::REVERSE, 1},
+            {Mirror::CENTRE, 1},
+            {Mirror::EDGE, 1},
+            //repeated mirrors are useful for circular displays, less so for linear ones
+            {Mirror::REPEAT, 1},
+            {Mirror::REPEAT_REVERSE, 1}
     };
 }
 
-inline WeightedMirrors allIntMirrors(EffectFactoryRef<uint8_t> effectFactory) {
-    return {
-        {Mirror::NONE, 1},
-        {Mirror::REVERSE, 1},
-        {Mirror::CENTRE, 1},
-        {Mirror::EDGE, 1},
-        //repeated mirrors are useful for circular displays, less so for linear ones
-        {Mirror::REPEAT, 1},
-        {Mirror::REPEAT_REVERSE, 1}
-    };
-}
+
+template
+WeightedMirrors noMirrors(EffectFactoryRef<uint8_t> effectFactory);
+
+template
+WeightedMirrors noMirrors(EffectFactoryRef<CRGB> effectFactory);
+
+template
+WeightedMirrors undividedMirrors(EffectFactoryRef<CRGB> effectFactory);
+
+template
+WeightedMirrors undividedMirrors(EffectFactoryRef<uint8_t> effectFactory);
+
+template
+WeightedMirrors unrepeatedMirrors(EffectFactoryRef<uint8_t> effectFactory);
+
+template
+WeightedMirrors unrepeatedMirrors(EffectFactoryRef<CRGB> effectFactory);
+
+template
+WeightedMirrors allMirrors(EffectFactoryRef<CRGB> effectFactory);
+
+template
+WeightedMirrors allMirrors(EffectFactoryRef<uint8_t> effectFactory);
+
 
 #endif //LED_SEGMENTS_MIRRORUTILS_H

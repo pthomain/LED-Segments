@@ -81,7 +81,7 @@ static EffectAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutId) {
                     // {NoiseEffect::factory, 1},
                     // {SlideEffect::factory, 1}
                 },
-                noCRGBMirrors // allCRGBMirrors
+                noMirrors<CRGB> // allCRGBMirrors
             };
     }
 };
@@ -125,7 +125,7 @@ static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutId) {
                     // }
                     // return allCRGBMirrors(overlayFactory);
 
-                    return noCRGBMirrors(overlayFactory);
+                    return noMirrors(overlayFactory);
                 }
             };
 

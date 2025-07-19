@@ -40,8 +40,8 @@ public :
     explicit PhraseSpec(): DisplaySpec(
         phraseLayoutCatalog(),
         IS_DEBUG ? 50 : 255,
-        IS_DEBUG ? 3 : 5,
-        IS_DEBUG ? 3 : 10
+        10, // IS_DEBUG ? 3 : 5,
+        10 // IS_DEBUG ? 3 : 10
     ) {
     }
 

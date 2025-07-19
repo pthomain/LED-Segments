@@ -37,21 +37,17 @@ const EffectAndMirrors<uint8_t> ALL_TRANSITIONS = {
         {FadeTransition::factory, 1},
         {SlideTransition::factory, 1}
     },
-    allIntMirrors
+    allMirrors<uint8_t>
 };
 
 const EffectAndMirrors<uint8_t> FADE_TRANSITION = {
-    {
-        {FadeTransition::factory, 1}
-    },
-    noIntMirrors
+    just(FadeTransition::factory),
+    noMirrors<uint8_t>
 };
 
 const EffectAndMirrors<uint8_t> NO_TRANSITION = {
-    {
-        {NoTransition::factory, 1}
-    },
-    noIntMirrors
+    just(NoTransition::factory),
+    noMirrors<uint8_t>
 };
 
 static String getTransitionName(Transition transition) {
@@ -62,11 +58,5 @@ static String getTransitionName(Transition transition) {
         default: return "UNKNOWN";
     }
 }
-
-static std::map<Transition, EffectFactoryRef<uint8_t> > transitionFactories = {
-    {Transition::NONE, NoTransition::factory},
-    {Transition::FADE, FadeTransition::factory},
-    {Transition::SLIDE, SlideTransition::factory}
-};
 
 #endif //LED_SEGMENTS_TRANSITION_H

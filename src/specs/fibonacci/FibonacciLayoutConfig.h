@@ -187,7 +187,7 @@ static EffectAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutId) {
             {NoiseEffect::factory, 1},
             {SlideEffect::factory, 1}
         },
-        allCRGBMirrors
+        allMirrors<CRGB>
     };
 }
 
@@ -198,7 +198,7 @@ static EffectAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutId) {
             {ChaseOverlay::factory, 1},
             {DashOverlay::factory, 1},
         },
-        allCRGBMirrors
+        allMirrors<CRGB>
     };
 }
 

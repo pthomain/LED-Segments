@@ -21,19 +21,18 @@
 #include "ChaseOverlay.h"
 #include "crgb.h"
 #include "engine/utils/Utils.h"
-#include "engine/utils/Weights.h"
 
 static const ChaseOverlayFactory factoryInstance;
 EffectFactoryRef<CRGB> ChaseOverlay::factory = &factoryInstance;
 
 ChaseOverlay::ChaseOverlay(const EffectContext &effectContext)
-        : Effect(effectContext),
-          sparkIntervalCounterPerSegment(new uint16_t[context.nbSegments]),
-          nbSparksForSegment(new uint8_t[context.nbSegments]),
-          forward(std::vector<std::vector<bool> >(context.nbSegments)),
-          backward(std::vector<std::vector<bool> >(context.nbSegments)),
-          tempForward(new bool[context.maxSegmentSize]),
-          tempBackward(new bool[context.maxSegmentSize]) {
+    : Effect(effectContext),
+      sparkIntervalCounterPerSegment(new uint16_t[context.nbSegments]),
+      nbSparksForSegment(new uint8_t[context.nbSegments]),
+      forward(std::vector<std::vector<bool> >(context.nbSegments)),
+      backward(std::vector<std::vector<bool> >(context.nbSegments)),
+      tempForward(new bool[context.maxSegmentSize]),
+      tempBackward(new bool[context.maxSegmentSize]) {
     memset(tempForward, 0, sizeof(bool) * context.maxSegmentSize);
     memset(tempBackward, 0, sizeof(bool) * context.maxSegmentSize);
     memset(sparkIntervalCounterPerSegment, 0, sizeof(uint16_t) * context.nbSegments);
@@ -107,7 +106,8 @@ void ChaseOverlay::fillArrayInternal(
     auto distanceFromLeadingSpark = leadingSparkPosition - sparkIntervalCounterPerSegment[segmentIndex];
     bool isSegmentReady = !isSwirling || distanceFromLeadingSpark >= swirlDistance * segmentIndex;
 
-    bool sparkIsOverdue = isSegmentReady && sparkIntervalCounterPerSegment[segmentIndex] % intervalBetweenSparks == 0;
+    bool sparkIsOverdue = isSegmentReady
+                          && sparkIntervalCounterPerSegment[segmentIndex] % intervalBetweenSparks == 0;
 
     if (isSegmentReady) {
         sparkIntervalCounterPerSegment[segmentIndex] =

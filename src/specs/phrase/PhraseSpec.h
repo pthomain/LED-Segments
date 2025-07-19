@@ -33,15 +33,16 @@
 
 class PhraseSpec : public DisplaySpec {
 public :
-
     static constexpr int LED_PIN = 9;
     static constexpr EOrder RGB_ORDER = GRB;
 
     explicit PhraseSpec(): DisplaySpec(
         phraseLayoutCatalog(),
-        IS_DEBUG ? 50 : 255,
-        10, // IS_DEBUG ? 3 : 5,
-        10 // IS_DEBUG ? 3 : 10
+        IS_DEBUG ? 50 : 192,
+        IS_DEBUG ? 3 : 5,
+        IS_DEBUG ? 3 : 10,
+        1000,
+        1.0f
     ) {
     }
 

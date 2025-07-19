@@ -45,7 +45,7 @@ enum PhraseLayout {
     WORDS_IN_WHOLE
 };
 
-inline const std::set<uint16_t> phraseLayouts = {
+static const std::set<uint16_t> phraseLayouts = {
     LEDS_IN_LETTERS,
     LEDS_IN_WORDS,
     LEDS_IN_WHOLE,
@@ -55,33 +55,59 @@ inline const std::set<uint16_t> phraseLayouts = {
 };
 
 static WeightedLayouts phraseLayoutSelector(EffectType effectType) {
-    return {
-        // {LEDS_IN_LETTERS, 4},
-        // {LEDS_IN_WORDS, 2},
-        {LEDS_IN_WHOLE, 1},
-        // {LETTERS_IN_WORDS, 2},
-        // {LETTERS_IN_WHOLE, 4},
-        // {WORDS_IN_WHOLE, 3}
-    };
+    switch (effectType) {
+        case EffectType::EFFECT:
+            return {
+                {LEDS_IN_WHOLE, 0},
+                {LEDS_IN_WORDS, 2},
+                {LEDS_IN_LETTERS, 6},
+                {LETTERS_IN_WHOLE, 12},
+                {LETTERS_IN_WORDS, 2},
+                {WORDS_IN_WHOLE, 8}
+            };
+
+        default:
+            return {
+                {LEDS_IN_WHOLE, 0},
+                {LEDS_IN_WORDS, 1},
+                {LEDS_IN_LETTERS, 2},
+                {LETTERS_IN_WHOLE, 8},
+                {LETTERS_IN_WORDS, 4},
+                {WORDS_IN_WHOLE, 0}
+            };
+    }
 }
 
 static EffectAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutId) {
     switch (layoutId) {
-        case LEDS_IN_LETTERS:
-        case LETTERS_IN_WORDS:
-        case LEDS_IN_WORDS:
-        case WORDS_IN_WHOLE:
-        case LETTERS_IN_WHOLE:
         case LEDS_IN_WHOLE:
-        default:
+        case LEDS_IN_WORDS:
+        case LEDS_IN_LETTERS:
+        case LETTERS_IN_WHOLE:
             return {
                 {
-                    // {GradientEffect::factory, 1},
-                    {SwirlEffect::factory, 1},
-                    // {NoiseEffect::factory, 1},
-                    // {SlideEffect::factory, 1}
+                    {GradientEffect::factory, 2},
+                    {SwirlEffect::factory, 8},
+                    {NoiseEffect::factory, 4},
+                    {SlideEffect::factory, 1}
                 },
-                noMirrors<CRGB> // allCRGBMirrors
+                [](EffectFactoryRef<CRGB> effectFactory) {
+                    if (effectFactory->is<SlideEffect>()) {
+                        return noMirrors(effectFactory);
+                    }
+                    return unrepeatedMirrors(effectFactory);
+                }
+            };
+
+        case LETTERS_IN_WORDS:
+        case WORDS_IN_WHOLE:
+            return {
+                {
+                    {GradientEffect::factory, 1},
+                    {SwirlEffect::factory, 2},
+                    {NoiseEffect::factory, 3}
+                },
+                noMirrors<CRGB>
             };
     }
 };
@@ -89,58 +115,83 @@ static EffectAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutId) {
 static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutId) {
     switch (layoutId) {
         case LEDS_IN_LETTERS:
+            return EffectAndMirrors<CRGB>{
+                {
+                    {WaveOverlay::factory, 1},
+                    {NoOverlay::factory, 8},
+                },
+                undividedMirrors<CRGB>
+            };
+
         case LEDS_IN_WORDS:
-        case LEDS_IN_WHOLE:
+            return EffectAndMirrors<CRGB>{
+                {
+                    {WaveOverlay::factory, 3},
+                    {DashOverlay::factory, 1},
+                    {NoOverlay::factory, 8},
+                },
+                [](EffectFactoryRef<CRGB> overlayFactory) {
+                    if (overlayFactory->is<ChaseOverlay>()) {
+                        return allMirrors(overlayFactory);
+                    }
+                    if (overlayFactory->is<DashOverlay>()) {
+                        return undividedMirrors(overlayFactory);
+                    }
+                    return unrepeatedMirrors(overlayFactory);
+                }
+            };
+
         case LETTERS_IN_WHOLE:
             return EffectAndMirrors<CRGB>{
                 {
-                    // {MoireOverlay::factory, 1},
-                    // {ChaseOverlay::factory, 1},
-                    // {WaveOverlay::factory, 1},
-                    // {DashOverlay::factory, 1},
-                    {NoOverlay::factory, 5},
+                    {ChaseOverlay::factory, 1},
+                    {DashOverlay::factory, 1},
+                    {NoOverlay::factory, 8},
                 },
                 [](EffectFactoryRef<CRGB> overlayFactory) {
-                    // if (overlayFactory->is<ChaseOverlay>()
-                    //     || overlayFactory->is<MoireOverlay>()) {
-                    //     return noCRGBMirrors(overlayFactory);
-                    // }
-                    //
-                    // if (overlayFactory->is<DashOverlay>()) {
-                    //     return WeightedMirrors{
-                    //         {Mirror::NONE, 2},
-                    //         {Mirror::REVERSE, 2},
-                    //         {Mirror::CENTRE, 2},
-                    //         {Mirror::EDGE, 2},
-                    //
-                    //         {Mirror::REPEAT, 1},
-                    //         {Mirror::REPEAT_REVERSE, 1},
-                    //
-                    //         {Mirror::OVERLAY_REVERSE, 1},
-                    //         {Mirror::OVERLAY_REPEAT_2, 1},
-                    //         {Mirror::OVERLAY_REPEAT_3, 1},
-                    //         {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
-                    //         {Mirror::OVERLAY_REPEAT_3_REVERSE, 1},
-                        // };
-                    // }
-                    // return allCRGBMirrors(overlayFactory);
-
+                    if (overlayFactory->is<ChaseOverlay>()) {
+                        return noMirrors(overlayFactory);
+                    }
+                    if (overlayFactory->is<DashOverlay>()) {
+                        return WeightedMirrors{
+                            {Mirror::NONE, 2},
+                            {Mirror::CENTRE, 1}
+                        };
+                    }
                     return noMirrors(overlayFactory);
                 }
             };
 
-        default: return {};
+        case LEDS_IN_WHOLE:
+        case LETTERS_IN_WORDS:
+        case WORDS_IN_WHOLE:
+        default: return {{}, noMirrors<CRGB>};
     }
 };
 
 static EffectAndMirrors<uint8_t> phraseTransitionSelector(uint16_t layoutId) {
     switch (layoutId) {
         case LEDS_IN_LETTERS:
-        case LEDS_IN_WORDS:
-        case LEDS_IN_WHOLE:
-        case LETTERS_IN_WHOLE: return ALL_TRANSITIONS;
+        case LETTERS_IN_WHOLE:
+            return {
+                just(SlideTransition::factory),
+                unrepeatedMirrors<uint8_t>
+            };
 
-        default: return FADE_TRANSITION;
+        case LETTERS_IN_WORDS:
+            return {
+                just(SlideTransition::factory),
+                undividedMirrors<uint8_t>
+            };
+
+        case LEDS_IN_WHOLE:
+        case LEDS_IN_WORDS:
+        case WORDS_IN_WHOLE:
+        default:
+            return {
+                just(FadeTransition::factory),
+                noMirrors<uint8_t>
+            };
     }
 }
 

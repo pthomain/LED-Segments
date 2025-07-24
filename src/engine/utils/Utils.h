@@ -29,7 +29,7 @@
 #include "FastLED.h"
 #include <functional>
 
-#define IS_DEBUG false
+#define IS_DEBUG true
 
 static const std::vector<uint8_t> PRIMES PROGMEM = std::vector<uint8_t>{
     43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,

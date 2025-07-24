@@ -44,6 +44,11 @@ public:
     static EffectFactoryRef<uint8_t> factory;
 };
 
-class NoTransitionFactory : public EffectFactory<NoTransition, uint8_t> {};
+class NoTransitionFactory : public EffectFactory<NoTransitionFactory, NoTransition, uint8_t> {
+public:
+    static std::vector<uint8_t> declareParams() {
+        return {};
+    }
+};
 
 #endif //NOTRANSITION_H

@@ -18,8 +18,8 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LAYOUTCATALOG_H
-#define LAYOUTCATALOG_H
+#ifndef LAYOUTCONFIG_H
+#define LAYOUTCONFIG_H
 
 #include <map>
 #include <set>
@@ -38,15 +38,20 @@ using EffectAndMirrors = std::pair<WeightedEffects<C>, MirrorSelector<C> >;
 template<typename C>
 using EffectSelector = std::function<EffectAndMirrors<C>(uint16_t layoutId)>;
 
+using EffectParamSelector = std::function<Params(
+    std::pair<TypeInfo::ID, Mirror> effectTypeAndMirror
+)>;
+
 template<typename C>
 using RandomEffect = std::tuple<uint16_t, EffectFactoryRef<C>, Mirror>;
 
-class LayoutCatalog {
+class LayoutConfig {
     const std::map<uint16_t, String> _layoutNames;
     const EffectSelector<CRGB> _effects;
     const EffectSelector<CRGB> _overlays;
     const EffectSelector<uint8_t> _transitions;
     const LayoutSelector _layoutSelector;
+    const EffectParamSelector _paramSelector;
 
     template<typename T>
     RandomEffect<T> randomEntry(
@@ -58,19 +63,21 @@ class LayoutCatalog {
 public:
     const std::set<uint16_t> layoutIds;
 
-    explicit LayoutCatalog(
+    explicit LayoutConfig(
         const std::set<uint16_t> &layoutIds,
         const std::map<uint16_t, String> &layoutNames,
         LayoutSelector layoutSelector,
         EffectSelector<CRGB> effects,
         EffectSelector<CRGB> overlays,
-        EffectSelector<uint8_t> transitions
+        EffectSelector<uint8_t> transitions,
+        EffectParamSelector paramSelector
     ): layoutIds(layoutIds),
        _layoutNames(layoutNames),
        _layoutSelector(std::move(layoutSelector)),
        _effects(std::move(effects)),
        _overlays(std::move(overlays)),
-       _transitions(std::move(transitions)) {
+       _transitions(std::move(transitions)),
+       _paramSelector(std::move(paramSelector)) {
     }
 
     String layoutName(uint16_t layoutId) const {
@@ -86,8 +93,10 @@ public:
 
     RandomEffect<uint8_t> randomTransition() const;
 
+    Params params(TypeInfo::ID effectId, Mirror mirror) const;
+
     virtual
-    ~LayoutCatalog() = default;
+    ~LayoutConfig() = default;
 };
 
 template<typename T>
@@ -96,4 +105,4 @@ std::map<uint16_t, std::vector<T> > mapLayoutId(
     const std::function<std::vector<T>(uint16_t)> &mapper
 );
 
-#endif //LAYOUTCATALOG_H
+#endif //LAYOUTCONFIG_H

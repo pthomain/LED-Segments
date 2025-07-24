@@ -21,16 +21,27 @@
 #ifndef LED_SEGMENTS_GRADIENTEFFECT_H
 #define LED_SEGMENTS_GRADIENTEFFECT_H
 
+#include "engine/displayspec/LayoutConfig.h"
 #include "engine/effect/Effect.h"
 #include "engine/effect/BaseEffectFactory.h"
 #include "engine/utils/Weights.h"
 
 class GradientEffect : public Effect<GradientEffect, CRGB> {
-    const uint8_t start = random8(); //start hue
-    const float variation = static_cast<float>(random8(85)) / 100.0f; // 30% variation
+    const uint8_t start;
+    const uint8_t variation;
 
 public:
-    explicit GradientEffect(const EffectContext &effectContext) : Effect(effectContext) {
+    static const uint8_t PARAM_START = 0;
+    static const uint8_t PARAM_VARIATION = 1;
+
+    explicit GradientEffect(const EffectContext &effectContext)
+        : Effect(effectContext),
+          start(effectContext.parameters.at(PARAM_START)),
+          variation(effectContext.parameters.at(PARAM_VARIATION)) {
+        Serial.print("start = ");
+        Serial.print(start);
+        Serial.print("; variation = ");
+        Serial.println(variation);
     }
 
     void fillArrayInternal(
@@ -46,6 +57,14 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class GradientEffectFactory : public EffectFactory<GradientEffect, CRGB> {};
+class GradientEffectFactory : public EffectFactory<GradientEffectFactory, GradientEffect, CRGB> {
+public:
+    static std::vector<uint8_t> declareParams() {       //TODO: handle default values
+        return {
+            GradientEffect::PARAM_START,
+            GradientEffect::PARAM_VARIATION
+        };
+    }
+};
 
 #endif //LED_SEGMENTS_GRADIENTEFFECT_H

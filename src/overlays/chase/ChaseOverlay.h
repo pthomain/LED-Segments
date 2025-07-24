@@ -79,6 +79,11 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class ChaseOverlayFactory : public EffectFactory<ChaseOverlay, CRGB> {};
+class ChaseOverlayFactory : public EffectFactory<ChaseOverlayFactory, ChaseOverlay, CRGB> {
+public:
+    static std::vector<uint8_t> declareParams() {
+        return {};
+    }
+};
 
 #endif //CHASEOVERLAY_H

@@ -26,16 +26,9 @@
 
 class FibonacciSpec : public DisplaySpec {
     void mapPixel(
-        uint16_t variation,
+        uint16_t layoutId,
         uint16_t segmentIndex,
         uint16_t pixelIndex,
-        uint8_t inflexionPoint,
-        const std::function<void(uint16_t)> &onLedMapped
-    ) const;
-
-    void mapPixelUnit(
-        uint16_t variation,
-        uint16_t pixelUnitIndex,
         uint8_t inflexionPoint,
         const std::function<void(uint16_t)> &onLedMapped
     ) const;
@@ -54,7 +47,10 @@ public :
     static constexpr int LED_PIN = 9;
     static constexpr EOrder RGB_ORDER = GRB;
 
-    explicit FibonacciSpec(): DisplaySpec(fibonacciLayoutCatalog()) {
+    explicit FibonacciSpec(): DisplaySpec(
+        fibonacciLayoutConfig(),
+        255
+        ) {
     }
 
     uint16_t nbLeds() const override { return TOTAL_FIBONACCI_LEDS; }

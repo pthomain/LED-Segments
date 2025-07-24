@@ -46,6 +46,11 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class SwirlEffectFactory : public EffectFactory<SwirlEffect, CRGB> {};
+class SwirlEffectFactory : public EffectFactory<SwirlEffectFactory, SwirlEffect, CRGB> {
+public:
+    static std::vector<uint8_t> declareParams() {
+        return {};
+    }
+};
 
 #endif //LED_SEGMENTS_SWIRLEFFECT_H

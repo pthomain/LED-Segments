@@ -18,7 +18,7 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "LayoutCatalog.h"
+#include "LayoutConfig.h"
 
 #include <string>
 #include <effects/none/NoEffect.h>
@@ -27,7 +27,7 @@
 #include "engine/utils/Utils.h"
 
 template<typename T>
-RandomEffect<T> LayoutCatalog::randomEntry(
+RandomEffect<T> LayoutConfig::randomEntry(
     EffectType effectType,
     const EffectSelector<T> &effectSelector,
     EffectFactoryRef<T> defaultEffectFactory
@@ -42,14 +42,18 @@ RandomEffect<T> LayoutCatalog::randomEntry(
     return RandomEffect<T>{randomLayoutId, effectFactory, randomMirror};
 }
 
-RandomEffect<CRGB> LayoutCatalog::randomEffect() const {
+RandomEffect<CRGB> LayoutConfig::randomEffect() const {
     return randomEntry(EffectType::EFFECT, _effects, NoEffect::factory);
 }
 
-RandomEffect<uint8_t> LayoutCatalog::randomTransition() const {
+RandomEffect<uint8_t> LayoutConfig::randomTransition() const {
     return randomEntry(EffectType::TRANSITION, _transitions, NoTransition::factory);
 }
 
-RandomEffect<CRGB> LayoutCatalog::randomOverlay() const {
+RandomEffect<CRGB> LayoutConfig::randomOverlay() const {
     return randomEntry(EffectType::OVERLAY, _overlays, NoOverlay::factory);
+}
+
+Params LayoutConfig::params(TypeInfo::ID effectId, Mirror mirror) const {
+    return _paramSelector({effectId, mirror});
 }

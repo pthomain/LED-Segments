@@ -42,6 +42,11 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class NoOverlayFactory : public EffectFactory<NoOverlay, CRGB> {};
+class NoOverlayFactory : public EffectFactory<NoOverlayFactory, NoOverlay, CRGB> {
+public:
+    static std::vector<uint8_t> declareParams() {
+        return {};
+    }
+};
 
 #endif //NOOVERLAY_H

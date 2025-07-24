@@ -21,13 +21,13 @@
 #ifndef LED_SEGMENTS_DISPLAYSPEC_H
 #define LED_SEGMENTS_DISPLAYSPEC_H
 
-#include "engine/displayspec/LayoutCatalog.h"
+#include "engine/displayspec/LayoutConfig.h"
 
 class DisplaySpec {
     uint16_t _maxSegmentSize = 0;
 
     void calculateMaxSegmentSize() {
-        for (auto layoutId: catalog.layoutIds) {
+        for (auto layoutId: config.layoutIds) {
             for (uint16_t segmentIndex = 0; segmentIndex < nbSegments(layoutId); segmentIndex++) {
                 _maxSegmentSize = max(_maxSegmentSize, segmentSize(layoutId, segmentIndex));
             }
@@ -35,7 +35,7 @@ class DisplaySpec {
     }
 
 public:
-    const LayoutCatalog catalog;
+    const LayoutConfig config;
     const uint8_t brightness;
     const uint8_t minEffectDurationsInSecs;
     const uint8_t maxEffectDurationsInSecs;
@@ -46,7 +46,7 @@ public:
     const uint8_t isCircular;
 
     explicit DisplaySpec(
-        const LayoutCatalog &catalog,
+        const LayoutConfig &config,
         const uint8_t brightness = 50,
         const uint8_t minEffectDurationsInSecs = 3,
         const uint8_t maxEffectDurationsInSecs = 10,
@@ -54,7 +54,7 @@ public:
         const float chanceOfRainbow = .75f,
         const uint8_t fps = 30,
         const uint8_t isCircular = false
-    ): catalog(catalog),
+    ): config(config),
        brightness(brightness),
        minEffectDurationsInSecs(min(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
        maxEffectDurationsInSecs(max(minEffectDurationsInSecs, maxEffectDurationsInSecs)),

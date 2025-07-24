@@ -24,39 +24,67 @@
 #include "BaseEffect.h"
 #include "../utils/TypeId.h"
 
+using Params = std::map<uint8_t, uint16_t>;
+
 template<typename C>
 class BaseEffectFactory {
+protected:
+    virtual std::vector<uint8_t> declareParameters() const;
+
 public:
-    virtual std::unique_ptr<BaseEffect<C>> create(const EffectContext &context) const = 0;
+    const TypeInfo::ID effectId;
+
+    virtual std::unique_ptr<BaseEffect<C> > create(const EffectContext &context) const = 0;
 
     virtual const char *name() const = 0;
 
-    // Pure virtual method to get the compile-time ID of the effect type.
-    virtual TypeInfo::ID getEffectTypeId() const = 0;
-
-    // Checks if the factory produces an effect of type T.
     template<typename T>
     bool is() const {
-        return getEffectTypeId() == TypeId<T>::id();
+        return effectId == TypeId<T>::id();
+    }
+
+    bool is(TypeInfo::ID effectId) const {
+        return this->effectId == effectId;
+    }
+
+    Params params(const std::function<uint16_t(uint8_t paramKey)> &selector) const {
+        auto params = Params();
+
+        for (auto paramKey: declareParameters()) {
+            params.insert({paramKey, selector(paramKey)});
+        }
+
+        return params;
     }
 
     virtual ~BaseEffectFactory() = default;
+
+protected:
+    explicit BaseEffectFactory(TypeInfo::ID id) : effectId(id) {
+    }
 };
 
-// CRTP helper class to automatically implement the factory methods
-template<typename T, typename C>
+template<typename Child, typename T, typename C>
 class EffectFactory : public BaseEffectFactory<C> {
+protected:
+    std::vector<uint8_t> declareParameters() const override {
+        return Child::declareParams();
+    }
+
 public:
-    std::unique_ptr<BaseEffect<C>> create(const EffectContext &context) const override {
+    explicit EffectFactory() : BaseEffectFactory<C>(TypeId<T>::id()) {
+        static_assert(
+            std::is_same<decltype(Child::declareParams()), std::vector<uint8_t> >::value,
+            "Child class must implement static std::vector<uint8_t> declareParams()"
+        );
+    }
+
+    std::unique_ptr<BaseEffect<C> > create(const EffectContext &context) const override {
         return std::make_unique<T>(context);
     }
 
     const char *name() const override {
         return T::name();
-    }
-
-    TypeInfo::ID getEffectTypeId() const override {
-        return TypeId<T>::id();
     }
 };
 

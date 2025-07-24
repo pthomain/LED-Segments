@@ -58,7 +58,11 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class WaveOverlayFactory : public EffectFactory<WaveOverlay, CRGB> {
+class WaveOverlayFactory : public EffectFactory<WaveOverlayFactory, WaveOverlay, CRGB> {
+public:
+    static std::vector<uint8_t> declareParams() {
+        return {};
+    }
 };
 
 #endif //LED_SEGMENTS_WAVEOVERLAY_H

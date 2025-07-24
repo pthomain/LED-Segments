@@ -90,7 +90,7 @@ uint8_t FibonacciSpec::getLedPadding(const uint8_t spiralPixelIndex) const {
 }
 
 void FibonacciSpec::mapPixel(
-    const uint16_t variation,
+    const uint16_t layoutId,
     const uint16_t segmentIndex,
     const uint16_t pixelIndex,
     const uint8_t inflexionPoint,
@@ -107,8 +107,8 @@ void FibonacciSpec::mapPixel(
         }
     };
 
-    const auto direction = getDirection(variation);
-    const auto alignment = getAlignment(variation);
+    const auto direction = getDirection(layoutId);
+    const auto alignment = getAlignment(layoutId);
 
     uint16_t segmentStart;
     uint8_t spiralPixelIndex;
@@ -146,50 +146,16 @@ void FibonacciSpec::mapPixel(
     }
 };
 
-void FibonacciSpec::mapPixelUnit(
-    const uint16_t variation,
-    const uint16_t pixelUnitIndex,
-    const uint8_t inflexionPoint,
-    const std::function<void(uint16_t)> &onLedMapped
-) const {
-    if (getPixelUnit(variation) == PIXEL) {
-        //the colour must be applied to the same pixel index for each segment
-        uint16_t nbSegments = getAlignment(variation) == SPIRAL ? NB_SPIRAL_SEGMENTS : NB_RADIAL_SEGMENTS;
-        for (uint16_t segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
-            mapPixel(
-                variation,
-                segmentIndex,
-                pixelUnitIndex, //pixel index
-                inflexionPoint,
-                onLedMapped
-            );
-        }
-    } else {
-        //each pixel index represents a segment and the colour must be applied to the entire segment
-        uint16_t nbPixels = getAlignment(variation) == SPIRAL ? NB_SPIRAL_PIXELS : NB_RADIAL_PIXELS;
-        for (uint16_t pixelIndex = 0; pixelIndex < nbPixels; pixelIndex++) {
-            mapPixel(
-                variation,
-                pixelUnitIndex, //segment index
-                pixelIndex,
-                inflexionPoint,
-                onLedMapped
-            );
-        }
-    }
-};
-
 void FibonacciSpec::mapLeds(
     uint16_t layoutId,
-    uint16_t segmentIndex,
+    uint16_t _, //same size segments
     uint16_t pixelIndex,
     float progress,
     const std::function<void(uint16_t)> &onLedMapped
 ) const {
-    const auto inflexion = getInflexion(layoutId);
     uint8_t inflexionPoint;
 
-    switch (inflexion) {
+    switch (getInflexion(layoutId)) {
         case STATIC_INFLEXION:
             inflexionPoint = 15;
             break;
@@ -202,10 +168,29 @@ void FibonacciSpec::mapLeds(
             break;
     }
 
-    mapPixelUnit(
-        layoutId,
-        pixelIndex, //optimisation for spirals, each segment is considered a pixel
-        inflexionPoint,
-        onLedMapped
-    );
+    if (getPixelUnit(layoutId) == PIXEL) {
+        //the colour must be applied to the same pixel index for each segment
+        uint16_t nbSegments = getAlignment(layoutId) == SPIRAL ? NB_SPIRAL_SEGMENTS : NB_RADIAL_SEGMENTS;
+        for (uint16_t segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
+            mapPixel(
+                layoutId,
+                segmentIndex,
+                pixelIndex,
+                inflexionPoint,
+                onLedMapped
+            );
+        }
+    } else {
+        //each pixel index represents a segment and the colour must be applied to the entire segment
+        uint16_t nbPixels = getAlignment(layoutId) == SPIRAL ? NB_SPIRAL_PIXELS : NB_RADIAL_PIXELS;
+        for (uint16_t segmentPixelIndex = 0; segmentPixelIndex < nbPixels; segmentPixelIndex++) {
+            mapPixel(
+                layoutId,
+                pixelIndex, //optimisation for spirals, each segment is considered a pixel
+                segmentPixelIndex,
+                inflexionPoint,
+                onLedMapped
+            );
+        }
+    }
 }

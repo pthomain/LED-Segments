@@ -25,7 +25,7 @@
 #include "engine/effect/BaseEffectFactory.h"
 #include "engine/effect/EffectOperation.h"
 
-class SlideTransition : public Effect<SlideTransition, uint8_t>{
+class SlideTransition : public Effect<SlideTransition, uint8_t> {
 public:
     explicit SlideTransition(const EffectContext &effectContext) : Effect(effectContext) {
     }
@@ -43,6 +43,11 @@ public:
     static EffectFactoryRef<uint8_t> factory;
 };
 
-class SlideTransitionFactory : public EffectFactory<SlideTransition, uint8_t> {};
+class SlideTransitionFactory : public EffectFactory<SlideTransitionFactory, SlideTransition, uint8_t> {
+public:
+    static std::vector<uint8_t> declareParams() {
+        return {};
+    }
+};
 
 #endif //SLIDETRANSITION_H

@@ -21,7 +21,7 @@
 #ifndef PHRASELAYOUTCONFIG_H
 #define PHRASELAYOUTCONFIG_H
 
-#include "engine/displayspec/LayoutCatalog.h"
+#include "engine/displayspec/LayoutConfig.h"
 #include "engine/effect/Effect.h"
 #include <effects/noise/NoiseEffect.h>
 #include <effects/slide/SlideEffect.h>
@@ -33,6 +33,7 @@
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/dash/DashOverlay.h"
 #include "overlays/moire/MoireOverlay.h"
+#include "overlays/sparkle/SparkleOverlay.h"
 #include "overlays/wave/WaveOverlay.h"
 
 // Format is PIXELS_IN_SEGMENTS
@@ -210,8 +211,37 @@ static EffectAndMirrors<uint8_t> phraseTransitionSelector(uint16_t layoutId) {
     }
 }
 
-inline LayoutCatalog phraseLayoutCatalog() {
-    return LayoutCatalog(
+static std::map<uint8_t, uint16_t> phraseParamSelector(
+    std::pair<TypeInfo::ID, Mirror> effectTypeAndMirror
+) {
+    const auto &[effectId, mirror] = effectTypeAndMirror;
+
+    if (GradientEffect::factory->is(effectId)) {
+        return GradientEffect::factory->params([](uint8_t paramKey) {
+            switch (paramKey) {
+                case GradientEffect::PARAM_START: return uint16_t(random8()); // Start hue
+                case GradientEffect::PARAM_VARIATION: return uint16_t(random8(85)); // 33% variation
+                default: return uint16_t(0);
+            }
+        });
+    }
+
+    // if (NoiseEffect::factory->is(effectId)) { return {{0, 0}}; }
+    // if (SlideEffect::factory->is(effectId)) { return {{0, 0}}; }
+    // if (SwirlEffect::factory->is(effectId)) { return {{0, 0}}; }
+    // if (ChaseOverlay::factory->is(effectId)) { return {{0, 0}}; }
+    // if (DashOverlay::factory->is(effectId)) { return {{0, 0}}; }
+    // if (MoireOverlay::factory->is(effectId)) { return {{0, 0}}; }
+    // if (SparkleOverlay::factory->is(effectId)) { return {{0, 0}}; }
+    // if (WaveOverlay::factory->is(effectId)) { return {{0, 0}}; }
+    // if (FadeTransition::factory->is(effectId)) { return {{0, 0}}; }
+    // if (SlideTransition::factory->is(effectId)) { return {{0, 0}}; }
+
+    return {};
+}
+
+inline LayoutConfig phraseLayoutConfig() {
+    return LayoutConfig(
         phraseLayouts,
         {
             {LEDS_IN_LETTERS, "LEDS_IN_LETTERS"},
@@ -224,7 +254,8 @@ inline LayoutCatalog phraseLayoutCatalog() {
         phraseLayoutSelector,
         phraseEffectSelector,
         phraseOverlaySelector,
-        phraseTransitionSelector
+        phraseTransitionSelector,
+        phraseParamSelector
     );
 }
 

@@ -37,7 +37,7 @@ public :
     static constexpr EOrder RGB_ORDER = GRB;
 
     explicit PhraseSpec(): DisplaySpec(
-        phraseLayoutCatalog(),
+        phraseLayoutConfig(),
         IS_DEBUG ? 50 : 192,
         IS_DEBUG ? 3 : 5,
         IS_DEBUG ? 3 : 10,

@@ -25,7 +25,7 @@
 #include "effects/gradient/GradientEffect.h"
 #include "effects/swirl/SwirlEffect.h"
 #include "effects/slide/SlideEffect.h"
-#include "engine/displayspec/LayoutCatalog.h"
+#include "engine/displayspec/LayoutConfig.h"
 #include "engine/effect/Effect.h"
 #include "overlays/none/NoOverlay.h"
 #include "transitions/Transition.h"
@@ -161,8 +161,28 @@ static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutId) {
     };
 }
 
-static LayoutCatalog umbrellaLayoutCatalog() {
-    return LayoutCatalog(
+static std::map<uint8_t, uint16_t> umbrellaParamSelector(
+    std::pair<TypeInfo::ID, Mirror> effectTypeAndMirror
+) {
+    const auto &[effectId, mirror] = effectTypeAndMirror;
+
+    if (GradientEffect::factory->is(effectId)) { return {{0, 0}}; }
+    if (NoiseEffect::factory->is(effectId)) { return {{0, 0}}; }
+    if (SlideEffect::factory->is(effectId)) { return {{0, 0}}; }
+    if (SwirlEffect::factory->is(effectId)) { return {{0, 0}}; }
+    if (ChaseOverlay::factory->is(effectId)) { return {{0, 0}}; }
+    if (DashOverlay::factory->is(effectId)) { return {{0, 0}}; }
+    if (MoireOverlay::factory->is(effectId)) { return {{0, 0}}; }
+    if (SparkleOverlay::factory->is(effectId)) { return {{0, 0}}; }
+    if (WaveOverlay::factory->is(effectId)) { return {{0, 0}}; }
+    if (FadeTransition::factory->is(effectId)) { return {{0, 0}}; }
+    if (SlideTransition::factory->is(effectId)) { return {{0, 0}}; }
+
+    return {};
+}
+
+static LayoutConfig umbrellaLayoutConfig() {
+    return LayoutConfig(
         umbrellaLayoutIds,
         {
             {LEDS_IN_SPOKE, "LEDS_IN_SPOKE"},
@@ -171,7 +191,8 @@ static LayoutCatalog umbrellaLayoutCatalog() {
         umbrellaLayoutSelector,
         umbrellaEffectSelector,
         umbrellaOverlaySelector,
-        umbrellaTransitionSelector
+        umbrellaTransitionSelector,
+        umbrellaParamSelector
     );
 }
 

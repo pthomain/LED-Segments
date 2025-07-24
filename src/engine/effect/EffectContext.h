@@ -21,9 +21,9 @@
 #ifndef LED_SEGMENTS_EFFECTCONTEXT_H
 #define LED_SEGMENTS_EFFECTCONTEXT_H
 
+#include <map>
 #include <engine/mirror/Mirror.h>
 #include <engine/palette/Palette.h>
-#include "FastLED.h"
 
 class EffectContext {
 public:
@@ -34,6 +34,7 @@ public:
     const uint16_t layoutId;
     const Palette palette;
     const Mirror mirror;
+    const std::map<uint8_t, uint16_t> parameters;
 
     EffectContext(
         const uint16_t maxSegmentSize,
@@ -42,14 +43,16 @@ public:
         const boolean isDisplayCircular,
         const uint16_t layoutId,
         Palette palette,
-        const Mirror mirror
+        const Mirror mirror,
+        const std::map<uint8_t, uint16_t> &parameters
     ) : maxSegmentSize(maxSegmentSize),
         nbSegments(nbSegments),
         durationInFrames(durationInFrames),
         isDisplayCircular(isDisplayCircular),
         layoutId(layoutId),
         palette(std::move(palette)),
-        mirror(mirror) {
+        mirror(mirror),
+        parameters(std::move(parameters)) {
     }
 };
 

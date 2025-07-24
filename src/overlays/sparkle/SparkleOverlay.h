@@ -46,6 +46,11 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class SparkleOverlayFactory : public EffectFactory<SparkleOverlay, CRGB> {};
+class SparkleOverlayFactory : public EffectFactory<SparkleOverlayFactory, SparkleOverlay, CRGB> {
+public:
+    static std::vector<uint8_t> declareParams() {
+        return {};
+    }
+};
 
 #endif //SPARKLEOVERLAY_H

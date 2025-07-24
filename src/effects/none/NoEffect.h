@@ -43,6 +43,11 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class NoEffectFactory : public EffectFactory<NoEffect, CRGB> {};
+class NoEffectFactory : public EffectFactory<NoEffectFactory, NoEffect, CRGB> {
+public:
+    static std::vector<uint8_t> declareParams() {
+        return {};
+    }
+};
 
 #endif //NOEFFECT_H

@@ -67,7 +67,7 @@ public:
         std::vector<uint8_t> freePinsForEntropy = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
     ) : _displaySpec(std::unique_ptr<SPEC>(new SPEC())),
         outputArray(new CRGB[_displaySpec->nbLeds()]),
-        renderer(std::make_unique<Renderer>(_displaySpec, outputArray)){
+        renderer(std::make_unique<Renderer>(_displaySpec, outputArray)) {
         freePinsForEntropy.erase(
             std::remove(freePinsForEntropy.begin(), freePinsForEntropy.end(), SPEC::LED_PIN),
             freePinsForEntropy.end()
@@ -85,14 +85,14 @@ public:
     }
 
     void changeEffect(uint8_t effectDurationsInSecs) {
-        const auto &catalog = _displaySpec->catalog;
+        const auto &config = _displaySpec->config;
         const Palette &palette = probability(_displaySpec->chanceOfRainbow)
                                      ? RAINBOW_PALETTE
                                      : PALETTES[random8(PALETTES.size())];
 
-        const auto &[effectLayoutId, effectFactory, effectMirror] = catalog.randomEffect();
-        const auto &[transitionLayoutId, transitionFactory, transitionMirror] = catalog.randomTransition();
-        const auto &[overlayLayoutId, overlayFactory, overlayMirror] = catalog.randomOverlay();
+        const auto &[effectLayoutId, effectFactory, effectMirror] = config.randomEffect();
+        const auto &[transitionLayoutId, transitionFactory, transitionMirror] = config.randomTransition();
+        const auto &[overlayLayoutId, overlayFactory, overlayMirror] = config.randomOverlay();
 
         if constexpr (IS_DEBUG) {
             Serial.println("---");
@@ -102,21 +102,21 @@ public:
             Serial.print("Effect			");
             Serial.println(effectFactory->name());
             Serial.print("Effect layout		");
-            Serial.println(catalog.layoutName(effectLayoutId));
+            Serial.println(config.layoutName(effectLayoutId));
             Serial.print("Effect mirror		");
             Serial.println(getMirrorName(effectMirror));
             Serial.println("-");
             Serial.print("Overlay			");
             Serial.println(overlayFactory->name());
             Serial.print("Overlay layout		");
-            Serial.println(catalog.layoutName(overlayLayoutId));
+            Serial.println(config.layoutName(overlayLayoutId));
             Serial.print("Overlay mirror		");
             Serial.println(getMirrorName(overlayMirror));
             Serial.println("-");
             Serial.print("Transition		");
             Serial.println(transitionFactory->name());
             Serial.print("Transition layout	");
-            Serial.println(catalog.layoutName(transitionLayoutId));
+            Serial.println(config.layoutName(transitionLayoutId));
             Serial.print("Transition mirror	");
             Serial.println(getMirrorName(transitionMirror));
             Serial.println("---");
@@ -132,7 +132,8 @@ public:
             _displaySpec->isCircular,
             effectLayoutId,
             palette,
-            effectMirror
+            effectMirror,
+            config.params(effectFactory->effectId, effectMirror)
         );
 
         const auto overlayContext = EffectContext(
@@ -142,7 +143,8 @@ public:
             _displaySpec->isCircular,
             overlayLayoutId,
             NO_PALETTE,
-            overlayMirror
+            overlayMirror,
+            config.params(overlayFactory->effectId, overlayMirror)
         );
 
         const auto transitionContext = EffectContext(
@@ -152,7 +154,8 @@ public:
             _displaySpec->isCircular,
             transitionLayoutId,
             NO_PALETTE,
-            transitionMirror
+            transitionMirror,
+            config.params(transitionFactory->effectId, transitionMirror)
         );
 
         auto effect = effectFactory->create(effectContext);

@@ -77,6 +77,11 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class MoireOverlayFactory : public EffectFactory<MoireOverlay, CRGB> {};
+class MoireOverlayFactory : public EffectFactory<MoireOverlayFactory, MoireOverlay, CRGB> {
+public:
+    static std::vector<uint8_t> declareParams() {
+        return {};
+    }
+};
 
 #endif //MOIREOVERLAY_H

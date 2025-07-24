@@ -21,6 +21,9 @@
 #include "GradientEffect.h"
 #include "engine/utils/Weights.h"
 
+const uint8_t GradientEffect::PARAM_START;
+const uint8_t GradientEffect::PARAM_VARIATION;
+
 static const GradientEffectFactory factoryInstance;
 EffectFactoryRef<CRGB> GradientEffect::factory = &factoryInstance;
 
@@ -31,13 +34,16 @@ void GradientEffect::fillArrayInternal(
     float progress,
     unsigned long timeInMillis
 ) {
-    auto increment = static_cast<uint8_t>(variation * (255.0f / static_cast<float>(effectArraySize)));
+    float percent = static_cast<float>(variation) / (255.0f * 2.0f);
+    uint8_t increment = max(1, 255.0f / static_cast<float>(effectArraySize));
+    uint8_t adjustedIncrement = random8(increment * (1.0f - percent), increment * (1.0f + percent));
+
     uint8_t progressOffset = start + progress * 255;
 
     for (int i = 0; i < effectArraySize; i++) {
         effectArray[i] = ColorFromPalette(
             context.palette.palette,
-            progressOffset + (i * increment)
+            progressOffset + (i * max(1, adjustedIncrement))
         );
     }
 }

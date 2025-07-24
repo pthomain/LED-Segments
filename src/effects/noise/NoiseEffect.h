@@ -21,6 +21,7 @@
 #ifndef LED_SEGMENTS_NOISEEFFECT_H
 #define LED_SEGMENTS_NOISEEFFECT_H
 
+#include "effects/gradient/GradientEffect.h"
 #include "engine/effect/Effect.h"
 #include "engine/effect/BaseEffectFactory.h"
 #include "engine/utils/Weights.h"
@@ -48,6 +49,11 @@ public:
     static EffectFactoryRef<CRGB> factory;
 };
 
-class NoiseEffectFactory : public EffectFactory<NoiseEffect, CRGB> {};
+class NoiseEffectFactory : public EffectFactory<NoiseEffectFactory, NoiseEffect, CRGB> {
+public:
+    static std::vector<uint8_t> declareParams() {
+        return {};
+    }
+};
 
 #endif //LED_SEGMENTS_NOISEEFFECT_H

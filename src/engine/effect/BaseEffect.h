@@ -54,9 +54,8 @@ public:
         float progress
     );
 
-    explicit BaseEffect(EffectContext context)
-        : context(std::move(context)),
-          randomStart(random8()) {
+    explicit BaseEffect(EffectContext context): context(std::move(context)),
+                                                randomStart(random8()) {
     }
 
     virtual const char *effectName() = 0;

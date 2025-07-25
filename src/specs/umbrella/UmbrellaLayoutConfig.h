@@ -162,10 +162,9 @@ static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutId) {
 }
 
 static std::map<uint8_t, uint16_t> umbrellaParamSelector(
-    std::pair<TypeInfo::ID, Mirror> effectTypeAndMirror
+    TypeInfo::ID effectId,
+    Mirror mirror
 ) {
-    const auto &[effectId, mirror] = effectTypeAndMirror;
-
     if (GradientEffect::factory->is(effectId)) { return {{0, 0}}; }
     if (NoiseEffect::factory->is(effectId)) { return {{0, 0}}; }
     if (SlideEffect::factory->is(effectId)) { return {{0, 0}}; }

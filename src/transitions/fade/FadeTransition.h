@@ -45,7 +45,7 @@ public:
 
 class FadeTransitionFactory : public EffectFactory<FadeTransitionFactory, FadeTransition, uint8_t> {
 public:
-    static std::vector<uint8_t> declareParams() {
+    static Params declareParams() {
         return {};
     }
 };

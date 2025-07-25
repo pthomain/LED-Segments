@@ -55,5 +55,5 @@ RandomEffect<CRGB> LayoutConfig::randomOverlay() const {
 }
 
 Params LayoutConfig::params(TypeInfo::ID effectId, Mirror mirror) const {
-    return _paramSelector({effectId, mirror});
+    return _paramSelector(effectId, mirror);
 }

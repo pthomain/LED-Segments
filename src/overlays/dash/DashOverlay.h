@@ -71,7 +71,7 @@ public:
 
 class DashOverlayFactory : public EffectFactory<DashOverlayFactory, DashOverlay, CRGB> {
 public:
-    static std::vector<uint8_t> declareParams() {
+    static Params declareParams() {
         return {};
     }
 };

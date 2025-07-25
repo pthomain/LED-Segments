@@ -60,7 +60,7 @@ public:
 
 class WaveOverlayFactory : public EffectFactory<WaveOverlayFactory, WaveOverlay, CRGB> {
 public:
-    static std::vector<uint8_t> declareParams() {
+    static Params declareParams() {
         return {};
     }
 };

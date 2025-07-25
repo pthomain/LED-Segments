@@ -39,7 +39,8 @@ template<typename C>
 using EffectSelector = std::function<EffectAndMirrors<C>(uint16_t layoutId)>;
 
 using EffectParamSelector = std::function<Params(
-    std::pair<TypeInfo::ID, Mirror> effectTypeAndMirror
+    TypeInfo::ID effectId,
+    Mirror mirror
 )>;
 
 template<typename C>

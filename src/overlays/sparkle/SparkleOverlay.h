@@ -48,7 +48,7 @@ public:
 
 class SparkleOverlayFactory : public EffectFactory<SparkleOverlayFactory, SparkleOverlay, CRGB> {
 public:
-    static std::vector<uint8_t> declareParams() {
+    static Params declareParams() {
         return {};
     }
 };

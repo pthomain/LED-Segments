@@ -125,6 +125,9 @@ public:
         const uint16_t effectDurationInFrames = effectDurationsInSecs * _displaySpec->fps;
         auto transitionDurationInFrames = _displaySpec->fps * _displaySpec->transitionDurationInMillis / 1000;
 
+        auto effectParams = config.params(effectFactory->effectId, effectMirror);
+        if (effectParams.empty()) effectParams = effectFactory->declareParameters();
+
         const auto effectContext = EffectContext(
             _displaySpec->maxSegmentSize(),
             _displaySpec->nbSegments(effectLayoutId),
@@ -133,8 +136,11 @@ public:
             effectLayoutId,
             palette,
             effectMirror,
-            config.params(effectFactory->effectId, effectMirror)
+            effectParams
         );
+
+        auto overlayParams = config.params(overlayFactory->effectId, overlayMirror);
+        if (overlayParams.empty()) overlayParams = overlayFactory->declareParameters();
 
         const auto overlayContext = EffectContext(
             _displaySpec->maxSegmentSize(),
@@ -144,8 +150,11 @@ public:
             overlayLayoutId,
             NO_PALETTE,
             overlayMirror,
-            config.params(overlayFactory->effectId, overlayMirror)
+            overlayParams
         );
+
+        auto transitionParams = config.params(transitionFactory->effectId, transitionMirror);
+        if (transitionParams.empty()) transitionParams = transitionFactory->declareParameters();
 
         const auto transitionContext = EffectContext(
             _displaySpec->maxSegmentSize(),
@@ -155,7 +164,7 @@ public:
             transitionLayoutId,
             NO_PALETTE,
             transitionMirror,
-            config.params(transitionFactory->effectId, transitionMirror)
+            transitionParams
         );
 
         auto effect = effectFactory->create(effectContext);

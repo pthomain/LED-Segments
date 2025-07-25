@@ -45,7 +45,7 @@ public:
 
 class NoEffectFactory : public EffectFactory<NoEffectFactory, NoEffect, CRGB> {
 public:
-    static std::vector<uint8_t> declareParams() {
+    static Params declareParams() {
         return {};
     }
 };

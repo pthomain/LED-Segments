@@ -51,7 +51,7 @@ public:
 
 class NoiseEffectFactory : public EffectFactory<NoiseEffectFactory, NoiseEffect, CRGB> {
 public:
-    static std::vector<uint8_t> declareParams() {
+    static Params declareParams() {
         return {};
     }
 };

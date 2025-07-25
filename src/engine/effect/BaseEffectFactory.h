@@ -28,9 +28,6 @@ using Params = std::map<uint8_t, uint16_t>;
 
 template<typename C>
 class BaseEffectFactory {
-protected:
-    virtual std::vector<uint8_t> declareParameters() const;
-
 public:
     const TypeInfo::ID effectId;
 
@@ -47,15 +44,17 @@ public:
         return this->effectId == effectId;
     }
 
-    Params params(const std::function<uint16_t(uint8_t paramKey)> &selector) const {
+    Params params(const std::function<uint16_t(uint8_t paramKey, uint16_t defaultValue)> &selector) const {
         auto params = Params();
 
-        for (auto paramKey: declareParameters()) {
-            params.insert({paramKey, selector(paramKey)});
+        for (auto &[paramKey, defaultValue]: declareParameters()) {
+            params.insert({paramKey, selector(paramKey, defaultValue)});
         }
 
         return params;
     }
+
+    virtual Params declareParameters() const;
 
     virtual ~BaseEffectFactory() = default;
 
@@ -67,15 +66,15 @@ protected:
 template<typename Child, typename T, typename C>
 class EffectFactory : public BaseEffectFactory<C> {
 protected:
-    std::vector<uint8_t> declareParameters() const override {
+    Params declareParameters() const override {
         return Child::declareParams();
     }
 
 public:
     explicit EffectFactory() : BaseEffectFactory<C>(TypeId<T>::id()) {
         static_assert(
-            std::is_same<decltype(Child::declareParams()), std::vector<uint8_t> >::value,
-            "Child class must implement static std::vector<uint8_t> declareParams()"
+            std::is_same<decltype(Child::declareParams()), Params>::value,
+            "Child class must implement static Params declareParams()"
         );
     }
 

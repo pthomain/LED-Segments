@@ -165,19 +165,18 @@ static EffectAndMirrors<uint8_t> fibonacciTransitionSelector(uint16_t layoutId) 
 }
 
 static std::map<uint8_t, uint16_t> fibonacciParamSelector(
-    std::pair<TypeInfo::ID, Mirror> effectTypeAndMirror
+    TypeInfo::ID effectId,
+    Mirror mirror
 ) {
-    const auto &[effectId, mirror] = effectTypeAndMirror;
-
-    if (GradientEffect::factory->is(effectId)) {
-        return GradientEffect::factory->params([](uint8_t paramKey) {
-            switch (paramKey) {
-                case GradientEffect::PARAM_START: return uint16_t(random8()); // Start hue
-                case GradientEffect::PARAM_VARIATION: return uint16_t(random8(85)); // 33% variation
-                default: return uint16_t(0);
-            }
-        });
-    }
+    // if (GradientEffect::factory->is(effectId)) {
+    //     return GradientEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue) {
+    //         switch (paramKey) {
+    //             case GradientEffect::PARAM_START: return static_cast<uint16_t>(random8()); // Start hue
+    //             case GradientEffect::PARAM_VARIATION: return static_cast<uint16_t>(random8(85)); // 33% variation
+    //             default: return defaultValue;
+    //         }
+    //     });
+    // }
 
     // if (NoiseEffect::factory->is(effectId)) { return {{0, 0}}; }
     // if (SlideEffect::factory->is(effectId)) { return {{0, 0}}; }

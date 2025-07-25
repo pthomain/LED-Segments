@@ -48,7 +48,7 @@ public:
 
 class SwirlEffectFactory : public EffectFactory<SwirlEffectFactory, SwirlEffect, CRGB> {
 public:
-    static std::vector<uint8_t> declareParams() {
+    static Params declareParams() {
         return {};
     }
 };

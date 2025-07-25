@@ -61,7 +61,7 @@ public:
 
 class SlideEffectFactory : public EffectFactory<SlideEffectFactory, SlideEffect, CRGB> {
 public:
-    static std::vector<uint8_t> declareParams() {
+    static Params declareParams() {
         return {};
     }
 };

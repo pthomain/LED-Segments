@@ -59,10 +59,10 @@ public:
 
 class GradientEffectFactory : public EffectFactory<GradientEffectFactory, GradientEffect, CRGB> {
 public:
-    static std::vector<uint8_t> declareParams() {       //TODO: handle default values
+    static Params declareParams() {
         return {
-            GradientEffect::PARAM_START,
-            GradientEffect::PARAM_VARIATION
+            {GradientEffect::PARAM_START, random8()},
+            {GradientEffect::PARAM_VARIATION, random8(85)}
         };
     }
 };

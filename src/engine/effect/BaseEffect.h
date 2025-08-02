@@ -27,11 +27,13 @@
 
 template<typename C>
 class BaseEffect {
+    unsigned long effectStartInMillis = 0L;
+    uint16_t _frameIndex = 0;
+
 protected:
-    unsigned long start = 0L;
-    bool isFirstFrame = true;
-    uint8_t randomStart;
-    uint16_t frameIndex = 0;
+    uint16_t frameIndex() {
+        return _frameIndex;
+    }
 
     virtual void fillArrayInternal(
         C *effectArray,
@@ -54,11 +56,13 @@ public:
         float progress
     );
 
-    explicit BaseEffect(EffectContext context): context(std::move(context)),
-                                                randomStart(random8()) {
-    }
+    virtual void onEachFrame(
+        float progress,
+        unsigned long timeElapsedInMillis
+    ) = 0;
 
-    virtual const char *effectName() = 0;
+    explicit BaseEffect(EffectContext context): context(std::move(context)) {
+    }
 
     virtual WeightedOperations effectOperations() = 0;
 

@@ -51,17 +51,13 @@ void UmbrellaSpec::mapLeds(
     float progress,
     const std::function<void(uint16_t)> &onLedMapped
 ) const {
-    auto mapSingleLed = [&](uint16_t ledIndex, const std::function<void(uint16_t)> &onLedMapped) {
-        onLedMapped(ledIndex);
-    };
-
     switch (layoutId) {
-        case LEDS_IN_SPOKE: mapSingleLed(segmentIndex * LEDS_PER_SPOKE + pixelIndex, onLedMapped);
+        case LEDS_IN_SPOKE: onLedMapped(segmentIndex * LEDS_PER_SPOKE + pixelIndex);
             break;
 
         case SPOKES_IN_WHOLE:
             for (uint8_t ledIndex = 0; ledIndex < LEDS_PER_SPOKE; ledIndex++) {
-                mapSingleLed(pixelIndex * LEDS_PER_SPOKE + ledIndex, onLedMapped); // PIXEL == SPOKE
+                onLedMapped(pixelIndex * LEDS_PER_SPOKE + ledIndex); // PIXEL == SPOKE
             }
             break;
 

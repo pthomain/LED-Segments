@@ -27,10 +27,18 @@
 #include "engine/utils/Weights.h"
 
 class SwirlEffect : public Effect<SwirlEffect, CRGB> {
-    bool isReversed = probability(0.5f);
+    const bool isReversible;
+    const bool isReversed = isReversible ? probability(0.5f) : false;
+    const uint8_t speedDivider;
 
 public:
-    explicit SwirlEffect(const EffectContext &effectContext) : Effect(effectContext) {
+    static const uint8_t PARAM_IS_REVERSIBLE = 0;
+    static const uint8_t PARAM_SPEED_DIVIDER = 1;
+
+    explicit SwirlEffect(const EffectContext &effectContext)
+        : Effect(effectContext),
+          isReversible(param(PARAM_IS_REVERSIBLE) > 0),
+          speedDivider(max(1, param(PARAM_SPEED_DIVIDER))) {
     }
 
     void fillArrayInternal(
@@ -41,15 +49,18 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    static constexpr const char* name() { return "SwirlEffect"; }
-    static WeightedOperations operations() { return just(EffectOperation::EFFECT); }
+    static constexpr const char *name() { return "SwirlEffect"; }
+    WeightedOperations operations() { return just(EffectOperation::EFFECT); }
     static EffectFactoryRef<CRGB> factory;
 };
 
 class SwirlEffectFactory : public EffectFactory<SwirlEffectFactory, SwirlEffect, CRGB> {
 public:
     static Params declareParams() {
-        return {};
+        return {
+            {SwirlEffect::PARAM_IS_REVERSIBLE, 1}, // 0 for false
+            {SwirlEffect::PARAM_SPEED_DIVIDER, 4} // 0 for false
+        };
     }
 };
 

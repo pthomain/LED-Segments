@@ -33,33 +33,47 @@ constexpr uint8_t PALETTE_SIZE = 16;
 
 template<typename Child, typename C>
 class Effect : public BaseEffect<C> {
+protected:
+    uint16_t param(uint8_t paramKey) const {
+        auto parameters = this->context.parameters;
+        if (parameters.find(paramKey) == parameters.end()) {
+            Serial.printf("Effect %s: Parameter %d not found\n", Child::name(), paramKey);
+            return 0;
+        }
+
+        return parameters.at(paramKey);
+    }
+
 public :
     explicit Effect(const EffectContext &effectContext) : BaseEffect<C>(effectContext) {
         static_assert(
-            std::is_same<decltype(Child::name()), const char *>::value,
+            std::is_base_of_v<Effect, Child>,
+            "Child must be a subclass of Effect"
+        );
+
+        static_assert(
+            std::is_same_v<decltype(Child::name()), const char *>,
             "Child class must implement static const char* name()"
         );
 
         static_assert(
-            std::is_same<decltype(Child::operations()), WeightedOperations>::value,
-            "Child class must implement static WeightedOperations operations()"
+            std::is_same_v<decltype(std::declval<Child>().operations()), WeightedOperations>,
+            "Child class must implement WeightedOperations operations()"
         );
     };
 
-    const char *effectName() override {
-        return name();
+    void onEachFrame(
+        float progress,
+        unsigned long timeElapsedInMillis
+    ) override {
     }
 
     WeightedOperations effectOperations() override {
-        return operations();
+        return static_cast<Child *>(this)->operations();
     }
 
     static const char *name() {
         return Child::name();
-    }
-
-    static WeightedOperations operations() {
-        return Child::operations();
     }
 };
 

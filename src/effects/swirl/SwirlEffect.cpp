@@ -23,6 +23,8 @@
 #include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
+const uint8_t SwirlEffect::PARAM_IS_REVERSIBLE;
+
 static const SwirlEffectFactory factoryInstance;
 EffectFactoryRef<CRGB> SwirlEffect::factory = &factoryInstance;
 
@@ -35,7 +37,8 @@ void SwirlEffect::fillArrayInternal(
 ) {
    const int8_t direction = isReversed ? -1 : 1;
    const uint8_t step = segmentIndex * max(1, 255 / context.nbSegments);
-   const auto offset = static_cast<uint8_t>(timeElapsedInMillis / 4);
+
+   const auto offset = max(1, static_cast<uint8_t>(timeElapsedInMillis / speedDivider));
    const uint8_t start = direction * (step + offset);
 
     fill_palette(

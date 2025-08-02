@@ -23,6 +23,10 @@
 #include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
+const uint8_t DashOverlay::PARAM_TAIL_SPEED;
+const uint16_t DashOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT;
+const uint16_t DashOverlay::PARAM_OPERATION_INVERT_WEIGHT;
+
 static const DashOverlayFactory factoryInstance;
 EffectFactoryRef<CRGB> DashOverlay::factory = &factoryInstance;
 
@@ -40,9 +44,7 @@ void DashOverlay::fillArrayInternal(
     const auto lastIndex = effectArraySize - 1;
 
     if (isReversed) {
-        const uint16_t headThreshold = tailSpeed == 1
-                                           ? 0
-                                           : effectArraySize / tailSpeed;
+        const uint16_t headThreshold = tailSpeed == 1 ? 0 : effectArraySize / tailSpeed;
         if (headPosition > 0) headPosition--;
 
         if (headPosition <= headThreshold && tailPosition > 0) {

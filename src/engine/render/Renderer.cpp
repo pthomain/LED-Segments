@@ -67,6 +67,14 @@ void Renderer::applyEffectOrTransition(
 
     for (auto segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
         auto segmentSize = displaySpec->segmentSize(layoutId, segmentIndex);
+        if (segmentSize == 0) {
+            Serial.print("No pixels for layout ");
+            Serial.print(displaySpec->config.layoutName(layoutId));
+            Serial.print(" at segmentIndex ");
+            Serial.println(segmentIndex);
+            continue;
+        }
+
         uint16_t mirrorSize = getMirrorSize(mirror, segmentSize);
 
         effect->fillArray(

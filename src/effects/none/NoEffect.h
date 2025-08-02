@@ -39,7 +39,7 @@ public:
     ) override;
 
     static constexpr const char *name() { return "NoEffect"; }
-    static WeightedOperations operations() { return just(EffectOperation::EFFECT); }
+    WeightedOperations operations() { return just(EffectOperation::EFFECT); }
     static EffectFactoryRef<CRGB> factory;
 };
 

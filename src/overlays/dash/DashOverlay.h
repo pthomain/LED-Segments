@@ -30,11 +30,20 @@ class DashOverlay : public Effect<DashOverlay, CRGB> {
     uint16_t *tailPositionForSegment;
     bool *isReversedForSegment;
 
-    const uint8_t tailSpeed = random8(1, 5);
+    const uint8_t tailSpeed;
+    const uint16_t multiplyOperationWeight;
+    const uint16_t invertOperationWeight;
 
 public:
+    static const uint8_t PARAM_TAIL_SPEED = 0;
+    static const uint16_t PARAM_OPERATION_MULTIPLY_WEIGHT = 1;
+    static const uint16_t PARAM_OPERATION_INVERT_WEIGHT = 2;
+
     explicit DashOverlay(const EffectContext &effectContext)
         : Effect(effectContext),
+          tailSpeed(max(1, param(PARAM_TAIL_SPEED))),
+          multiplyOperationWeight(param(PARAM_OPERATION_MULTIPLY_WEIGHT)),
+          invertOperationWeight(param(PARAM_OPERATION_INVERT_WEIGHT)),
           headPositionForSegment(new uint16_t[context.nbSegments]),
           tailPositionForSegment(new uint16_t[context.nbSegments]),
           isReversedForSegment(new bool[context.nbSegments]) {
@@ -59,10 +68,10 @@ public:
 
     static constexpr const char *name() { return "DashOverlay"; }
 
-    static WeightedOperations operations() {
+    WeightedOperations operations() {
         return {
-            {EffectOperation::OVERLAY_MULTIPLY, 4},
-            {EffectOperation::OVERLAY_INVERT, 1}
+            {EffectOperation::OVERLAY_MULTIPLY, multiplyOperationWeight},
+            {EffectOperation::OVERLAY_INVERT, invertOperationWeight}
         };
     }
 
@@ -72,7 +81,11 @@ public:
 class DashOverlayFactory : public EffectFactory<DashOverlayFactory, DashOverlay, CRGB> {
 public:
     static Params declareParams() {
-        return {};
+        return {
+            {DashOverlay::PARAM_TAIL_SPEED, random8(1, 5)},
+            {DashOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT, 4},
+            {DashOverlay::PARAM_OPERATION_INVERT_WEIGHT, 1}
+        };
     }
 };
 

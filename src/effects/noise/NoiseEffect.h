@@ -28,12 +28,24 @@
 
 class NoiseEffect : public Effect<NoiseEffect, CRGB> {
 protected:
-    const uint8_t noiseScale = random8(10, 20);
-    const uint8_t paletteScale = random8(2, 6);
-    const uint8_t noiseSpeed = random8(5, 100);
+    const uint8_t paletteScale;
+    const uint8_t noiseScale;
+    const uint8_t noiseSpeed;
+    const uint8_t randomStart = random8();
+    const uint8_t speedDivider;
 
 public:
-    explicit NoiseEffect(const EffectContext &effectContext) : Effect(effectContext) {
+    static const uint8_t PARAM_PALETTE_SCALE = 0;
+    static const uint8_t PARAM_NOISE_SCALE = 1;
+    static const uint8_t PARAM_NOISE_SPEED = 2;
+    static const uint8_t PARAM_SPEED_DIVIDER = 3;
+
+    explicit NoiseEffect(const EffectContext &effectContext)
+        : Effect(effectContext),
+          paletteScale(param(PARAM_PALETTE_SCALE)),
+          noiseScale(param(PARAM_NOISE_SCALE)),
+          noiseSpeed(param(PARAM_NOISE_SPEED)),
+          speedDivider(max(1, param(PARAM_SPEED_DIVIDER))) {
     }
 
     void fillArrayInternal(
@@ -45,14 +57,19 @@ public:
     ) override;
 
     static constexpr const char *name() { return "NoiseEffect"; }
-    static WeightedOperations operations() { return just(EffectOperation::EFFECT); }
+    WeightedOperations operations() { return just(EffectOperation::EFFECT); }
     static EffectFactoryRef<CRGB> factory;
 };
 
 class NoiseEffectFactory : public EffectFactory<NoiseEffectFactory, NoiseEffect, CRGB> {
 public:
     static Params declareParams() {
-        return {};
+        return {
+            {NoiseEffect::PARAM_PALETTE_SCALE, random8(2, 6)},
+            {NoiseEffect::PARAM_NOISE_SCALE, random8(10, 20)},
+            {NoiseEffect::PARAM_NOISE_SPEED, random8(5, 100)},
+            {NoiseEffect::PARAM_SPEED_DIVIDER, 5}
+        };
     }
 };
 

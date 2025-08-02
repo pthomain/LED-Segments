@@ -26,21 +26,36 @@
 #include "engine/utils/Utils.h"
 
 class MoireOverlay : public Effect<MoireOverlay, CRGB> {
+    const bool isClockwise;
+    const bool isInverted;
 
-    const bool isClockwise = probability(0.5f);
-    const bool isInverted = probability(0.5f);
+    const CRGB frontColour;
+    const CRGB backColour;
 
-    const CRGB frontColour = isInverted ? CRGB::White : CRGB::Black;
-    const CRGB backColour = isInverted ? CRGB::Black : CRGB::White;
+    const uint8_t headLength;
 
-    const uint8_t headLength = 5;
+    const uint16_t multiplyOperationWeight;
+    const uint16_t invertOperationWeight;
 
     uint16_t *headPositionForSegment;
     CRGB *reverseArray;
 
 public:
+    static const uint16_t PARAM_OPERATION_MULTIPLY_WEIGHT = 0;
+    static const uint16_t PARAM_OPERATION_INVERT_WEIGHT = 1;
+    static const uint16_t PARAM_HEAD_LENGTH = 2;
+    static const uint16_t PARAM_IS_CLOCKWISE = 3;
+    static const uint16_t PARAM_IS_MASK_INCLUSIVE = 4;
+
     explicit MoireOverlay(const EffectContext &effectContext)
         : Effect(effectContext),
+          isClockwise(param(PARAM_IS_CLOCKWISE) > 0),
+          isInverted(param(PARAM_IS_MASK_INCLUSIVE) > 0),
+          frontColour(isInverted ? CRGB::White : CRGB::Black),
+          backColour(isInverted ? CRGB::Black : CRGB::White),
+          headLength(param(PARAM_HEAD_LENGTH)),
+          multiplyOperationWeight(param(PARAM_OPERATION_MULTIPLY_WEIGHT)),
+          invertOperationWeight(param(PARAM_OPERATION_INVERT_WEIGHT)),
           reverseArray(new CRGB[context.maxSegmentSize]),
           headPositionForSegment(new uint16_t[context.nbSegments]) {
         memset(headPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
@@ -67,10 +82,10 @@ public:
 
     static constexpr const char *name() { return "MoireOverlay"; }
 
-    static WeightedOperations operations() {
+    WeightedOperations operations() {
         return {
-            {EffectOperation::OVERLAY_MULTIPLY, 4},
-            {EffectOperation::OVERLAY_INVERT, 1}
+            {EffectOperation::OVERLAY_MULTIPLY, multiplyOperationWeight},
+            {EffectOperation::OVERLAY_INVERT, invertOperationWeight}
         };
     }
 
@@ -80,7 +95,13 @@ public:
 class MoireOverlayFactory : public EffectFactory<MoireOverlayFactory, MoireOverlay, CRGB> {
 public:
     static Params declareParams() {
-        return {};
+        return {
+            {MoireOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT, 4},
+            {MoireOverlay::PARAM_OPERATION_INVERT_WEIGHT, 1},
+            {MoireOverlay::PARAM_HEAD_LENGTH, 5},
+            {MoireOverlay::PARAM_IS_CLOCKWISE, probability(0.5f)},
+            {MoireOverlay::PARAM_IS_MASK_INCLUSIVE, probability(0.5f)},
+        };
     }
 };
 

@@ -72,18 +72,18 @@ public:
         EffectSelector<CRGB> overlays,
         EffectSelector<uint8_t> transitions,
         EffectParamSelector paramSelector
-    ): layoutIds(layoutIds),
-       _layoutNames(layoutNames),
+    ): _layoutNames(layoutNames),
        _layoutSelector(std::move(layoutSelector)),
        _effects(std::move(effects)),
        _overlays(std::move(overlays)),
        _transitions(std::move(transitions)),
-       _paramSelector(std::move(paramSelector)) {
+       _paramSelector(std::move(paramSelector)),
+       layoutIds(layoutIds) {
     }
 
     String layoutName(uint16_t layoutId) const {
         if (_layoutNames.find(layoutId) == _layoutNames.end()) {
-            return "Layout " + String(layoutId) + " not found";
+            return "UNKNOWN(" + String(layoutId) + ")";
         }
         return _layoutNames.at(layoutId);
     }

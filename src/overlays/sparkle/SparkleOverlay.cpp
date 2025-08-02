@@ -23,6 +23,8 @@
 #include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
+const uint16_t SparkleOverlay::PARAM_DENSITY;
+
 static const SparkleOverlayFactory factoryInstance;
 EffectFactoryRef<CRGB> SparkleOverlay::factory = &factoryInstance;
 

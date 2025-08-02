@@ -215,26 +215,19 @@ static std::map<uint8_t, uint16_t> phraseParamSelector(
     TypeInfo::ID effectId,
     Mirror mirror
 ) {
-    // if (GradientEffect::factory->is(effectId)) {
-    //     return GradientEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue) {
-    //         switch (paramKey) {
-    //             case GradientEffect::PARAM_START: return static_cast<uint16_t>(random8()); // Start hue
-    //             case GradientEffect::PARAM_VARIATION: return static_cast<uint16_t>(random8(85)); // 33% variation
-    //             default: return defaultValue;
-    //         }
-    //     });
-    // }
-
-    // if (NoiseEffect::factory->is(effectId)) { return {{0, 0}}; }
-    // if (SlideEffect::factory->is(effectId)) { return {{0, 0}}; }
-    // if (SwirlEffect::factory->is(effectId)) { return {{0, 0}}; }
-    // if (ChaseOverlay::factory->is(effectId)) { return {{0, 0}}; }
-    // if (DashOverlay::factory->is(effectId)) { return {{0, 0}}; }
-    // if (MoireOverlay::factory->is(effectId)) { return {{0, 0}}; }
-    // if (SparkleOverlay::factory->is(effectId)) { return {{0, 0}}; }
-    // if (WaveOverlay::factory->is(effectId)) { return {{0, 0}}; }
-    // if (FadeTransition::factory->is(effectId)) { return {{0, 0}}; }
-    // if (SlideTransition::factory->is(effectId)) { return {{0, 0}}; }
+    if (ChaseOverlay::factory->is(effectId)) {
+        return ChaseOverlay::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
+            switch (paramKey) {
+                case ChaseOverlay::PARAM_MIN_SPARKS_PER_SEGMENT: return 1;
+                case ChaseOverlay::PARAM_MAX_SPARKS_PER_SEGMENT: return 1;
+                // case ChaseOverlay::PARAM_SPARK_DISTANCE: return 3;
+                case ChaseOverlay::PARAM_TRAIL_LENGTH: return 2;
+                case ChaseOverlay::PARAM_CHANCE_OF_BOUNCE: return 75; // 0 - 100
+                case ChaseOverlay::PARAM_CHANCE_OF_SWIRL: return 0; // 0 - 100
+                default: return defaultValue;
+            }
+        });
+    }
 
     return {};
 }

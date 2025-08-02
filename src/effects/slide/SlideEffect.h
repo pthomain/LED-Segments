@@ -25,16 +25,25 @@
 #include "engine/effect/BaseEffectFactory.h"
 
 class SlideEffect : public Effect<SlideEffect, CRGB> {
-    const uint8_t nbColours = 4;
-    const uint8_t step = 255 / nbColours;
-    const uint8_t start = random8();
+    const uint8_t nbColours;
+    const uint8_t colourStart;
+    const uint8_t step;
+    const uint8_t speedDivider;
 
     uint8_t *colourIndexForSegment;
     uint16_t *headPositionForSegment;
 
 public:
+    static const uint8_t PARAM_NB_COLOURS = 0;
+    static const uint8_t PARAM_COLOUR_START = 1;
+    static const uint8_t PARAM_SPEED_DIVIDER = 2;
+
     explicit SlideEffect(const EffectContext &effectContext)
         : Effect(effectContext),
+          nbColours(max(1, param(PARAM_NB_COLOURS))),
+          colourStart(param(PARAM_COLOUR_START)),
+          speedDivider(max(1, param(PARAM_SPEED_DIVIDER))),
+          step(max(1, 255 / nbColours)),
           colourIndexForSegment(new uint8_t[nbColours]),
           headPositionForSegment(new uint16_t[context.nbSegments]) {
         memset(colourIndexForSegment, 0, nbColours * sizeof(uint8_t));
@@ -55,14 +64,19 @@ public:
     }
 
     static constexpr const char *name() { return "SlideEffect"; }
-    static WeightedOperations operations() { return just(EffectOperation::EFFECT); }
+    WeightedOperations operations() { return just(EffectOperation::EFFECT); }
     static EffectFactoryRef<CRGB> factory;
 };
 
 class SlideEffectFactory : public EffectFactory<SlideEffectFactory, SlideEffect, CRGB> {
 public:
     static Params declareParams() {
-        return {};
+        return {
+            {SlideEffect::PARAM_NB_COLOURS, 4},
+            {SlideEffect::PARAM_COLOUR_START, random8()},
+            {SlideEffect::PARAM_SPEED_DIVIDER, 50}
+
+        };
     }
 };
 

@@ -26,22 +26,26 @@
 #include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
-//TODO add extra parameters to map in EffectContext
 class ChaseOverlay : public Effect<ChaseOverlay, CRGB> {
-    const uint8_t minxSparksPerSegment = 1;
-    const uint8_t maxSparksPerSegment = 1; //5;
-    const uint8_t sparksPerSegment = random8(minxSparksPerSegment, maxSparksPerSegment);
+    const uint8_t minSparksPerSegment;
+    const uint8_t maxSparksPerSegment;
+    const uint8_t intervalBetweenSparks;
+    const uint8_t trailLength;
 
-    const uint8_t intervalBetweenSparks = 3; //10;
-    const uint8_t trailLength = 2; //3;
+    // Whether the sparks bounce back and forth. Otherwise, new sparks get emitted at the start after they exit.
+    const bool isBouncy;
+    const bool isSwirling;
+
+    const uint8_t sparksPerSegment = random8(minSparksPerSegment, maxSparksPerSegment);
+    const uint16_t swirlingInterval;
+    const uint16_t swirlDistance;
+
+    const uint16_t multiplyOperationWeight;
+    const uint16_t invertOperationWeight;
 
     uint16_t leadingSparkPosition = 0;
     uint16_t *sparkIntervalCounterPerSegment;
     uint8_t *nbSparksForSegment;
-
-    // Whether the sparks bounce back and forth. Otherwise, new sparks get emitted at the start after they exit.
-    bool isBouncy = probability(0.75f);
-    bool isSwirling = false; //probability(0.5f);
 
     std::vector<std::vector<bool> > forward;
     std::vector<std::vector<bool> > backward;
@@ -50,6 +54,15 @@ class ChaseOverlay : public Effect<ChaseOverlay, CRGB> {
     bool *tempBackward;
 
 public:
+    static const uint8_t PARAM_MIN_SPARKS_PER_SEGMENT = 0;
+    static const uint8_t PARAM_MAX_SPARKS_PER_SEGMENT = 1;
+    static const uint8_t PARAM_INTERVAL_BETWEEN_SPARKS = 2;
+    static const uint8_t PARAM_TRAIL_LENGTH = 3;
+    static const uint8_t PARAM_CHANCE_OF_BOUNCE = 4;
+    static const uint8_t PARAM_CHANCE_OF_SWIRL = 5;
+    static const uint8_t PARAM_OPERATION_MULTIPLY_WEIGHT = 6;
+    static const uint8_t PARAM_OPERATION_INVERT_WEIGHT = 7;
+
     explicit ChaseOverlay(const EffectContext &effectContext);
 
     void fillArrayInternal(
@@ -69,10 +82,10 @@ public:
 
     static constexpr const char *name() { return "ChaseOverlay"; }
 
-    static WeightedOperations operations() {
+    WeightedOperations operations() {
         return {
-            {EffectOperation::OVERLAY_MULTIPLY, 4},
-            {EffectOperation::OVERLAY_INVERT, 1}
+            {EffectOperation::OVERLAY_MULTIPLY, multiplyOperationWeight},
+            {EffectOperation::OVERLAY_INVERT, invertOperationWeight}
         };
     }
 
@@ -82,7 +95,16 @@ public:
 class ChaseOverlayFactory : public EffectFactory<ChaseOverlayFactory, ChaseOverlay, CRGB> {
 public:
     static Params declareParams() {
-        return {};
+        return {
+            {ChaseOverlay::PARAM_MIN_SPARKS_PER_SEGMENT, 1},
+            {ChaseOverlay::PARAM_MAX_SPARKS_PER_SEGMENT, 5},
+            {ChaseOverlay::PARAM_INTERVAL_BETWEEN_SPARKS, 10},
+            {ChaseOverlay::PARAM_TRAIL_LENGTH, 3},
+            {ChaseOverlay::PARAM_CHANCE_OF_BOUNCE, 75}, // 0 - 100
+            {ChaseOverlay::PARAM_CHANCE_OF_SWIRL, 50}, // 0 - 100
+            {ChaseOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT, 4},
+            {ChaseOverlay::PARAM_OPERATION_INVERT_WEIGHT, 1},
+        };
     }
 };
 

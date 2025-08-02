@@ -45,16 +45,16 @@ public:
     }
 
     Params params(const std::function<uint16_t(uint8_t paramKey, uint16_t defaultValue)> &selector) const {
-        auto params = Params();
+        auto parameters = Params();
 
-        for (auto &[paramKey, defaultValue]: declareParameters()) {
-            params.insert({paramKey, selector(paramKey, defaultValue)});
+        for (auto &[paramKey, defaultValue]: params()) {
+            parameters.insert({paramKey, selector(paramKey, defaultValue)});
         }
 
-        return params;
+        return parameters;
     }
 
-    virtual Params declareParameters() const;
+    virtual Params params() const = 0;
 
     virtual ~BaseEffectFactory() = default;
 
@@ -66,7 +66,7 @@ protected:
 template<typename Child, typename T, typename C>
 class EffectFactory : public BaseEffectFactory<C> {
 protected:
-    Params declareParameters() const override {
+    Params params() const override {
         return Child::declareParams();
     }
 

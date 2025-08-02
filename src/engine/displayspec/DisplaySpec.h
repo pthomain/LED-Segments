@@ -62,8 +62,7 @@ public:
        refreshRateInMillis(1000 / max(1, fps)),
        chanceOfRainbow(chanceOfRainbow),
        fps(max(1, fps)),
-       isCircular(isCircular) {
-    }
+       isCircular(isCircular) {}
 
     virtual uint16_t nbLeds() const = 0;
 

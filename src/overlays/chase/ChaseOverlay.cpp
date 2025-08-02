@@ -22,13 +22,32 @@
 #include "crgb.h"
 #include "engine/utils/Utils.h"
 
+const uint8_t ChaseOverlay::PARAM_MIN_SPARKS_PER_SEGMENT;
+const uint8_t ChaseOverlay::PARAM_MAX_SPARKS_PER_SEGMENT;
+const uint8_t ChaseOverlay::PARAM_INTERVAL_BETWEEN_SPARKS;
+const uint8_t ChaseOverlay::PARAM_TRAIL_LENGTH;
+const uint8_t ChaseOverlay::PARAM_CHANCE_OF_BOUNCE;
+const uint8_t ChaseOverlay::PARAM_CHANCE_OF_SWIRL;
+const uint8_t ChaseOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT;
+const uint8_t ChaseOverlay::PARAM_OPERATION_INVERT_WEIGHT;
+
 static const ChaseOverlayFactory factoryInstance;
 EffectFactoryRef<CRGB> ChaseOverlay::factory = &factoryInstance;
 
 ChaseOverlay::ChaseOverlay(const EffectContext &effectContext)
     : Effect(effectContext),
+      minSparksPerSegment(param(PARAM_MIN_SPARKS_PER_SEGMENT)),
+      maxSparksPerSegment(param(PARAM_MAX_SPARKS_PER_SEGMENT)),
+      intervalBetweenSparks(param(PARAM_INTERVAL_BETWEEN_SPARKS)),
+      trailLength(param(PARAM_TRAIL_LENGTH)),
+      isBouncy(probability(param(PARAM_CHANCE_OF_BOUNCE) / 100.0f)),
+      isSwirling(probability(param(PARAM_CHANCE_OF_SWIRL) / 100.0f)),
+      multiplyOperationWeight(param(PARAM_OPERATION_MULTIPLY_WEIGHT)),
+      invertOperationWeight(param(PARAM_OPERATION_INVERT_WEIGHT)),
       sparkIntervalCounterPerSegment(new uint16_t[context.nbSegments]),
       nbSparksForSegment(new uint8_t[context.nbSegments]),
+      swirlingInterval(isSwirling ? random8(1, context.nbSegments) : context.nbSegments),
+      swirlDistance(context.maxSegmentSize / swirlingInterval),
       forward(std::vector<std::vector<bool> >(context.nbSegments)),
       backward(std::vector<std::vector<bool> >(context.nbSegments)),
       tempForward(new bool[context.maxSegmentSize]),
@@ -100,9 +119,6 @@ void ChaseOverlay::fillArrayInternal(
 
     // Add new spark if needed
 
-    const uint8_t swirlingInterval = isSwirling ? random8(0, context.nbSegments) : context.nbSegments;
-    const uint8_t swirlDistance = effectArraySize / swirlingInterval;
-
     auto distanceFromLeadingSpark = leadingSparkPosition - sparkIntervalCounterPerSegment[segmentIndex];
     bool isSegmentReady = !isSwirling || distanceFromLeadingSpark >= swirlDistance * segmentIndex;
 
@@ -122,9 +138,10 @@ void ChaseOverlay::fillArrayInternal(
 
     // Update effect arrays with new sparks + update count
 
+    auto maxPosition = static_cast<float>(trailLength + 1);
+
     auto getAlpha = [&](uint16_t position, uint16_t trailIndex) {
         auto relativePosition = static_cast<float>(abs(position - trailIndex));
-        auto maxPosition = static_cast<float>(trailLength + 1);
         auto alpha = static_cast<uint8_t>(255.0f * (1.0f - (relativePosition / maxPosition)));
         return CRGB{alpha, alpha, alpha};
     };
@@ -143,6 +160,9 @@ void ChaseOverlay::fillArrayInternal(
             }
         }
     }
-
-    if (leadingSparkPosition < context.nbSegments * swirlDistance) leadingSparkPosition++;
+    if (leadingSparkPosition < context.nbSegments * swirlDistance) {
+        leadingSparkPosition++;
+    } else {
+        leadingSparkPosition = 0;
+    }
 }

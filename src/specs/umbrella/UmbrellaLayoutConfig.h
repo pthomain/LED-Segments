@@ -88,16 +88,17 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
     if (layoutId == LEDS_IN_SPOKE) {
         return {
             {
-                {MoireOverlay::factory, 4},
+                // {MoireOverlay::factory, 4},
                 {ChaseOverlay::factory, 4},
-                {WaveOverlay::factory, 3},
-                {DashOverlay::factory, 2},
+                // {WaveOverlay::factory, 3},
+                // {DashOverlay::factory, 2},
             },
             [](EffectFactoryRef<CRGB> overlayFactory) {
                 if (
                     overlayFactory->is<MoireOverlay>()
                     || overlayFactory->is<ChaseOverlay>()
                 ) {
+                    return noMirrors<CRGB>(overlayFactory);
                     return WeightedMirrors{
                         {Mirror::NONE, 2},
                         {Mirror::REVERSE, 2},
@@ -165,18 +166,6 @@ static std::map<uint8_t, uint16_t> umbrellaParamSelector(
     TypeInfo::ID effectId,
     Mirror mirror
 ) {
-    if (GradientEffect::factory->is(effectId)) { return {{0, 0}}; }
-    if (NoiseEffect::factory->is(effectId)) { return {{0, 0}}; }
-    if (SlideEffect::factory->is(effectId)) { return {{0, 0}}; }
-    if (SwirlEffect::factory->is(effectId)) { return {{0, 0}}; }
-    if (ChaseOverlay::factory->is(effectId)) { return {{0, 0}}; }
-    if (DashOverlay::factory->is(effectId)) { return {{0, 0}}; }
-    if (MoireOverlay::factory->is(effectId)) { return {{0, 0}}; }
-    if (SparkleOverlay::factory->is(effectId)) { return {{0, 0}}; }
-    if (WaveOverlay::factory->is(effectId)) { return {{0, 0}}; }
-    if (FadeTransition::factory->is(effectId)) { return {{0, 0}}; }
-    if (SlideTransition::factory->is(effectId)) { return {{0, 0}}; }
-
     return {};
 }
 

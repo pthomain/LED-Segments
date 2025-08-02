@@ -23,6 +23,9 @@
 #include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
+const uint16_t WaveOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT;
+const uint16_t WaveOverlay::PARAM_OPERATION_INVERT_WEIGHT;
+
 static const WaveOverlayFactory factoryInstance;
 EffectFactoryRef<CRGB> WaveOverlay::factory = &factoryInstance;
 
@@ -35,13 +38,10 @@ void WaveOverlay::fillArrayInternal(
 ) {
     memset(effectArray, CRGB::White, effectArraySize * sizeof(CRGB));
 
-    uint8_t ceiling = effectArraySize;
-    uint8_t floor = effectArraySize / 1;
-
     uint8_t amplitude = beatsin16(
         bpm,
-        floor,
-        ceiling
+        effectArraySize,
+        effectArraySize
     );
 
     phase += scrollingSpeed;

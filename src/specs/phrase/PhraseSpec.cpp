@@ -73,7 +73,6 @@ uint16_t PhraseSpec::segmentSize(
     }
 }
 
-
 void PhraseSpec::mapLeds(
     uint16_t layoutId,
     uint16_t segmentIndex,
@@ -81,27 +80,27 @@ void PhraseSpec::mapLeds(
     float progress,
     const std::function<void(uint16_t)> &onLedMapped
 ) const {
-    auto mapSingleLed = [&](uint16_t ledIndex, const std::function<void(uint16_t)> &onLedMapped) {
+    auto mapLed = [&](uint16_t ledIndex){
         IS_DEBUG ? mapLedInSnakeDisplay(ledIndex, onLedMapped) : onLedMapped(ledIndex);
     };
 
     auto mapRange = [&](uint16_t start, uint16_t end) {
         for (uint16_t i = start; i <= end; i++) {
-            mapSingleLed(i, onLedMapped);
+            mapLed(i);
         }
     };
 
     switch (layoutId) {
         case LEDS_IN_LETTERS:
-            mapSingleLed(LETTERS[segmentIndex][0] + pixelIndex, onLedMapped);
+            mapLed(LETTERS[segmentIndex][0] + pixelIndex);
             break;
 
         case LEDS_IN_WORDS:
-            mapSingleLed(WORDS[segmentIndex][0] + pixelIndex, onLedMapped);
+            mapLed(WORDS[segmentIndex][0] + pixelIndex);
             break;
 
         case LEDS_IN_WHOLE:
-            mapSingleLed(pixelIndex, onLedMapped);
+            mapLed(pixelIndex);
             break;
 
         case LETTERS_IN_WORDS: {
@@ -127,6 +126,7 @@ void PhraseSpec::mapLeds(
         case WORDS_IN_WHOLE:
             mapRange(WORDS[pixelIndex][0], WORDS[pixelIndex][1]);
             break;
+
         default:
             Serial.print("PhraseSpec::mapLeds: Unknown layoutId ");
             Serial.println(layoutId);

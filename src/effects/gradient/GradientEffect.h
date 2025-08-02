@@ -27,22 +27,17 @@
 #include "engine/utils/Weights.h"
 
 class GradientEffect : public Effect<GradientEffect, CRGB> {
-    const uint8_t start;
+    const uint8_t colourStart;
     const uint8_t variation;
 
 public:
-    static const uint8_t PARAM_START = 0;
-    static const uint8_t PARAM_VARIATION = 1;
+    static const uint8_t PARAM_COLOUR_START = 0;
+    static const uint8_t PARAM_DENSITY_VARIATION = 1;
 
     explicit GradientEffect(const EffectContext &effectContext)
         : Effect(effectContext),
-          start(effectContext.parameters.at(PARAM_START)),
-          variation(effectContext.parameters.at(PARAM_VARIATION)) {
-        Serial.print("start = ");
-        Serial.print(start);
-        Serial.print("; variation = ");
-        Serial.println(variation);
-    }
+          colourStart(param(PARAM_COLOUR_START)),
+          variation(param(PARAM_DENSITY_VARIATION)) {}
 
     void fillArrayInternal(
         CRGB *effectArray,
@@ -53,7 +48,7 @@ public:
     ) override;
 
     static constexpr const char *name() { return "GradientEffect"; }
-    static WeightedOperations operations() { return just(EffectOperation::EFFECT); }
+    WeightedOperations operations() { return just(EffectOperation::EFFECT); }
     static EffectFactoryRef<CRGB> factory;
 };
 
@@ -61,8 +56,8 @@ class GradientEffectFactory : public EffectFactory<GradientEffectFactory, Gradie
 public:
     static Params declareParams() {
         return {
-            {GradientEffect::PARAM_START, random8()},
-            {GradientEffect::PARAM_VARIATION, random8(85)}
+            {GradientEffect::PARAM_COLOUR_START, random8()},
+            {GradientEffect::PARAM_DENSITY_VARIATION, random8(85)}
         };
     }
 };

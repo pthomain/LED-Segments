@@ -25,12 +25,16 @@
 #include "engine/effect/BaseEffectFactory.h"
 #include "engine/utils/Weights.h"
 
-class SparkleOverlay : public Effect<SparkleOverlay, CRGB>{
-    const float density = 0.005f;
+class SparkleOverlay : public Effect<SparkleOverlay, CRGB> {
+    const float density;
     const CRGB minBrightness = CRGB(127, 127, 127);
 
 public:
-    explicit SparkleOverlay(const EffectContext &effectContext) : Effect(effectContext) {
+    static const uint16_t PARAM_DENSITY = 0;
+
+    explicit SparkleOverlay(const EffectContext &effectContext)
+        : Effect(effectContext),
+          density(min(1000, param(PARAM_DENSITY)) / 1000.0f) {
     }
 
     void fillArrayInternal(
@@ -42,14 +46,16 @@ public:
     ) override;
 
     static constexpr const char *name() { return "SparkleOverlay"; }
-    static WeightedOperations operations() { return just(EffectOperation::OVERLAY_MULTIPLY); }
+    WeightedOperations operations() { return just(EffectOperation::OVERLAY_MULTIPLY); }
     static EffectFactoryRef<CRGB> factory;
 };
 
 class SparkleOverlayFactory : public EffectFactory<SparkleOverlayFactory, SparkleOverlay, CRGB> {
 public:
     static Params declareParams() {
-        return {};
+        return {
+            {SparkleOverlay::PARAM_DENSITY, 5} // Permil
+        };
     }
 };
 

@@ -27,18 +27,22 @@ void BaseEffect<C>::fillArray(
     uint16_t segmentIndex,
     float progress
 ) {
-    if (effectArraySize == 0) {
-        Serial.println("BaseEffect::fillArray: empty array");
-        return;
+    unsigned long elapsedMillis;
+    if (_frameIndex == 0) {
+        effectStartInMillis = millis();
+        elapsedMillis = 0;
+    } else {
+        elapsedMillis = max(1, millis() - effectStartInMillis);
     }
 
-    unsigned long elapsedMillis;
-    if (isFirstFrame) {
-        start = millis();
-        elapsedMillis = 0;
-        isFirstFrame = false;
-    } else {
-        elapsedMillis = max(1, millis() - start);
+    if (segmentIndex == 0) {
+        onEachFrame(progress, elapsedMillis);
+        _frameIndex++;
+    }
+
+    if (effectArraySize == 0) {
+        Serial.println("BaseEffect::fillArray: empty array for segment " + String(segmentIndex));
+        return;
     }
 
     memset(effectArray, 0, effectArraySize * sizeof(C));
@@ -50,8 +54,4 @@ void BaseEffect<C>::fillArray(
         progress,
         elapsedMillis
     );
-
-    if (segmentIndex == context.nbSegments - 1) {
-        frameIndex++;
-    }
 };

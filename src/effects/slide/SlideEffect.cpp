@@ -22,6 +22,9 @@
 #include "colorutils.h"
 #include "engine/utils/Weights.h"
 
+const uint8_t SlideEffect::PARAM_NB_COLOURS;
+const uint8_t SlideEffect::PARAM_COLOUR_START;
+
 static const SlideEffectFactory factoryInstance;
 EffectFactoryRef<CRGB> SlideEffect::factory = &factoryInstance;
 
@@ -40,11 +43,11 @@ void SlideEffect::fillArrayInternal(
     const auto bottomColour = colourIndexForSegment[bottomColourIndex];
     const auto topColour = colourIndexForSegment[topColourIndex];
 
-    auto topColourStart = CHSV(start + topColour * (255 / nbColours), 255, 255);
-    auto topColourEnd = CHSV(start + 127 + topColour * (255 / nbColours), 255, 255);
+    auto topColourStart = CHSV(colourStart + topColour * (255 / nbColours), 255, 255);
+    auto topColourEnd = CHSV(colourStart + 127 + topColour * (255 / nbColours), 255, 255);
 
-    auto bottomColourStart = CHSV(start + bottomColour * (255 / nbColours), 255, 255);
-    auto bottomColourEnd = CHSV(start + 127 + bottomColour * (255 / nbColours), 255, 255);
+    auto bottomColourStart = CHSV(colourStart + bottomColour * (255 / nbColours), 255, 255);
+    auto bottomColourEnd = CHSV(colourStart + 127 + bottomColour * (255 / nbColours), 255, 255);
 
     fill_gradient(
         effectArray,
@@ -64,10 +67,11 @@ void SlideEffect::fillArrayInternal(
         TGradientDirectionCode::SHORTEST_HUES
     );
 
+    //TODO make reversible
     if (headPosition == effectArraySize - 1) {
         colourIndexForSegment[bottomColourIndex] = topColour;
         headPositionForSegment[segmentIndex] = 0;
     } else {
-        headPositionForSegment[segmentIndex] = (timeInMillis / 50) % effectArraySize;
+        headPositionForSegment[segmentIndex] = (timeInMillis / speedDivider) % effectArraySize;
     }
 }

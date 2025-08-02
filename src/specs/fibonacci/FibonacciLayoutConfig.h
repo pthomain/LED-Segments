@@ -58,7 +58,7 @@ static WeightedLayouts fibonacciLayoutSelector(EffectType effectType) {
                 }
 
                 case EffectType::OVERLAY:
-                    return WeightedLayout{layoutId, 0};
+                    return WeightedLayout{layoutId, getPixelUnit(layoutId) == PIXEL ? 1 : 0};
 
                 case EffectType::TRANSITION:
                 default:
@@ -93,69 +93,70 @@ static EffectAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutId) {
 }
 
 static EffectAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutId) {
-    if (getAlignment(layoutId) == RADIAL) {
-        return {
-            {
-                {MoireOverlay::factory, 4},
-                {ChaseOverlay::factory, 4},
-                {WaveOverlay::factory, 3},
-                {DashOverlay::factory, 2},
-            },
-            [](EffectFactoryRef<CRGB> overlayFactory) {
-                if (
-                    overlayFactory->is<MoireOverlay>()
-                    || overlayFactory->is<ChaseOverlay>()
-                ) {
-                    return WeightedMirrors{
-                        {Mirror::NONE, 2},
-                        {Mirror::REVERSE, 2},
-                        {Mirror::CENTRE, 2},
-                        {Mirror::EDGE, 2},
-
-                        {Mirror::REPEAT, 1},
-                        {Mirror::REPEAT_REVERSE, 1},
-
-                        {Mirror::OVERLAY_REVERSE, 1},
-                        {Mirror::OVERLAY_REPEAT_2, 1},
-                        {Mirror::OVERLAY_REPEAT_3, 1},
-                        {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
-                        {Mirror::OVERLAY_REPEAT_3_REVERSE, 1},
-                    };
-                }
-
-                if (overlayFactory->is<DashOverlay>()) {
-                    return WeightedMirrors{
-                        {Mirror::NONE, 2},
-                        {Mirror::REVERSE, 2},
-                        {Mirror::CENTRE, 2},
-                        {Mirror::EDGE, 2},
-
-                        {Mirror::REPEAT, 1},
-                        {Mirror::REPEAT_REVERSE, 1},
-
-                        {Mirror::OVERLAY_REVERSE, 1},
-                        {Mirror::OVERLAY_REPEAT_2, 1},
-                    };
-                }
-
-                if (overlayFactory->is<WaveOverlay>()) {
-                    return WeightedMirrors{
-                        {Mirror::NONE, 3},
-                        {Mirror::REVERSE, 3},
-                        {Mirror::CENTRE, 3},
-                        {Mirror::EDGE, 3},
-                        {Mirror::REPEAT, 2},
-
-                        {Mirror::REPEAT_REVERSE, 2},
-                        {Mirror::OVERLAY_REVERSE, 1},
-
-                        {Mirror::OVERLAY_REPEAT_2, 1},
-                        {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
-                    };
-                }
+    // if (getAlignment(layoutId) == RADIAL) {
+    return {
+        {
+            // {MoireOverlay::factory, 4},
+            // {ChaseOverlay::factory, 4},
+            // {WaveOverlay::factory, 3},
+            // {DashOverlay::factory, 2},
+        },
+        [](EffectFactoryRef<CRGB> overlayFactory) {
+            if (
+                overlayFactory->is<MoireOverlay>()
+                || overlayFactory->is<ChaseOverlay>()
+            ) {
+                return noMirrors<CRGB>(overlayFactory);
+                // return WeightedMirrors{
+                //     {Mirror::NONE, 2},
+                //     {Mirror::REVERSE, 2},
+                //     {Mirror::CENTRE, 2},
+                //     {Mirror::EDGE, 2},
+                //
+                //     {Mirror::REPEAT, 1},
+                //     {Mirror::REPEAT_REVERSE, 1},
+                //
+                //     {Mirror::OVERLAY_REVERSE, 1},
+                //     {Mirror::OVERLAY_REPEAT_2, 1},
+                //     {Mirror::OVERLAY_REPEAT_3, 1},
+                //     {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
+                //     {Mirror::OVERLAY_REPEAT_3_REVERSE, 1},
+                // };
             }
-        };
-    }
+
+            if (overlayFactory->is<DashOverlay>()) {
+                return WeightedMirrors{
+                    {Mirror::NONE, 2},
+                    {Mirror::REVERSE, 2},
+                    {Mirror::CENTRE, 2},
+                    {Mirror::EDGE, 2},
+
+                    {Mirror::REPEAT, 1},
+                    {Mirror::REPEAT_REVERSE, 1},
+
+                    {Mirror::OVERLAY_REVERSE, 1},
+                    {Mirror::OVERLAY_REPEAT_2, 1},
+                };
+            }
+
+            if (overlayFactory->is<WaveOverlay>()) {
+                return WeightedMirrors{
+                    {Mirror::NONE, 3},
+                    {Mirror::REVERSE, 3},
+                    {Mirror::CENTRE, 3},
+                    {Mirror::EDGE, 3},
+                    {Mirror::REPEAT, 2},
+
+                    {Mirror::REPEAT_REVERSE, 2},
+                    {Mirror::OVERLAY_REVERSE, 1},
+
+                    {Mirror::OVERLAY_REPEAT_2, 1},
+                    {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
+                };
+            }
+        }
+    };
+    // }
 
     return {just(NoOverlay::factory), allMirrors<CRGB>};
 }
@@ -171,8 +172,8 @@ static std::map<uint8_t, uint16_t> fibonacciParamSelector(
     // if (GradientEffect::factory->is(effectId)) {
     //     return GradientEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue) {
     //         switch (paramKey) {
-    //             case GradientEffect::PARAM_START: return static_cast<uint16_t>(random8()); // Start hue
-    //             case GradientEffect::PARAM_VARIATION: return static_cast<uint16_t>(random8(85)); // 33% variation
+    //             case GradientEffect::PARAM_COLOUR_START: return static_cast<uint16_t>(random8()); // Start hue
+    //             case GradientEffect::PARAM_DENSITY_VARIATION: return static_cast<uint16_t>(random8(85)); // 33% variation
     //             default: return defaultValue;
     //         }
     //     });

@@ -23,6 +23,9 @@
 #include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
+const uint16_t MoireOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT;
+const uint16_t MoireOverlay::PARAM_OPERATION_INVERT_WEIGHT;
+
 static const MoireOverlayFactory factoryInstance;
 EffectFactoryRef<CRGB> MoireOverlay::factory = &factoryInstance;
 

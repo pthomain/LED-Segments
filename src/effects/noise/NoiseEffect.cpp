@@ -23,6 +23,10 @@
 #include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
+const uint8_t NoiseEffect::PARAM_NOISE_SCALE;
+const uint8_t NoiseEffect::PARAM_PALETTE_SCALE;
+const uint8_t NoiseEffect::PARAM_NOISE_SPEED;
+
 static const NoiseEffectFactory factoryInstance;
 EffectFactoryRef<CRGB> NoiseEffect::factory = &factoryInstance;
 
@@ -33,7 +37,8 @@ void NoiseEffect::fillArrayInternal(
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    const uint8_t noise = inoise8(noiseScale, randomStart + timeElapsedInMillis / 5);
+    const uint8_t increment = max(1, timeElapsedInMillis / speedDivider);
+    const uint8_t noise = inoise8(noiseScale, randomStart + increment);
     const uint8_t step = max(1, 255 / (effectArraySize * paletteScale));
 
     fill_palette(

@@ -27,15 +27,23 @@
 #include "engine/utils/Weights.h"
 
 class WaveOverlay : public Effect<WaveOverlay, CRGB> {
-
     const bool isClockwise = probability(0.5f);
     const uint16_t scrollingSpeed = random8(2, 4) * 64;
     const uint8_t bpm = random(1, 5) * 5;
     const uint8_t nbWaves = random8(1, 8);
+    const uint16_t multiplyOperationWeight;
+    const uint16_t invertOperationWeight;
+
     uint16_t phase = 0;
 
 public:
-    explicit WaveOverlay(const EffectContext &effectContext) : Effect(effectContext) {
+    static const uint16_t PARAM_OPERATION_MULTIPLY_WEIGHT = 0;
+    static const uint16_t PARAM_OPERATION_INVERT_WEIGHT = 1;
+
+    explicit WaveOverlay(const EffectContext &effectContext)
+        : Effect(effectContext),
+          multiplyOperationWeight(param(PARAM_OPERATION_MULTIPLY_WEIGHT)),
+          invertOperationWeight(param(PARAM_OPERATION_INVERT_WEIGHT)) {
     }
 
     void fillArrayInternal(
@@ -48,10 +56,10 @@ public:
 
     static constexpr const char *name() { return "WaveOverlay"; }
 
-    static WeightedOperations operations() {
+    WeightedOperations operations() {
         return {
-            {EffectOperation::OVERLAY_MULTIPLY, 4},
-            {EffectOperation::OVERLAY_INVERT, 1}
+            {EffectOperation::OVERLAY_MULTIPLY, multiplyOperationWeight},
+            {EffectOperation::OVERLAY_INVERT, invertOperationWeight}
         };
     }
 
@@ -61,7 +69,10 @@ public:
 class WaveOverlayFactory : public EffectFactory<WaveOverlayFactory, WaveOverlay, CRGB> {
 public:
     static Params declareParams() {
-        return {};
+        return {
+            {WaveOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT, 4},
+            {WaveOverlay::PARAM_OPERATION_INVERT_WEIGHT, 1}
+        };
     }
 };
 

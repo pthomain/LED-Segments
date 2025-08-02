@@ -126,7 +126,7 @@ public:
         auto transitionDurationInFrames = _displaySpec->fps * _displaySpec->transitionDurationInMillis / 1000;
 
         auto effectParams = config.params(effectFactory->effectId, effectMirror);
-        if (effectParams.empty()) effectParams = effectFactory->declareParameters();
+        if (effectParams.empty()) effectParams = effectFactory->params();
 
         const auto effectContext = EffectContext(
             _displaySpec->maxSegmentSize(),
@@ -140,7 +140,7 @@ public:
         );
 
         auto overlayParams = config.params(overlayFactory->effectId, overlayMirror);
-        if (overlayParams.empty()) overlayParams = overlayFactory->declareParameters();
+        if (overlayParams.empty()) overlayParams = overlayFactory->params();
 
         const auto overlayContext = EffectContext(
             _displaySpec->maxSegmentSize(),
@@ -154,7 +154,7 @@ public:
         );
 
         auto transitionParams = config.params(transitionFactory->effectId, transitionMirror);
-        if (transitionParams.empty()) transitionParams = transitionFactory->declareParameters();
+        if (transitionParams.empty()) transitionParams = transitionFactory->params();
 
         const auto transitionContext = EffectContext(
             _displaySpec->maxSegmentSize(),

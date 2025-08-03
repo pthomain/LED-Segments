@@ -21,17 +21,19 @@
 #ifndef FIBONACCILAYOUTDEFINITIONS_H
 #define FIBONACCILAYOUTDEFINITIONS_H
 
-const uint16_t TOTAL_FIBONACCI_LEDS = 324;
-const uint8_t NB_LEDS_IN_SPIRAL = 27;
-const uint8_t NB_SPIRAL_PIXELS = 20;
-const uint8_t NB_RADIAL_PIXELS = 10;
-const uint8_t NB_SPIRAL_SEGMENTS = 12;
-const uint8_t NB_RADIAL_SEGMENTS = 24;
+#include <set>
 
-const uint8_t PIXEL_UNIT_MASK = 0b00000001;
-const uint8_t DIRECTION_MASK = 0b00000010;
-const uint8_t ALIGNMENT_MASK = 0b00000100;
-const uint8_t INFLEXION_MASK = 0b00011000;
+constexpr uint16_t TOTAL_FIBONACCI_LEDS = 324;
+constexpr uint8_t NB_LEDS_IN_SPIRAL = 27;
+constexpr uint8_t NB_SPIRAL_PIXELS = 20;
+constexpr uint8_t NB_RADIAL_PIXELS = 10;
+constexpr uint8_t NB_SPIRAL_SEGMENTS = 12;
+constexpr uint8_t NB_RADIAL_SEGMENTS = 24;
+
+constexpr uint8_t PIXEL_UNIT_MASK = 0b00000001;
+constexpr uint8_t DIRECTION_MASK = 0b00000010;
+constexpr uint8_t ALIGNMENT_MASK = 0b00000100;
+constexpr uint8_t INFLEXION_MASK = 0b00011000;
 
 enum PixelUnit {
     PIXEL,

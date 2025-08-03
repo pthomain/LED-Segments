@@ -28,6 +28,10 @@
 #include "specs/phrase/config/DlhPhraseConfig.h"
 #endif
 
+#include "config/PhraseEffectConfig.h"
+#include "config/PhraseOverlayConfig.h"
+#include "config/PhraseParamConfig.h"
+#include "config/PhraseTransitionConfig.h"
 #include "engine/displayspec/DisplaySpec.h"
 #include "specs/phrase/config/PhraseLayoutConfig.h"
 
@@ -37,7 +41,15 @@ public :
     static constexpr EOrder RGB_ORDER = GRB;
 
     explicit PhraseSpec(): DisplaySpec(
-        phraseLayoutConfig(),
+        LayoutConfig(
+            phraseLayouts,
+            phraseLayoutNames,
+            phraseLayoutSelector,
+            phraseEffectSelector,
+            phraseOverlaySelector,
+            phraseTransitionSelector,
+            phraseParamSelector
+        ),
         IS_DEBUG ? 50 : 192,
         IS_DEBUG ? 3 : 5,
         IS_DEBUG ? 3 : 10,

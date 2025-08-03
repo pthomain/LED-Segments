@@ -18,87 +18,30 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef UMBRELLALAYOUTCONFIG_H
-#define UMBRELLALAYOUTCONFIG_H
+#ifndef UMBRELLA_OVERLAY_CONFIG_H
+#define UMBRELLA_OVERLAY_CONFIG_H
 
-#include "effects/noise/NoiseEffect.h"
-#include "effects/gradient/GradientEffect.h"
-#include "effects/swirl/SwirlEffect.h"
-#include "effects/slide/SlideEffect.h"
 #include "engine/displayspec/LayoutConfig.h"
-#include "engine/effect/Effect.h"
 #include "overlays/none/NoOverlay.h"
-#include "transitions/Transition.h"
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/dash/DashOverlay.h"
 #include "overlays/moire/MoireOverlay.h"
-#include "overlays/sparkle/SparkleOverlay.h"
 #include "overlays/wave/WaveOverlay.h"
-
-enum UmbrellaLayout {
-    LEDS_IN_SPOKE,
-    SPOKES_IN_WHOLE
-};
-
-static const std::set<uint16_t> umbrellaLayoutIds = {
-    {LEDS_IN_SPOKE, SPOKES_IN_WHOLE}
-};
-
-static WeightedLayouts umbrellaLayoutSelector(EffectType effectType) {
-    switch (effectType) {
-        case EffectType::EFFECT:
-            return {
-                {LEDS_IN_SPOKE, 4},
-                {SPOKES_IN_WHOLE, 1}
-            };
-
-        case EffectType::OVERLAY:
-        case EffectType::TRANSITION:
-        default:
-            return {{LEDS_IN_SPOKE, 1}};
-    }
-};
-
-static EffectAndMirrors<CRGB> umbrellaEffectSelector(uint16_t layoutId) {
-    if (layoutId == LEDS_IN_SPOKE) {
-        return {
-            {
-                {SwirlEffect::factory, 2},
-                {NoiseEffect::factory, 2},
-                {SlideEffect::factory, 1}
-            },
-            allMirrors<CRGB>
-        };
-    } else {
-        return {
-            {
-                {SwirlEffect::factory, 1},
-            },
-            [](EffectFactoryRef<CRGB> effectFactory) {
-                return WeightedMirrors{
-                    {Mirror::NONE, 1},
-                    {Mirror::REVERSE, 1}
-                };
-            }
-        };
-    }
-}
 
 static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
     if (layoutId == LEDS_IN_SPOKE) {
         return {
             {
-                // {MoireOverlay::factory, 4},
+                {MoireOverlay::factory, 4},
                 {ChaseOverlay::factory, 4},
-                // {WaveOverlay::factory, 3},
-                // {DashOverlay::factory, 2},
+                {WaveOverlay::factory, 3},
+                {DashOverlay::factory, 2},
             },
             [](EffectFactoryRef<CRGB> overlayFactory) {
                 if (
                     overlayFactory->is<MoireOverlay>()
                     || overlayFactory->is<ChaseOverlay>()
                 ) {
-                    return noMirrors<CRGB>(overlayFactory);
                     return WeightedMirrors{
                         {Mirror::NONE, 2},
                         {Mirror::REVERSE, 2},
@@ -137,13 +80,15 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
                         {Mirror::REVERSE, 3},
                         {Mirror::CENTRE, 3},
                         {Mirror::EDGE, 3},
-                        {Mirror::REPEAT, 2},
 
                         {Mirror::REPEAT_REVERSE, 2},
                         {Mirror::OVERLAY_REVERSE, 1},
 
                         {Mirror::OVERLAY_REPEAT_2, 1},
                         {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
+
+                        {Mirror::OVERLAY_REPEAT_3, 1},
+                        {Mirror::OVERLAY_REPEAT_3_REVERSE, 1},
                     };
                 }
 
@@ -155,33 +100,4 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
     return {{}, noMirrors<CRGB>}; //No overlays for SPOKES_IN_WHOLE
 }
 
-static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutId) {
-    return {
-        just(SlideTransition::factory),
-        noMirrors<uint8_t>
-    };
-}
-
-static std::map<uint8_t, uint16_t> umbrellaParamSelector(
-    TypeInfo::ID effectId,
-    Mirror mirror
-) {
-    return {};
-}
-
-static LayoutConfig umbrellaLayoutConfig() {
-    return LayoutConfig(
-        umbrellaLayoutIds,
-        {
-            {LEDS_IN_SPOKE, "LEDS_IN_SPOKE"},
-            {SPOKES_IN_WHOLE, "SPOKES_IN_WHOLE"},
-        },
-        umbrellaLayoutSelector,
-        umbrellaEffectSelector,
-        umbrellaOverlaySelector,
-        umbrellaTransitionSelector,
-        umbrellaParamSelector
-    );
-}
-
-#endif //UMBRELLALAYOUTCONFIG_H
+#endif //UMBRELLA_OVERLAY_CONFIG_H

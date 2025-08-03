@@ -65,7 +65,6 @@ WeightedMirrors allMirrors(EffectFactoryRef<C> effectFactory) {
     };
 }
 
-
 template
 WeightedMirrors noMirrors(EffectFactoryRef<uint8_t> effectFactory);
 

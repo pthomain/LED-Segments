@@ -21,8 +21,30 @@
 #ifndef LED_SEGMENTS_FIBONACCIDISPLAY_H
 #define LED_SEGMENTS_FIBONACCIDISPLAY_H
 
-#include "FibonacciLayoutConfig.h"
+#include "config/FibonacciEffectConfig.h"
+#include "config/FibonacciLayoutConfig.h"
+#include "config/FibonacciParamConfig.h"
+#include "config/FibonacciTransitionConfig.h"
 #include "engine/displayspec/DisplaySpec.h"
+
+static LayoutConfig fibonacciLayoutConfig() {
+    auto layoutIds = fibonacciLayoutIds();
+    auto names = std::map<uint16_t, String>();
+    for (auto layoutId: layoutIds) {
+        names.insert(std::pair(layoutId, getLayoutName(layoutId)));
+    }
+
+    EffectSelector<CRGB> fibonacciOverlaySelector;
+    return LayoutConfig(
+        layoutIds,
+        names,
+        fibonacciLayoutSelector,
+        fibonacciEffectSelector,
+        fibonacciOverlaySelector,
+        fibonacciTransitionSelector,
+        fibonacciParamSelector
+    );
+}
 
 class FibonacciSpec : public DisplaySpec {
     void mapPixel(
@@ -43,14 +65,13 @@ class FibonacciSpec : public DisplaySpec {
     uint8_t getLedPadding(uint8_t pixelIndex) const;
 
 public :
-
     static constexpr int LED_PIN = 9;
     static constexpr EOrder RGB_ORDER = GRB;
 
     explicit FibonacciSpec(): DisplaySpec(
         fibonacciLayoutConfig(),
         255
-        ) {
+    ) {
     }
 
     uint16_t nbLeds() const override { return TOTAL_FIBONACCI_LEDS; }

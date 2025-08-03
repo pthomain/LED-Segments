@@ -21,7 +21,11 @@
 #ifndef UMBRELLASPEC_H
 #define UMBRELLASPEC_H
 
-#include "UmbrellaLayoutConfig.h"
+#include "config/UmbrellaEffectConfig.h"
+#include "config/UmbrellaLayoutConfig.h"
+#include "config/UmbrellaOverlayConfig.h"
+#include "config/UmbrellaParamConfig.h"
+#include "config/UmbrellaTransitionConfig.h"
 #include "engine/displayspec/DisplaySpec.h"
 #include "engine/utils/Utils.h"
 
@@ -30,12 +34,19 @@ constexpr uint8_t LEDS_PER_SPOKE = 42;
 
 class UmbrellaSpec : public DisplaySpec {
 public:
-
     static constexpr int LED_PIN = D7;
     static constexpr EOrder RGB_ORDER = GRB;
 
     explicit UmbrellaSpec(): DisplaySpec(
-        umbrellaLayoutConfig(),
+        LayoutConfig(
+            umbrellaLayoutIds,
+            umbrellaLayoutNames,
+            umbrellaLayoutSelector,
+            umbrellaEffectSelector,
+            umbrellaOverlaySelector,
+            umbrellaTransitionSelector,
+            umbrellaParamSelector
+        ),
         IS_DEBUG ? 50 : 128,
         IS_DEBUG ? 3 : 3,
         IS_DEBUG ? 3 : 8,

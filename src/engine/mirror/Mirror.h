@@ -32,7 +32,6 @@ class BaseEffect;
 
 enum class Mirror {
     // The following mirrors apply to all effect types (effects, overlays and transitions).
-
     NONE,
     REVERSE,
     CENTRE,

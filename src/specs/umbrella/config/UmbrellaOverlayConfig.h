@@ -41,11 +41,14 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
             },
             [](EffectFactoryRef<CRGB> overlayFactory) {
                 if (overlayFactory->is<MatrixOverlay>()) {
-                    noMirrors<CRGB>(overlayFactory);
+                    return WeightedMirrors{
+                        {Mirror::NONE, 2},
+                        {Mirror::REVERSE, 1},
+                    };
                 }
 
                 if (overlayFactory->is<ChaseOverlay>()) {
-                    unrepeatedMirrors<CRGB>(overlayFactory);
+                    return unrepeatedMirrors<CRGB>(overlayFactory);
                 }
 
                 if (overlayFactory->is<MoireOverlay>()) {

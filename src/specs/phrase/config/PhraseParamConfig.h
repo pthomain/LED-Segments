@@ -94,7 +94,7 @@ static std::map<uint8_t, uint16_t> phraseOverlayParamSelector(
             switch (paramKey) {
                 case ChaseOverlay::PARAM_MIN_SPARKS_PER_SEGMENT: return 1;
                 case ChaseOverlay::PARAM_MAX_SPARKS_PER_SEGMENT: return 1;
-                case ChaseOverlay::PARAM_INTERVAL_BETWEEN_SPARKS: return 10;
+                case ChaseOverlay::PARAM_DISTANCE_BETWEEN_SPARKS: return 10;
                 case ChaseOverlay::PARAM_TRAIL_LENGTH: return 2;
                 case ChaseOverlay::PARAM_CHANCE_OF_BOUNCE: return 75;
                 case ChaseOverlay::PARAM_CHANCE_OF_SWIRL: return 0;

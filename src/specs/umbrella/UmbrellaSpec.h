@@ -48,8 +48,8 @@ public:
             umbrellaParamSelector
         ),
         IS_DEBUG ? 50 : 128,
-        IS_DEBUG ? 5 : 3,
-        IS_DEBUG ? 5 : 8,
+        IS_DEBUG ? 10 : 3,
+        IS_DEBUG ? 10 : 8,
         1000,
         0.5f
     ) {

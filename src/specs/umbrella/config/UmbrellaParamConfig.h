@@ -22,6 +22,7 @@
 #define UMBRELLA_PARAM_CONFIG_H
 
 #include "engine/displayspec/LayoutConfig.h"
+#include "overlays/chase/ChaseOverlay.h"
 #include "overlays/sparkle/SparkleOverlay.h"
 
 static std::map<uint8_t, uint16_t> umbrellaEffectParamSelector(
@@ -83,10 +84,10 @@ static std::map<uint8_t, uint16_t> umbrellaOverlayParamSelector(
             switch (paramKey) {
                 case ChaseOverlay::PARAM_MIN_SPARKS_PER_SEGMENT: return 1;
                 case ChaseOverlay::PARAM_MAX_SPARKS_PER_SEGMENT: return 5;
-                case ChaseOverlay::PARAM_INTERVAL_BETWEEN_SPARKS: return 10;
+                case ChaseOverlay::PARAM_DISTANCE_BETWEEN_SPARKS: return 10;
                 case ChaseOverlay::PARAM_TRAIL_LENGTH: return 3;
-                case ChaseOverlay::PARAM_CHANCE_OF_BOUNCE: return 75;
-                case ChaseOverlay::PARAM_CHANCE_OF_SWIRL: return 50;
+                case ChaseOverlay::PARAM_CHANCE_OF_BOUNCE: return 50;
+                case ChaseOverlay::PARAM_CHANCE_OF_SWIRL: return 75;
                 case ChaseOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT: return 4;
                 case ChaseOverlay::PARAM_OPERATION_INVERT_WEIGHT: return 1;
                 default: return defaultValue;

@@ -36,8 +36,7 @@ void BaseEffect<C>::fillArray(
     }
 
     if (segmentIndex == 0) {
-        onEachFrame(progress, elapsedMillis);
-        _frameIndex++;
+        beforeFrame(progress, elapsedMillis);
     }
 
     if (effectArraySize == 0) {
@@ -54,4 +53,10 @@ void BaseEffect<C>::fillArray(
         progress,
         elapsedMillis
     );
+
+    if (segmentIndex == context.nbSegments - 1) {
+        elapsedMillis = max(1, millis() - effectStartInMillis);
+        afterFrame(progress, elapsedMillis);
+        _frameIndex++;
+    }
 };

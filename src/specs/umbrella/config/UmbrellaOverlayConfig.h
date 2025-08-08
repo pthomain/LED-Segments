@@ -25,6 +25,7 @@
 #include "overlays/none/NoOverlay.h"
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/dash/DashOverlay.h"
+#include "overlays/matrix/MatrixOverlay.h"
 #include "overlays/moire/MoireOverlay.h"
 #include "overlays/wave/WaveOverlay.h"
 
@@ -36,8 +37,13 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
                 {ChaseOverlay::factory, 4},
                 {WaveOverlay::factory, 3},
                 {DashOverlay::factory, 2},
+                {MatrixOverlay::factory, 2},
             },
             [](EffectFactoryRef<CRGB> overlayFactory) {
+                if (overlayFactory->is<MatrixOverlay>()) {
+                    noMirrors<CRGB>(overlayFactory);
+                }
+
                 if (overlayFactory->is<ChaseOverlay>()) {
                     unrepeatedMirrors<CRGB>(overlayFactory);
                 }

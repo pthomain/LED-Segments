@@ -35,19 +35,12 @@ void GradientEffect::fillArrayInternal(
     unsigned long timeInMillis
 ) {
     uint8_t progressOffset = colourStart + static_cast<uint8_t>(progress * 255);
-
-    auto increment = max(1.0f, 255.0f / static_cast<float>(effectArraySize));
-    float percent = static_cast<float>(variation) / (255.0f * 2.0f);
-
-    uint8_t adjustedIncrement = random8(
-        max(1.0f, increment * (1.0f - percent)),
-        min(255.0f, increment * (1.0f + percent))
-    );
+    auto increment = max(1.0f, 255.0f / static_cast<float>(effectArraySize)) + variation8;
 
     for (int pixelIndex = 0; pixelIndex < effectArraySize; pixelIndex++) {
         effectArray[pixelIndex] = ColorFromPalette(
             context.palette.palette,
-            progressOffset + (pixelIndex * adjustedIncrement)
+            progressOffset + (pixelIndex * increment)
         );
     }
 }

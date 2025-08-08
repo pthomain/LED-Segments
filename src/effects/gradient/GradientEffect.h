@@ -28,7 +28,7 @@
 
 class GradientEffect : public Effect<GradientEffect, CRGB> {
     const uint8_t colourStart;
-    const uint8_t variation;
+    const uint8_t variation8;
 
 public:
     static const uint8_t PARAM_COLOUR_START = 0;
@@ -37,7 +37,13 @@ public:
     explicit GradientEffect(const EffectContext &effectContext)
         : Effect(effectContext),
           colourStart(param(PARAM_COLOUR_START)),
-          variation(param(PARAM_DENSITY_VARIATION)) {}
+          variation8(
+              random8(
+                  127 - param(PARAM_DENSITY_VARIATION) / 2.0f,
+                  127 + param(PARAM_DENSITY_VARIATION) / 2.0f
+              ) - 127
+          ) {
+    }
 
     void fillArrayInternal(
         CRGB *effectArray,

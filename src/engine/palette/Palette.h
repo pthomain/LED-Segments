@@ -40,23 +40,25 @@ static const Palette RAINBOW_PALETTE = Palette(Rainbow_gp, "Rainbow");
 static const Palette NO_PALETTE = Palette(CRGBPalette16(), "None");
 
 static const auto PALETTES = std::vector{
-    Palette(
-        CRGBPalette16{
-            0xff0066,
-            0x9900ff,
-            0x3333ff
-        },
-        "Aurora"
+    Palette(CRGBPalette16(
+                0xff0000,
+                0x00ff00
+            ),
+            "Red-Green"
     ),
-    Palette(
-        CRGBPalette16{
-            0xff7003,
-            0x17f702,
-            0xf3f702,
-            0xf70202
-        },
-        "Jamaica"
+    Palette(CRGBPalette16(
+                0x00ff00,
+                0x0000ff
+            ),
+            "Green-Blue"
+    ),
+    Palette(CRGBPalette16(
+                0x0000ff,
+                0xff0000
+            ),
+            "Blue-Red"
     ),
 };
+
 
 #endif //PALETTE_H

@@ -29,34 +29,35 @@
 class ChaseOverlay : public Effect<ChaseOverlay, CRGB> {
     const uint8_t minSparksPerSegment;
     const uint8_t maxSparksPerSegment;
-    const uint8_t intervalBetweenSparks;
+    const uint8_t distanceBetweenSparks;
     const uint8_t trailLength;
 
     // Whether the sparks bounce back and forth. Otherwise, new sparks get emitted at the start after they exit.
     const bool isBouncy;
-    const bool isSwirling;
 
     const uint8_t sparksPerSegment = random8(minSparksPerSegment, maxSparksPerSegment);
-    const uint16_t swirlingInterval;
     const uint16_t swirlDistance;
 
     const uint16_t multiplyOperationWeight;
     const uint16_t invertOperationWeight;
 
-    uint16_t leadingSparkPosition = 0;
-    uint16_t *sparkIntervalCounterPerSegment;
-    uint8_t *nbSparksForSegment;
+    uint16_t frameCounter = 0;
 
-    std::vector<std::vector<bool> > forward;
-    std::vector<std::vector<bool> > backward;
+    struct Spark {
+        uint16_t position;
+        bool isMovingForward;
+        bool isLessThanZero;
+    };
 
-    bool *tempForward;
-    bool *tempBackward;
+    std::vector<std::vector<Spark> > sparks;
+    std::vector<uint8_t> emittedSparkCount;
+
+    CRGB getAlpha(int16_t position, int16_t trailIndex) const;
 
 public:
     static const uint8_t PARAM_MIN_SPARKS_PER_SEGMENT = 0;
     static const uint8_t PARAM_MAX_SPARKS_PER_SEGMENT = 1;
-    static const uint8_t PARAM_INTERVAL_BETWEEN_SPARKS = 2;
+    static const uint8_t PARAM_DISTANCE_BETWEEN_SPARKS = 2;
     static const uint8_t PARAM_TRAIL_LENGTH = 3;
     static const uint8_t PARAM_CHANCE_OF_BOUNCE = 4;
     static const uint8_t PARAM_CHANCE_OF_SWIRL = 5;
@@ -73,12 +74,12 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    ~ChaseOverlay() override {
-        delete[] sparkIntervalCounterPerSegment;
-        delete[] nbSparksForSegment;
-        delete[] tempForward;
-        delete[] tempBackward;
-    }
+    ~ChaseOverlay() override = default;
+
+    void afterFrame(
+        float progress,
+        unsigned long timeElapsedInMillis
+    ) override;
 
     static constexpr const char *name() { return "ChaseOverlay"; }
 
@@ -98,7 +99,7 @@ public:
         return {
             {ChaseOverlay::PARAM_MIN_SPARKS_PER_SEGMENT, 1},
             {ChaseOverlay::PARAM_MAX_SPARKS_PER_SEGMENT, 5},
-            {ChaseOverlay::PARAM_INTERVAL_BETWEEN_SPARKS, 10},
+            {ChaseOverlay::PARAM_DISTANCE_BETWEEN_SPARKS, 10},
             {ChaseOverlay::PARAM_TRAIL_LENGTH, 3},
             {ChaseOverlay::PARAM_CHANCE_OF_BOUNCE, 75}, // 0 - 100
             {ChaseOverlay::PARAM_CHANCE_OF_SWIRL, 50}, // 0 - 100

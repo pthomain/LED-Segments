@@ -62,11 +62,15 @@ public :
         );
     };
 
-    void onEachFrame(
+    void beforeFrame(
         float progress,
         unsigned long timeElapsedInMillis
-    ) override {
-    }
+    ) override {}
+
+    void afterFrame(
+        float progress,
+        unsigned long timeElapsedInMillis
+    ) override {}
 
     WeightedOperations effectOperations() override {
         return static_cast<Child *>(this)->operations();

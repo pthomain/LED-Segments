@@ -32,16 +32,17 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
     if (layoutId == LEDS_IN_SPOKE) {
         return {
             {
-                // {MoireOverlay::factory, 4},
+                {MoireOverlay::factory, 4},
                 {ChaseOverlay::factory, 4},
-                // {WaveOverlay::factory, 3},
-                // {DashOverlay::factory, 2},
+                {WaveOverlay::factory, 3},
+                {DashOverlay::factory, 2},
             },
             [](EffectFactoryRef<CRGB> overlayFactory) {
-                if (
-                    overlayFactory->is<MoireOverlay>()
-                    || overlayFactory->is<ChaseOverlay>()
-                ) {
+                if (overlayFactory->is<ChaseOverlay>()) {
+                    unrepeatedMirrors<CRGB>(overlayFactory);
+                }
+
+                if (overlayFactory->is<MoireOverlay>()) {
                     return WeightedMirrors{
                         {Mirror::NONE, 2},
                         {Mirror::REVERSE, 2},

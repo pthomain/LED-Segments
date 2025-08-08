@@ -56,7 +56,12 @@ public:
         float progress
     );
 
-    virtual void onEachFrame(
+    virtual void beforeFrame(
+        float progress,
+        unsigned long timeElapsedInMillis
+    ) = 0;
+
+    virtual void afterFrame(
         float progress,
         unsigned long timeElapsedInMillis
     ) = 0;

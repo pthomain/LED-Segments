@@ -32,9 +32,7 @@ class MatrixOverlay : public Effect<MatrixOverlay, CRGB> {
     const uint8_t maxDensity;
 
     const float chanceOfNewStream;
-    const uint8_t streamSpeed;
     const uint8_t streamLength;
-    const uint8_t streamLifespan;
 
     const uint16_t multiplyOperationWeight;
     const uint16_t invertOperationWeight;
@@ -54,11 +52,9 @@ public:
     static const uint8_t PARAM_MIN_DENSITY = 0;
     static const uint8_t PARAM_MAX_DENSITY = 1;
     static const uint8_t PARAM_DENSITY_INCREMENT = 2;
-    static const uint8_t PARAM_STREAM_SPEED = 3;
-    static const uint8_t PARAM_STREAM_LENGTH = 4;
-    static const uint8_t PARAM_STREAM_LIFESPAN = 5;
-    static const uint8_t PARAM_OPERATION_MULTIPLY_WEIGHT = 6;
-    static const uint8_t PARAM_OPERATION_INVERT_WEIGHT = 7;
+    static const uint8_t PARAM_STREAM_LENGTH = 3;
+    static const uint8_t PARAM_OPERATION_MULTIPLY_WEIGHT = 4;
+    static const uint8_t PARAM_OPERATION_INVERT_WEIGHT = 5;
 
     explicit MatrixOverlay(const EffectContext &effectContext);
 
@@ -88,14 +84,12 @@ class MatrixOverlayFactory : public EffectFactory<MatrixOverlayFactory, MatrixOv
 public:
     static Params declareParams() {
         return {
-            {MatrixOverlay::PARAM_MIN_DENSITY, 10}, //0-100
-            {MatrixOverlay::PARAM_MAX_DENSITY, 30}, //0-100
+            {MatrixOverlay::PARAM_MIN_DENSITY, 20}, //0-100
+            {MatrixOverlay::PARAM_MAX_DENSITY, 40}, //0-100
             {MatrixOverlay::PARAM_DENSITY_INCREMENT, 5}, //0-10
-            {MatrixOverlay::PARAM_STREAM_SPEED, 1},
-            {MatrixOverlay::PARAM_STREAM_LENGTH, 8},
-            {MatrixOverlay::PARAM_STREAM_LIFESPAN, 50},
-            {MatrixOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT, 4},
-            {MatrixOverlay::PARAM_OPERATION_INVERT_WEIGHT, 0},
+            {MatrixOverlay::PARAM_STREAM_LENGTH, 7},
+            {MatrixOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT, 6},
+            {MatrixOverlay::PARAM_OPERATION_INVERT_WEIGHT, 1},
         };
     }
 };

@@ -25,9 +25,7 @@
 const uint8_t MatrixOverlay::PARAM_MIN_DENSITY;
 const uint8_t MatrixOverlay::PARAM_MAX_DENSITY;
 const uint8_t MatrixOverlay::PARAM_DENSITY_INCREMENT;
-const uint8_t MatrixOverlay::PARAM_STREAM_SPEED;
 const uint8_t MatrixOverlay::PARAM_STREAM_LENGTH;
-const uint8_t MatrixOverlay::PARAM_STREAM_LIFESPAN;
 const uint8_t MatrixOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT;
 const uint8_t MatrixOverlay::PARAM_OPERATION_INVERT_WEIGHT;
 
@@ -45,9 +43,7 @@ MatrixOverlay::MatrixOverlay(const EffectContext &effectContext)
               max(minDensity, maxDensity) / densityIncrement
           ) * (densityIncrement / 100.0f)
       ),
-      streamSpeed(param(PARAM_STREAM_SPEED)),
       streamLength(param(PARAM_STREAM_LENGTH)),
-      streamLifespan(param(PARAM_STREAM_LIFESPAN)),
       multiplyOperationWeight(param(PARAM_OPERATION_MULTIPLY_WEIGHT)),
       invertOperationWeight(param(PARAM_OPERATION_INVERT_WEIGHT)),
       streams(std::vector<std::vector<Stream> >(context.nbSegments)) {
@@ -61,29 +57,33 @@ void MatrixOverlay::fillArrayInternal(
     unsigned long timeElapsedInMillis
 ) {
     auto &segmentStreams = streams[segmentIndex];
+    uint16_t speed = 2;
 
-    // Handle streams
-    segmentStreams.erase(
-        std::remove_if(
-            segmentStreams.begin(),
-            segmentStreams.end(),
-            [=](const Stream &stream) {
-                return !stream.isAlive;
-            }
-        ),
-        segmentStreams.end()
-    );
+    if (frameIndex() % speed == 0) {
+        // Handle streams
+        segmentStreams.erase(
+            std::remove_if(
+                segmentStreams.begin(),
+                segmentStreams.end(),
+                [=](const Stream &stream) {
+                    return !stream.isAlive;
+                }
+            ),
+            segmentStreams.end()
+        );
 
-    // Add new stream if needed
-    if (probability(chanceOfNewStream)) {
-        segmentStreams.push_back({
-            0,
-            random8(streamSpeed, streamSpeed * 2),
-            random8(streamLength / 2, streamLength),
-            random8(streamLifespan / 2, streamLifespan),
-            0,
-            true
-        });
+        // Add new stream if needed
+        if (probability(chanceOfNewStream)) {
+            uint8_t streamSpeed = random8(1, 4);
+            segmentStreams.push_back({
+                0,
+                streamSpeed,
+                random8(streamLength / 2, streamLength),
+                random8(effectArraySize / 3, effectArraySize / 2),
+                0,
+                true
+            });
+        }
     }
 
     // Draw and update streams
@@ -93,17 +93,19 @@ void MatrixOverlay::fillArrayInternal(
             if (charPos >= 0 && charPos < effectArraySize) {
                 float tailFade = 1.0f - static_cast<float>(character) / stream.length;
                 float ageFade = 1.0f - static_cast<float>(stream.age) / stream.lifespan;
-                float brightness = tailFade * ageFade;
+                float brightness = tailFade * ageFade * 1.2f;
 
                 CRGB color = CRGB::White;
                 effectArray[charPos] = color.nscale8(255 * brightness);
             }
         }
 
-        stream.position += stream.speed;
-        if (stream.position - stream.length >= effectArraySize || stream.age >= stream.lifespan) {
-            stream.isAlive = false;
+        if (frameIndex() % speed == 0) {
+            stream.position += stream.speed;
+            if (stream.position - stream.length >= effectArraySize || stream.age >= stream.lifespan) {
+                stream.isAlive = false;
+            }
+            stream.age++;
         }
-        stream.age++;
     }
 }

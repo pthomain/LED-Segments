@@ -22,6 +22,7 @@
 #include "engine/effect/BaseEffect.h"
 #include "engine/utils/Blending.h"
 #include "engine/utils/Utils.h"
+#include "engine/utils/Interpolation.h"
 
 Renderer::Renderer(
     const std::shared_ptr<DisplaySpec> &displaySpec,
@@ -185,7 +186,7 @@ void Renderer::render() {
 
     //Render transition in transitionOutputArray
     const float transitionPercent = 1.0f - (transitionStep / transitionDurationInFrames);
-    const float smoothedTransition = 1.0f - static_cast<float>(cos(transitionPercent * PI / 2.0f)); //sine easing
+    const float smoothedTransition = Interpolation::easeInOutQuad(transitionPercent);
 
     applyEffectOrTransition<uint8_t>(
         transition,

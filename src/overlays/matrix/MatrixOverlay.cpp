@@ -21,6 +21,7 @@
 #include "MatrixOverlay.h"
 #include "crgb.h"
 #include "engine/utils/Utils.h"
+#include "engine/utils/Interpolation.h"
 
 const uint8_t MatrixOverlay::PARAM_MIN_DENSITY;
 const uint8_t MatrixOverlay::PARAM_MAX_DENSITY;
@@ -74,13 +75,12 @@ void MatrixOverlay::fillArrayInternal(
 
         // Add new stream if needed
         if (probability(chanceOfNewStream)) {
-            uint8_t streamSpeed = random8(1, 4);
             segmentStreams.push_back({
                 0,
-                streamSpeed,
-                random8(streamLength / 2, streamLength),
-                random8(effectArraySize / 3, effectArraySize / 2),
-                0,
+                random8(2, streamLength),
+                0.0f,
+                (uint16_t) random8(2, 5) * 750,
+                (uint16_t) timeElapsedInMillis,
                 true
             });
         }
@@ -88,24 +88,26 @@ void MatrixOverlay::fillArrayInternal(
 
     // Draw and update streams
     for (auto &stream: segmentStreams) {
-        for (int character = 0; character < stream.length; ++character) {
-            int16_t charPos = stream.position - character;
-            if (charPos >= 0 && charPos < effectArraySize) {
-                float tailFade = 1.0f - static_cast<float>(character) / stream.length;
-                float ageFade = 1.0f - static_cast<float>(stream.age) / stream.lifespan;
-                float brightness = tailFade * ageFade * 1.2f;
-
-                CRGB color = CRGB::White;
-                effectArray[charPos] = color.nscale8(255 * brightness);
-            }
-        }
-
-        if (frameIndex() % speed == 0) {
-            stream.position += stream.speed;
-            if (stream.position - stream.length >= effectArraySize || stream.age >= stream.lifespan) {
+        if (stream.isAlive) {
+            stream.progress = (static_cast<float>(timeElapsedInMillis) - stream.startTime) / stream.duration;
+            if (stream.progress > 1.0f) {
                 stream.isAlive = false;
+                continue;
             }
-            stream.age++;
+
+            float easedProgress = Interpolation::easeOutQuad(stream.progress);
+            stream.position = easedProgress * (effectArraySize + stream.length);
+
+            for (int character = 0; character < stream.length; ++character) {
+                int16_t charPos = stream.position - character;
+                if (charPos >= 0 && charPos < effectArraySize) {
+                    float ageFade = 1.0f - stream.progress;
+                    float brightness = ageFade * ageFade;
+
+                    CRGB color = CRGB::White;
+                    effectArray[charPos] = color;//.nscale8(255 * brightness);
+                }
+            }
         }
     }
 }

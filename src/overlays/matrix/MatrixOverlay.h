@@ -39,10 +39,10 @@ class MatrixOverlay : public Effect<MatrixOverlay, CRGB> {
 
     struct Stream {
         int16_t position;
-        uint8_t speed;
         uint8_t length;
-        uint8_t lifespan;
-        uint8_t age;
+        float progress;
+        uint16_t duration;
+        uint16_t startTime;
         bool isAlive;
     };
 
@@ -84,10 +84,10 @@ class MatrixOverlayFactory : public EffectFactory<MatrixOverlayFactory, MatrixOv
 public:
     static Params declareParams() {
         return {
-            {MatrixOverlay::PARAM_MIN_DENSITY, 20}, //0-100
-            {MatrixOverlay::PARAM_MAX_DENSITY, 40}, //0-100
+            {MatrixOverlay::PARAM_MIN_DENSITY, 15}, //0-100
+            {MatrixOverlay::PARAM_MAX_DENSITY, 35}, //0-100
             {MatrixOverlay::PARAM_DENSITY_INCREMENT, 5}, //0-10
-            {MatrixOverlay::PARAM_STREAM_LENGTH, 7},
+            {MatrixOverlay::PARAM_STREAM_LENGTH, 6},
             {MatrixOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT, 6},
             {MatrixOverlay::PARAM_OPERATION_INVERT_WEIGHT, 1},
         };

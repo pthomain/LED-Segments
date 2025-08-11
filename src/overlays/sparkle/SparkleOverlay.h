@@ -27,14 +27,13 @@
 
 class SparkleOverlay : public Effect<SparkleOverlay, CRGB> {
     const float density;
-    const CRGB minBrightness = CRGB(127, 127, 127);
 
 public:
     static const uint16_t PARAM_DENSITY = 0;
 
     explicit SparkleOverlay(const EffectContext &effectContext)
         : Effect(effectContext),
-          density(min(1000, param(PARAM_DENSITY)) / 1000.0f) {
+          density(min(100, param(PARAM_DENSITY)) / 100.0f) {
     }
 
     void fillArrayInternal(
@@ -46,7 +45,14 @@ public:
     ) override;
 
     static constexpr const char *name() { return "SparkleOverlay"; }
-    WeightedOperations operations() { return just(EffectOperation::OVERLAY_MULTIPLY); }
+
+    WeightedOperations operations() {
+        return {
+            {EffectOperation::OVERLAY_SCREEN, 1},
+            {EffectOperation::OVERLAY_MULTIPLY, 1},
+        };
+    }
+
     static EffectFactoryRef<CRGB> factory;
 };
 
@@ -54,7 +60,7 @@ class SparkleOverlayFactory : public EffectFactory<SparkleOverlayFactory, Sparkl
 public:
     static Params declareParams() {
         return {
-            {SparkleOverlay::PARAM_DENSITY, 5} // Permil
+            {SparkleOverlay::PARAM_DENSITY, 50} // 0-100
         };
     }
 };

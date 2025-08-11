@@ -52,8 +52,6 @@ class ChaseOverlay : public Effect<ChaseOverlay, CRGB> {
     std::vector<std::vector<Spark> > sparks;
     std::vector<uint8_t> emittedSparkCount;
 
-    CRGB getAlpha(int16_t position, int16_t trailIndex) const;
-
 public:
     static const uint8_t PARAM_MIN_SPARKS_PER_SEGMENT = 0;
     static const uint8_t PARAM_MAX_SPARKS_PER_SEGMENT = 1;

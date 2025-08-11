@@ -27,6 +27,7 @@
 #include "overlays/dash/DashOverlay.h"
 #include "overlays/matrix/MatrixOverlay.h"
 #include "overlays/moire/MoireOverlay.h"
+#include "overlays/sparkle/SparkleOverlay.h"
 #include "overlays/wave/WaveOverlay.h"
 
 static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
@@ -34,10 +35,11 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
         return {
             {
                 {MoireOverlay::factory, 4},
-                {ChaseOverlay::factory, 4},
-                {WaveOverlay::factory, 3},
-                {DashOverlay::factory, 2},
-                {MatrixOverlay::factory, 2},
+                {ChaseOverlay::factory, 5},
+                {WaveOverlay::factory, 4},
+                {DashOverlay::factory, 3},
+                {MatrixOverlay::factory, 3},
+                {SparkleOverlay::factory, 1},
             },
             [](EffectFactoryRef<CRGB> overlayFactory) {
                 if (overlayFactory->is<MatrixOverlay>()) {

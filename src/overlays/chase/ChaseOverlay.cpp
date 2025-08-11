@@ -49,12 +49,6 @@ ChaseOverlay::ChaseOverlay(const EffectContext &effectContext)
       emittedSparkCount(std::vector<uint8_t>(context.nbSegments, 0)) {
 }
 
-CRGB ChaseOverlay::getAlpha(int16_t position, int16_t trailIndex) const {
-    auto relativePosition = static_cast<float>(abs(position - trailIndex));
-    auto alpha = static_cast<uint8_t>(255.0f * (1.0f - (relativePosition / (trailLength + 1.0f))));
-    return CRGB{alpha, alpha, alpha};
-}
-
 void ChaseOverlay::fillArrayInternal(
     CRGB *effectArray,
     uint16_t effectArraySize,
@@ -95,7 +89,7 @@ void ChaseOverlay::fillArrayInternal(
         for (int16_t trailIndex = 0; trailIndex <= trailLength; ++trailIndex) {
             int16_t trailPos = spark.position - trailIndex * (spark.isMovingForward ? 1 : -1);
             if (trailPos >= 0 && trailPos < effectArraySize) {
-                effectArray[trailPos] = getAlpha(spark.position, trailPos);
+                effectArray[trailPos] = CRGB::White;
             }
         }
 

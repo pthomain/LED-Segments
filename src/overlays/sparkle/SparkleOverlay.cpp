@@ -36,6 +36,6 @@ void SparkleOverlay::fillArrayInternal(
     unsigned long timeElapsedInMillis
 ) {
     for (uint16_t i = 0; i < effectArraySize; i++) {
-        effectArray[i] = probability(density) ? CRGB::White : minBrightness;
+        effectArray[i] = probability(density) ? CRGB::White : CRGB::Black;
     }
 }

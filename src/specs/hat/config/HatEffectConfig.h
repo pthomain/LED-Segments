@@ -18,24 +18,25 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "engine/display/Display.h"
-#include "engine/utils/Utils.h"
-#include "specs/phrase/PhraseSpec.h"
-#include "specs/fibonacci/FibonacciSpec.h"
-#include "specs/hat/HatSpec.h"
-#include "specs/umbrella/UmbrellaSpec.h"
+#ifndef HAT_EFFECT_CONFIG_H
+#define HAT_EFFECT_CONFIG_H
 
-using SPEC = HatSpec;
-Display<SPEC> *display;
+#include "HatLayoutConfig.h"
+#include "effects/noise/NoiseEffect.h"
+#include "effects/swirl/SwirlEffect.h"
+#include "effects/slide/SlideEffect.h"
+#include "engine/effect/Effect.h"
 
-void setup() {
-    if constexpr (IS_DEBUG) {
-        Serial.begin(9600);
-        delay(2000);
-    }
-    display = new Display<SPEC>(); //must be instantiated in this method
+static EffectAndMirrors<CRGB> hatEffectSelector(uint16_t layoutId) {
+    return {
+        {
+            {SwirlEffect::factory, 2},
+            {NoiseEffect::factory, 2},
+            {SlideEffect::factory, 1},
+            {GradientEffect::factory, 1}
+        },
+        allMirrors<CRGB>
+    };
 }
 
-void loop() {
-    display->loop();
-}
+#endif //HAT_EFFECT_CONFIG_H

@@ -18,24 +18,19 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "engine/display/Display.h"
-#include "engine/utils/Utils.h"
-#include "specs/phrase/PhraseSpec.h"
-#include "specs/fibonacci/FibonacciSpec.h"
-#include "specs/hat/HatSpec.h"
-#include "specs/umbrella/UmbrellaSpec.h"
+#ifndef HAT_OVERLAY_CONFIG_H
+#define HAT_OVERLAY_CONFIG_H
 
-using SPEC = HatSpec;
-Display<SPEC> *display;
+#include "engine/displayspec/LayoutConfig.h"
+#include "overlays/none/NoOverlay.h"
+#include "specs/hat/overlays/CompositeOverlay.h"
+#include "specs/hat/overlays/EyeOverlay.h"
 
-void setup() {
-    if constexpr (IS_DEBUG) {
-        Serial.begin(9600);
-        delay(2000);
-    }
-    display = new Display<SPEC>(); //must be instantiated in this method
+static EffectAndMirrors<CRGB> hatOverlaySelector(uint16_t layoutId) {
+    return {
+        just(CompositeOverlay::factory),
+        noMirrors<CRGB>
+    };
 }
 
-void loop() {
-    display->loop();
-}
+#endif //HAT_OVERLAY_CONFIG_H

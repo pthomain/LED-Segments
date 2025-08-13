@@ -18,24 +18,29 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "engine/display/Display.h"
-#include "engine/utils/Utils.h"
-#include "specs/phrase/PhraseSpec.h"
-#include "specs/fibonacci/FibonacciSpec.h"
-#include "specs/hat/HatSpec.h"
-#include "specs/umbrella/UmbrellaSpec.h"
+#include "CompositeOverlay.h"
 
-using SPEC = HatSpec;
-Display<SPEC> *display;
+static const CompositeOverlayFactory factoryInstance;
+EffectFactoryRef<CRGB> CompositeOverlay::factory = &factoryInstance;
 
-void setup() {
-    if constexpr (IS_DEBUG) {
-        Serial.begin(9600);
-        delay(2000);
-    }
-    display = new Display<SPEC>(); //must be instantiated in this method
-}
+void CompositeOverlay::fillArrayInternal(
+    CRGB *effectArray,
+    uint16_t effectArraySize,
+    uint16_t segmentIndex,
+    float progress,
+    unsigned long timeElapsedInMillis
+) {
+    randomOverlay->fillArray(
+        effectArray,
+        effectArraySize,
+        segmentIndex,
+        progress
+    );
 
-void loop() {
-    display->loop();
+    eyeOverlay.fillArray(
+        effectArray,
+        effectArraySize,
+        segmentIndex,
+        progress
+    );
 }

@@ -78,7 +78,12 @@ public:
         );
     }
 
-    std::unique_ptr<BaseEffect<C> > create(const EffectContext &context) const override {
+    std::unique_ptr<BaseEffect<C> > create(const EffectContext &context) const final {
+        return static_cast<const Child *>(this)->createEffect(context);
+    }
+
+    //Required for proper method dispatching with CRTP, override in child factory if needed
+    std::unique_ptr<BaseEffect<C> > createEffect(const EffectContext &context) const {
         return std::make_unique<T>(context);
     }
 

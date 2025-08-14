@@ -20,8 +20,7 @@
 
 #include "CompositeOverlay.h"
 
-static const CompositeOverlayFactory factoryInstance;
-EffectFactoryRef<CRGB> CompositeOverlay::factory = &factoryInstance;
+EffectFactoryRef<CRGB> CompositeOverlayFactory::randomOverlayFactory = nullptr;
 
 void CompositeOverlay::fillArrayInternal(
     CRGB *effectArray,

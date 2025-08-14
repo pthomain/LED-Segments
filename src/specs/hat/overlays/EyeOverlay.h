@@ -46,9 +46,8 @@ enum PupilPosition {
 };
 
 class EyeOverlay : public Effect<EyeOverlay, CRGB> {
-    static constexpr CRGB eyeDimming = CRGB(30, 30, 30);
 
-    const std::vector<uint8_t> &pupilPosition(uint8_t position);
+    const uint8_t eyeBrightness = 7;
 
     void drawPupil(
         CRGB *effectArray,
@@ -56,18 +55,18 @@ class EyeOverlay : public Effect<EyeOverlay, CRGB> {
         unsigned long timeElapsedInMillis
     );
 
-    uint8_t m_sequenceIndex = 0;
+    uint8_t sequenceIndex = 0;
     uint8_t m_frameIndex = 0;
-    unsigned long m_lastSequenceChange = 0;
-    uint8_t m_previousSequenceIndex = 0;
+    unsigned long lastSequenceChange = 0;
+    uint8_t previousSequenceIndex = 0;
 
-    bool m_isBlinking = false;
-    unsigned long m_lastBlinkTime = 0;
-    uint8_t m_blinkStateIndex = 0;
+    bool isBlinking = false;
+    unsigned long lastBlinkTime = 0;
+    uint8_t blinkFrameIndex = 0;
 
-    unsigned long m_nextBlinkInterval = 5000;
-    unsigned long m_nextSequenceInterval = 3000;
-    unsigned long m_positionInSequence = 0;
+    unsigned long nextBlinkInterval = 5000;
+    unsigned long nextSequenceInterval = 3000;
+    unsigned long positionInSequence = 0;
 
 public:
     explicit EyeOverlay(const EffectContext &effectContext): Effect(effectContext) {

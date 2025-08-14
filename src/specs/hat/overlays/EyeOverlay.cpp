@@ -49,12 +49,6 @@ static const auto positions = std::vector<std::vector<uint8_t> >{
 };
 
 static const auto sequences = std::vector<std::vector<uint8_t> >{
-    // {C, CL, L, TL, T, TR, R, CR, C},
-    // {C, CR, R, TR, T, TL, L, CL, C},
-
-    // {C, CL, L, BL, B, BR, R, CR, C},
-    // {C, CR, R, BR, B, BL, L, CL, C},
-
     //Eye dashes LTR
     {C, CL, L, L, L, L, L, CL, C, CR, R, R, R, R, R, CR, C},
     {C, CL, L, L, L, L, L, CL, C, CR, R, R, R, R, R, CR, C, CL, L, L, L, L, L, CL, C, CR, R, R, R, R, R, CR, C},
@@ -64,98 +58,90 @@ static const auto sequences = std::vector<std::vector<uint8_t> >{
 
     //Eye dashes TB
     {C, T, T, T, T, T, T, T, T, T, T, C, B, B, B, B, B, B, B, B, B, B, C},
-    // {C, T, C, B, C, T, C, B, C},
 };
 
-// Blink sequence states (pixels to turn black)
-static const std::vector<uint8_t> blink_state_1 = {
-    0, 1, 2, 3, // Row 0
-    33, 34, 35, 36 // Row 6
+static const std::vector<uint8_t> blinkFrame1 = {
+    0, 1, 2, 3,
+    33, 34, 35, 36
 };
-static const std::vector<uint8_t> blink_state_2 = {
-    0, 1, 2, 3, // Row 0
-    4, 5, 6, 7, 8, // Row 1
-    28, 29, 30, 31, 32, // Row 5
-    33, 34, 35, 36 // Row 6
+
+static const std::vector<uint8_t> blinkFrame2 = {
+    0, 1, 2, 3,
+    4, 5, 6, 7, 8,
+    28, 29, 30, 31, 32,
+    33, 34, 35, 36
 };
-static const std::vector<uint8_t> blink_state_3 = {
+static const std::vector<uint8_t> blinkFrame3 = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
     11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
     21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
     31, 32, 33, 34, 35, 36
 };
 
-static const std::vector blink_sequence = {
-    blink_state_1, // State 1: Start closing
-    blink_state_2, // State 2
-    blink_state_3, // State 3: Fully closed
-    blink_state_2, // State 4
-    blink_state_1, // State 5
+static const std::vector blinkSequence = {
+    blinkFrame1,
+    blinkFrame2,
+    blinkFrame3,
+    blinkFrame2,
+    blinkFrame1,
 };
-
-const std::vector<uint8_t> &EyeOverlay::pupilPosition(uint8_t position) {
-    return positions.at(position);
-}
 
 void EyeOverlay::drawPupil(
     CRGB *effectArray,
     uint16_t effectArraySize,
     unsigned long timeElapsedInMillis
 ) {
-    // --- Blink timing and state update ---
-    if (!m_isBlinking) {
-        if (timeElapsedInMillis - m_lastBlinkTime > m_nextBlinkInterval) {
-            m_isBlinking = true;
-            m_lastBlinkTime = timeElapsedInMillis;
-            m_blinkStateIndex = 1; // Start from first blink state (partially closed)
+    if (!isBlinking) {
+        if (timeElapsedInMillis - lastBlinkTime > nextBlinkInterval) {
+            isBlinking = true;
+            lastBlinkTime = timeElapsedInMillis;
+            blinkFrameIndex = 1;
         }
     } else {
-        const unsigned long blink_duration_per_state = 50; // Adjust as needed
-        if (timeElapsedInMillis - m_lastBlinkTime > m_blinkStateIndex * blink_duration_per_state) {
-            m_blinkStateIndex++;
-            if (m_blinkStateIndex >= blink_sequence.size()) {
-                m_isBlinking = false; // Blink finished
-                m_blinkStateIndex = 0; // Reset for next blink cycle
-                m_lastBlinkTime = timeElapsedInMillis; // Reset blink timer
-                m_nextBlinkInterval = random(7000, 10000); // Set new random blink interval
+        const unsigned long blinkFrameDurationInMillis = 50;
+        if (timeElapsedInMillis - lastBlinkTime > blinkFrameIndex * blinkFrameDurationInMillis) {
+            blinkFrameIndex++;
+
+            if (blinkFrameIndex >= blinkSequence.size()) {
+                isBlinking = false;
+                blinkFrameIndex = 0;
+                lastBlinkTime = timeElapsedInMillis;
+                nextBlinkInterval = random(7000, 10000);
             }
         }
     }
 
-    // --- Draw base eye (dimming) ---
     for (int i = 0; i < effectArraySize; i++) {
-        effectArray[i] = eyeDimming;
+        effectArray[i] = blend(effectArray[i], CRGB::White, eyeBrightness);
     }
 
-    // Update sequence every 3 seconds
-    if (timeElapsedInMillis - m_lastSequenceChange > m_nextSequenceInterval) {
-        m_lastSequenceChange = timeElapsedInMillis;
-        m_previousSequenceIndex = m_sequenceIndex;
+    if (timeElapsedInMillis - lastSequenceChange > nextSequenceInterval) {
+        lastSequenceChange = timeElapsedInMillis;
+        previousSequenceIndex = sequenceIndex;
 
         uint8_t newSequenceIndex;
         do {
             newSequenceIndex = random8(sequences.size());
-        } while (newSequenceIndex == m_previousSequenceIndex);
-        m_sequenceIndex = newSequenceIndex;
+        } while (newSequenceIndex == previousSequenceIndex);
 
-        m_positionInSequence = 0;
-        m_nextSequenceInterval = random(4000, 8000); // Set new random sequence interval
+        sequenceIndex = newSequenceIndex;
+        positionInSequence = 0;
+        nextSequenceInterval = random(5000, 8000);
     }
 
-    // Update position in sequence every 100ms
-    const auto &currentSequence = sequences[m_sequenceIndex];
-    const unsigned long timeInSequence = timeElapsedInMillis - m_lastSequenceChange;
-    m_positionInSequence = std::min((unsigned long) (timeInSequence / 80),
-                                    (unsigned long) (currentSequence.size() - 1));
+    const auto &currentSequence = sequences[sequenceIndex];
+    const unsigned long timeInSequence = timeElapsedInMillis - lastSequenceChange;
+    positionInSequence = min(
+        timeInSequence / 80,
+        static_cast<unsigned long>(currentSequence.size() - 1)
+    );
 
-    const auto pupilPosEnum = currentSequence[m_positionInSequence];
-    for (auto i: pupilPosition(pupilPosEnum)) {
+    for (auto i: positions.at(currentSequence[positionInSequence])) {
         effectArray[i] = CRGB::Black;
     }
 
-    // --- Apply blink overlay ---
-    if (m_isBlinking) {
-        for (auto pixel_index: blink_sequence[m_blinkStateIndex]) {
+    if (isBlinking) {
+        for (auto pixel_index: blinkSequence[blinkFrameIndex]) {
             effectArray[pixel_index] = CRGB::Black;
         }
     }

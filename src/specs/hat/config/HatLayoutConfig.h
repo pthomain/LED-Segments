@@ -49,7 +49,10 @@ static WeightedLayouts hatLayoutSelector(EffectType effectType) {
     switch (effectType) {
         case EffectType::EFFECT:
         case EffectType::TRANSITION:
-            return just(uint16_t(CONCENTRIC_EYES));
+            return {
+                {LINEAR_EYES, 1},
+                {CONCENTRIC_EYES, 1}
+            };
 
         case EffectType::OVERLAY:
         default:

@@ -23,6 +23,7 @@
 
 #include "config/HatEffectConfig.h"
 #include "config/HatLayoutConfig.h"
+#include "config/HatOverlayConfig.h"
 #include "config/HatParamConfig.h"
 #include "config/HatTransitionConfig.h"
 #include "engine/displayspec/DisplaySpec.h"
@@ -30,17 +31,19 @@
 #include "overlays/CompositeOverlay.h"
 
 class HatSpec : public DisplaySpec {
-    CompositeOverlayFactory overlayFactory;
+    CompositeOverlayFactory overlayFactory = CompositeOverlayFactory();
+    EffectFactoryRef<CRGB> compositeFactoryRef = &overlayFactory;
+
+    const LayoutConfig wrappedConfig;
 
     static const std::vector<uint8_t> &eyeCircle(uint16_t pixelIndex);
 
 public:
-    static constexpr int LED_PIN = 5;
+    static constexpr int LED_PIN = IS_DEBUG ? 9 : 5;
     static constexpr EOrder RGB_ORDER = GRB;
 
     explicit HatSpec()
-        : overlayFactory(CompositeOverlayFactory()),
-          DisplaySpec(
+        : DisplaySpec(
               LayoutConfig(
                   hatLayoutIds,
                   hatLayoutNames,
@@ -48,7 +51,7 @@ public:
                   hatEffectSelector,
                   [&](uint16_t _) {
                       return EffectAndMirrors<CRGB>{
-                          just(CompositeOverlay::factory),
+                          just(compositeFactoryRef),
                           noMirrors<CRGB>
                       };
                   },
@@ -56,11 +59,23 @@ public:
                   hatParamSelector
               ),
               255,
-              IS_DEBUG ? 20 : 3,
-              IS_DEBUG ? 20 : 8,
+              IS_DEBUG ? 3 : 3,
+              IS_DEBUG ? 3 : 8,
               1000,
               0.5f
+          ),
+          wrappedConfig(
+              LayoutConfig(
+                  hatLayoutIds,
+                  hatLayoutNames,
+                  hatLayoutSelector,
+                  hatEffectSelector,
+                  hatOverlaySelector,
+                  hatTransitionSelector,
+                  hatParamSelector
+              )
           ) {
+        overlayFactory.setConfig(&wrappedConfig);
     }
 
     uint16_t nbLeds() const override { return (LEDS_PER_EYE * 2) + (NB_PANELS * LEDS_PER_PANEL); }

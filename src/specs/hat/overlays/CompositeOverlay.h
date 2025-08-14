@@ -34,11 +34,15 @@ class CompositeOverlay : public Effect<CompositeOverlay, CRGB> {
 
 public:
     explicit CompositeOverlay(
-        const EffectContext &effectContext): Effect(effectContext),
+        const EffectContext &effectContext,
+        EffectFactoryRef<CRGB> randomOverlayFactory
+    ): Effect(effectContext),
+       randomOverlay(randomOverlayFactory->create(effectContext)),
        eyeOverlay(EyeOverlay(effectContext)) {
-        // const auto &[overlayLayoutId, overlayFactory, overlayMirror] = config.randomOverlay();
-        // randomOverlay = overlayFactory->create(context);
-        randomOverlay = SparkleOverlay::factory->create(effectContext);
+        if constexpr (IS_DEBUG) {
+            Serial.print("CompositeOverlay - random overlay: ");
+            Serial.println(randomOverlayFactory->name());
+        }
     }
 
     void fillArrayInternal(
@@ -54,16 +58,25 @@ public:
     WeightedOperations operations() {
         return just(EffectOperation::OVERLAY_MULTIPLY);
     }
-
-    static EffectFactoryRef<CRGB> factory;
 };
 
 class CompositeOverlayFactory : public EffectFactory<CompositeOverlayFactory, CompositeOverlay, CRGB> {
+    const LayoutConfig *_config = nullptr;
+    static EffectFactoryRef<CRGB> randomOverlayFactory;
 
 public:
+    std::unique_ptr<BaseEffect<CRGB> > createEffect(const EffectContext &context) const {
+        randomOverlayFactory = std::get<1>(_config->randomOverlay());
+        return std::make_unique<CompositeOverlay>(context, randomOverlayFactory);
+    }
+
+    void setConfig(const LayoutConfig *config) {
+        _config = config;
+        randomOverlayFactory = std::get<1>(_config->randomOverlay());
+    }
 
     static Params declareParams() {
-        return {};
+        return randomOverlayFactory->params();
     }
 };
 

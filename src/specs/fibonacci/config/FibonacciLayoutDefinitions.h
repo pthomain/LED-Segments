@@ -56,20 +56,29 @@ enum Inflexion {
     DYNAMIC_INFLEXION
 };
 
-static PixelUnit getPixelUnit(uint8_t layout) {
-    return (layout & PIXEL_UNIT_MASK) ? SEGMENT : PIXEL;
+static PixelUnit getPixelUnit(uint16_t layoutId) {
+    return (layoutId & PIXEL_UNIT_MASK) ? SEGMENT : PIXEL;
 }
 
-static Direction getDirection(uint8_t layout) {
-    return (layout & DIRECTION_MASK) ? COUNTER_CLOCKWISE : CLOCKWISE;
+static Direction getDirection(uint16_t layoutId) {
+    return (layoutId & DIRECTION_MASK) ? COUNTER_CLOCKWISE : CLOCKWISE;
 }
 
-static Alignment getAlignment(uint8_t layout) {
-    return (layout & ALIGNMENT_MASK) ? RADIAL : SPIRAL;
+static Alignment getAlignment(uint16_t layoutId) {
+    return (layoutId & ALIGNMENT_MASK) ? RADIAL : SPIRAL;
 }
 
-static Inflexion getInflexion(uint8_t layout) {
-    return static_cast<Inflexion>((layout & INFLEXION_MASK) >> 3);
+static Inflexion getInflexion(uint16_t layoutId) {
+    return static_cast<Inflexion>((layoutId & INFLEXION_MASK) >> 3);
+}
+
+static std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> layoutInfo(uint16_t layoutId) {
+    uint8_t pixelUnit = getPixelUnit(layoutId);
+    uint8_t direction = getDirection(layoutId);
+    uint8_t alignment = getAlignment(layoutId);
+    auto inflexion = static_cast<uint8_t>(getInflexion(layoutId));
+
+    return std::make_tuple(pixelUnit, direction, alignment, inflexion);
 }
 
 static uint8_t getLayoutId(

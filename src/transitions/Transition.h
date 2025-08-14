@@ -45,6 +45,11 @@ const EffectAndMirrors<uint8_t> FADE_TRANSITION = {
     noMirrors<uint8_t>
 };
 
+const EffectAndMirrors<uint8_t> SLIDE_TRANSITION = {
+    just(SlideTransition::factory),
+    noMirrors<uint8_t>
+};
+
 const EffectAndMirrors<uint8_t> NO_TRANSITION = {
     just(NoTransition::factory),
     noMirrors<uint8_t>

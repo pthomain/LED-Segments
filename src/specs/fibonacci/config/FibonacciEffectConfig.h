@@ -29,25 +29,26 @@
 #include "FibonacciLayoutDefinitions.h"
 
 static EffectAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutId) {
-    if (getAlignment(layoutId) == RADIAL) {
-        return {
-            {
-                {GradientEffect::factory, 1},
-                // {SwirlEffect::factory, 1},
-                // {NoiseEffect::factory, 1},
-                // {SlideEffect::factory, 1}
-            },
-            allMirrors<CRGB>
-        };
-    } else {
-        return {
-            {
-                {GradientEffect::factory, 1},
-                // {NoiseEffect::factory, 1},
-            },
-            noMirrors<CRGB>
-        };
-    }
+    return {
+        {
+            {GradientEffect::factory, 1},
+            {SwirlEffect::factory, 1},
+            {NoiseEffect::factory, 1},
+            {SlideEffect::factory, 1}
+        },
+        [](EffectFactoryRef<CRGB> effectFactory) {
+            return WeightedMirrors{
+                {Mirror::REPEAT, 1},
+                {Mirror::REPEAT_REVERSE, 1},
+
+                {Mirror::OVERLAY_REPEAT_2, 1},
+                {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
+
+                {Mirror::OVERLAY_REPEAT_3, 1},
+                {Mirror::OVERLAY_REPEAT_3_REVERSE, 1}
+            };
+        }
+    };
 }
 
 #endif //FIBONACCI_EFFECT_CONFIG_H

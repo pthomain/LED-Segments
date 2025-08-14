@@ -154,6 +154,7 @@ static std::map<uint8_t, uint16_t> phraseOverlayParamSelector(
 static std::map<uint8_t, uint16_t> phraseParamSelector(
     EffectType effectType,
     TypeInfo::ID effectId,
+    uint16_t layoutId,
     Mirror mirror
 ) {
     switch (effectType) {

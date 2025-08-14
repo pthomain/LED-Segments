@@ -23,6 +23,7 @@
 
 #include "config/FibonacciEffectConfig.h"
 #include "config/FibonacciLayoutConfig.h"
+#include "config/FibonacciOverlayConfig.h"
 #include "config/FibonacciParamConfig.h"
 #include "config/FibonacciTransitionConfig.h"
 #include "engine/displayspec/DisplaySpec.h"
@@ -34,7 +35,6 @@ static LayoutConfig fibonacciLayoutConfig() {
         names.insert(std::pair(layoutId, getLayoutName(layoutId)));
     }
 
-    EffectSelector<CRGB> fibonacciOverlaySelector;
     return LayoutConfig(
         layoutIds,
         names,

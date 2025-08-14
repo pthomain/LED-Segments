@@ -36,10 +36,13 @@ RandomEffect<T> LayoutConfig::randomEntry(
 
     auto [effects, effectMirrorSelector] = effectSelector(randomLayoutId);
 
-    auto effectFactory = pickRandomWeightedItem(effects, defaultEffectFactory);
-    auto randomMirror = pickRandomWeightedItem(effectMirrorSelector(effectFactory), Mirror::NONE);
+    if (!effects.empty()) {
+        auto effectFactory = pickRandomWeightedItem(effects, defaultEffectFactory);
+        auto randomMirror = pickRandomWeightedItem(effectMirrorSelector(effectFactory), Mirror::NONE);
+        return RandomEffect<T>{randomLayoutId, effectFactory, randomMirror};
+    }
 
-    return RandomEffect<T>{randomLayoutId, effectFactory, randomMirror};
+    return RandomEffect<T>{randomLayoutId, defaultEffectFactory, Mirror::NONE};
 }
 
 RandomEffect<CRGB> LayoutConfig::randomEffect() const {
@@ -54,6 +57,11 @@ RandomEffect<CRGB> LayoutConfig::randomOverlay() const {
     return randomEntry(EffectType::OVERLAY, _overlays, NoOverlay::factory);
 }
 
-Params LayoutConfig::params(EffectType effectType, TypeInfo::ID effectId, Mirror mirror) const {
-    return _paramSelector(effectType, effectId, mirror);
+Params LayoutConfig::params(
+    EffectType effectType,
+    TypeInfo::ID effectId,
+    uint16_t layoutId,
+    Mirror mirror
+) const {
+    return _paramSelector(effectType, effectId, layoutId, mirror);
 }

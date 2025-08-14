@@ -128,6 +128,7 @@ public:
         auto effectParams = config.params(
             EffectType::EFFECT,
             effectFactory->effectId,
+            effectLayoutId,
             effectMirror
         );
 
@@ -147,6 +148,7 @@ public:
         auto overlayParams = config.params(
             EffectType::OVERLAY,
             overlayFactory->effectId,
+            overlayLayoutId,
             overlayMirror
         );
 
@@ -166,6 +168,7 @@ public:
         auto transitionParams = config.params(
             EffectType::TRANSITION,
             transitionFactory->effectId,
+            transitionLayoutId,
             transitionMirror
         );
 

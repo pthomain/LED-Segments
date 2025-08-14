@@ -41,6 +41,7 @@ using EffectSelector = std::function<EffectAndMirrors<C>(uint16_t layoutId)>;
 using EffectParamSelector = std::function<Params(
     EffectType effectType,
     TypeInfo::ID effectId,
+    uint16_t layoutId,
     Mirror mirror
 )>;
 
@@ -95,7 +96,12 @@ public:
 
     RandomEffect<uint8_t> randomTransition() const;
 
-    Params params(EffectType effectType, TypeInfo::ID effectId, Mirror mirror) const;
+    Params params(
+        EffectType effectType,
+        TypeInfo::ID effectId,
+        uint16_t layoutId,
+        Mirror mirror
+    ) const;
 
     virtual
     ~LayoutConfig() = default;

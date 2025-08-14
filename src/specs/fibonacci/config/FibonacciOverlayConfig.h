@@ -29,74 +29,118 @@
 #include "overlays/wave/WaveOverlay.h"
 #include "overlays/sparkle/SparkleOverlay.h"
 #include "FibonacciLayoutDefinitions.h"
+#include "overlays/matrix/MatrixOverlay.h"
 
 static EffectAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutId) {
-    // if (getAlignment(layoutId) == RADIAL) {
-    return {
-        {
-            // {MoireOverlay::factory, 4},
-            // {ChaseOverlay::factory, 4},
-            // {WaveOverlay::factory, 3},
-            // {DashOverlay::factory, 2},
-        },
-        [](EffectFactoryRef<CRGB> overlayFactory) {
-            if (
-                overlayFactory->is<MoireOverlay>()
-                || overlayFactory->is<ChaseOverlay>()
-            ) {
-                return noMirrors<CRGB>(overlayFactory);
-                // return WeightedMirrors{
-                //     {Mirror::NONE, 2},
-                //     {Mirror::REVERSE, 2},
-                //     {Mirror::CENTRE, 2},
-                //     {Mirror::EDGE, 2},
-                //
-                //     {Mirror::REPEAT, 1},
-                //     {Mirror::REPEAT_REVERSE, 1},
-                //
-                //     {Mirror::OVERLAY_REVERSE, 1},
-                //     {Mirror::OVERLAY_REPEAT_2, 1},
-                //     {Mirror::OVERLAY_REPEAT_3, 1},
-                //     {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
-                //     {Mirror::OVERLAY_REPEAT_3_REVERSE, 1},
-                // };
-            }
+    const auto [pixelUnit, direction, alignment, inflexion] = layoutInfo(layoutId);
 
-            if (overlayFactory->is<DashOverlay>()) {
-                return WeightedMirrors{
-                    {Mirror::NONE, 2},
-                    {Mirror::REVERSE, 2},
-                    {Mirror::CENTRE, 2},
-                    {Mirror::EDGE, 2},
+    if (pixelUnit == SEGMENT) {
+        if (alignment == SPIRAL || alignment == RADIAL) {
+            return {
+                {
+                    // {MoireOverlay::factory, 4},
+                    // {ChaseOverlay::factory, 5},
+                    {WaveOverlay::factory, 4},
+                    // {DashOverlay::factory, 3},
+                    {MatrixOverlay::factory, 3},
+                },
+                [](EffectFactoryRef<CRGB> overlayFactory) {
+                    return WeightedMirrors{
+                        {Mirror::OVERLAY_REPEAT_2, 1},
+                        {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
 
-                    {Mirror::REPEAT, 1},
-                    {Mirror::REPEAT_REVERSE, 1},
+                        {Mirror::OVERLAY_REPEAT_3, 1},
+                        {Mirror::OVERLAY_REPEAT_3_REVERSE, 1},
 
-                    {Mirror::OVERLAY_REVERSE, 1},
-                    {Mirror::OVERLAY_REPEAT_2, 1},
-                };
-            }
+                        {Mirror::OVERLAY_REPEAT_4, 1},
+                        {Mirror::OVERLAY_REPEAT_4_REVERSE, 1},
 
-            if (overlayFactory->is<WaveOverlay>()) {
-                return WeightedMirrors{
-                    {Mirror::NONE, 3},
-                    {Mirror::REVERSE, 3},
-                    {Mirror::CENTRE, 3},
-                    {Mirror::EDGE, 3},
-                    {Mirror::REPEAT, 2},
-
-                    {Mirror::REPEAT_REVERSE, 2},
-                    {Mirror::OVERLAY_REVERSE, 1},
-
-                    {Mirror::OVERLAY_REPEAT_2, 1},
-                    {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
-                };
-            }
+                        {Mirror::OVERLAY_REPEAT_6, 1},
+                        {Mirror::OVERLAY_REPEAT_6_REVERSE, 1},
+                    };
+                }
+            };
         }
-    };
-    // }
+    } else {
+        //PIXEL
+        if (alignment == SPIRAL || alignment == RADIAL) {
+            return {
+                {
+                    {MoireOverlay::factory, 4},
+                    {ChaseOverlay::factory, 5},
+                    {WaveOverlay::factory, 4},
+                    {DashOverlay::factory, 3},
+                    {MatrixOverlay::factory, 3},
+                },
+                [](EffectFactoryRef<CRGB> overlayFactory) {
+                    if (overlayFactory->is<MatrixOverlay>()) {
+                        return WeightedMirrors{
+                            {Mirror::NONE, 2},
+                            {Mirror::REVERSE, 1},
+                        };
+                    }
 
-    return {just(NoOverlay::factory), allMirrors<CRGB>};
+                    if (overlayFactory->is<ChaseOverlay>()) {
+                        return unrepeatedMirrors<CRGB>(overlayFactory);
+                    }
+
+                    if (overlayFactory->is<MoireOverlay>()) {
+                        return WeightedMirrors{
+                            {Mirror::NONE, 2},
+                            {Mirror::REVERSE, 2},
+                            {Mirror::CENTRE, 2},
+                            {Mirror::EDGE, 2},
+
+                            {Mirror::REPEAT, 1},
+                            {Mirror::REPEAT_REVERSE, 1},
+
+                            {Mirror::OVERLAY_REVERSE, 1},
+                            {Mirror::OVERLAY_REPEAT_2, 1},
+                            {Mirror::OVERLAY_REPEAT_3, 1},
+                            {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
+                            {Mirror::OVERLAY_REPEAT_3_REVERSE, 1},
+                        };
+                    }
+
+                    if (overlayFactory->is<DashOverlay>()) {
+                        return WeightedMirrors{
+                            {Mirror::NONE, 2},
+                            {Mirror::REVERSE, 2},
+                            {Mirror::CENTRE, 2},
+                            {Mirror::EDGE, 2},
+
+                            {Mirror::REPEAT, 1},
+                            {Mirror::REPEAT_REVERSE, 1},
+
+                            {Mirror::OVERLAY_REVERSE, 1},
+                            {Mirror::OVERLAY_REPEAT_2, 1},
+                        };
+                    }
+
+                    if (overlayFactory->is<WaveOverlay>()) {
+                        return WeightedMirrors{
+                            {Mirror::NONE, 3},
+                            {Mirror::REVERSE, 3},
+                            {Mirror::CENTRE, 3},
+                            {Mirror::EDGE, 3},
+
+                            {Mirror::REPEAT_REVERSE, 2},
+                            {Mirror::OVERLAY_REVERSE, 1},
+
+                            {Mirror::OVERLAY_REPEAT_2, 1},
+                            {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
+
+                            {Mirror::OVERLAY_REPEAT_3, 1},
+                            {Mirror::OVERLAY_REPEAT_3_REVERSE, 1},
+                        };
+                    }
+
+                    return noMirrors(overlayFactory);
+                }
+            };
+        }
+    }
+    return {};
 }
 
 #endif //FIBONACCI_OVERLAY_CONFIG_H

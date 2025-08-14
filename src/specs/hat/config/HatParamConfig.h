@@ -35,6 +35,7 @@ static std::map<uint8_t, uint16_t> hatOverlayParamSelector(
 static std::map<uint8_t, uint16_t> hatParamSelector(
     EffectType effectType,
     TypeInfo::ID effectId,
+    uint16_t layoutId,
     Mirror mirror
 ) {
     switch (effectType) {

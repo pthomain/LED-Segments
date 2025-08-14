@@ -144,6 +144,7 @@ static std::map<uint8_t, uint16_t> umbrellaOverlayParamSelector(
 static std::map<uint8_t, uint16_t> umbrellaParamSelector(
     EffectType effectType,
     TypeInfo::ID effectId,
+    uint16_t layoutId,
     Mirror mirror
 ) {
     switch (effectType) {

@@ -36,8 +36,11 @@
 
 static std::map<uint8_t, uint16_t> fibonacciEffectParamSelector(
     TypeInfo::ID effectId,
+    uint16_t layoutId,
     Mirror mirror
 ) {
+    const auto [pixelUnit, direction, alignment, inflexion] = layoutInfo(layoutId);
+
     if (GradientEffect::factory->is(effectId)) {
         return GradientEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue)-> uint16_t {
             switch (paramKey) {
@@ -86,6 +89,7 @@ static std::map<uint8_t, uint16_t> fibonacciEffectParamSelector(
 
 static std::map<uint8_t, uint16_t> fibonacciOverlayParamSelector(
     TypeInfo::ID effectId,
+    uint16_t layoutId,
     Mirror mirror
 ) {
     if (ChaseOverlay::factory->is(effectId)) {
@@ -153,13 +157,14 @@ static std::map<uint8_t, uint16_t> fibonacciOverlayParamSelector(
 static std::map<uint8_t, uint16_t> fibonacciParamSelector(
     EffectType effectType,
     TypeInfo::ID effectId,
+    uint16_t layoutId,
     Mirror mirror
 ) {
     switch (effectType) {
         case EffectType::EFFECT:
-            return fibonacciEffectParamSelector(effectId, mirror);
+            return fibonacciEffectParamSelector(effectId, layoutId, mirror);
         case EffectType::OVERLAY:
-            return fibonacciOverlayParamSelector(effectId, mirror);
+            return fibonacciOverlayParamSelector(effectId, layoutId, mirror);
         default:
             return {};
     }

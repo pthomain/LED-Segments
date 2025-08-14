@@ -25,7 +25,7 @@
 #include "transitions/Transition.h"
 
 static EffectAndMirrors<uint8_t> fibonacciTransitionSelector(uint16_t layoutId) {
-    return ALL_TRANSITIONS;
+    return SLIDE_TRANSITION;
 }
 
 #endif //FIBONACCI_TRANSLATION_CONFIG_H

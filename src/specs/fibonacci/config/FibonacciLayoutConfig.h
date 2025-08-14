@@ -25,6 +25,18 @@
 #include "engine/utils/Weights.h"
 #include "FibonacciLayoutDefinitions.h"
 
+static uint8_t effectLayoutWeight(uint16_t layoutId) {
+    return getInflexion(layoutId) == INFLEXION_NONE ? 1 : 0;
+}
+
+static uint8_t overlayLayoutWeights(uint16_t layoutId) {
+    return getPixelUnit(layoutId) == SEGMENT ? 1 : 0;
+}
+
+static uint8_t transitionLayoutWeights(uint16_t layoutId) {
+    return 1;
+}
+
 static WeightedLayouts fibonacciLayoutSelector(EffectType effectType) {
     auto ids = fibonacciLayoutIds();
     WeightedLayouts result;
@@ -36,19 +48,15 @@ static WeightedLayouts fibonacciLayoutSelector(EffectType effectType) {
         std::back_inserter(result),
         [&](uint16_t layoutId) {
             switch (effectType) {
-                case EffectType::EFFECT: {
-                    if (getInflexion(layoutId) == INFLEXION_NONE) {
-                        return WeightedLayout{layoutId, 1};
-                    }
-                    return WeightedLayout{layoutId, 0};
-                }
+                case EffectType::EFFECT:
+                    return WeightedLayout{layoutId, effectLayoutWeight(layoutId)};
 
                 case EffectType::OVERLAY:
-                    return WeightedLayout{layoutId, getPixelUnit(layoutId) == PIXEL ? 1 : 0};
+                    return WeightedLayout{layoutId, overlayLayoutWeights(layoutId)};
 
                 case EffectType::TRANSITION:
                 default:
-                    return WeightedLayout{layoutId, 1};
+                    return WeightedLayout{layoutId, transitionLayoutWeights(layoutId)};
             }
         }
     );

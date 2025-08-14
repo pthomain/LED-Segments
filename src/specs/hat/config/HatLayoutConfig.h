@@ -86,7 +86,7 @@ static WeightedLayouts hatLayoutSelector(EffectType effectType) {
 
         case EffectType::OVERLAY:
         default:
-            return just(uint16_t(EYE_LINEAR));
+            return {{EYE_LINEAR, 1}};
     }
 }
 

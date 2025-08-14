@@ -22,28 +22,12 @@
 #define HAT_OVERLAY_CONFIG_H
 
 #include "engine/displayspec/LayoutConfig.h"
-#include "overlays/chase/ChaseOverlay.h"
-#include "overlays/dash/DashOverlay.h"
-#include "overlays/moire/MoireOverlay.h"
-#include "overlays/none/NoOverlay.h"
-#include "overlays/wave/WaveOverlay.h"
-#include "specs/hat/overlays/CompositeOverlay.h"
 #include "specs/hat/overlays/EyeOverlay.h"
 
 static EffectAndMirrors<CRGB> hatOverlaySelector(uint16_t layoutId) {
     return {
-        {
-            // {MoireOverlay::factory, 4},
-            // {ChaseOverlay::factory, 5},
-            // {WaveOverlay::factory, 4},
-            // {DashOverlay::factory, 3},
-            // {MatrixOverlay::factory, 3},
-            {SparkleOverlay::factory, 1},
-            {NoOverlay::factory, 3},
-        },
-        [](EffectFactoryRef<CRGB> overlayFactory) {
-            return noMirrors(overlayFactory);
-        }
+        just(EyeOverlay::factory),
+        undividedMirrors<CRGB>
     };
 }
 

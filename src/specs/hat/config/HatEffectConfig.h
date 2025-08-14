@@ -28,14 +28,24 @@
 #include "engine/effect/Effect.h"
 
 static EffectAndMirrors<CRGB> hatEffectSelector(uint16_t layoutId) {
+    if (layoutId == EYE_LINEAR) {
+        return {
+            {
+                {SwirlEffect::factory, 2},
+                {NoiseEffect::factory, 2},
+                {SlideEffect::factory, 1},
+                {GradientEffect::factory, 1}
+            },
+            undividedMirrors<CRGB>
+        };
+    }
+
     return {
         {
-            {SwirlEffect::factory, 2},
-            {NoiseEffect::factory, 2},
-            {SlideEffect::factory, 1},
-            {GradientEffect::factory, 1}
+            {NoiseEffect::factory, 1},
+            {GradientEffect::factory, 2}
         },
-        allMirrors<CRGB>
+        undividedMirrors<CRGB>
     };
 }
 

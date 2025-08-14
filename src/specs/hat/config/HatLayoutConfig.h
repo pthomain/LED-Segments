@@ -26,23 +26,46 @@
 constexpr uint8_t NB_PANELS = 5;
 constexpr uint8_t LEDS_PER_PANEL = 6;
 constexpr uint8_t LEDS_PER_EYE = 37;
-constexpr uint8_t EYE_CIRCLES = 4;
 
 enum HatLayout {
-    CONCENTRIC_EYES,
-    LINEAR_EYES,
+    EYE_CONCENTRIC,
+    EYE_SPIRAL,
+    EYE_RADIAL,
+    EYE_ROW,
+    EYE_COLUMN,
+    EYE_DIAGONAL_TOP_RIGHT,
+    EYE_DIAGONAL_TOP_LEFT,
+    EYE_DIAGONAL_BOTTOM_RIGHT,
+    EYE_DIAGONAL_BOTTOM_LEFT,
+    EYE_LINEAR,
 };
 
 static const std::set<uint16_t> hatLayoutIds = {
     {
-        CONCENTRIC_EYES,
-        LINEAR_EYES
+        EYE_CONCENTRIC,
+        EYE_SPIRAL,
+        EYE_RADIAL,
+        EYE_ROW,
+        EYE_COLUMN,
+        EYE_DIAGONAL_TOP_RIGHT,
+        EYE_DIAGONAL_TOP_LEFT,
+        EYE_DIAGONAL_BOTTOM_RIGHT,
+        EYE_DIAGONAL_BOTTOM_LEFT,
+        EYE_LINEAR
     }
 };
 
 static const std::map<uint16_t, String> hatLayoutNames = {
-    {CONCENTRIC_EYES, "CONCENTRIC_EYES"},
-    {LINEAR_EYES, "LINEAR_EYES"}
+    {EYE_CONCENTRIC, "EYE_CONCENTRIC"},
+    {EYE_SPIRAL, "EYE_SPIRAL"},
+    {EYE_RADIAL, "EYE_RADIAL"},
+    {EYE_ROW, "EYE_ROW"},
+    {EYE_COLUMN, "EYE_COLUMN"},
+    {EYE_DIAGONAL_TOP_RIGHT, "EYE_DIAGONAL_TOP_RIGHT"},
+    {EYE_DIAGONAL_TOP_LEFT, "EYE_DIAGONAL_TOP_LEFT"},
+    {EYE_DIAGONAL_BOTTOM_RIGHT, "EYE_DIAGONAL_BOTTOM_RIGHT"},
+    {EYE_DIAGONAL_BOTTOM_LEFT, "EYE_DIAGONAL_BOTTOM_LEFT"},
+    {EYE_LINEAR, "EYE_LINEAR"}
 };
 
 static WeightedLayouts hatLayoutSelector(EffectType effectType) {
@@ -50,13 +73,20 @@ static WeightedLayouts hatLayoutSelector(EffectType effectType) {
         case EffectType::EFFECT:
         case EffectType::TRANSITION:
             return {
-                {LINEAR_EYES, 1},
-                {CONCENTRIC_EYES, 1}
+                {EYE_ROW, 1},
+                {EYE_COLUMN, 1},
+                {EYE_DIAGONAL_TOP_RIGHT, 1},
+                {EYE_DIAGONAL_TOP_LEFT, 1},
+                {EYE_DIAGONAL_BOTTOM_RIGHT, 1},
+                {EYE_DIAGONAL_BOTTOM_LEFT, 1},
+                {EYE_SPIRAL, 12},
+                {EYE_RADIAL, 24},
+                {EYE_CONCENTRIC, 6}
             };
 
         case EffectType::OVERLAY:
         default:
-            return just(uint16_t(LINEAR_EYES));
+            return just(uint16_t(EYE_LINEAR));
     }
 }
 

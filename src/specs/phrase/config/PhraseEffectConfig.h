@@ -29,7 +29,7 @@
 #include "lib/effects/swirl/SwirlEffect.h"
 #include "lib/engine/utils/Weights.h"
 
-static RenderablesAndMirrors<CRGB> phraseRenderableSelector(uint16_t layoutId) {
+static RenderablesAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutId) {
     switch (layoutId) {
         case LEDS_IN_WHOLE:
         case LEDS_IN_WORDS:

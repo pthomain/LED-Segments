@@ -27,7 +27,7 @@
 #include "lib/effects/slide/SlideEffect.h"
 #include "lib/engine/render/renderable/TypedRenderable.h"
 
-static RenderablesAndMirrors<CRGB> hatRenderableSelector(uint16_t layoutId) {
+static RenderablesAndMirrors<CRGB> hatEffectSelector(uint16_t layoutId) {
     if (layoutId == EYE_LINEAR) {
         return {
             {

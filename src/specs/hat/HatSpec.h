@@ -42,7 +42,7 @@ public:
                 hatLayoutIds,
                 hatLayoutNames,
                 hatLayoutSelector,
-                hatRenderableSelector,
+                hatEffectSelector,
                 hatOverlaySelector,
                 hatTransitionSelector,
                 hatParamSelector

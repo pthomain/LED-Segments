@@ -27,7 +27,7 @@
 #include "lib/effects/slide/SlideEffect.h"
 #include "lib/engine/render/renderable/TypedRenderable.h"
 
-static RenderablesAndMirrors<CRGB> umbrellaRenderableSelector(uint16_t layoutId) {
+static RenderablesAndMirrors<CRGB> umbrellaEffectSelector(uint16_t layoutId) {
     if (layoutId == LEDS_IN_SPOKE) {
         return {
             {

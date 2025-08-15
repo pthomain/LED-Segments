@@ -26,8 +26,8 @@
 #include "config/HatOverlayConfig.h"
 #include "config/HatParamConfig.h"
 #include "config/HatTransitionConfig.h"
-#include "engine/displayspec/DisplaySpec.h"
-#include "engine/utils/Utils.h"
+#include "lib/engine/displayspec/DisplaySpec.h"
+#include "lib/engine/utils/Utils.h"
 
 class HatSpec : public DisplaySpec {
     static const std::vector<uint8_t> &eyeSegment(uint16_t layoutId, uint16_t pixelIndex);

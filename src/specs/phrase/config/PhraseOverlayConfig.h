@@ -21,16 +21,13 @@
 #ifndef PHRASE_OVERLAY_CONFIG_H
 #define PHRASE_OVERLAY_CONFIG_H
 
-#include "engine/displayspec/config/LayoutConfig.h"
+#include "lib/engine/displayspec/config/LayoutConfig.h"
 #include "PhraseLayoutConfig.h"
-#include "engine/effect/Effect.h"
-#include "overlays/none/NoOverlay.h"
-#include "engine/utils/Weights.h"
-#include "overlays/chase/ChaseOverlay.h"
-#include "overlays/dash/DashOverlay.h"
-#include "overlays/moire/MoireOverlay.h"
-#include "overlays/sparkle/SparkleOverlay.h"
-#include "overlays/wave/WaveOverlay.h"
+#include "lib/engine/utils/Weights.h"
+#include "lib/overlays/none/NoOverlay.h"
+#include "lib/overlays/chase/ChaseOverlay.h"
+#include "lib/overlays/dash/DashOverlay.h"
+#include "lib/overlays/wave/WaveOverlay.h"
 
 static RenderablesAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutId) {
     switch (layoutId) {

@@ -18,8 +18,8 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "engine/display/Display.h"
-#include "engine/utils/Utils.h"
+#include "lib/engine/display/Display.h"
+#include "lib/engine/utils/Utils.h"
 #include "specs/phrase/PhraseSpec.h"
 #include "specs/fibonacci/FibonacciSpec.h"
 #include "specs/hat/HatSpec.h"

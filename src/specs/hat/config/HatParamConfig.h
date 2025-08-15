@@ -21,7 +21,7 @@
 #ifndef HAT_PARAM_CONFIG_H
 #define HAT_PARAM_CONFIG_H
 
-#include "engine/displayspec/config/LayoutConfig.h"
+#include "lib/engine/displayspec/config/LayoutConfig.h"
 
 static std::map<uint8_t, uint16_t> hatOverlayParamSelector(
     TypeInfo::ID renderableId,

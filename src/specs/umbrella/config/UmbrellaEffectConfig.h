@@ -22,10 +22,10 @@
 #define UMBRELLA_EFFECT_CONFIG_H
 
 #include "UmbrellaLayoutConfig.h"
-#include "effects/noise/NoiseEffect.h"
-#include "effects/swirl/SwirlEffect.h"
-#include "effects/slide/SlideEffect.h"
-#include "engine/effect/Effect.h"
+#include "lib/effects/noise/NoiseEffect.h"
+#include "lib/effects/swirl/SwirlEffect.h"
+#include "lib/effects/slide/SlideEffect.h"
+#include "lib/engine/render/renderable/TypedRenderable.h"
 
 static RenderablesAndMirrors<CRGB> umbrellaRenderableSelector(uint16_t layoutId) {
     if (layoutId == LEDS_IN_SPOKE) {

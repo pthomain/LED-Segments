@@ -21,7 +21,7 @@
 #ifndef HAT_LAYOUT_CONFIG_H
 #define HAT_LAYOUT_CONFIG_H
 
-#include "engine/displayspec/config/LayoutConfig.h"
+#include "lib/engine/displayspec/config/LayoutConfig.h"
 
 constexpr uint8_t NB_PANELS = 5;
 constexpr uint8_t LEDS_PER_PANEL = 6;

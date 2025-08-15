@@ -21,14 +21,13 @@
 #ifndef PHRASE_EFFECT_CONFIG_H
 #define PHRASE_EFFECT_CONFIG_H
 
-#include "engine/displayspec/config/LayoutConfig.h"
+#include "lib/engine/displayspec/config/LayoutConfig.h"
 #include "PhraseLayoutConfig.h"
-#include "engine/effect/Effect.h"
-#include <effects/noise/NoiseEffect.h>
-#include <effects/slide/SlideEffect.h>
-#include "effects/gradient/GradientEffect.h"
-#include "effects/swirl/SwirlEffect.h"
-#include "engine/utils/Weights.h"
+#include <lib/effects/noise/NoiseEffect.h>
+#include <lib/effects/slide/SlideEffect.h>
+#include "lib/effects/gradient/GradientEffect.h"
+#include "lib/effects/swirl/SwirlEffect.h"
+#include "lib/engine/utils/Weights.h"
 
 static RenderablesAndMirrors<CRGB> phraseRenderableSelector(uint16_t layoutId) {
     switch (layoutId) {

@@ -21,8 +21,8 @@
 #ifndef FIBONACCI_LAYOUT_CONFIG_H
 #define FIBONACCI_LAYOUT_CONFIG_H
 
-#include "../../../engine/render/renderable/RenderableOperation.h"
-#include "engine/utils/Weights.h"
+#include "lib/engine/render/renderable/RenderableOperation.h"
+#include "lib/engine/utils/Weights.h"
 #include "FibonacciLayoutDefinitions.h"
 
 static uint8_t effectLayoutWeight(uint16_t layoutId) {

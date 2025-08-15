@@ -21,9 +21,9 @@
 #ifndef HAT_TRANSITION_CONFIG_H
 #define HAT_TRANSITION_CONFIG_H
 
-#include "engine/displayspec/config/LayoutConfig.h"
-#include "transitions/Transition.h"
-#include "transitions/fade/FadeTransition.h"
+#include "lib/engine/displayspec/config/LayoutConfig.h"
+#include "lib/transitions/Transition.h"
+#include "lib/transitions/fade/FadeTransition.h"
 
 static RenderablesAndMirrors<uint8_t> hatTransitionSelector(uint16_t layoutId) {
     return {

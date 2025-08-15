@@ -21,14 +21,14 @@
 #ifndef UMBRELLA_OVERLAY_CONFIG_H
 #define UMBRELLA_OVERLAY_CONFIG_H
 
-#include "engine/displayspec/config/LayoutConfig.h"
-#include "overlays/none/NoOverlay.h"
-#include "overlays/chase/ChaseOverlay.h"
-#include "overlays/dash/DashOverlay.h"
-#include "overlays/matrix/MatrixOverlay.h"
-#include "overlays/moire/MoireOverlay.h"
-#include "overlays/sparkle/SparkleOverlay.h"
-#include "overlays/wave/WaveOverlay.h"
+#include "lib/engine/displayspec/config/LayoutConfig.h"
+#include "lib/overlays/none/NoOverlay.h"
+#include "lib/overlays/chase/ChaseOverlay.h"
+#include "lib/overlays/dash/DashOverlay.h"
+#include "lib/overlays/matrix/MatrixOverlay.h"
+#include "lib/overlays/moire/MoireOverlay.h"
+#include "lib/overlays/sparkle/SparkleOverlay.h"
+#include "lib/overlays/wave/WaveOverlay.h"
 
 static RenderablesAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
     if (layoutId == LEDS_IN_SPOKE) {

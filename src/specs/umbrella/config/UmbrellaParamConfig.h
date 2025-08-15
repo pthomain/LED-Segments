@@ -21,9 +21,9 @@
 #ifndef UMBRELLA_PARAM_CONFIG_H
 #define UMBRELLA_PARAM_CONFIG_H
 
-#include "engine/displayspec/config/LayoutConfig.h"
-#include "overlays/chase/ChaseOverlay.h"
-#include "overlays/sparkle/SparkleOverlay.h"
+#include "lib/engine/displayspec/config/LayoutConfig.h"
+#include "lib/overlays/chase/ChaseOverlay.h"
+#include "lib/overlays/sparkle/SparkleOverlay.h"
 
 static std::map<uint8_t, uint16_t> umbrellaEffectParamSelector(
     TypeInfo::ID renderableId,

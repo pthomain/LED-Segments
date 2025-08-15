@@ -20,7 +20,7 @@
 
 #include "FibonacciSpec.h"
 #include "config/FibonacciLayoutConfig.h"
-#include "engine/utils/Utils.h"
+#include "lib/engine/utils/Utils.h"
 
 uint16_t FibonacciSpec::nbSegments(const uint16_t layoutId) const {
     //same effect applied to all segments, pixels are used as an optimisation

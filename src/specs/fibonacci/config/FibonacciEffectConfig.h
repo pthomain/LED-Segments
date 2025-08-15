@@ -21,12 +21,11 @@
 #ifndef FIBONACCI_EFFECT_CONFIG_H
 #define FIBONACCI_EFFECT_CONFIG_H
 
-#include <effects/noise/NoiseEffect.h>
-#include <effects/gradient/GradientEffect.h>
-#include <effects/swirl/SwirlEffect.h>
-#include <effects/slide/SlideEffect.h>
-#include "engine/displayspec/config/LayoutConfig.h"
-#include "FibonacciLayoutDefinitions.h"
+#include <lib/effects/noise/NoiseEffect.h>
+#include <lib/effects/gradient/GradientEffect.h>
+#include <lib/effects/swirl/SwirlEffect.h>
+#include <lib/effects/slide/SlideEffect.h>
+#include "lib/engine/displayspec/config/LayoutConfig.h"
 
 static RenderablesAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutId) {
     return {

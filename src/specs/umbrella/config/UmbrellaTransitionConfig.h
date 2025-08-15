@@ -21,8 +21,8 @@
 #ifndef UMBRELLA_TRANSITION_CONFIG_H
 #define UMBRELLA_TRANSITION_CONFIG_H
 
-#include "engine/displayspec/config/LayoutConfig.h"
-#include "transitions/slide/SlideTransition.h"
+#include "lib/engine/displayspec/config/LayoutConfig.h"
+#include "lib/transitions/slide/SlideTransition.h"
 
 static RenderablesAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutId) {
     return {

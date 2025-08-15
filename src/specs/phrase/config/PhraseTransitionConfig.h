@@ -22,8 +22,8 @@
 #define PHRASE_TRANSITION_CONFIG_H
 
 #include "PhraseLayoutConfig.h"
-#include "engine/displayspec/config/LayoutConfig.h"
-#include "transitions/Transition.h"
+#include "lib/engine/displayspec/config/LayoutConfig.h"
+#include "lib/transitions/Transition.h"
 
 static RenderablesAndMirrors<uint8_t> phraseTransitionSelector(uint16_t layoutId) {
     switch (layoutId) {

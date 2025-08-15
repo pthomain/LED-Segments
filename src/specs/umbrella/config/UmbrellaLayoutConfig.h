@@ -21,7 +21,7 @@
 #ifndef UMBRELLA_LAYOUT_CONFIG_H
 #define UMBRELLA_LAYOUT_CONFIG_H
 
-#include "engine/displayspec/config/LayoutConfig.h"
+#include "lib/engine/displayspec/config/LayoutConfig.h"
 
 enum UmbrellaLayout {
     LEDS_IN_SPOKE,

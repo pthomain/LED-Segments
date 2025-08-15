@@ -26,8 +26,8 @@
 #include "config/UmbrellaOverlayConfig.h"
 #include "config/UmbrellaParamConfig.h"
 #include "config/UmbrellaTransitionConfig.h"
-#include "engine/displayspec/DisplaySpec.h"
-#include "engine/utils/Utils.h"
+#include "lib/engine/displayspec/DisplaySpec.h"
+#include "lib/engine/utils/Utils.h"
 
 constexpr uint8_t NB_SPOKES = 8;
 constexpr uint8_t LEDS_PER_SPOKE = 42;

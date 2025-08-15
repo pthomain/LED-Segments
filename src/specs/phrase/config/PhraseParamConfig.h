@@ -21,19 +21,17 @@
 #ifndef PHRASE_PARAM_CONFIG_H
 #define PHRASE_PARAM_CONFIG_H
 
-#include "engine/displayspec/config/LayoutConfig.h"
-#include "engine/effect/Effect.h"
-#include <effects/noise/NoiseEffect.h>
-#include <effects/slide/SlideEffect.h>
-#include "effects/gradient/GradientEffect.h"
-#include "effects/swirl/SwirlEffect.h"
-#include "overlays/none/NoOverlay.h"
-#include "engine/utils/Weights.h"
-#include "overlays/chase/ChaseOverlay.h"
-#include "overlays/dash/DashOverlay.h"
-#include "overlays/moire/MoireOverlay.h"
-#include "overlays/sparkle/SparkleOverlay.h"
-#include "overlays/wave/WaveOverlay.h"
+#include "lib/engine/displayspec/config/LayoutConfig.h"
+#include "lib/effects/gradient/GradientEffect.h"
+#include "lib/effects/swirl/SwirlEffect.h"
+#include <lib/effects/noise/NoiseEffect.h>
+#include <lib/effects/slide/SlideEffect.h>
+#include "lib/overlays/none/NoOverlay.h"
+#include "lib/overlays/chase/ChaseOverlay.h"
+#include "lib/overlays/dash/DashOverlay.h"
+#include "lib/overlays/moire/MoireOverlay.h"
+#include "lib/overlays/sparkle/SparkleOverlay.h"
+#include "lib/overlays/wave/WaveOverlay.h"
 
 static std::map<uint8_t, uint16_t> phraseEffectParamSelector(
     TypeInfo::ID renderableId,

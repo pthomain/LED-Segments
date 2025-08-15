@@ -21,10 +21,10 @@
 #ifndef EYEOVERLAY_H
 #define EYEOVERLAY_H
 
-#include "engine/effect/Effect.h"
-#include "../../../engine/render/renderable/RenderableOperation.h"
-#include "engine/render/renderable/BaseRenderableFactory.h"
-#include "engine/utils/Weights.h"
+#include "lib/engine/render/renderable/TypedRenderable.h"
+#include "lib/engine/render/renderable/RenderableOperation.h"
+#include "lib/engine/render/renderable/BaseRenderableFactory.h"
+#include "lib/engine/utils/Weights.h"
 
 enum PupilPosition {
     C,
@@ -44,7 +44,7 @@ enum PupilPosition {
     CR
 };
 
-class EyeOverlay : public Effect<EyeOverlay, CRGB> {
+class EyeOverlay : public TypedRenderable<EyeOverlay, CRGB> {
 
     const uint8_t eyeBrightness = 7;
 
@@ -68,7 +68,7 @@ class EyeOverlay : public Effect<EyeOverlay, CRGB> {
     unsigned long positionInSequence = 0;
 
 public:
-    explicit EyeOverlay(const RenderableContext &context): Effect(context) {
+    explicit EyeOverlay(const RenderableContext &context): TypedRenderable(context) {
     }
 
     void fillArrayInternal(

@@ -21,18 +21,17 @@
 #ifndef FIBONACCI_PARAM_CONFIG_H
 #define FIBONACCI_PARAM_CONFIG_H
 
-#include "engine/utils/Utils.h"
-#include <effects/noise/NoiseEffect.h>
-#include <effects/gradient/GradientEffect.h>
-#include <effects/swirl/SwirlEffect.h>
-#include <effects/slide/SlideEffect.h>
-#include "overlays/none/NoOverlay.h"
-#include "overlays/dash/DashOverlay.h"
-#include "overlays/moire/MoireOverlay.h"
-#include "overlays/chase/ChaseOverlay.h"
-#include "overlays/wave/WaveOverlay.h"
+#include "lib/engine/utils/Utils.h"
+#include <lib/effects/noise/NoiseEffect.h>
+#include <lib/effects/gradient/GradientEffect.h>
+#include <lib/effects/swirl/SwirlEffect.h>
+#include <lib/effects/slide/SlideEffect.h>
+#include "lib/overlays/dash/DashOverlay.h"
+#include "lib/overlays/moire/MoireOverlay.h"
+#include "lib/overlays/chase/ChaseOverlay.h"
+#include "lib/overlays/wave/WaveOverlay.h"
+#include "lib/overlays/sparkle/SparkleOverlay.h"
 #include "FibonacciLayoutDefinitions.h"
-#include "overlays/sparkle/SparkleOverlay.h"
 
 static std::map<uint8_t, uint16_t> fibonacciEffectParamSelector(
     TypeInfo::ID renderableId,

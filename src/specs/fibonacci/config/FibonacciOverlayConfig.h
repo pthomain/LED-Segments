@@ -21,15 +21,14 @@
 #ifndef FIBONACCI_OVERLAY_CONFIG_H
 #define FIBONACCI_OVERLAY_CONFIG_H
 
-#include "engine/displayspec/config/LayoutConfig.h"
-#include "overlays/none/NoOverlay.h"
-#include "overlays/dash/DashOverlay.h"
-#include "overlays/moire/MoireOverlay.h"
-#include "overlays/chase/ChaseOverlay.h"
-#include "overlays/wave/WaveOverlay.h"
-#include "overlays/sparkle/SparkleOverlay.h"
+#include "lib/engine/displayspec/config/LayoutConfig.h"
+#include "lib/overlays/none/NoOverlay.h"
+#include "lib/overlays/dash/DashOverlay.h"
+#include "lib/overlays/moire/MoireOverlay.h"
+#include "lib/overlays/chase/ChaseOverlay.h"
+#include "lib/overlays/wave/WaveOverlay.h"
+#include "lib/overlays/matrix/MatrixOverlay.h"
 #include "FibonacciLayoutDefinitions.h"
-#include "overlays/matrix/MatrixOverlay.h"
 
 static RenderablesAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutId) {
     const auto [pixelUnit, direction, alignment, inflexion] = layoutInfo(layoutId);

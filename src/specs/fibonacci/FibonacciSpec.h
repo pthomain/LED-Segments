@@ -26,7 +26,7 @@
 #include "config/FibonacciOverlayConfig.h"
 #include "config/FibonacciParamConfig.h"
 #include "config/FibonacciTransitionConfig.h"
-#include "engine/displayspec/DisplaySpec.h"
+#include "lib/engine/displayspec/DisplaySpec.h"
 
 static LayoutConfig fibonacciLayoutConfig() {
     auto layoutIds = fibonacciLayoutIds();

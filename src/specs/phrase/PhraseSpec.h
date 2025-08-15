@@ -20,7 +20,7 @@
 
 #ifndef LED_SEGMENTS_PHRASESPEC_H
 #define LED_SEGMENTS_PHRASESPEC_H
-#include"engine/utils/Utils.h"
+#include"lib/engine/utils/Utils.h"
 
 #if IS_DEBUG
 #include "config/TestPhraseConfig.h"
@@ -32,7 +32,7 @@
 #include "config/PhraseOverlayConfig.h"
 #include "config/PhraseParamConfig.h"
 #include "config/PhraseTransitionConfig.h"
-#include "engine/displayspec/DisplaySpec.h"
+#include "lib/engine/displayspec/DisplaySpec.h"
 #include "specs/phrase/config/PhraseLayoutConfig.h"
 
 class PhraseSpec : public DisplaySpec {

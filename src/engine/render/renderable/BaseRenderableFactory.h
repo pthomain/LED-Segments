@@ -18,30 +18,30 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef EFFECTFACTORY_H
-#define EFFECTFACTORY_H
+#ifndef RENDERABLEFACTORY_H
+#define RENDERABLEFACTORY_H
 
-#include "BaseEffect.h"
-#include "../utils/TypeId.h"
+#include "Renderable.h"
+#include "engine/utils/TypeId.h"
 
 using Params = std::map<uint8_t, uint16_t>;
 
 template<typename C>
-class BaseEffectFactory {
+class BaseRenderableFactory {
 public:
-    const TypeInfo::ID effectId;
+    const TypeInfo::ID renderableId;
 
-    virtual std::unique_ptr<BaseEffect<C> > create(const EffectContext &context) const = 0;
+    virtual std::unique_ptr<Renderable<C> > create(const RenderableContext &context) const = 0;
 
     virtual const char *name() const = 0;
 
     template<typename T>
     bool is() const {
-        return effectId == TypeId<T>::id();
+        return renderableId == TypeId<T>::id();
     }
 
-    bool is(TypeInfo::ID effectId) const {
-        return this->effectId == effectId;
+    bool is(TypeInfo::ID renderableId) const {
+        return this->renderableId == renderableId;
     }
 
     Params params(const std::function<uint16_t(uint8_t paramKey, uint16_t defaultValue)> &selector) const {
@@ -56,34 +56,34 @@ public:
 
     virtual Params params() const = 0;
 
-    virtual ~BaseEffectFactory() = default;
+    virtual ~BaseRenderableFactory() = default;
 
 protected:
-    explicit BaseEffectFactory(TypeInfo::ID id) : effectId(id) {
+    explicit BaseRenderableFactory(TypeInfo::ID id) : renderableId(id) {
     }
 };
 
 template<typename Child, typename T, typename C>
-class EffectFactory : public BaseEffectFactory<C> {
+class RenderableFactory : public BaseRenderableFactory<C> {
 protected:
     Params params() const override {
         return Child::declareParams();
     }
 
 public:
-    explicit EffectFactory() : BaseEffectFactory<C>(TypeId<T>::id()) {
+    explicit RenderableFactory() : BaseRenderableFactory<C>(TypeId<T>::id()) {
         static_assert(
             std::is_same<decltype(Child::declareParams()), Params>::value,
             "Child class must implement static Params declareParams()"
         );
     }
 
-    std::unique_ptr<BaseEffect<C> > create(const EffectContext &context) const final {
-        return static_cast<const Child *>(this)->createEffect(context);
+    std::unique_ptr<Renderable<C> > create(const RenderableContext &context) const final {
+        return static_cast<const Child *>(this)->createRenderable(context);
     }
 
     //Required for proper method dispatching with CRTP, override in child factory if needed
-    std::unique_ptr<BaseEffect<C> > createEffect(const EffectContext &context) const {
+    std::unique_ptr<Renderable<C> > createRenderable(const RenderableContext &context) const {
         return std::make_unique<T>(context);
     }
 
@@ -93,12 +93,12 @@ public:
 };
 
 template<typename T>
-using EffectFactoryRef = const BaseEffectFactory<T> *;
+using RenderableFactoryRef = const BaseRenderableFactory<T> *;
 
 template<typename T>
-using WeightedEffect = WeightedItem<EffectFactoryRef<T> >;
+using WeightedRenderable = WeightedItem<RenderableFactoryRef<T> >;
 
 template<typename T>
-using WeightedEffects = std::vector<WeightedEffect<T> >;
+using WeightedRenderables = std::vector<WeightedRenderable<T> >;
 
-#endif //EFFECTFACTORY_H
+#endif //RENDERABLEFACTORY_H

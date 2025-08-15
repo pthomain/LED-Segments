@@ -25,10 +25,10 @@
 #include <effects/gradient/GradientEffect.h>
 #include <effects/swirl/SwirlEffect.h>
 #include <effects/slide/SlideEffect.h>
-#include <engine/displayspec/LayoutConfig.h>
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "FibonacciLayoutDefinitions.h"
 
-static EffectAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutId) {
+static RenderablesAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutId) {
     return {
         {
             {GradientEffect::factory, 1},
@@ -36,7 +36,7 @@ static EffectAndMirrors<CRGB> fibonacciEffectSelector(uint16_t layoutId) {
             {NoiseEffect::factory, 1},
             {SlideEffect::factory, 1}
         },
-        [](EffectFactoryRef<CRGB> effectFactory) {
+        [](RenderableFactoryRef<CRGB> effectFactory) {
             return WeightedMirrors{
                 {Mirror::REPEAT, 1},
                 {Mirror::REPEAT_REVERSE, 1},

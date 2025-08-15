@@ -22,7 +22,7 @@
 #include <algorithm>
 
 static const EyeOverlayFactory factoryInstance;
-EffectFactoryRef<CRGB> EyeOverlay::factory = &factoryInstance;
+RenderableFactoryRef<CRGB> EyeOverlay::factory = &factoryInstance;
 
 static const auto positions = std::vector<std::vector<uint8_t> >{
     {11, 12, 17, 18, 19, 24, 25}, //C
@@ -87,8 +87,8 @@ static const std::vector blinkSequence = {
 };
 
 void EyeOverlay::drawPupil(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     unsigned long timeElapsedInMillis
 ) {
     if (!isBlinking) {
@@ -111,8 +111,8 @@ void EyeOverlay::drawPupil(
         }
     }
 
-    for (int i = 0; i < effectArraySize; i++) {
-        effectArray[i] = blend(effectArray[i], CRGB::White, eyeBrightness);
+    for (int i = 0; i < renderableArraySize; i++) {
+        renderableArray[i] = blend(renderableArray[i], CRGB::White, eyeBrightness);
     }
 
     if (timeElapsedInMillis - lastSequenceChange > nextSequenceInterval) {
@@ -137,26 +137,26 @@ void EyeOverlay::drawPupil(
     );
 
     for (auto i: positions.at(currentSequence[positionInSequence])) {
-        effectArray[i] = CRGB::Black;
+        renderableArray[i] = CRGB::Black;
     }
 
     if (isBlinking) {
         for (auto pixel_index: blinkSequence[blinkFrameIndex]) {
-            effectArray[pixel_index] = CRGB::Black;
+            renderableArray[pixel_index] = CRGB::Black;
         }
     }
 }
 
 void EyeOverlay::fillArrayInternal(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
     if (segmentIndex == 0) {
-        drawPupil(effectArray, effectArraySize, timeElapsedInMillis);
+        drawPupil(renderableArray, renderableArraySize, timeElapsedInMillis);
     } else {
-        memset(effectArray, CRGB::White, effectArraySize * sizeof(CRGB));
+        memset(renderableArray, CRGB::White, renderableArraySize * sizeof(CRGB));
     }
 }

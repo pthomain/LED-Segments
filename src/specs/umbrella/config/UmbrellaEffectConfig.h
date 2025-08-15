@@ -27,7 +27,7 @@
 #include "effects/slide/SlideEffect.h"
 #include "engine/effect/Effect.h"
 
-static EffectAndMirrors<CRGB> umbrellaEffectSelector(uint16_t layoutId) {
+static RenderablesAndMirrors<CRGB> umbrellaRenderableSelector(uint16_t layoutId) {
     if (layoutId == LEDS_IN_SPOKE) {
         return {
             {
@@ -44,8 +44,8 @@ static EffectAndMirrors<CRGB> umbrellaEffectSelector(uint16_t layoutId) {
         {
             {SwirlEffect::factory, 1},
         },
-        [](EffectFactoryRef<CRGB> effectFactory) {
-            return undividedMirrors(effectFactory);
+        [](RenderableFactoryRef<CRGB> effectFactory) {
+            return undividedMirrors<CRGB>(effectFactory);
         }
     };
 }

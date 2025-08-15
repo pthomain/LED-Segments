@@ -18,12 +18,12 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "Effect.h"
+#include "Renderable.h"
 
 template<typename C>
-void BaseEffect<C>::fillArray(
-    C *effectArray,
-    uint16_t effectArraySize,
+void Renderable<C>::fillArray(
+    C *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress
 ) {
@@ -39,16 +39,16 @@ void BaseEffect<C>::fillArray(
         beforeFrame(progress, elapsedMillis);
     }
 
-    if (effectArraySize == 0) {
-        Serial.println("BaseEffect::fillArray: empty array for segment " + String(segmentIndex));
+    if (renderableArraySize == 0) {
+        Serial.println("Renderable::fillArray: empty array for segment " + String(segmentIndex));
         return;
     }
 
-    memset(effectArray, 0, effectArraySize * sizeof(C));
+    memset(renderableArray, 0, renderableArraySize * sizeof(C));
 
     fillArrayInternal(
-        effectArray,
-        effectArraySize,
+        renderableArray,
+        renderableArraySize,
         segmentIndex,
         progress,
         elapsedMillis

@@ -21,11 +21,10 @@
 #ifndef UMBRELLA_TRANSITION_CONFIG_H
 #define UMBRELLA_TRANSITION_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
-#include "transitions/Transition.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "transitions/slide/SlideTransition.h"
 
-static EffectAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutId) {
+static RenderablesAndMirrors<uint8_t> umbrellaTransitionSelector(uint16_t layoutId) {
     return {
         just(SlideTransition::factory),
         noMirrors<uint8_t>

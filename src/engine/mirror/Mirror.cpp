@@ -21,30 +21,30 @@
 #include "Mirror.h"
 #include <functional>
 #include <memory>
-#include "engine/effect/BaseEffect.h"
 #include "engine/utils/Utils.h"
 #include "engine/utils/Blending.h"
+#include "engine/render/renderable/Renderable.h"
 
 template<typename C>
 void applyMirror(
-    const std::shared_ptr<BaseEffect<C> > &effect,
+    const std::shared_ptr<Renderable<C> > &renderable,
     Mirror mirror,
-    C *effectArray,
-    uint16_t effectArraySize
+    C *renderableArray,
+    uint16_t renderableArraySize
 ) {
     if (mirror == Mirror::NONE) return;
 
-    const uint16_t mirrorSize = getMirrorSize(mirror, effectArraySize);
-    const uint16_t offset = effectArraySize % 2 == 0 ? 1 : 0;
+    const uint16_t mirrorSize = getMirrorSize(mirror, renderableArraySize);
+    const uint16_t offset = renderableArraySize % 2 == 0 ? 1 : 0;
     const uint16_t centre = mirrorSize - 1;
 
     auto reverse = [&](const std::function<void(uint16_t x)> &extraStep = nullptr) {
         for (uint16_t index = 0; index < mirrorSize / 2; ++index) {
             uint16_t reverseIndex = mirrorSize - 1 - index;
 
-            auto temp = effectArray[index];
-            effectArray[index] = effectArray[reverseIndex];
-            effectArray[reverseIndex] = temp;
+            auto temp = renderableArray[index];
+            renderableArray[index] = renderableArray[reverseIndex];
+            renderableArray[reverseIndex] = temp;
 
             if (extraStep) extraStep(index);
         }
@@ -57,27 +57,27 @@ void applyMirror(
 
         case Mirror::CENTRE:
             for (uint16_t index = 0; index < mirrorSize; ++index) {
-                effectArray[centre + index + offset] = effectArray[centre - index];
+                renderableArray[centre + index + offset] = renderableArray[centre - index];
             }
             break;
 
         case Mirror::EDGE: {
             for (uint16_t index = 0; index < mirrorSize; ++index) {
-                effectArray[centre + index + offset] = effectArray[index];
-                effectArray[centre - index] = effectArray[centre + index + offset];
+                renderableArray[centre + index + offset] = renderableArray[index];
+                renderableArray[centre - index] = renderableArray[centre + index + offset];
             }
         }
         break;
 
         case Mirror::REPEAT:
             for (uint16_t index = 0; index < mirrorSize; ++index) {
-                effectArray[centre + index + offset] = effectArray[index];
+                renderableArray[centre + index + offset] = renderableArray[index];
             }
             break;
 
         case Mirror::REPEAT_REVERSE: {
             auto extraStep = [&](uint16_t index) {
-                effectArray[mirrorSize + index] = effectArray[index];
+                renderableArray[mirrorSize + index] = renderableArray[index];
             };
             reverse(extraStep);
             for (uint16_t index = mirrorSize / 2; index < mirrorSize; ++index) {
@@ -87,51 +87,51 @@ void applyMirror(
         break;
 
         default: {
-            auto effectOperation = effect->effectOperation();
-            bool isOverlay = effectOperation == EffectOperation::OVERLAY_SCREEN
-                             || effectOperation == EffectOperation::OVERLAY_MULTIPLY
-                             || effectOperation == EffectOperation::OVERLAY_INVERT;
+            auto renderableOperation = renderable->renderableOperation();
+            bool isOverlay = renderableOperation == RenderableOperation::OVERLAY_SCREEN
+                             || renderableOperation == RenderableOperation::OVERLAY_MULTIPLY
+                             || renderableOperation == RenderableOperation::OVERLAY_INVERT;
 
             if (!isOverlay) return;
         }
     }
 
     auto overlayRepeat = [&](uint16_t x) {
-        C *originalEffectArray = new C[mirrorSize];
-        std::copy(effectArray, effectArray + mirrorSize, originalEffectArray);
+        C *originalrenderableArray = new C[mirrorSize];
+        std::copy(renderableArray, renderableArray + mirrorSize, originalrenderableArray);
 
         for (uint16_t repetition = 0; repetition < x; ++repetition) {
             int repetitionOffset = repetition * mirrorSize / x;
             for (uint16_t index = 0; index < mirrorSize; ++index) {
                 int targetIndex = (repetitionOffset + index) % mirrorSize;
-                effectArray[targetIndex] = mix(
-                    effectArray[targetIndex],
-                    originalEffectArray[index],
-                    mixOperation(EffectOperation::OVERLAY_SCREEN)
+                renderableArray[targetIndex] = mix(
+                    renderableArray[targetIndex],
+                    originalrenderableArray[index],
+                    mixOperation(RenderableOperation::OVERLAY_SCREEN)
                 );
             }
         }
 
-        delete[] originalEffectArray;
+        delete[] originalrenderableArray;
     };
 
     auto overlayRepeatReverse = [&](uint16_t x) {
         overlayRepeat(x);
 
-        C *forwardEffectArray = new C[mirrorSize];
-        std::copy(effectArray, effectArray + mirrorSize, forwardEffectArray);
+        C *forwardrenderableArray = new C[mirrorSize];
+        std::copy(renderableArray, renderableArray + mirrorSize, forwardrenderableArray);
 
         reverse();
 
         for (uint16_t index = 0; index < mirrorSize; ++index) {
-            effectArray[index] = mix(
-                effectArray[index],
-                forwardEffectArray[index],
-                mixOperation(EffectOperation::OVERLAY_SCREEN)
+            renderableArray[index] = mix(
+                renderableArray[index],
+                forwardrenderableArray[index],
+                mixOperation(RenderableOperation::OVERLAY_SCREEN)
             );
         }
 
-        delete[] forwardEffectArray;
+        delete[] forwardrenderableArray;
     };
 
     switch (mirror) {
@@ -173,21 +173,21 @@ void applyMirror(
 
 uint16_t getMirrorSize(
     Mirror mirror,
-    uint16_t effectArraySize
+    uint16_t renderableArraySize
 ) {
     switch (mirror) {
         case Mirror::CENTRE:
         case Mirror::EDGE:
         case Mirror::REPEAT:
         case Mirror::REPEAT_REVERSE:
-            return (effectArraySize / 2) + (effectArraySize % 2 == 0 ? 0 : 1);
+            return (renderableArraySize / 2) + (renderableArraySize % 2 == 0 ? 0 : 1);
 
-        default: return effectArraySize;
+        default: return renderableArraySize;
     }
 }
 
-EffectOperation mixOperation(EffectOperation operation) {
-    return EffectOperation::OVERLAY_SCREEN;
+RenderableOperation mixOperation(RenderableOperation operation) {
+    return RenderableOperation::OVERLAY_SCREEN;
 }
 
 String getMirrorName(Mirror mirror) {
@@ -233,16 +233,16 @@ String getMirrorName(Mirror mirror) {
 
 template
 void applyMirror(
-    const std::shared_ptr<BaseEffect<CRGB> > &effect,
+    const std::shared_ptr<Renderable<CRGB> > &renderable,
     Mirror mirror,
-    CRGB *effectArray,
-    uint16_t effectArraySize
+    CRGB *renderableArray,
+    uint16_t renderableArraySize
 );
 
 template
 void applyMirror(
-    const std::shared_ptr<BaseEffect<uint8_t> > &effect,
+    const std::shared_ptr<Renderable<uint8_t> > &renderable,
     Mirror mirror,
-    uint8_t *effectArray,
-    uint16_t effectArraySize
+    uint8_t *renderableArray,
+    uint16_t renderableArraySize
 );

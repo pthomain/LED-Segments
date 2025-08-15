@@ -126,15 +126,15 @@ public:
         auto transitionDurationInFrames = _displaySpec->fps * _displaySpec->transitionDurationInMillis / 1000;
 
         auto effectParams = config.params(
-            EffectType::EFFECT,
-            effectFactory->effectId,
+            RenderableType::EFFECT,
+            effectFactory->renderableId,
             effectLayoutId,
             effectMirror
         );
 
         if (effectParams.empty()) effectParams = effectFactory->params();
 
-        const auto effectContext = EffectContext(
+        const auto context = RenderableContext(
             _displaySpec->maxSegmentSize(),
             _displaySpec->nbSegments(effectLayoutId),
             effectDurationInFrames,
@@ -146,15 +146,15 @@ public:
         );
 
         auto overlayParams = config.params(
-            EffectType::OVERLAY,
-            overlayFactory->effectId,
+            RenderableType::OVERLAY,
+            overlayFactory->renderableId,
             overlayLayoutId,
             overlayMirror
         );
 
         if (overlayParams.empty()) overlayParams = overlayFactory->params();
 
-        const auto overlayContext = EffectContext(
+        const auto overlayContext = RenderableContext(
             _displaySpec->maxSegmentSize(),
             _displaySpec->nbSegments(overlayLayoutId),
             effectDurationInFrames,
@@ -166,15 +166,15 @@ public:
         );
 
         auto transitionParams = config.params(
-            EffectType::TRANSITION,
-            transitionFactory->effectId,
+            RenderableType::TRANSITION,
+            transitionFactory->renderableId,
             transitionLayoutId,
             transitionMirror
         );
 
         if (transitionParams.empty()) transitionParams = transitionFactory->params();
 
-        const auto transitionContext = EffectContext(
+        const auto transitionContext = RenderableContext(
             _displaySpec->maxSegmentSize(),
             _displaySpec->nbSegments(transitionLayoutId),
             transitionDurationInFrames,
@@ -185,7 +185,7 @@ public:
             transitionParams
         );
 
-        auto effect = effectFactory->create(effectContext);
+        auto effect = effectFactory->create(context);
         auto overlay = overlayFactory->create(overlayContext);
         auto transition = transitionFactory->create(transitionContext);
 

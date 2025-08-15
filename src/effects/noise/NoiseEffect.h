@@ -23,7 +23,6 @@
 
 #include "effects/gradient/GradientEffect.h"
 #include "engine/effect/Effect.h"
-#include "engine/effect/BaseEffectFactory.h"
 #include "engine/utils/Weights.h"
 
 class NoiseEffect : public Effect<NoiseEffect, CRGB> {
@@ -40,8 +39,8 @@ public:
     static const uint8_t PARAM_NOISE_SPEED = 2;
     static const uint8_t PARAM_SPEED_DIVIDER = 3;
 
-    explicit NoiseEffect(const EffectContext &effectContext)
-        : Effect(effectContext),
+    explicit NoiseEffect(const RenderableContext &context)
+        : Effect(context),
           paletteScale(param(PARAM_PALETTE_SCALE)),
           noiseScale(param(PARAM_NOISE_SCALE)),
           noiseSpeed(param(PARAM_NOISE_SPEED)),
@@ -49,19 +48,19 @@ public:
     }
 
     void fillArrayInternal(
-        CRGB *effectArray,
-        uint16_t effectArraySize,
+        CRGB *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
     ) override;
 
     static constexpr const char *name() { return "NoiseEffect"; }
-    WeightedOperations operations() { return just(EffectOperation::EFFECT); }
-    static EffectFactoryRef<CRGB> factory;
+    WeightedOperations operations() { return just(RenderableOperation::EFFECT); }
+    static RenderableFactoryRef<CRGB> factory;
 };
 
-class NoiseEffectFactory : public EffectFactory<NoiseEffectFactory, NoiseEffect, CRGB> {
+class NoiseEffectFactory : public RenderableFactory<NoiseEffectFactory, NoiseEffect, CRGB> {
 public:
     static Params declareParams() {
         return {

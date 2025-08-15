@@ -24,7 +24,7 @@
 #define BLENDING_H
 
 #include "FastLED.h"
-#include "engine/effect/EffectOperation.h"
+#include "../render/renderable/RenderableOperation.h"
 
 uint8_t multiply(uint8_t base, uint8_t overlay);
 
@@ -39,15 +39,15 @@ uint8_t invert(uint8_t base, uint8_t overlay);
 CRGB invert(const CRGB &base, const CRGB &overlay);
 
 template<typename T>
-T mix(const T &base, const T &overlay, EffectOperation operation) {
+T mix(const T &base, const T &overlay, RenderableOperation operation) {
     switch (operation) {
-        case EffectOperation::OVERLAY_SCREEN:
+        case RenderableOperation::OVERLAY_SCREEN:
             return screen(base, overlay);
 
-        case EffectOperation::OVERLAY_MULTIPLY:
+        case RenderableOperation::OVERLAY_MULTIPLY:
             return multiply(base, overlay);
 
-        case EffectOperation::OVERLAY_INVERT:
+        case RenderableOperation::OVERLAY_INVERT:
             return invert(base, overlay);
 
         default:
@@ -56,9 +56,9 @@ T mix(const T &base, const T &overlay, EffectOperation operation) {
 }
 
 template
-CRGB mix(const CRGB &base, const CRGB &overlay, EffectOperation operation);
+CRGB mix(const CRGB &base, const CRGB &overlay, RenderableOperation operation);
 
 template
-uint8_t mix(const uint8_t &base, const uint8_t &overlay, EffectOperation operation);
+uint8_t mix(const uint8_t &base, const uint8_t &overlay, RenderableOperation operation);
 
 #endif //BLENDING_H

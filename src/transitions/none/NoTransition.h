@@ -22,29 +22,29 @@
 #define NOTRANSITION_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/BaseEffectFactory.h"
-#include "engine/effect/EffectOperation.h"
+#include "../../engine/render/renderable/RenderableOperation.h"
+#include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/utils/Weights.h"
 
 class NoTransition : public Effect<NoTransition, uint8_t> {
 public:
-    explicit NoTransition(const EffectContext &effectContext) : Effect(effectContext) {
+    explicit NoTransition(const RenderableContext &context) : Effect(context) {
     }
 
     void fillArrayInternal(
-        uint8_t *effectArray,
-        uint16_t effectArraySize,
+        uint8_t *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
     ) override;
 
     static constexpr const char *name() { return "NoTransition"; }
-    WeightedOperations operations() { return just(EffectOperation::TRANSITION); }
-    static EffectFactoryRef<uint8_t> factory;
+    WeightedOperations operations() { return just(RenderableOperation::TRANSITION); }
+    static RenderableFactoryRef<uint8_t> factory;
 };
 
-class NoTransitionFactory : public EffectFactory<NoTransitionFactory, NoTransition, uint8_t> {
+class NoTransitionFactory : public RenderableFactory<NoTransitionFactory, NoTransition, uint8_t> {
 public:
     static Params declareParams() {
         return {};

@@ -25,10 +25,10 @@
 
 #include <memory>
 #include "FastLED.h"
-#include "engine/effect/EffectOperation.h"
+#include "../render/renderable/RenderableOperation.h"
 
 template<typename C>
-class BaseEffect;
+class Renderable;
 
 enum class Mirror {
     // The following mirrors apply to all effect types (effects, overlays and transitions).
@@ -69,17 +69,17 @@ String getMirrorName(Mirror mirror);
 
 uint16_t getMirrorSize(
     Mirror mirror,
-    uint16_t effectArraySize
+    uint16_t renderableArraySize
 );
 
 template<typename C>
 void applyMirror(
-    const std::shared_ptr<BaseEffect<C> > &effect,
+    const std::shared_ptr<Renderable<C> > &renderable,
     Mirror mirror,
-    C *effectArray,
-    uint16_t effectArraySize
+    C *renderableArray,
+    uint16_t renderableArraySize
 );
 
-EffectOperation mixOperation(EffectOperation operation);
+RenderableOperation mixOperation(RenderableOperation operation);
 
 #endif //LED_SEGMENTS_MIRROR_H

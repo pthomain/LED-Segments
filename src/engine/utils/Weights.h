@@ -23,6 +23,8 @@
 #include <cstdint>
 #include <utility>
 #include "Utils.h"
+#include "engine/mirror/Mirror.h"
+#include "../render/renderable/RenderableOperation.h"
 
 template<typename T>
 using WeightedItem = std::pair<T, uint8_t>;
@@ -33,7 +35,7 @@ using WeightedLayouts = std::vector<WeightedLayout>;
 using WeightedMirror = WeightedItem<Mirror>;
 using WeightedMirrors = std::vector<WeightedMirror>;
 
-using WeightedOperations = std::vector<WeightedItem<EffectOperation>>;
+using WeightedOperations = std::vector<WeightedItem<RenderableOperation>>;
 
 template<typename T>
 std::vector<WeightedItem<T>> just(T item) {
@@ -47,7 +49,7 @@ template
 std::vector<WeightedItem<CRGB> > just(CRGB item);
 
 template
-std::vector<WeightedItem<EffectOperation> > just(EffectOperation item);
+std::vector<WeightedItem<RenderableOperation> > just(RenderableOperation item);
 
 template<typename T>
 static T pickRandomWeightedItem(

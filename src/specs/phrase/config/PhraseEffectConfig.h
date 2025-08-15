@@ -21,7 +21,7 @@
 #ifndef PHRASE_EFFECT_CONFIG_H
 #define PHRASE_EFFECT_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "PhraseLayoutConfig.h"
 #include "engine/effect/Effect.h"
 #include <effects/noise/NoiseEffect.h>
@@ -30,7 +30,7 @@
 #include "effects/swirl/SwirlEffect.h"
 #include "engine/utils/Weights.h"
 
-static EffectAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutId) {
+static RenderablesAndMirrors<CRGB> phraseRenderableSelector(uint16_t layoutId) {
     switch (layoutId) {
         case LEDS_IN_WHOLE:
         case LEDS_IN_WORDS:
@@ -43,7 +43,7 @@ static EffectAndMirrors<CRGB> phraseEffectSelector(uint16_t layoutId) {
                     {NoiseEffect::factory, 4},
                     {SlideEffect::factory, 1}
                 },
-                [](EffectFactoryRef<CRGB> effectFactory) {
+                [](RenderableFactoryRef<CRGB> effectFactory) {
                     if (effectFactory->is<SlideEffect>()) {
                         return noMirrors(effectFactory);
                     }

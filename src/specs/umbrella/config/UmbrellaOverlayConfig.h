@@ -21,7 +21,7 @@
 #ifndef UMBRELLA_OVERLAY_CONFIG_H
 #define UMBRELLA_OVERLAY_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "overlays/none/NoOverlay.h"
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/dash/DashOverlay.h"
@@ -30,7 +30,7 @@
 #include "overlays/sparkle/SparkleOverlay.h"
 #include "overlays/wave/WaveOverlay.h"
 
-static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
+static RenderablesAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
     if (layoutId == LEDS_IN_SPOKE) {
         return {
             {
@@ -41,7 +41,7 @@ static EffectAndMirrors<CRGB> umbrellaOverlaySelector(uint16_t layoutId) {
                 {MatrixOverlay::factory, 3},
                 {SparkleOverlay::factory, 1},
             },
-            [](EffectFactoryRef<CRGB> overlayFactory) {
+            [](RenderableFactoryRef<CRGB> overlayFactory) {
                 if (overlayFactory->is<MatrixOverlay>()) {
                     return WeightedMirrors{
                         {Mirror::NONE, 2},

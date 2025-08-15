@@ -25,20 +25,20 @@ const uint8_t GradientEffect::PARAM_COLOUR_START;
 const uint8_t GradientEffect::PARAM_DENSITY_VARIATION;
 
 static const GradientEffectFactory factoryInstance;
-EffectFactoryRef<CRGB> GradientEffect::factory = &factoryInstance;
+RenderableFactoryRef<CRGB> GradientEffect::factory = &factoryInstance;
 
 void GradientEffect::fillArrayInternal(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeInMillis
 ) {
     uint8_t progressOffset = colourStart + static_cast<uint8_t>(progress * 255);
-    auto increment = max(1.0f, 255.0f / static_cast<float>(effectArraySize)) + variation8;
+    auto increment = max(1.0f, 255.0f / static_cast<float>(renderableArraySize)) + variation8;
 
-    for (int pixelIndex = 0; pixelIndex < effectArraySize; pixelIndex++) {
-        effectArray[pixelIndex] = ColorFromPalette(
+    for (int pixelIndex = 0; pixelIndex < renderableArraySize; pixelIndex++) {
+        renderableArray[pixelIndex] = ColorFromPalette(
             context.palette.palette,
             progressOffset + (pixelIndex * increment)
         );

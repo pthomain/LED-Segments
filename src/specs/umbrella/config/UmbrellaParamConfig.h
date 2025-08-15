@@ -21,15 +21,15 @@
 #ifndef UMBRELLA_PARAM_CONFIG_H
 #define UMBRELLA_PARAM_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/sparkle/SparkleOverlay.h"
 
 static std::map<uint8_t, uint16_t> umbrellaEffectParamSelector(
-    TypeInfo::ID effectId,
+    TypeInfo::ID renderableId,
     Mirror mirror
 ) {
-    if (GradientEffect::factory->is(effectId)) {
+    if (GradientEffect::factory->is(renderableId)) {
         return GradientEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue)-> uint16_t {
             switch (paramKey) {
                 case GradientEffect::PARAM_COLOUR_START: return random8();
@@ -39,7 +39,7 @@ static std::map<uint8_t, uint16_t> umbrellaEffectParamSelector(
         });
     }
 
-    if (NoiseEffect::factory->is(effectId)) {
+    if (NoiseEffect::factory->is(renderableId)) {
         return NoiseEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case NoiseEffect::PARAM_PALETTE_SCALE: return random8(2, 6);
@@ -51,7 +51,7 @@ static std::map<uint8_t, uint16_t> umbrellaEffectParamSelector(
         });
     }
 
-    if (SlideEffect::factory->is(effectId)) {
+    if (SlideEffect::factory->is(renderableId)) {
         return SlideEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case SlideEffect::PARAM_NB_COLOURS: return 4;
@@ -62,7 +62,7 @@ static std::map<uint8_t, uint16_t> umbrellaEffectParamSelector(
         });
     }
 
-    if (SwirlEffect::factory->is(effectId)) {
+    if (SwirlEffect::factory->is(renderableId)) {
         return SwirlEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case SwirlEffect::PARAM_IS_REVERSIBLE: return 1;
@@ -76,10 +76,10 @@ static std::map<uint8_t, uint16_t> umbrellaEffectParamSelector(
 }
 
 static std::map<uint8_t, uint16_t> umbrellaOverlayParamSelector(
-    TypeInfo::ID effectId,
+    TypeInfo::ID renderableId,
     Mirror mirror
 ) {
-    if (ChaseOverlay::factory->is(effectId)) {
+    if (ChaseOverlay::factory->is(renderableId)) {
         return ChaseOverlay::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case ChaseOverlay::PARAM_MIN_SPARKS_PER_SEGMENT: return 1;
@@ -95,7 +95,7 @@ static std::map<uint8_t, uint16_t> umbrellaOverlayParamSelector(
         });
     }
 
-    if (DashOverlay::factory->is(effectId)) {
+    if (DashOverlay::factory->is(renderableId)) {
         return DashOverlay::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case DashOverlay::PARAM_TAIL_SPEED: return random8(1, 5);
@@ -106,7 +106,7 @@ static std::map<uint8_t, uint16_t> umbrellaOverlayParamSelector(
         });
     }
 
-    if (MoireOverlay::factory->is(effectId)) {
+    if (MoireOverlay::factory->is(renderableId)) {
         return MoireOverlay::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case MoireOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT: return 4;
@@ -119,7 +119,7 @@ static std::map<uint8_t, uint16_t> umbrellaOverlayParamSelector(
         });
     }
 
-    if (SparkleOverlay::factory->is(effectId)) {
+    if (SparkleOverlay::factory->is(renderableId)) {
         return SparkleOverlay::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case SparkleOverlay::PARAM_DENSITY: return 5;
@@ -128,7 +128,7 @@ static std::map<uint8_t, uint16_t> umbrellaOverlayParamSelector(
         });
     }
 
-    if (WaveOverlay::factory->is(effectId)) {
+    if (WaveOverlay::factory->is(renderableId)) {
         return WaveOverlay::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case WaveOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT: return 4;
@@ -142,16 +142,16 @@ static std::map<uint8_t, uint16_t> umbrellaOverlayParamSelector(
 }
 
 static std::map<uint8_t, uint16_t> umbrellaParamSelector(
-    EffectType effectType,
-    TypeInfo::ID effectId,
+    RenderableType type,
+    TypeInfo::ID renderableId,
     uint16_t layoutId,
     Mirror mirror
 ) {
-    switch (effectType) {
-        case EffectType::EFFECT:
-            return umbrellaEffectParamSelector(effectId, mirror);
-        case EffectType::OVERLAY:
-            return umbrellaOverlayParamSelector(effectId, mirror);
+    switch (type) {
+        case RenderableType::EFFECT:
+            return umbrellaEffectParamSelector(renderableId, mirror);
+        case RenderableType::OVERLAY:
+            return umbrellaOverlayParamSelector(renderableId, mirror);
         default:
             return {};
     }

@@ -22,7 +22,7 @@
 #define SPARKLEOVERLAY_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/BaseEffectFactory.h"
+#include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/utils/Weights.h"
 
 class SparkleOverlay : public Effect<SparkleOverlay, CRGB> {
@@ -31,14 +31,14 @@ class SparkleOverlay : public Effect<SparkleOverlay, CRGB> {
 public:
     static const uint16_t PARAM_DENSITY = 0;
 
-    explicit SparkleOverlay(const EffectContext &effectContext)
-        : Effect(effectContext),
+    explicit SparkleOverlay(const RenderableContext &context)
+        : Effect(context),
           density(min(100, param(PARAM_DENSITY)) / 100.0f) {
     }
 
     void fillArrayInternal(
-        CRGB *effectArray,
-        uint16_t effectArraySize,
+        CRGB *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
@@ -48,15 +48,15 @@ public:
 
     WeightedOperations operations() {
         return {
-            {EffectOperation::OVERLAY_SCREEN, 1},
-            {EffectOperation::OVERLAY_MULTIPLY, 1},
+            {RenderableOperation::OVERLAY_SCREEN, 1},
+            {RenderableOperation::OVERLAY_MULTIPLY, 1},
         };
     }
 
-    static EffectFactoryRef<CRGB> factory;
+    static RenderableFactoryRef<CRGB> factory;
 };
 
-class SparkleOverlayFactory : public EffectFactory<SparkleOverlayFactory, SparkleOverlay, CRGB> {
+class SparkleOverlayFactory : public RenderableFactory<SparkleOverlayFactory, SparkleOverlay, CRGB> {
 public:
     static Params declareParams() {
         return {

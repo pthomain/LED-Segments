@@ -42,7 +42,7 @@ public:
             umbrellaLayoutIds,
             umbrellaLayoutNames,
             umbrellaLayoutSelector,
-            umbrellaEffectSelector,
+            umbrellaRenderableSelector,
             umbrellaOverlaySelector,
             umbrellaTransitionSelector,
             umbrellaParamSelector

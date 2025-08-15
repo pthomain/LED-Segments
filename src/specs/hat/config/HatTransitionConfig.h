@@ -21,11 +21,11 @@
 #ifndef HAT_TRANSITION_CONFIG_H
 #define HAT_TRANSITION_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "transitions/Transition.h"
 #include "transitions/fade/FadeTransition.h"
 
-static EffectAndMirrors<uint8_t> hatTransitionSelector(uint16_t layoutId) {
+static RenderablesAndMirrors<uint8_t> hatTransitionSelector(uint16_t layoutId) {
     return {
         just(FadeTransition::factory),
         noMirrors<uint8_t>

@@ -32,10 +32,10 @@ const uint8_t ChaseOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT;
 const uint8_t ChaseOverlay::PARAM_OPERATION_INVERT_WEIGHT;
 
 static const ChaseOverlayFactory factoryInstance;
-EffectFactoryRef<CRGB> ChaseOverlay::factory = &factoryInstance;
+RenderableFactoryRef<CRGB> ChaseOverlay::factory = &factoryInstance;
 
-ChaseOverlay::ChaseOverlay(const EffectContext &effectContext)
-    : Effect(effectContext),
+ChaseOverlay::ChaseOverlay(const RenderableContext &context)
+    : Effect(context),
       minSparksPerSegment(param(PARAM_MIN_SPARKS_PER_SEGMENT)),
       maxSparksPerSegment(param(PARAM_MAX_SPARKS_PER_SEGMENT)),
       distanceBetweenSparks(param(PARAM_DISTANCE_BETWEEN_SPARKS)),
@@ -50,8 +50,8 @@ ChaseOverlay::ChaseOverlay(const EffectContext &effectContext)
 }
 
 void ChaseOverlay::fillArrayInternal(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
@@ -64,7 +64,7 @@ void ChaseOverlay::fillArrayInternal(
             segmentSparks.begin(),
             segmentSparks.end(),
             [=](const Spark &spark) {
-                auto isRemovalNeeded = spark.position >= effectArraySize || spark.isLessThanZero;
+                auto isRemovalNeeded = spark.position >= renderableArraySize || spark.isLessThanZero;
                 if (isRemovalNeeded) emittedSparkCount[segmentIndex]--;
                 return isRemovalNeeded;
             }
@@ -88,8 +88,8 @@ void ChaseOverlay::fillArrayInternal(
         //Draw spark
         for (int16_t trailIndex = 0; trailIndex <= trailLength; ++trailIndex) {
             int16_t trailPos = spark.position - trailIndex * (spark.isMovingForward ? 1 : -1);
-            if (trailPos >= 0 && trailPos < effectArraySize) {
-                effectArray[trailPos] = CRGB::White;
+            if (trailPos >= 0 && trailPos < renderableArraySize) {
+                renderableArray[trailPos] = CRGB::White;
             }
         }
 
@@ -107,8 +107,8 @@ void ChaseOverlay::fillArrayInternal(
 
         // Bounce spark if necessary
         if (isBouncy) {
-            if (spark.position >= effectArraySize) {
-                spark.position = effectArraySize - 1;
+            if (spark.position >= renderableArraySize) {
+                spark.position = renderableArraySize - 1;
                 spark.isMovingForward = false;
             } else if (spark.isLessThanZero) {
                 spark.position = 0;

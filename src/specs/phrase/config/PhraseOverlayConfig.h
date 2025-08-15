@@ -21,7 +21,7 @@
 #ifndef PHRASE_OVERLAY_CONFIG_H
 #define PHRASE_OVERLAY_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "PhraseLayoutConfig.h"
 #include "engine/effect/Effect.h"
 #include "overlays/none/NoOverlay.h"
@@ -32,10 +32,10 @@
 #include "overlays/sparkle/SparkleOverlay.h"
 #include "overlays/wave/WaveOverlay.h"
 
-static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutId) {
+static RenderablesAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutId) {
     switch (layoutId) {
         case LEDS_IN_LETTERS:
-            return EffectAndMirrors<CRGB>{
+            return RenderablesAndMirrors<CRGB>{
                 {
                     {WaveOverlay::factory, 1},
                     {NoOverlay::factory, 2},
@@ -44,13 +44,13 @@ static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutId) {
             };
 
         case LEDS_IN_WORDS:
-            return EffectAndMirrors<CRGB>{
+            return RenderablesAndMirrors<CRGB>{
                 {
                     {WaveOverlay::factory, 2},
                     {DashOverlay::factory, 1},
                     {NoOverlay::factory, 4},
                 },
-                [](EffectFactoryRef<CRGB> overlayFactory) {
+                [](RenderableFactoryRef<CRGB> overlayFactory) {
                     if (overlayFactory->is<ChaseOverlay>()) {
                         return allMirrors(overlayFactory);
                     }
@@ -62,13 +62,13 @@ static EffectAndMirrors<CRGB> phraseOverlaySelector(uint16_t layoutId) {
             };
 
         case LETTERS_IN_WHOLE:
-            return EffectAndMirrors<CRGB>{
+            return RenderablesAndMirrors<CRGB>{
                 {
                     {ChaseOverlay::factory, 1},
                     {DashOverlay::factory, 1},
                     {NoOverlay::factory, 6},
                 },
-                [](EffectFactoryRef<CRGB> overlayFactory) {
+                [](RenderableFactoryRef<CRGB> overlayFactory) {
                     if (overlayFactory->is<ChaseOverlay>()) {
                         return noMirrors(overlayFactory);
                     }

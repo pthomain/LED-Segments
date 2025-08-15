@@ -22,28 +22,28 @@
 #define FADETRANSITION_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/BaseEffectFactory.h"
+#include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/utils/Weights.h"
 
 class FadeTransition : public Effect<FadeTransition, uint8_t> {
 public:
-    explicit FadeTransition(const EffectContext &effectContext) : Effect(effectContext) {
+    explicit FadeTransition(const RenderableContext &context) : Effect(context) {
     }
 
     void fillArrayInternal(
-        uint8_t *effectArray,
-        uint16_t effectArraySize,
+        uint8_t *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
     ) override;
 
     static constexpr const char *name() { return "FadeTransition"; }
-    WeightedOperations operations() { return just(EffectOperation::TRANSITION); }
-    static EffectFactoryRef<uint8_t> factory;
+    WeightedOperations operations() { return just(RenderableOperation::TRANSITION); }
+    static RenderableFactoryRef<uint8_t> factory;
 };
 
-class FadeTransitionFactory : public EffectFactory<FadeTransitionFactory, FadeTransition, uint8_t> {
+class FadeTransitionFactory : public RenderableFactory<FadeTransitionFactory, FadeTransition, uint8_t> {
 public:
     static Params declareParams() {
         return {};

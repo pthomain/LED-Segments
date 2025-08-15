@@ -23,16 +23,11 @@
 #define EFFECTS_H
 
 #include <memory>
-#include "BaseEffect.h"
-#include "EffectContext.h"
+#include "engine/render/renderable/RenderableContext.h"
 #include "engine/utils/Weights.h"
 
-constexpr uint8_t MIN_CYCLE_SPEED = 5;
-constexpr uint8_t MAX_CYCLE_SPEED = 15;
-constexpr uint8_t PALETTE_SIZE = 16;
-
 template<typename Child, typename C>
-class Effect : public BaseEffect<C> {
+class Effect : public Renderable<C> {
 protected:
     uint16_t param(uint8_t paramKey) const {
         auto parameters = this->context.parameters;
@@ -45,7 +40,7 @@ protected:
     }
 
 public :
-    explicit Effect(const EffectContext &effectContext) : BaseEffect<C>(effectContext) {
+    explicit Effect(const RenderableContext &context) : Renderable<C>(context) {
         static_assert(
             std::is_base_of_v<Effect, Child>,
             "Child must be a subclass of Effect"
@@ -72,7 +67,7 @@ public :
         unsigned long timeElapsedInMillis
     ) override {}
 
-    WeightedOperations effectOperations() override {
+    WeightedOperations renderableOperations() override {
         return static_cast<Child *>(this)->operations();
     }
 
@@ -80,8 +75,5 @@ public :
         return Child::name();
     }
 };
-
-template<typename E, typename C>
-using EffectAndName = std::pair<std::unique_ptr<Effect<E, C> >, const char *>;
 
 #endif //EFFECTS_H

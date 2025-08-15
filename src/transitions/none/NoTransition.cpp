@@ -23,14 +23,14 @@
 #include "engine/utils/Weights.h"
 
 static const NoTransitionFactory factoryInstance;
-EffectFactoryRef<uint8_t> NoTransition::factory = &factoryInstance;
+RenderableFactoryRef<uint8_t> NoTransition::factory = &factoryInstance;
 
 void NoTransition::fillArrayInternal(
-    uint8_t *effectArray,
-    uint16_t effectArraySize,
+    uint8_t *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    memset(effectArray, progress < 0.5f ? 0 : 255, effectArraySize * sizeof(uint8_t));
+    memset(renderableArray, progress < 0.5f ? 0 : 255, renderableArraySize * sizeof(uint8_t));
 }

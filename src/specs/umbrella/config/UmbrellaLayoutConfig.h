@@ -21,7 +21,7 @@
 #ifndef UMBRELLA_LAYOUT_CONFIG_H
 #define UMBRELLA_LAYOUT_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 
 enum UmbrellaLayout {
     LEDS_IN_SPOKE,
@@ -37,16 +37,16 @@ static const std::map<uint16_t, String> umbrellaLayoutNames = {
     {SPOKES_IN_WHOLE, "SPOKES_IN_WHOLE"},
 };
 
-static WeightedLayouts umbrellaLayoutSelector(EffectType effectType) {
-    switch (effectType) {
-        case EffectType::EFFECT:
+static WeightedLayouts umbrellaLayoutSelector(RenderableType type) {
+    switch (type) {
+        case RenderableType::EFFECT:
             return {
                 {LEDS_IN_SPOKE, 4},
                 {SPOKES_IN_WHOLE, 1}
             };
 
-        case EffectType::OVERLAY:
-        case EffectType::TRANSITION:
+        case RenderableType::OVERLAY:
+        case RenderableType::TRANSITION:
         default:
             return {{LEDS_IN_SPOKE, 1}};
     }

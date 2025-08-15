@@ -28,22 +28,22 @@ const uint8_t NoiseEffect::PARAM_PALETTE_SCALE;
 const uint8_t NoiseEffect::PARAM_NOISE_SPEED;
 
 static const NoiseEffectFactory factoryInstance;
-EffectFactoryRef<CRGB> NoiseEffect::factory = &factoryInstance;
+RenderableFactoryRef<CRGB> NoiseEffect::factory = &factoryInstance;
 
 void NoiseEffect::fillArrayInternal(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
     const uint8_t increment = max(1, timeElapsedInMillis / speedDivider);
     const uint8_t noise = inoise8(noiseScale, randomStart + increment);
-    const uint8_t step = max(1, 255 / (effectArraySize * paletteScale));
+    const uint8_t step = max(1, 255 / (renderableArraySize * paletteScale));
 
     fill_palette(
-        effectArray,
-        effectArraySize,
+        renderableArray,
+        renderableArraySize,
         normaliseNoise(noise),
         step,
         context.palette.palette,

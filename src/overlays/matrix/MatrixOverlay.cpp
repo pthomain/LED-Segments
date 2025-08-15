@@ -31,10 +31,10 @@ const uint8_t MatrixOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT;
 const uint8_t MatrixOverlay::PARAM_OPERATION_INVERT_WEIGHT;
 
 static const MatrixOverlayFactory factoryInstance;
-EffectFactoryRef<CRGB> MatrixOverlay::factory = &factoryInstance;
+RenderableFactoryRef<CRGB> MatrixOverlay::factory = &factoryInstance;
 
-MatrixOverlay::MatrixOverlay(const EffectContext &effectContext)
-    : Effect(effectContext),
+MatrixOverlay::MatrixOverlay(const RenderableContext &context)
+    : Effect(context),
       densityIncrement(constrain(param(PARAM_DENSITY_INCREMENT), 0, 10)),
       minDensity(min(100, param(PARAM_MIN_DENSITY))),
       maxDensity(min(100, param(PARAM_MAX_DENSITY))),
@@ -51,8 +51,8 @@ MatrixOverlay::MatrixOverlay(const EffectContext &effectContext)
 }
 
 void MatrixOverlay::fillArrayInternal(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
@@ -96,16 +96,16 @@ void MatrixOverlay::fillArrayInternal(
             }
 
             float easedProgress = Interpolation::easeOutQuad(stream.progress);
-            stream.position = easedProgress * (effectArraySize + stream.length);
+            stream.position = easedProgress * (renderableArraySize + stream.length);
 
             for (int character = 0; character < stream.length; ++character) {
                 int16_t charPos = stream.position - character;
-                if (charPos >= 0 && charPos < effectArraySize) {
+                if (charPos >= 0 && charPos < renderableArraySize) {
                     float ageFade = 1.0f - stream.progress;
                     float brightness = ageFade * ageFade;
 
                     CRGB color = CRGB::White;
-                    effectArray[charPos] = color;//.nscale8(255 * brightness);
+                    renderableArray[charPos] = color;//.nscale8(255 * brightness);
                 }
             }
         }

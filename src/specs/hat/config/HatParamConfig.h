@@ -21,26 +21,24 @@
 #ifndef HAT_PARAM_CONFIG_H
 #define HAT_PARAM_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
-#include "overlays/chase/ChaseOverlay.h"
-#include "overlays/sparkle/SparkleOverlay.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 
 static std::map<uint8_t, uint16_t> hatOverlayParamSelector(
-    TypeInfo::ID effectId,
+    TypeInfo::ID renderableId,
     Mirror mirror
 ) {
     return {};
 }
 
 static std::map<uint8_t, uint16_t> hatParamSelector(
-    EffectType effectType,
-    TypeInfo::ID effectId,
+    RenderableType type,
+    TypeInfo::ID renderableId,
     uint16_t layoutId,
     Mirror mirror
 ) {
-    switch (effectType) {
-        case EffectType::OVERLAY:
-            return hatOverlayParamSelector(effectId, mirror);
+    switch (type) {
+        case RenderableType::OVERLAY:
+            return hatOverlayParamSelector(renderableId, mirror);
         default:
             return {};
     }

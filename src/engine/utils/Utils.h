@@ -72,15 +72,15 @@ static void mapLedInSnakeDisplay(
 }
 
 inline void fillEffectPalette(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     const CRGBPalette16 &effectPalette
 ) {
     fill_palette(
-        effectArray,
-        effectArraySize,
+        renderableArray,
+        renderableArraySize,
         0,
-        max(1, 255 / effectArraySize),
+        max(1, 255 / renderableArraySize),
         effectPalette,
         255,
         LINEARBLEND

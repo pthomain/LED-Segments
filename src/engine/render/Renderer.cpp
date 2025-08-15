@@ -19,7 +19,6 @@
  */
 
 #include "Renderer.h"
-#include "engine/effect/BaseEffect.h"
 #include "engine/utils/Blending.h"
 #include "engine/utils/Utils.h"
 #include "engine/utils/Interpolation.h"
@@ -36,7 +35,7 @@ Renderer::Renderer(
 
 template
 void Renderer::applyEffectOrTransition(
-    const std::shared_ptr<BaseEffect<CRGB> > &effect,
+    const std::shared_ptr<Renderable<CRGB> > &renderable,
     CRGB *segmentArray,
     CRGB *outputArray,
     std::function<CRGB(uint16_t ledIndex, CRGB existing, CRGB toBeMixed)> mix,
@@ -45,7 +44,7 @@ void Renderer::applyEffectOrTransition(
 
 template
 void Renderer::applyEffectOrTransition(
-    const std::shared_ptr<BaseEffect<uint8_t> > &effect,
+    const std::shared_ptr<Renderable<uint8_t> > &renderable,
     uint8_t *segmentArray,
     CRGB *outputArray,
     std::function<CRGB(uint16_t ledIndex, CRGB existing, uint8_t toBeMixed)> mix,
@@ -54,13 +53,13 @@ void Renderer::applyEffectOrTransition(
 
 template<typename C>
 void Renderer::applyEffectOrTransition(
-    const std::shared_ptr<BaseEffect<C> > &effect,
+    const std::shared_ptr<Renderable<C> > &renderable,
     C *segmentArray,
     CRGB *outputArray,
     std::function<CRGB(uint16_t ledIndex, CRGB existing, C toBeMixed)> mix,
     float progress
 ) const {
-    auto context = effect->context;
+    auto context = renderable->context;
     auto layoutId = context.layoutId;
     auto mirror = context.mirror;
 
@@ -78,14 +77,14 @@ void Renderer::applyEffectOrTransition(
 
         uint16_t mirrorSize = getMirrorSize(mirror, segmentSize);
 
-        effect->fillArray(
+        renderable->fillArray(
             segmentArray,
             mirrorSize,
             segmentIndex,
             progress
         );
 
-        applyMirror(effect, mirror, segmentArray, segmentSize);
+        applyMirror(renderable, mirror, segmentArray, segmentSize);
 
         for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
             displaySpec->mapLeds(
@@ -112,30 +111,30 @@ Renderer::~Renderer() {
     delete[] pendingOutputArray;
 }
 
-bool Renderer::validateEffect(
-    const std::shared_ptr<BaseEffect<CRGB> > &effect,
-    const std::shared_ptr<BaseEffect<CRGB> > &overlay,
-    const std::shared_ptr<BaseEffect<uint8_t> > &transition
+bool Renderer::validateRenderables(
+    const std::shared_ptr<Renderable<CRGB> > &effect,
+    const std::shared_ptr<Renderable<CRGB> > &overlay,
+    const std::shared_ptr<Renderable<uint8_t> > &transition
 ) {
     return effect && overlay && transition
-           && effect->effectOperation() == EffectOperation::EFFECT
+           && effect->renderableOperation() == RenderableOperation::EFFECT
            && (
-               overlay->effectOperation() == EffectOperation::OVERLAY_SOURCE
-               || overlay->effectOperation() == EffectOperation::OVERLAY_SCREEN
-               || overlay->effectOperation() == EffectOperation::OVERLAY_MULTIPLY
-               || overlay->effectOperation() == EffectOperation::OVERLAY_INVERT
+               overlay->renderableOperation() == RenderableOperation::OVERLAY_SOURCE
+               || overlay->renderableOperation() == RenderableOperation::OVERLAY_SCREEN
+               || overlay->renderableOperation() == RenderableOperation::OVERLAY_MULTIPLY
+               || overlay->renderableOperation() == RenderableOperation::OVERLAY_INVERT
            )
-           && transition->effectOperation() == EffectOperation::TRANSITION;
+           && transition->renderableOperation() == RenderableOperation::TRANSITION;
 }
 
 void Renderer::changeEffect(
-    const std::shared_ptr<BaseEffect<CRGB> > &effect,
-    const std::shared_ptr<BaseEffect<CRGB> > &overlay,
-    const std::shared_ptr<BaseEffect<uint8_t> > &transition
+    const std::shared_ptr<Renderable<CRGB> > &effect,
+    const std::shared_ptr<Renderable<CRGB> > &overlay,
+    const std::shared_ptr<Renderable<uint8_t> > &transition
 ) {
-    if (!validateEffect(effect, overlay, transition)) return;
+    if (!validateRenderables(effect, overlay, transition)) return;
 
-    if (!validateEffect(this->effect, this->overlay, this->transition)) {
+    if (!validateRenderables(this->effect, this->overlay, this->transition)) {
         this->effect = effect;
         this->overlay = overlay;
         this->transition = transition;
@@ -151,7 +150,7 @@ void Renderer::changeEffect(
 }
 
 void Renderer::render() {
-    if (!validateEffect(effect, overlay, transition)) {
+    if (!validateRenderables(effect, overlay, transition)) {
         Serial.println("Could not render");
         return;
     }
@@ -214,8 +213,8 @@ void Renderer::render() {
 }
 
 void Renderer::flattenEffectAndOverlay(
-    const std::shared_ptr<BaseEffect<CRGB> > &effect,
-    const std::shared_ptr<BaseEffect<CRGB> > &overlay,
+    const std::shared_ptr<Renderable<CRGB> > &effect,
+    const std::shared_ptr<Renderable<CRGB> > &overlay,
     float progress,
     CRGB *effectOutputArray
 ) const {
@@ -235,7 +234,7 @@ void Renderer::flattenEffectAndOverlay(
             return mix(
                 existing,
                 toBeMixed,
-                overlay->effectOperation()
+                overlay->renderableOperation()
             );
         },
         progress

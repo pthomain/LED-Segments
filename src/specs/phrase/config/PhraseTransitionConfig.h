@@ -22,10 +22,10 @@
 #define PHRASE_TRANSITION_CONFIG_H
 
 #include "PhraseLayoutConfig.h"
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "transitions/Transition.h"
 
-static EffectAndMirrors<uint8_t> phraseTransitionSelector(uint16_t layoutId) {
+static RenderablesAndMirrors<uint8_t> phraseTransitionSelector(uint16_t layoutId) {
     switch (layoutId) {
         case LEDS_IN_LETTERS:
         case LETTERS_IN_WHOLE:

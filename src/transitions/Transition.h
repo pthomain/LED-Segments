@@ -32,25 +32,25 @@ enum class Transition {
     SLIDE
 };
 
-const EffectAndMirrors<uint8_t> ALL_TRANSITIONS = {
-    WeightedEffects<uint8_t>{
+const RenderablesAndMirrors<uint8_t> ALL_TRANSITIONS = {
+    WeightedRenderables<uint8_t>{
         {FadeTransition::factory, 1},
         {SlideTransition::factory, 1}
     },
     allMirrors<uint8_t>
 };
 
-const EffectAndMirrors<uint8_t> FADE_TRANSITION = {
+const RenderablesAndMirrors<uint8_t> FADE_TRANSITION = {
     just(FadeTransition::factory),
     noMirrors<uint8_t>
 };
 
-const EffectAndMirrors<uint8_t> SLIDE_TRANSITION = {
+const RenderablesAndMirrors<uint8_t> SLIDE_TRANSITION = {
     just(SlideTransition::factory),
     noMirrors<uint8_t>
 };
 
-const EffectAndMirrors<uint8_t> NO_TRANSITION = {
+const RenderablesAndMirrors<uint8_t> NO_TRANSITION = {
     just(NoTransition::factory),
     noMirrors<uint8_t>
 };

@@ -22,7 +22,7 @@
 #define MOIREOVERLAY_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/BaseEffectFactory.h"
+#include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/utils/Utils.h"
 
 class MoireOverlay : public Effect<MoireOverlay, CRGB> {
@@ -47,8 +47,8 @@ public:
     static const uint16_t PARAM_IS_CLOCKWISE = 3;
     static const uint16_t PARAM_IS_MASK_INCLUSIVE = 4;
 
-    explicit MoireOverlay(const EffectContext &effectContext)
-        : Effect(effectContext),
+    explicit MoireOverlay(const RenderableContext &context)
+        : Effect(context),
           isClockwise(param(PARAM_IS_CLOCKWISE) > 0),
           isInverted(param(PARAM_IS_MASK_INCLUSIVE) > 0),
           frontColour(isInverted ? CRGB::White : CRGB::Black),
@@ -62,8 +62,8 @@ public:
     }
 
     void fillArrayInternal(
-        CRGB *effectArray,
-        uint16_t effectArraySize,
+        CRGB *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
@@ -84,15 +84,15 @@ public:
 
     WeightedOperations operations() {
         return {
-            {EffectOperation::OVERLAY_MULTIPLY, multiplyOperationWeight},
-            {EffectOperation::OVERLAY_INVERT, invertOperationWeight}
+            {RenderableOperation::OVERLAY_MULTIPLY, multiplyOperationWeight},
+            {RenderableOperation::OVERLAY_INVERT, invertOperationWeight}
         };
     }
 
-    static EffectFactoryRef<CRGB> factory;
+    static RenderableFactoryRef<CRGB> factory;
 };
 
-class MoireOverlayFactory : public EffectFactory<MoireOverlayFactory, MoireOverlay, CRGB> {
+class MoireOverlayFactory : public RenderableFactory<MoireOverlayFactory, MoireOverlay, CRGB> {
 public:
     static Params declareParams() {
         return {

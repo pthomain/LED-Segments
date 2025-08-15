@@ -22,28 +22,28 @@
 #define SLIDETRANSITION_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/BaseEffectFactory.h"
-#include "engine/effect/EffectOperation.h"
+#include "../../engine/render/renderable/RenderableOperation.h"
+#include "engine/render/renderable/BaseRenderableFactory.h"
 
 class SlideTransition : public Effect<SlideTransition, uint8_t> {
 public:
-    explicit SlideTransition(const EffectContext &effectContext) : Effect(effectContext) {
+    explicit SlideTransition(const RenderableContext &context) : Effect(context) {
     }
 
     void fillArrayInternal(
-        uint8_t *effectArray,
-        uint16_t effectArraySize,
+        uint8_t *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
     ) override;
 
     static constexpr const char *name() { return "SlideTransition"; }
-    WeightedOperations operations() { return just(EffectOperation::TRANSITION); }
-    static EffectFactoryRef<uint8_t> factory;
+    WeightedOperations operations() { return just(RenderableOperation::TRANSITION); }
+    static RenderableFactoryRef<uint8_t> factory;
 };
 
-class SlideTransitionFactory : public EffectFactory<SlideTransitionFactory, SlideTransition, uint8_t> {
+class SlideTransitionFactory : public RenderableFactory<SlideTransitionFactory, SlideTransition, uint8_t> {
 public:
     static Params declareParams() {
         return {};

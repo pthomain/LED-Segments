@@ -28,11 +28,11 @@ const uint16_t DashOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT;
 const uint16_t DashOverlay::PARAM_OPERATION_INVERT_WEIGHT;
 
 static const DashOverlayFactory factoryInstance;
-EffectFactoryRef<CRGB> DashOverlay::factory = &factoryInstance;
+RenderableFactoryRef<CRGB> DashOverlay::factory = &factoryInstance;
 
 void DashOverlay::fillArrayInternal(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
@@ -41,10 +41,10 @@ void DashOverlay::fillArrayInternal(
     auto &tailPosition = tailPositionForSegment[segmentIndex];
     auto &isReversed = isReversedForSegment[segmentIndex];
 
-    const auto lastIndex = effectArraySize - 1;
+    const auto lastIndex = renderableArraySize - 1;
 
     if (isReversed) {
-        const uint16_t headThreshold = tailSpeed == 1 ? 0 : effectArraySize / tailSpeed;
+        const uint16_t headThreshold = tailSpeed == 1 ? 0 : renderableArraySize / tailSpeed;
         if (headPosition > 0) headPosition--;
 
         if (headPosition <= headThreshold && tailPosition > 0) {
@@ -57,7 +57,7 @@ void DashOverlay::fillArrayInternal(
     } else {
         const uint16_t headThreshold = tailSpeed == 1
                                            ? lastIndex
-                                           : effectArraySize - (effectArraySize / tailSpeed) + 1;
+                                           : renderableArraySize - (renderableArraySize / tailSpeed) + 1;
 
         if (headPosition < lastIndex) headPosition++;
 
@@ -71,6 +71,6 @@ void DashOverlay::fillArrayInternal(
     }
 
     for (uint16_t i = min(headPosition, tailPosition); i <= max(headPosition, tailPosition); i++) {
-        effectArray[i] = CRGB::White;
+        renderableArray[i] = CRGB::White;
     }
 }

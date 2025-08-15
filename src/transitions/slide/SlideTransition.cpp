@@ -23,16 +23,16 @@
 #include "engine/utils/Weights.h"
 
 static const SlideTransitionFactory factoryInstance;
-EffectFactoryRef<uint8_t> SlideTransition::factory = &factoryInstance;
+RenderableFactoryRef<uint8_t> SlideTransition::factory = &factoryInstance;
 
 void SlideTransition::fillArrayInternal(
-    uint8_t *effectArray,
-    uint16_t effectArraySize,
+    uint8_t *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    uint16_t limit = constrain(round((float) effectArraySize * progress), 0, effectArraySize);
-    memset(effectArray, CRGB::White, limit * sizeof(uint8_t));
-    memset(effectArray + limit, CRGB::Black, (effectArraySize - limit) * sizeof(uint8_t));
+    uint16_t limit = constrain(round((float) renderableArraySize * progress), 0, renderableArraySize);
+    memset(renderableArray, CRGB::White, limit * sizeof(uint8_t));
+    memset(renderableArray + limit, CRGB::Black, (renderableArraySize - limit) * sizeof(uint8_t));
 }

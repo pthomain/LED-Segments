@@ -21,9 +21,8 @@
 #ifndef LED_SEGMENTS_GRADIENTEFFECT_H
 #define LED_SEGMENTS_GRADIENTEFFECT_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "engine/effect/Effect.h"
-#include "engine/effect/BaseEffectFactory.h"
 #include "engine/utils/Weights.h"
 
 class GradientEffect : public Effect<GradientEffect, CRGB> {
@@ -34,8 +33,8 @@ public:
     static const uint8_t PARAM_COLOUR_START = 0;
     static const uint8_t PARAM_DENSITY_VARIATION = 1;
 
-    explicit GradientEffect(const EffectContext &effectContext)
-        : Effect(effectContext),
+    explicit GradientEffect(const RenderableContext &context)
+        : Effect(context),
           colourStart(param(PARAM_COLOUR_START)),
           variation8(
               random8(
@@ -46,19 +45,19 @@ public:
     }
 
     void fillArrayInternal(
-        CRGB *effectArray,
-        uint16_t effectArraySize,
+        CRGB *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeInMillis
     ) override;
 
     static constexpr const char *name() { return "GradientEffect"; }
-    WeightedOperations operations() { return just(EffectOperation::EFFECT); }
-    static EffectFactoryRef<CRGB> factory;
+    WeightedOperations operations() { return just(RenderableOperation::EFFECT); }
+    static RenderableFactoryRef<CRGB> factory;
 };
 
-class GradientEffectFactory : public EffectFactory<GradientEffectFactory, GradientEffect, CRGB> {
+class GradientEffectFactory : public RenderableFactory<GradientEffectFactory, GradientEffect, CRGB> {
 public:
     static Params declareParams() {
         return {

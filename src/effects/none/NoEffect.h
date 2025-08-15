@@ -22,28 +22,28 @@
 #define NOEFFECT_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/BaseEffectFactory.h"
+#include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/utils/Weights.h"
 
 class NoEffect : public Effect<NoEffect, CRGB> {
 public:
-    explicit NoEffect(const EffectContext &effectContext) : Effect(effectContext) {
+    explicit NoEffect(const RenderableContext &context) : Effect(context) {
     }
 
     void fillArrayInternal(
-        CRGB *effectArray,
-        uint16_t effectArraySize,
+        CRGB *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
     ) override;
 
     static constexpr const char *name() { return "NoEffect"; }
-    WeightedOperations operations() { return just(EffectOperation::EFFECT); }
-    static EffectFactoryRef<CRGB> factory;
+    WeightedOperations operations() { return just(RenderableOperation::EFFECT); }
+    static RenderableFactoryRef<CRGB> factory;
 };
 
-class NoEffectFactory : public EffectFactory<NoEffectFactory, NoEffect, CRGB> {
+class NoEffectFactory : public RenderableFactory<NoEffectFactory, NoEffect, CRGB> {
 public:
     static Params declareParams() {
         return {};

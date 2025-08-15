@@ -23,15 +23,15 @@
 #include "engine/utils/Weights.h"
 
 static const FadeTransitionFactory factoryInstance;
-EffectFactoryRef<uint8_t> FadeTransition::factory = &factoryInstance;
+RenderableFactoryRef<uint8_t> FadeTransition::factory = &factoryInstance;
 
 void FadeTransition::fillArrayInternal(
-    uint8_t *effectArray,
-    uint16_t effectArraySize,
+    uint8_t *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
     auto alpha = static_cast<uint8_t>(255.0f * progress);
-    memset(effectArray, alpha, effectArraySize * sizeof(uint8_t));
+    memset(renderableArray, alpha, renderableArraySize * sizeof(uint8_t));
 }

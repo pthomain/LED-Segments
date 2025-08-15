@@ -18,40 +18,40 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BASEEFFECT_H
-#define BASEEFFECT_H
+#ifndef RENDERABLE_H
+#define RENDERABLE_H
 
 #include <utility>
-#include "EffectContext.h"
+#include "RenderableContext.h"
 #include "engine/utils/Weights.h"
 
 template<typename C>
-class BaseEffect {
+class Renderable {
     unsigned long effectStartInMillis = 0L;
     uint16_t _frameIndex = 0;
 
 protected:
-    uint16_t frameIndex() {
+    uint16_t frameIndex() const {
         return _frameIndex;
     }
 
     virtual void fillArrayInternal(
-        C *effectArray,
-        uint16_t effectArraySize,
+        C *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeInMillis
     ) = 0;
 
-    EffectOperation _effectOperation = EffectOperation::EFFECT;
-    bool _effectOperationInitialised = false;
+    RenderableOperation _renderableOperation = RenderableOperation::EFFECT;
+    bool _renderableOperationInitialised = false;
 
 public:
-    const EffectContext context;
+    const RenderableContext context;
 
     void fillArray(
-        C *effectArray,
-        uint16_t effectArraySize,
+        C *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress
     );
@@ -66,26 +66,26 @@ public:
         unsigned long timeElapsedInMillis
     ) = 0;
 
-    explicit BaseEffect(EffectContext context): context(std::move(context)) {
+    explicit Renderable(RenderableContext context): context(std::move(context)) {
     }
 
-    virtual WeightedOperations effectOperations() = 0;
+    virtual WeightedOperations renderableOperations() = 0;
 
-    EffectOperation effectOperation() {
-        if (!_effectOperationInitialised) {
-            _effectOperation = pickRandomWeightedItem(
-                effectOperations(),
-                EffectOperation::EFFECT
+    RenderableOperation renderableOperation() {
+        if (!_renderableOperationInitialised) {
+            _renderableOperation = pickRandomWeightedItem(
+                renderableOperations(),
+                RenderableOperation::EFFECT
             );
-            _effectOperationInitialised = true;
+            _renderableOperationInitialised = true;
         }
-        return _effectOperation;
+        return _renderableOperation;
     }
 
-    virtual ~BaseEffect() = default;
+    virtual ~Renderable() = default;
 };
 
-template class BaseEffect<CRGB>;
-template class BaseEffect<uint8_t>;
+template class Renderable<CRGB>;
+template class Renderable<uint8_t>;
 
-#endif //BASEEFFECT_H
+#endif //RENDERABLE_H

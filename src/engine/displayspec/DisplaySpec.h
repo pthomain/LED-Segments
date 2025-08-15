@@ -21,7 +21,7 @@
 #ifndef LED_SEGMENTS_DISPLAYSPEC_H
 #define LED_SEGMENTS_DISPLAYSPEC_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "config/LayoutConfig.h"
 
 class DisplaySpec {
     uint16_t _maxSegmentSize = 0;

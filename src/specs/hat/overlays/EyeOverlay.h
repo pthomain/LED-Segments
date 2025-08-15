@@ -21,11 +21,10 @@
 #ifndef EYEOVERLAY_H
 #define EYEOVERLAY_H
 
-#include "engine/effect/BaseEffectFactory.h"
 #include "engine/effect/Effect.h"
-#include "engine/effect/EffectOperation.h"
+#include "../../../engine/render/renderable/RenderableOperation.h"
+#include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/utils/Weights.h"
-
 
 enum PupilPosition {
     C,
@@ -50,8 +49,8 @@ class EyeOverlay : public Effect<EyeOverlay, CRGB> {
     const uint8_t eyeBrightness = 7;
 
     void drawPupil(
-        CRGB *effectArray,
-        uint16_t effectArraySize,
+        CRGB *renderableArray,
+        uint16_t renderableArraySize,
         unsigned long timeElapsedInMillis
     );
 
@@ -69,12 +68,12 @@ class EyeOverlay : public Effect<EyeOverlay, CRGB> {
     unsigned long positionInSequence = 0;
 
 public:
-    explicit EyeOverlay(const EffectContext &effectContext): Effect(effectContext) {
+    explicit EyeOverlay(const RenderableContext &context): Effect(context) {
     }
 
     void fillArrayInternal(
-        CRGB *effectArray,
-        uint16_t effectArraySize,
+        CRGB *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
@@ -83,13 +82,13 @@ public:
     static constexpr const char *name() { return "EyeOverlay"; }
 
     WeightedOperations operations() {
-        return just(EffectOperation::OVERLAY_MULTIPLY);
+        return just(RenderableOperation::OVERLAY_MULTIPLY);
     }
 
-    static EffectFactoryRef<CRGB> factory;
+    static RenderableFactoryRef<CRGB> factory;
 };
 
-class EyeOverlayFactory : public EffectFactory<EyeOverlayFactory, EyeOverlay, CRGB> {
+class EyeOverlayFactory : public RenderableFactory<EyeOverlayFactory, EyeOverlay, CRGB> {
 public:
     static Params declareParams() {
         return {};

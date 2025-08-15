@@ -25,42 +25,42 @@
 #include <set>
 #include <utility>
 #include <vector>
-#include <engine/effect/Effect.h>
 #include <engine/mirror/Mirror.h>
 #include <engine/mirror/MirrorUtils.h>
+#include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/utils/Utils.h"
 
-using LayoutSelector = std::function<WeightedLayouts(EffectType effectType)>;
+using LayoutSelector = std::function<WeightedLayouts(RenderableType type)>;
 
 template<typename C>
-using EffectAndMirrors = std::pair<WeightedEffects<C>, MirrorSelector<C> >;
+using RenderablesAndMirrors = std::pair<WeightedRenderables<C>, MirrorSelector<C> >;
 
 template<typename C>
-using EffectSelector = std::function<EffectAndMirrors<C>(uint16_t layoutId)>;
+using RenderableSelector = std::function<RenderablesAndMirrors<C>(uint16_t layoutId)>;
 
-using EffectParamSelector = std::function<Params(
-    EffectType effectType,
-    TypeInfo::ID effectId,
+using RenderableParamSelector = std::function<Params(
+    RenderableType type,
+    TypeInfo::ID renderableId,
     uint16_t layoutId,
     Mirror mirror
 )>;
 
 template<typename C>
-using RandomEffect = std::tuple<uint16_t, EffectFactoryRef<C>, Mirror>;
+using RandomRenderable = std::tuple<uint16_t, RenderableFactoryRef<C>, Mirror>;
 
 class LayoutConfig {
     const std::map<uint16_t, String> _layoutNames;
-    const EffectSelector<CRGB> _effects;
-    const EffectSelector<CRGB> _overlays;
-    const EffectSelector<uint8_t> _transitions;
+    const RenderableSelector<CRGB> _effects;
+    const RenderableSelector<CRGB> _overlays;
+    const RenderableSelector<uint8_t> _transitions;
     const LayoutSelector _layoutSelector;
-    const EffectParamSelector _paramSelector;
+    const RenderableParamSelector _paramSelector;
 
     template<typename T>
-    RandomEffect<T> randomEntry(
-        EffectType effectType,
-        const EffectSelector<T> &effectSelector,
-        EffectFactoryRef<T> defaultEffectFactory
+    RandomRenderable<T> randomEntry(
+        RenderableType type,
+        const RenderableSelector<T> &renderableSelector,
+        RenderableFactoryRef<T> defaultRenderableFactory
     ) const;
 
 public:
@@ -70,10 +70,10 @@ public:
         const std::set<uint16_t> &layoutIds,
         const std::map<uint16_t, String> &layoutNames,
         LayoutSelector layoutSelector,
-        EffectSelector<CRGB> effects,
-        EffectSelector<CRGB> overlays,
-        EffectSelector<uint8_t> transitions,
-        EffectParamSelector paramSelector
+        RenderableSelector<CRGB> effects,
+        RenderableSelector<CRGB> overlays,
+        RenderableSelector<uint8_t> transitions,
+        RenderableParamSelector paramSelector
     ): _layoutNames(layoutNames),
        _layoutSelector(std::move(layoutSelector)),
        _effects(std::move(effects)),
@@ -90,15 +90,15 @@ public:
         return _layoutNames.at(layoutId);
     }
 
-    RandomEffect<CRGB> randomEffect() const;
+    RandomRenderable<CRGB> randomEffect() const;
 
-    RandomEffect<CRGB> randomOverlay() const;
+    RandomRenderable<CRGB> randomOverlay() const;
 
-    RandomEffect<uint8_t> randomTransition() const;
+    RandomRenderable<uint8_t> randomTransition() const;
 
     Params params(
-        EffectType effectType,
-        TypeInfo::ID effectId,
+        RenderableType type,
+        TypeInfo::ID renderableId,
         uint16_t layoutId,
         Mirror mirror
     ) const;

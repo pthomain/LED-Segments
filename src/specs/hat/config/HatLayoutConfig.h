@@ -21,7 +21,7 @@
 #ifndef HAT_LAYOUT_CONFIG_H
 #define HAT_LAYOUT_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 
 constexpr uint8_t NB_PANELS = 5;
 constexpr uint8_t LEDS_PER_PANEL = 6;
@@ -68,10 +68,10 @@ static const std::map<uint16_t, String> hatLayoutNames = {
     {EYE_LINEAR, "EYE_LINEAR"}
 };
 
-static WeightedLayouts hatLayoutSelector(EffectType effectType) {
-    switch (effectType) {
-        case EffectType::EFFECT:
-        case EffectType::TRANSITION:
+static WeightedLayouts hatLayoutSelector(RenderableType type) {
+    switch (type) {
+        case RenderableType::EFFECT:
+        case RenderableType::TRANSITION:
             return {
                 {EYE_ROW, 1},
                 {EYE_COLUMN, 1},
@@ -84,7 +84,7 @@ static WeightedLayouts hatLayoutSelector(EffectType effectType) {
                 {EYE_CONCENTRIC, 6}
             };
 
-        case EffectType::OVERLAY:
+        case RenderableType::OVERLAY:
         default:
             return {{EYE_LINEAR, 1}};
     }

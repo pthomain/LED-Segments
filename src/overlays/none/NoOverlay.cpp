@@ -22,14 +22,14 @@
 #include "NoOverlay.h"
 
 static const NoOverlayFactory factoryInstance;
-EffectFactoryRef<CRGB> NoOverlay::factory = &factoryInstance;
+RenderableFactoryRef<CRGB> NoOverlay::factory = &factoryInstance;
 
 void NoOverlay::fillArrayInternal(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    memset(effectArray, CRGB::White, effectArraySize * sizeof(CRGB));
+    memset(renderableArray, CRGB::White, renderableArraySize * sizeof(CRGB));
 };

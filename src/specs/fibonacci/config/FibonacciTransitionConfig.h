@@ -21,10 +21,10 @@
 #ifndef FIBONACCI_TRANSLATION_CONFIG_H
 #define FIBONACCI_TRANSLATION_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "transitions/Transition.h"
 
-static EffectAndMirrors<uint8_t> fibonacciTransitionSelector(uint16_t layoutId) {
+static RenderablesAndMirrors<uint8_t> fibonacciTransitionSelector(uint16_t layoutId) {
     return SLIDE_TRANSITION;
 }
 

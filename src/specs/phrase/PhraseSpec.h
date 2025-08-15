@@ -45,7 +45,7 @@ public :
             phraseLayouts,
             phraseLayoutNames,
             phraseLayoutSelector,
-            phraseEffectSelector,
+            phraseRenderableSelector,
             phraseOverlaySelector,
             phraseTransitionSelector,
             phraseParamSelector

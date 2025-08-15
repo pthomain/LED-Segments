@@ -21,7 +21,7 @@
 #ifndef FIBONACCI_OVERLAY_CONFIG_H
 #define FIBONACCI_OVERLAY_CONFIG_H
 
-#include <engine/displayspec/LayoutConfig.h>
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "overlays/none/NoOverlay.h"
 #include "overlays/dash/DashOverlay.h"
 #include "overlays/moire/MoireOverlay.h"
@@ -31,7 +31,7 @@
 #include "FibonacciLayoutDefinitions.h"
 #include "overlays/matrix/MatrixOverlay.h"
 
-static EffectAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutId) {
+static RenderablesAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutId) {
     const auto [pixelUnit, direction, alignment, inflexion] = layoutInfo(layoutId);
 
     if (pixelUnit == SEGMENT) {
@@ -44,7 +44,7 @@ static EffectAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutId) {
                     // {DashOverlay::factory, 3},
                     {MatrixOverlay::factory, 3},
                 },
-                [](EffectFactoryRef<CRGB> overlayFactory) {
+                [](RenderableFactoryRef<CRGB> overlayFactory) {
                     return WeightedMirrors{
                         {Mirror::OVERLAY_REPEAT_2, 1},
                         {Mirror::OVERLAY_REPEAT_2_REVERSE, 1},
@@ -72,7 +72,7 @@ static EffectAndMirrors<CRGB> fibonacciOverlaySelector(uint16_t layoutId) {
                     {DashOverlay::factory, 3},
                     {MatrixOverlay::factory, 3},
                 },
-                [](EffectFactoryRef<CRGB> overlayFactory) {
+                [](RenderableFactoryRef<CRGB> overlayFactory) {
                     if (overlayFactory->is<MatrixOverlay>()) {
                         return WeightedMirrors{
                             {Mirror::NONE, 2},

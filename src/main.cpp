@@ -25,7 +25,7 @@
 #include "specs/hat/HatSpec.h"
 #include "specs/umbrella/UmbrellaSpec.h"
 
-using SPEC = FibonacciSpec;
+using SPEC = PhraseSpec;
 Display<SPEC> *display;
 
 void setup() {

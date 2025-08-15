@@ -22,27 +22,27 @@
 #define NOOVERLAY_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/BaseEffectFactory.h"
+#include "engine/render/renderable/BaseRenderableFactory.h"
 
 class NoOverlay : public Effect<NoOverlay, CRGB> {
 public:
-    explicit NoOverlay(const EffectContext &effectContext) : Effect(effectContext) {
+    explicit NoOverlay(const RenderableContext &context) : Effect(context) {
     }
 
     void fillArrayInternal(
-        CRGB *effectArray,
-        uint16_t effectArraySize,
+        CRGB *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
     ) override;
 
     static constexpr const char *name() { return "NoOverlay"; }
-    WeightedOperations operations() { return just(EffectOperation::OVERLAY_MULTIPLY); }
-    static EffectFactoryRef<CRGB> factory;
+    WeightedOperations operations() { return just(RenderableOperation::OVERLAY_MULTIPLY); }
+    static RenderableFactoryRef<CRGB> factory;
 };
 
-class NoOverlayFactory : public EffectFactory<NoOverlayFactory, NoOverlay, CRGB> {
+class NoOverlayFactory : public RenderableFactory<NoOverlayFactory, NoOverlay, CRGB> {
 public:
     static Params declareParams() {
         return {};

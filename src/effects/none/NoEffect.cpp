@@ -23,11 +23,11 @@
 #include "engine/utils/Weights.h"
 
 static const NoEffectFactory factoryInstance;
-EffectFactoryRef<CRGB> NoEffect::factory = &factoryInstance;
+RenderableFactoryRef<CRGB> NoEffect::factory = &factoryInstance;
 
 void NoEffect::fillArrayInternal(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis

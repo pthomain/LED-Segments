@@ -22,7 +22,7 @@
 #define LED_SEGMENTS_SWIRLEFFECT_H
 
 #include "engine/effect/Effect.h"
-#include "engine/effect/BaseEffectFactory.h"
+#include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/utils/Utils.h"
 #include "engine/utils/Weights.h"
 
@@ -35,26 +35,26 @@ public:
     static const uint8_t PARAM_IS_REVERSIBLE = 0;
     static const uint8_t PARAM_SPEED_DIVIDER = 1;
 
-    explicit SwirlEffect(const EffectContext &effectContext)
-        : Effect(effectContext),
+    explicit SwirlEffect(const RenderableContext &context)
+        : Effect(context),
           isReversible(param(PARAM_IS_REVERSIBLE) > 0),
           speedDivider(max(1, param(PARAM_SPEED_DIVIDER))) {
     }
 
     void fillArrayInternal(
-        CRGB *effectArray,
-        uint16_t effectArraySize,
+        CRGB *renderableArray,
+        uint16_t renderableArraySize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
     ) override;
 
     static constexpr const char *name() { return "SwirlEffect"; }
-    WeightedOperations operations() { return just(EffectOperation::EFFECT); }
-    static EffectFactoryRef<CRGB> factory;
+    WeightedOperations operations() { return just(RenderableOperation::EFFECT); }
+    static RenderableFactoryRef<CRGB> factory;
 };
 
-class SwirlEffectFactory : public EffectFactory<SwirlEffectFactory, SwirlEffect, CRGB> {
+class SwirlEffectFactory : public RenderableFactory<SwirlEffectFactory, SwirlEffect, CRGB> {
 public:
     static Params declareParams() {
         return {

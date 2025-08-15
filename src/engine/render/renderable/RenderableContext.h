@@ -18,14 +18,14 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LED_SEGMENTS_EFFECTCONTEXT_H
-#define LED_SEGMENTS_EFFECTCONTEXT_H
+#ifndef RENDERABLE_CONTEXT_H
+#define RENDERABLE_CONTEXT_H
 
 #include <map>
 #include <engine/mirror/Mirror.h>
 #include <engine/palette/Palette.h>
 
-class EffectContext {
+class RenderableContext {
 public:
     const uint16_t maxSegmentSize;
     const uint16_t nbSegments;
@@ -36,7 +36,7 @@ public:
     const Mirror mirror;
     const std::map<uint8_t, uint16_t> parameters;
 
-    EffectContext(
+    RenderableContext(
         const uint16_t maxSegmentSize,
         const uint16_t nbSegments,
         const uint16_t durationInFrames,
@@ -56,4 +56,4 @@ public:
     }
 };
 
-#endif //LED_SEGMENTS_EFFECTCONTEXT_H
+#endif //RENDERABLE_CONTEXT_H

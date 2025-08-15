@@ -21,7 +21,7 @@
 #ifndef PHRASE_LAYOUT_CONFIG_H
 #define PHRASE_LAYOUT_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 
 // Format is PIXELS_IN_SEGMENTS
 enum PhraseLayout {
@@ -51,9 +51,9 @@ static const std::map<uint16_t, String> phraseLayoutNames = {
     {WORDS_IN_WHOLE, "WORDS_IN_WHOLE"},
 };
 
-static WeightedLayouts phraseLayoutSelector(EffectType effectType) {
-    switch (effectType) {
-        case EffectType::EFFECT:
+static WeightedLayouts phraseLayoutSelector(RenderableType type) {
+    switch (type) {
+        case RenderableType::EFFECT:
             return {
                 {LEDS_IN_WHOLE, 0},
                 {LEDS_IN_WORDS, 0},
@@ -63,7 +63,7 @@ static WeightedLayouts phraseLayoutSelector(EffectType effectType) {
                 {WORDS_IN_WHOLE, 8}
             };
 
-        case EffectType::TRANSITION:
+        case RenderableType::TRANSITION:
             return {
                 {LEDS_IN_WHOLE, 0},
                 {LEDS_IN_WORDS, 1},
@@ -73,7 +73,7 @@ static WeightedLayouts phraseLayoutSelector(EffectType effectType) {
                 {WORDS_IN_WHOLE, 0}
             };
 
-        case EffectType::OVERLAY:
+        case RenderableType::OVERLAY:
             return {
                 {LEDS_IN_WHOLE, 0},
                 {LEDS_IN_WORDS, 2},

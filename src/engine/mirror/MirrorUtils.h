@@ -23,19 +23,19 @@
 #ifndef LED_SEGMENTS_MIRRORUTILS_H
 #define LED_SEGMENTS_MIRRORUTILS_H
 
-#include "engine/effect/BaseEffectFactory.h"
+#include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/utils/Weights.h"
 
 template<typename C>
-using MirrorSelector = std::function<WeightedMirrors(EffectFactoryRef<C> effectFactory)>;
+using MirrorSelector = std::function<WeightedMirrors(RenderableFactoryRef<C> renderableFactory)>;
 
 template<typename C>
-WeightedMirrors noMirrors(EffectFactoryRef<C> effectFactory) {
+WeightedMirrors noMirrors(RenderableFactoryRef<C> renderableFactory) {
     return {};
 }
 
 template<typename C>
-WeightedMirrors undividedMirrors(EffectFactoryRef<C> effectFactory) {
+WeightedMirrors undividedMirrors(RenderableFactoryRef<C> renderableFactory) {
     return {
             {Mirror::NONE, 1},
             {Mirror::REVERSE, 1},
@@ -43,7 +43,7 @@ WeightedMirrors undividedMirrors(EffectFactoryRef<C> effectFactory) {
 }
 
 template<typename C>
-WeightedMirrors unrepeatedMirrors(EffectFactoryRef<C> effectFactory) {
+WeightedMirrors unrepeatedMirrors(RenderableFactoryRef<C> renderableFactory) {
     return {
             {Mirror::NONE, 1},
             {Mirror::REVERSE, 1},
@@ -53,7 +53,7 @@ WeightedMirrors unrepeatedMirrors(EffectFactoryRef<C> effectFactory) {
 }
 
 template<typename C>
-WeightedMirrors allMirrors(EffectFactoryRef<C> effectFactory) {
+WeightedMirrors allMirrors(RenderableFactoryRef<C> renderableFactory) {
     return {
             {Mirror::NONE, 1},
             {Mirror::REVERSE, 1},
@@ -66,28 +66,28 @@ WeightedMirrors allMirrors(EffectFactoryRef<C> effectFactory) {
 }
 
 template
-WeightedMirrors noMirrors(EffectFactoryRef<uint8_t> effectFactory);
+WeightedMirrors noMirrors(RenderableFactoryRef<uint8_t> renderableFactory);
 
 template
-WeightedMirrors noMirrors(EffectFactoryRef<CRGB> effectFactory);
+WeightedMirrors noMirrors(RenderableFactoryRef<CRGB> renderableFactory);
 
 template
-WeightedMirrors undividedMirrors(EffectFactoryRef<CRGB> effectFactory);
+WeightedMirrors undividedMirrors(RenderableFactoryRef<CRGB> renderableFactory);
 
 template
-WeightedMirrors undividedMirrors(EffectFactoryRef<uint8_t> effectFactory);
+WeightedMirrors undividedMirrors(RenderableFactoryRef<uint8_t> renderableFactory);
 
 template
-WeightedMirrors unrepeatedMirrors(EffectFactoryRef<uint8_t> effectFactory);
+WeightedMirrors unrepeatedMirrors(RenderableFactoryRef<uint8_t> renderableFactory);
 
 template
-WeightedMirrors unrepeatedMirrors(EffectFactoryRef<CRGB> effectFactory);
+WeightedMirrors unrepeatedMirrors(RenderableFactoryRef<CRGB> renderableFactory);
 
 template
-WeightedMirrors allMirrors(EffectFactoryRef<CRGB> effectFactory);
+WeightedMirrors allMirrors(RenderableFactoryRef<CRGB> renderableFactory);
 
 template
-WeightedMirrors allMirrors(EffectFactoryRef<uint8_t> effectFactory);
+WeightedMirrors allMirrors(RenderableFactoryRef<uint8_t> renderableFactory);
 
 
 #endif //LED_SEGMENTS_MIRRORUTILS_H

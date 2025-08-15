@@ -26,11 +26,11 @@
 const uint8_t SwirlEffect::PARAM_IS_REVERSIBLE;
 
 static const SwirlEffectFactory factoryInstance;
-EffectFactoryRef<CRGB> SwirlEffect::factory = &factoryInstance;
+RenderableFactoryRef<CRGB> SwirlEffect::factory = &factoryInstance;
 
 void SwirlEffect::fillArrayInternal(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
@@ -42,10 +42,10 @@ void SwirlEffect::fillArrayInternal(
    const uint8_t start = direction * (step + offset);
 
     fill_palette(
-        effectArray,
-        effectArraySize,
+        renderableArray,
+        renderableArraySize,
         start,
-        max(1, 255 / effectArraySize),
+        max(1, 255 / renderableArraySize),
         context.palette.palette,
         255,
         LINEARBLEND

@@ -26,16 +26,16 @@
 const uint16_t SparkleOverlay::PARAM_DENSITY;
 
 static const SparkleOverlayFactory factoryInstance;
-EffectFactoryRef<CRGB> SparkleOverlay::factory = &factoryInstance;
+RenderableFactoryRef<CRGB> SparkleOverlay::factory = &factoryInstance;
 
 void SparkleOverlay::fillArrayInternal(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    for (uint16_t i = 0; i < effectArraySize; i++) {
-        effectArray[i] = probability(density) ? CRGB::White : CRGB::Black;
+    for (uint16_t i = 0; i < renderableArraySize; i++) {
+        renderableArray[i] = probability(density) ? CRGB::White : CRGB::Black;
     }
 }

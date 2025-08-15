@@ -27,21 +27,21 @@ const uint16_t WaveOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT;
 const uint16_t WaveOverlay::PARAM_OPERATION_INVERT_WEIGHT;
 
 static const WaveOverlayFactory factoryInstance;
-EffectFactoryRef<CRGB> WaveOverlay::factory = &factoryInstance;
+RenderableFactoryRef<CRGB> WaveOverlay::factory = &factoryInstance;
 
 void WaveOverlay::fillArrayInternal(
-    CRGB *effectArray,
-    uint16_t effectArraySize,
+    CRGB *renderableArray,
+    uint16_t renderableArraySize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    memset(effectArray, CRGB::White, effectArraySize * sizeof(CRGB));
+    memset(renderableArray, CRGB::White, renderableArraySize * sizeof(CRGB));
 
     uint8_t amplitude = beatsin16(
         bpm,
-        effectArraySize,
-        effectArraySize
+        renderableArraySize,
+        renderableArraySize
     );
 
     phase += scrollingSpeed;
@@ -52,5 +52,5 @@ void WaveOverlay::fillArrayInternal(
     //Sine value in range -32768 to +32767
     int16_t sineVal = map(sin16(x), -32768, 32767, 0, amplitude);
 
-    memset(effectArray, CRGB::Black, sineVal * sizeof(CRGB));
+    memset(renderableArray, CRGB::Black, sineVal * sizeof(CRGB));
 }

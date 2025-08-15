@@ -21,10 +21,10 @@
 #ifndef HAT_OVERLAY_CONFIG_H
 #define HAT_OVERLAY_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "specs/hat/overlays/EyeOverlay.h"
 
-static EffectAndMirrors<CRGB> hatOverlaySelector(uint16_t layoutId) {
+static RenderablesAndMirrors<CRGB> hatOverlaySelector(uint16_t layoutId) {
     return {
         just(EyeOverlay::factory),
         undividedMirrors<CRGB>

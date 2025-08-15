@@ -21,7 +21,7 @@
 #ifndef FIBONACCI_LAYOUT_CONFIG_H
 #define FIBONACCI_LAYOUT_CONFIG_H
 
-#include "engine/effect/EffectOperation.h"
+#include "../../../engine/render/renderable/RenderableOperation.h"
 #include "engine/utils/Weights.h"
 #include "FibonacciLayoutDefinitions.h"
 
@@ -37,7 +37,7 @@ static uint8_t transitionLayoutWeights(uint16_t layoutId) {
     return 1;
 }
 
-static WeightedLayouts fibonacciLayoutSelector(EffectType effectType) {
+static WeightedLayouts fibonacciLayoutSelector(RenderableType type) {
     auto ids = fibonacciLayoutIds();
     WeightedLayouts result;
     result.reserve(ids.size());
@@ -47,14 +47,14 @@ static WeightedLayouts fibonacciLayoutSelector(EffectType effectType) {
         ids.end(),
         std::back_inserter(result),
         [&](uint16_t layoutId) {
-            switch (effectType) {
-                case EffectType::EFFECT:
+            switch (type) {
+                case RenderableType::EFFECT:
                     return WeightedLayout{layoutId, effectLayoutWeight(layoutId)};
 
-                case EffectType::OVERLAY:
+                case RenderableType::OVERLAY:
                     return WeightedLayout{layoutId, overlayLayoutWeights(layoutId)};
 
-                case EffectType::TRANSITION:
+                case RenderableType::TRANSITION:
                 default:
                     return WeightedLayout{layoutId, transitionLayoutWeights(layoutId)};
             }

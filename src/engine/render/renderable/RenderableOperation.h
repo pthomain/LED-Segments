@@ -18,16 +18,16 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef EFFECTTYPE_H
-#define EFFECTTYPE_H
+#ifndef RENDERABLE_TYPE_H
+#define RENDERABLE_TYPE_H
 
-enum class EffectType {
+enum class RenderableType {
     EFFECT,
     OVERLAY,
     TRANSITION
 };
 
-enum class EffectOperation {
+enum class RenderableOperation {
     EFFECT,             //default for effects, always uses source (CRGB)
     OVERLAY_SOURCE,     //only useful for Overlay::NONE (CRGB)
     OVERLAY_SCREEN,     //blends using screen mode (CRGB)
@@ -36,17 +36,17 @@ enum class EffectOperation {
     TRANSITION          //default for transitions, always uses multiply (uint8_t)
 };
 
-inline String effectTypeName(EffectType effectType) {
-    switch (effectType) {
-        case EffectType::EFFECT:
+inline String renderableTypeName(RenderableType type) {
+    switch (type) {
+        case RenderableType::EFFECT:
             return "EFFECT";
-        case EffectType::OVERLAY:
+        case RenderableType::OVERLAY:
             return "OVERLAY";
-        case EffectType::TRANSITION:
+        case RenderableType::TRANSITION:
             return "TRANSITION";
         default:
             return "UNKNOWN";
     }
 }
 
-#endif //EFFECTTYPE_H
+#endif //RENDERABLE_TYPE_H

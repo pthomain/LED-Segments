@@ -21,7 +21,7 @@
 #ifndef PHRASE_PARAM_CONFIG_H
 #define PHRASE_PARAM_CONFIG_H
 
-#include "engine/displayspec/LayoutConfig.h"
+#include "engine/displayspec/config/LayoutConfig.h"
 #include "engine/effect/Effect.h"
 #include <effects/noise/NoiseEffect.h>
 #include <effects/slide/SlideEffect.h>
@@ -36,10 +36,10 @@
 #include "overlays/wave/WaveOverlay.h"
 
 static std::map<uint8_t, uint16_t> phraseEffectParamSelector(
-    TypeInfo::ID effectId,
+    TypeInfo::ID renderableId,
     Mirror mirror
 ) {
-    if (GradientEffect::factory->is(effectId)) {
+    if (GradientEffect::factory->is(renderableId)) {
         return GradientEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue)-> uint16_t {
             switch (paramKey) {
                 case GradientEffect::PARAM_COLOUR_START: return random8();
@@ -49,7 +49,7 @@ static std::map<uint8_t, uint16_t> phraseEffectParamSelector(
         });
     }
 
-    if (NoiseEffect::factory->is(effectId)) {
+    if (NoiseEffect::factory->is(renderableId)) {
         return NoiseEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case NoiseEffect::PARAM_PALETTE_SCALE: return random8(2, 6);
@@ -61,7 +61,7 @@ static std::map<uint8_t, uint16_t> phraseEffectParamSelector(
         });
     }
 
-    if (SlideEffect::factory->is(effectId)) {
+    if (SlideEffect::factory->is(renderableId)) {
         return SlideEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case SlideEffect::PARAM_NB_COLOURS: return 4;
@@ -72,7 +72,7 @@ static std::map<uint8_t, uint16_t> phraseEffectParamSelector(
         });
     }
 
-    if (SwirlEffect::factory->is(effectId)) {
+    if (SwirlEffect::factory->is(renderableId)) {
         return SwirlEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case SwirlEffect::PARAM_IS_REVERSIBLE: return 1;
@@ -86,10 +86,10 @@ static std::map<uint8_t, uint16_t> phraseEffectParamSelector(
 }
 
 static std::map<uint8_t, uint16_t> phraseOverlayParamSelector(
-    TypeInfo::ID effectId,
+    TypeInfo::ID renderableId,
     Mirror mirror
 ) {
-    if (ChaseOverlay::factory->is(effectId)) {
+    if (ChaseOverlay::factory->is(renderableId)) {
         return ChaseOverlay::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case ChaseOverlay::PARAM_MIN_SPARKS_PER_SEGMENT: return 1;
@@ -105,7 +105,7 @@ static std::map<uint8_t, uint16_t> phraseOverlayParamSelector(
         });
     }
 
-    if (DashOverlay::factory->is(effectId)) {
+    if (DashOverlay::factory->is(renderableId)) {
         return DashOverlay::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case DashOverlay::PARAM_TAIL_SPEED: return random8(1, 5);
@@ -116,7 +116,7 @@ static std::map<uint8_t, uint16_t> phraseOverlayParamSelector(
         });
     }
 
-    if (MoireOverlay::factory->is(effectId)) {
+    if (MoireOverlay::factory->is(renderableId)) {
         return MoireOverlay::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case MoireOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT: return 4;
@@ -129,7 +129,7 @@ static std::map<uint8_t, uint16_t> phraseOverlayParamSelector(
         });
     }
 
-    if (SparkleOverlay::factory->is(effectId)) {
+    if (SparkleOverlay::factory->is(renderableId)) {
         return SparkleOverlay::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case SparkleOverlay::PARAM_DENSITY: return 5;
@@ -138,7 +138,7 @@ static std::map<uint8_t, uint16_t> phraseOverlayParamSelector(
         });
     }
 
-    if (WaveOverlay::factory->is(effectId)) {
+    if (WaveOverlay::factory->is(renderableId)) {
         return WaveOverlay::factory->params([](uint8_t paramKey, uint16_t defaultValue) -> uint16_t {
             switch (paramKey) {
                 case WaveOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT: return 4;
@@ -152,16 +152,16 @@ static std::map<uint8_t, uint16_t> phraseOverlayParamSelector(
 }
 
 static std::map<uint8_t, uint16_t> phraseParamSelector(
-    EffectType effectType,
-    TypeInfo::ID effectId,
+    RenderableType type,
+    TypeInfo::ID renderableId,
     uint16_t layoutId,
     Mirror mirror
 ) {
-    switch (effectType) {
-        case EffectType::EFFECT:
-            return phraseEffectParamSelector(effectId, mirror);
-        case EffectType::OVERLAY:
-            return phraseOverlayParamSelector(effectId, mirror);
+    switch (type) {
+        case RenderableType::EFFECT:
+            return phraseEffectParamSelector(renderableId, mirror);
+        case RenderableType::OVERLAY:
+            return phraseOverlayParamSelector(renderableId, mirror);
         default:
             return {};
     }

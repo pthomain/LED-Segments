@@ -4,3 +4,9 @@
 
 # OS
 .DS_Store
+
+# PlatformIO
+.pio/
+
+# Python
+.venv/

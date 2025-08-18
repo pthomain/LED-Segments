@@ -21,16 +21,20 @@
 #include "FadeTransition.h"
 #include "engine/utils/Weights.h"
 
+namespace LEDSegments {
+
 static const FadeTransitionFactory factoryInstance;
 RenderableFactoryRef<uint8_t> FadeTransition::factory = &factoryInstance;
 
-void FadeTransition::fillArrayInternal(
-    uint8_t *renderableArray,
-    uint16_t renderableArraySize,
+void FadeTransition::fillSegmentArray(
+    uint8_t *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
     auto alpha = static_cast<uint8_t>(255.0f * progress);
-    memset(renderableArray, alpha, renderableArraySize * sizeof(uint8_t));
+    memset(segmentArray, alpha, segmentSize * sizeof(uint8_t));
 }
+
+} // namespace LEDSegments

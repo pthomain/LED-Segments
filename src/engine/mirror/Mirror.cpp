@@ -19,32 +19,34 @@
  */
 
 #include "Mirror.h"
+#include "engine/render/renderable/Renderable.h"
+#include "engine/utils/Blending.h"
+#include "engine/utils/Utils.h"
 #include <functional>
 #include <memory>
-#include "engine/utils/Utils.h"
-#include "engine/utils/Blending.h"
-#include "engine/render/renderable/Renderable.h"
+
+namespace LEDSegments {
 
 template<typename C>
 void applyMirror(
     const std::shared_ptr<Renderable<C> > &renderable,
     Mirror mirror,
-    C *renderableArray,
-    uint16_t renderableArraySize
+    C *segmentArray,
+    uint16_t segmentSize
 ) {
     if (mirror == Mirror::NONE) return;
 
-    const uint16_t mirrorSize = getMirrorSize(mirror, renderableArraySize);
-    const uint16_t offset = renderableArraySize % 2 == 0 ? 1 : 0;
+    const uint16_t mirrorSize = getMirrorSize(mirror, segmentSize);
+    const uint16_t offset = segmentSize % 2 == 0 ? 1 : 0;
     const uint16_t centre = mirrorSize - 1;
 
     auto reverse = [&](const std::function<void(uint16_t x)> &extraStep = nullptr) {
         for (uint16_t index = 0; index < mirrorSize / 2; ++index) {
             uint16_t reverseIndex = mirrorSize - 1 - index;
 
-            auto temp = renderableArray[index];
-            renderableArray[index] = renderableArray[reverseIndex];
-            renderableArray[reverseIndex] = temp;
+            auto temp = segmentArray[index];
+            segmentArray[index] = segmentArray[reverseIndex];
+            segmentArray[reverseIndex] = temp;
 
             if (extraStep) extraStep(index);
         }
@@ -57,27 +59,27 @@ void applyMirror(
 
         case Mirror::CENTRE:
             for (uint16_t index = 0; index < mirrorSize; ++index) {
-                renderableArray[centre + index + offset] = renderableArray[centre - index];
+                segmentArray[centre + index + offset] = segmentArray[centre - index];
             }
             break;
 
         case Mirror::EDGE: {
             for (uint16_t index = 0; index < mirrorSize; ++index) {
-                renderableArray[centre + index + offset] = renderableArray[index];
-                renderableArray[centre - index] = renderableArray[centre + index + offset];
+                segmentArray[centre + index + offset] = segmentArray[index];
+                segmentArray[centre - index] = segmentArray[centre + index + offset];
             }
         }
         break;
 
         case Mirror::REPEAT:
             for (uint16_t index = 0; index < mirrorSize; ++index) {
-                renderableArray[centre + index + offset] = renderableArray[index];
+                segmentArray[centre + index + offset] = segmentArray[index];
             }
             break;
 
         case Mirror::REPEAT_REVERSE: {
             auto extraStep = [&](uint16_t index) {
-                renderableArray[mirrorSize + index] = renderableArray[index];
+                segmentArray[mirrorSize + index] = segmentArray[index];
             };
             reverse(extraStep);
             for (uint16_t index = mirrorSize / 2; index < mirrorSize; ++index) {
@@ -97,41 +99,41 @@ void applyMirror(
     }
 
     auto overlayRepeat = [&](uint16_t x) {
-        C *originalrenderableArray = new C[mirrorSize];
-        std::copy(renderableArray, renderableArray + mirrorSize, originalrenderableArray);
+        C *originalSegmentArray = new C[mirrorSize];
+        std::copy(segmentArray, segmentArray + mirrorSize, originalSegmentArray);
 
         for (uint16_t repetition = 0; repetition < x; ++repetition) {
             int repetitionOffset = repetition * mirrorSize / x;
             for (uint16_t index = 0; index < mirrorSize; ++index) {
                 int targetIndex = (repetitionOffset + index) % mirrorSize;
-                renderableArray[targetIndex] = mix(
-                    renderableArray[targetIndex],
-                    originalrenderableArray[index],
+                segmentArray[targetIndex] = mix(
+                    segmentArray[targetIndex],
+                    originalSegmentArray[index],
                     mixOperation(RenderableOperation::OVERLAY_SCREEN)
                 );
             }
         }
 
-        delete[] originalrenderableArray;
+        delete[] originalSegmentArray;
     };
 
     auto overlayRepeatReverse = [&](uint16_t x) {
         overlayRepeat(x);
 
-        C *forwardrenderableArray = new C[mirrorSize];
-        std::copy(renderableArray, renderableArray + mirrorSize, forwardrenderableArray);
+        C *forwardSegmentArray = new C[mirrorSize];
+        std::copy(segmentArray, segmentArray + mirrorSize, forwardSegmentArray);
 
         reverse();
 
         for (uint16_t index = 0; index < mirrorSize; ++index) {
-            renderableArray[index] = mix(
-                renderableArray[index],
-                forwardrenderableArray[index],
+            segmentArray[index] = mix(
+                segmentArray[index],
+                forwardSegmentArray[index],
                 mixOperation(RenderableOperation::OVERLAY_SCREEN)
             );
         }
 
-        delete[] forwardrenderableArray;
+        delete[] forwardSegmentArray;
     };
 
     switch (mirror) {
@@ -173,16 +175,16 @@ void applyMirror(
 
 uint16_t getMirrorSize(
     Mirror mirror,
-    uint16_t renderableArraySize
+    uint16_t segmentSize
 ) {
     switch (mirror) {
         case Mirror::CENTRE:
         case Mirror::EDGE:
         case Mirror::REPEAT:
         case Mirror::REPEAT_REVERSE:
-            return (renderableArraySize / 2) + (renderableArraySize % 2 == 0 ? 0 : 1);
+            return (segmentSize / 2) + (segmentSize % 2 == 0 ? 0 : 1);
 
-        default: return renderableArraySize;
+        default: return segmentSize;
     }
 }
 
@@ -235,14 +237,16 @@ template
 void applyMirror(
     const std::shared_ptr<Renderable<CRGB> > &renderable,
     Mirror mirror,
-    CRGB *renderableArray,
-    uint16_t renderableArraySize
+    CRGB *segmentArray,
+    uint16_t segmentSize
 );
 
 template
 void applyMirror(
     const std::shared_ptr<Renderable<uint8_t> > &renderable,
     Mirror mirror,
-    uint8_t *renderableArray,
-    uint16_t renderableArraySize
+    uint8_t *segmentArray,
+    uint16_t segmentSize
 );
+
+} // namespace LEDSegments

@@ -22,6 +22,8 @@
 #include "crgb.h"
 #include "engine/utils/Utils.h"
 
+namespace LEDSegments {
+
 const uint8_t DashOverlay::PARAM_TAIL_SPEED;
 const uint16_t DashOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT;
 const uint16_t DashOverlay::PARAM_OPERATION_INVERT_WEIGHT;
@@ -29,9 +31,9 @@ const uint16_t DashOverlay::PARAM_OPERATION_INVERT_WEIGHT;
 static const DashOverlayFactory factoryInstance;
 RenderableFactoryRef<CRGB> DashOverlay::factory = &factoryInstance;
 
-void DashOverlay::fillArrayInternal(
-    CRGB *renderableArray,
-    uint16_t renderableArraySize,
+void DashOverlay::fillSegmentArray(
+    CRGB *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
@@ -40,10 +42,10 @@ void DashOverlay::fillArrayInternal(
     auto &tailPosition = tailPositionForSegment[segmentIndex];
     auto &isReversed = isReversedForSegment[segmentIndex];
 
-    const auto lastIndex = renderableArraySize - 1;
+    const auto lastIndex = segmentSize - 1;
 
     if (isReversed) {
-        const uint16_t headThreshold = tailSpeed == 1 ? 0 : renderableArraySize / tailSpeed;
+        const uint16_t headThreshold = tailSpeed == 1 ? 0 : segmentSize / tailSpeed;
         if (headPosition > 0) headPosition--;
 
         if (headPosition <= headThreshold && tailPosition > 0) {
@@ -56,7 +58,7 @@ void DashOverlay::fillArrayInternal(
     } else {
         const uint16_t headThreshold = tailSpeed == 1
                                            ? lastIndex
-                                           : renderableArraySize - (renderableArraySize / tailSpeed) + 1;
+                                           : segmentSize - (segmentSize / tailSpeed) + 1;
 
         if (headPosition < lastIndex) headPosition++;
 
@@ -70,6 +72,8 @@ void DashOverlay::fillArrayInternal(
     }
 
     for (uint16_t i = min(headPosition, tailPosition); i <= max(headPosition, tailPosition); i++) {
-        renderableArray[i] = CRGB::White;
+        segmentArray[i] = CRGB::White;
     }
 }
+
+} // namespace LEDSegments

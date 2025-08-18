@@ -21,18 +21,20 @@
 #ifndef FADETRANSITION_H
 #define FADETRANSITION_H
 
-#include "engine/render/renderable/TypedRenderable.h"
 #include "engine/render/renderable/BaseRenderableFactory.h"
+#include "engine/render/renderable/TypedRenderable.h"
 #include "engine/utils/Weights.h"
+
+namespace LEDSegments {
 
 class FadeTransition : public Transition<FadeTransition> {
 public:
     explicit FadeTransition(const RenderableContext &context) : Transition(context) {
     }
 
-    void fillArrayInternal(
-        uint8_t *renderableArray,
-        uint16_t renderableArraySize,
+    void fillSegmentArray(
+        uint8_t *segmentArray,
+        uint16_t segmentSize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
@@ -48,5 +50,7 @@ public:
         return {};
     }
 };
+
+} // namespace LEDSegments
 
 #endif //FADETRANSITION_H

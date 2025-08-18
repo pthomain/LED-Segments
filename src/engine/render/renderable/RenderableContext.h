@@ -21,9 +21,11 @@
 #ifndef RENDERABLE_CONTEXT_H
 #define RENDERABLE_CONTEXT_H
 
-#include <map>
 #include <engine/mirror/Mirror.h>
 #include <engine/palette/Palette.h>
+#include <map>
+
+namespace LEDSegments {
 
 class RenderableContext {
 public:
@@ -56,4 +58,6 @@ public:
     }
 };
 
-#endif //RENDERABLE_CONTEXT_H
+} // namespace LEDSegments
+
+#endif // RENDERABLE_CONTEXT_H

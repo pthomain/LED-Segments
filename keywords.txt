@@ -95,7 +95,7 @@ addEntropy	KEYWORD2
 pickRandomWeightedItem	KEYWORD2
 just	KEYWORD2
 declareParams	KEYWORD2
-fillArrayInternal	KEYWORD2
+fillSegmentArray	KEYWORD2
 
 # Literals & Enums
 NONE	LITERAL1

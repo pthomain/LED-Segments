@@ -21,8 +21,10 @@
 #ifndef PALETTE_H
 #define PALETTE_H
 
-#include <vector>
 #include "FastLED.h"
+#include <vector>
+
+namespace LEDSegments {
 
 class Palette {
 public:
@@ -39,26 +41,12 @@ public:
 static const Palette RAINBOW_PALETTE = Palette(Rainbow_gp, "Rainbow");
 static const Palette NO_PALETTE = Palette(CRGBPalette16(), "None");
 
-static const auto PALETTES = std::vector{
-    Palette(CRGBPalette16(
-                0xff0000,
-                0x00ff00
-            ),
-            "Red-Green"
-    ),
-    Palette(CRGBPalette16(
-                0x00ff00,
-                0x0000ff
-            ),
-            "Green-Blue"
-    ),
-    Palette(CRGBPalette16(
-                0x0000ff,
-                0xff0000
-            ),
-            "Blue-Red"
-    ),
+static const auto PALETTES = std::vector<Palette>{
+    Palette(CRGBPalette16(0xff0000, 0x00ff00), "Red-Green"),
+    Palette(CRGBPalette16(0x00ff00, 0x0000ff), "Green-Blue"),
+    Palette(CRGBPalette16(0x0000ff, 0xff0000), "Blue-Red"),
 };
 
+} // namespace LEDSegments
 
 #endif //PALETTE_H

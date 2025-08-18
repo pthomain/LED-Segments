@@ -22,15 +22,19 @@
 
 #include "engine/utils/Weights.h"
 
+namespace LEDSegments {
+
 static const NoEffectFactory factoryInstance;
 RenderableFactoryRef<CRGB> NoEffect::factory = &factoryInstance;
 
-void NoEffect::fillArrayInternal(
-    CRGB *renderableArray,
-    uint16_t renderableArraySize,
+void NoEffect::fillSegmentArray(
+    CRGB *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
     //NOOP
 };
+
+} // namespace LEDSegments

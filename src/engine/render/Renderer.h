@@ -24,12 +24,14 @@
 #include "FastLED.h"
 #include "engine/displayspec/DisplaySpec.h"
 
+namespace LEDSegments {
+
 class Renderer {
     std::shared_ptr<DisplaySpec> displaySpec;
 
     CRGB *outputArray = nullptr;
-    CRGB *renderableArray = nullptr;
-    uint8_t *renderableArray8 = nullptr;
+    CRGB *segmentArray = nullptr;
+    uint8_t *segmentArray8 = nullptr;
     CRGB *pendingOutputArray = nullptr;
 
     std::shared_ptr<Renderable<CRGB> > effect = nullptr;
@@ -54,7 +56,7 @@ class Renderer {
     template<typename C>
     void applyEffectOrTransition(
         const std::shared_ptr<Renderable<C> > &renderable,
-        C *renderableArray,
+        C *segmentArray,
         CRGB *outputArray,
         std::function<CRGB(uint16_t ledIndex, CRGB existing, C toBeMixed)> mix,
         float progress
@@ -80,5 +82,7 @@ public:
 
     ~Renderer();
 };
+
+} // namespace LEDSegments
 
 #endif //LED_SEGMENTS_RENDERER_H

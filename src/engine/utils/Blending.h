@@ -26,6 +26,7 @@
 #include "FastLED.h"
 #include "engine/render/renderable/RenderableOperation.h"
 
+namespace LEDSegments {
 uint8_t multiply(uint8_t base, uint8_t overlay);
 
 CRGB multiply(const CRGB &base, const CRGB &overlay);
@@ -60,5 +61,7 @@ CRGB mix(const CRGB &base, const CRGB &overlay, RenderableOperation operation);
 
 template
 uint8_t mix(const uint8_t &base, const uint8_t &overlay, RenderableOperation operation);
+
+} // namespace LEDSegments
 
 #endif //BLENDING_H

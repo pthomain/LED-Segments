@@ -18,18 +18,22 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "crgb.h"
 #include "NoOverlay.h"
+#include "crgb.h"
+
+namespace LEDSegments {
 
 static const NoOverlayFactory factoryInstance;
 RenderableFactoryRef<CRGB> NoOverlay::factory = &factoryInstance;
 
-void NoOverlay::fillArrayInternal(
-    CRGB *renderableArray,
-    uint16_t renderableArraySize,
+void NoOverlay::fillSegmentArray(
+    CRGB *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    memset(renderableArray, CRGB::White, renderableArraySize * sizeof(CRGB));
+    memset(segmentArray, CRGB::White, segmentSize * sizeof(CRGB));
 };
+
+} // namespace LEDSegments

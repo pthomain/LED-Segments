@@ -19,10 +19,12 @@
  */
 
 #include "LayoutConfig.h"
+#include "engine/utils/Utils.h"
+#include "transitions/none/NoTransition.h"
 #include <effects/none/NoEffect.h>
 #include <overlays/none/NoOverlay.h>
-#include "transitions/none/NoTransition.h"
-#include "engine/utils/Utils.h"
+
+namespace LEDSegments {
 
 template<typename T>
 RandomRenderable<T> LayoutConfig::randomEntry(
@@ -63,3 +65,5 @@ Params LayoutConfig::params(
 ) const {
     return _paramSelector(type, renderableId, layoutId, mirror);
 }
+
+} // namespace LEDSegments

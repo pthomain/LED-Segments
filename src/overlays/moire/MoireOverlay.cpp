@@ -22,21 +22,23 @@
 #include "crgb.h"
 #include "engine/utils/Utils.h"
 
+namespace LEDSegments {
+
 const uint16_t MoireOverlay::PARAM_OPERATION_MULTIPLY_WEIGHT;
 const uint16_t MoireOverlay::PARAM_OPERATION_INVERT_WEIGHT;
 
 static const MoireOverlayFactory factoryInstance;
 RenderableFactoryRef<CRGB> MoireOverlay::factory = &factoryInstance;
 
-void MoireOverlay::fillArrayInternal(
-    CRGB *renderableArray,
-    uint16_t renderableArraySize,
+void MoireOverlay::fillSegmentArray(
+    CRGB *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    for (uint16_t i = 0; i < renderableArraySize; i++) {
-        renderableArray[i] = backColour;
+    for (uint16_t i = 0; i < segmentSize; i++) {
+        segmentArray[i] = backColour;
     }
 
     const uint8_t distance = context.nbSegments * headLength;
@@ -44,14 +46,14 @@ void MoireOverlay::fillArrayInternal(
 
     auto &headIndex = headPositionForSegment[segmentIndex];
 
-    for (int32_t pixelIndex = 0; pixelIndex < renderableArraySize; pixelIndex++) {
+    for (int32_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
         bool isHead = ((pixelIndex + headIndex) % distance) - start == 0;
 
         if (isHead) {
             for (uint8_t trailIndex = 0; trailIndex < headLength && pixelIndex; trailIndex++) {
                 int32_t index = pixelIndex + trailIndex;
-                if (index > 0 && index < renderableArraySize) {
-                    renderableArray[index] = frontColour;
+                if (index > 0 && index < segmentSize) {
+                    segmentArray[index] = frontColour;
                     reverseArray[index] = frontColour;
                 }
             }
@@ -60,3 +62,5 @@ void MoireOverlay::fillArrayInternal(
 
     headIndex = ++headIndex % distance;
 }
+
+} // namespace LEDSegments

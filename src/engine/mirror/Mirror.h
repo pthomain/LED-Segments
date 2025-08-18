@@ -23,12 +23,13 @@
 #ifndef LED_SEGMENTS_MIRROR_H
 #define LED_SEGMENTS_MIRROR_H
 
-#include <memory>
 #include "FastLED.h"
 #include "engine/render/renderable/RenderableOperation.h"
+#include <memory>
 
-template<typename C>
-class Renderable;
+namespace LEDSegments {
+
+template <typename C> class Renderable;
 
 enum class Mirror {
     // The following mirrors apply to all effect types (effects, overlays and transitions).
@@ -69,17 +70,19 @@ String getMirrorName(Mirror mirror);
 
 uint16_t getMirrorSize(
     Mirror mirror,
-    uint16_t renderableArraySize
+    uint16_t segmentSize
 );
 
 template<typename C>
 void applyMirror(
     const std::shared_ptr<Renderable<C> > &renderable,
     Mirror mirror,
-    C *renderableArray,
-    uint16_t renderableArraySize
+    C *segmentArray,
+    uint16_t segmentSize
 );
 
 RenderableOperation mixOperation(RenderableOperation operation);
+
+} // namespace LEDSegments
 
 #endif //LED_SEGMENTS_MIRROR_H

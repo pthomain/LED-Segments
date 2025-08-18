@@ -26,10 +26,12 @@
 #include <cstdint>
 #include <vector>
 
-//Provide any free pin to use to gather electrical noise to build entropy for the PRNG.
-//Be careful not to include any pin already used in your circuit.
-void addEntropy(
-    const std::vector<uint8_t> &freePinsForEntropy
-);
+namespace LEDSegments {
 
-#endif //LED_SEGMENTS_SEEDGENERATOR_H
+// Provide any free pin to use to gather electrical noise to build entropy for
+// the PRNG. Be careful not to include any pin already used in your circuit.
+void addEntropy(const std::vector<uint8_t> &freePinsForEntropy);
+
+} // namespace LEDSegments
+
+#endif // LED_SEGMENTS_SEEDGENERATOR_H

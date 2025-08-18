@@ -21,17 +21,19 @@
 #ifndef NOOVERLAY_H
 #define NOOVERLAY_H
 
-#include "engine/render/renderable/TypedRenderable.h"
 #include "engine/render/renderable/BaseRenderableFactory.h"
+#include "engine/render/renderable/TypedRenderable.h"
+
+namespace LEDSegments {
 
 class NoOverlay : public Overlay<NoOverlay> {
 public:
     explicit NoOverlay(const RenderableContext &context) : Overlay(context) {
     }
 
-    void fillArrayInternal(
-        CRGB *renderableArray,
-        uint16_t renderableArraySize,
+    void fillSegmentArray(
+        CRGB *segmentArray,
+        uint16_t segmentSize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
@@ -48,5 +50,7 @@ public:
         return {};
     }
 };
+
+} // namespace LEDSegments
 
 #endif //NOOVERLAY_H

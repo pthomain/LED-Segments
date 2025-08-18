@@ -21,14 +21,16 @@
 #include "SwirlEffect.h"
 #include "engine/utils/Utils.h"
 
+namespace LEDSegments {
+
 const uint8_t SwirlEffect::PARAM_IS_REVERSIBLE;
 
 static const SwirlEffectFactory factoryInstance;
 RenderableFactoryRef<CRGB> SwirlEffect::factory = &factoryInstance;
 
-void SwirlEffect::fillArrayInternal(
-    CRGB *renderableArray,
-    uint16_t renderableArraySize,
+void SwirlEffect::fillSegmentArray(
+    CRGB *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
@@ -40,12 +42,14 @@ void SwirlEffect::fillArrayInternal(
    const uint8_t start = direction * (step + offset);
 
     fill_palette(
-        renderableArray,
-        renderableArraySize,
+        segmentArray,
+        segmentSize,
         start,
-        max(1, 255 / renderableArraySize),
+        max(1, 255 / segmentSize),
         context.palette.palette,
         255,
         LINEARBLEND
     );
 }
+
+} // namespace LEDSegments

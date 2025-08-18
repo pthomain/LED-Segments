@@ -20,10 +20,12 @@
 
 #include "Renderable.h"
 
+namespace LEDSegments {
+
 template<typename C>
 void Renderable<C>::fillArray(
-    C *renderableArray,
-    uint16_t renderableArraySize,
+    C *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress
 ) {
@@ -39,16 +41,16 @@ void Renderable<C>::fillArray(
         beforeFrame(progress, elapsedMillis);
     }
 
-    if (renderableArraySize == 0) {
+    if (segmentSize == 0) {
         Serial.println("Renderable::fillArray: empty array for segment " + String(segmentIndex));
         return;
     }
 
-    memset(renderableArray, 0, renderableArraySize * sizeof(C));
+    memset(segmentArray, 0, segmentSize * sizeof(C));
 
-    fillArrayInternal(
-        renderableArray,
-        renderableArraySize,
+    fillSegmentArray(
+        segmentArray,
+        segmentSize,
         segmentIndex,
         progress,
         elapsedMillis
@@ -60,3 +62,5 @@ void Renderable<C>::fillArray(
         _frameIndex++;
     }
 };
+
+} // namespace LEDSegments

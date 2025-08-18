@@ -4,7 +4,8 @@
 #ifndef INTERPOLATION_H
 #define INTERPOLATION_H
 
-namespace Interpolation {
+namespace LEDSegments {
+
     template<typename T>
     T easeOutQuad(T x) {
         return 1 - (1 - x) * (1 - x);
@@ -39,6 +40,7 @@ namespace Interpolation {
     T easeOutQuart(T x) {
         return 1 - pow(1 - x, 4);
     }
-}
 
-#endif //INTERPOLATION_H
+} // namespace LEDSegments
+
+#endif // INTERPOLATION_H

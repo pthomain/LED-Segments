@@ -21,9 +21,11 @@
 #ifndef SPARKLEOVERLAY_H
 #define SPARKLEOVERLAY_H
 
-#include "engine/render/renderable/TypedRenderable.h"
 #include "engine/render/renderable/BaseRenderableFactory.h"
+#include "engine/render/renderable/TypedRenderable.h"
 #include "engine/utils/Weights.h"
+
+namespace LEDSegments {
 
 class SparkleOverlay : public Overlay<SparkleOverlay> {
     const float density;
@@ -36,9 +38,9 @@ public:
           density(min(100, param(PARAM_DENSITY)) / 100.0f) {
     }
 
-    void fillArrayInternal(
-        CRGB *renderableArray,
-        uint16_t renderableArraySize,
+    void fillSegmentArray(
+        CRGB *segmentArray,
+        uint16_t segmentSize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
@@ -64,5 +66,7 @@ public:
         };
     }
 };
+
+} // namespace LEDSegments
 
 #endif //SPARKLEOVERLAY_H

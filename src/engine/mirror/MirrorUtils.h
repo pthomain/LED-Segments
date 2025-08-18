@@ -26,6 +26,8 @@
 #include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/utils/Weights.h"
 
+namespace LEDSegments {
+
 template<typename C>
 using MirrorSelector = std::function<WeightedMirrors(RenderableFactoryRef<C> renderableFactory)>;
 
@@ -89,5 +91,6 @@ WeightedMirrors allMirrors(RenderableFactoryRef<CRGB> renderableFactory);
 template
 WeightedMirrors allMirrors(RenderableFactoryRef<uint8_t> renderableFactory);
 
+} // namespace LEDSegments
 
 #endif //LED_SEGMENTS_MIRRORUTILS_H

@@ -25,6 +25,8 @@
 #include "engine/render/renderable/TypedRenderable.h"
 #include "engine/utils/Weights.h"
 
+namespace LEDSegments {
+
 class GradientEffect : public Effect<GradientEffect> {
     const uint8_t colourStart;
     const uint8_t variation8;
@@ -43,9 +45,9 @@ public:
           ) {
     }
 
-    void fillArrayInternal(
-        CRGB *renderableArray,
-        uint16_t renderableArraySize,
+    void fillSegmentArray(
+        CRGB *segmentArray,
+        uint16_t segmentSize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeInMillis
@@ -64,5 +66,7 @@ public:
         };
     }
 };
+
+} // namespace LEDSegments
 
 #endif //LED_SEGMENTS_GRADIENTEFFECT_H

@@ -26,11 +26,9 @@
 #include "transitions/none/NoTransition.h"
 #include "transitions/slide/SlideTransition.h"
 
-enum class TransitionType {
-    NONE,
-    FADE,
-    SLIDE
-};
+namespace LEDSegments {
+
+enum class TransitionType { NONE, FADE, SLIDE };
 
 const RenderablesAndMirrors<uint8_t> ALL_TRANSITIONS = {
     WeightedRenderables<uint8_t>{
@@ -63,5 +61,7 @@ static String getTransitionName(TransitionType transition) {
         default: return "UNKNOWN";
     }
 }
+
+} // namespace LEDSegments
 
 #endif //LED_SEGMENTS_TRANSITION_H

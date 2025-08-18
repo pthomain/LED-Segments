@@ -23,6 +23,8 @@
 
 #include "config/LayoutConfig.h"
 
+namespace LEDSegments {
+
 class DisplaySpec {
     uint16_t _maxSegmentSize = 0;
 
@@ -85,5 +87,7 @@ public:
 
     virtual ~DisplaySpec() = default;
 };
+
+} // namespace LEDSegments
 
 #endif //LED_SEGMENTS_DISPLAYSPEC_H

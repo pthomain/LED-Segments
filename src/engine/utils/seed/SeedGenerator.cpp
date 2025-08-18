@@ -19,9 +19,11 @@
  */
 
 #include "SeedGenerator.h"
-#include <Arduino.h>
 #include "lib8tion/random8.h"
+#include <Arduino.h>
 #include <vector>
+
+namespace LEDSegments {
 
 void addEntropy(
     const std::vector<uint8_t> &freePinsForEntropy
@@ -46,3 +48,5 @@ void addEntropy(
         seedSet = true;
     }
 }
+
+} // namespace LEDSegments

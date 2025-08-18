@@ -18,35 +18,34 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef HAT_EFFECT_CONFIG_H
-#define HAT_EFFECT_CONFIG_H
+#ifndef LED_SEGMENTS_CUSTOMEFFECT_H
+#define LED_SEGMENTS_CUSTOMEFFECT_H
 
-#include "HatLayoutConfig.h"
-#include "effects/noise/NoiseEffect.h"
-#include "effects/swirl/SwirlEffect.h"
-#include "effects/slide/SlideEffect.h"
+#include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/render/renderable/TypedRenderable.h"
+#include "engine/utils/Weights.h"
 
-static RenderablesAndMirrors<CRGB> hatEffectSelector(uint16_t layoutId) {
-    if (layoutId == EYE_LINEAR) {
-        return {
-            {
-                {SwirlEffect::factory, 2},
-                {NoiseEffect::factory, 2},
-                {SlideEffect::factory, 1},
-                {GradientEffect::factory, 1}
-            },
-            undividedMirrors<CRGB>
-        };
+class CustomEffect : public Effect<CustomEffect> {
+public:
+    explicit CustomEffect(const RenderableContext &context): Effect(context){}
+
+    void fillSegmentArray(
+        CRGB *segmentArray,
+        uint16_t segmentSize,
+    uint16_t segmentIndex,
+        float progress,
+        unsigned long timeInMillis
+    ) override;
+
+    static constexpr const char *name() { return "CustomEffect"; }
+    static RenderableFactoryRef<CRGB> factory;
+};
+
+class CustomEffectFactory : public RenderableFactory<CustomEffectFactory, CustomEffect, CRGB> {
+public:
+    static Params declareParams() {
+        return {};
     }
+};
 
-    return {
-        {
-            {NoiseEffect::factory, 1},
-            {GradientEffect::factory, 2}
-        },
-        undividedMirrors<CRGB>
-    };
-}
-
-#endif //HAT_EFFECT_CONFIG_H
+#endif //LED_SEGMENTS_CUSTOMEFFECT_H

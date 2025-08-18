@@ -24,22 +24,24 @@
 
 #include "Renderable.h"
 
+namespace LEDSegments {
+
 template<typename Child, typename Data>
 class TypedRenderable : public Renderable<Data> {
 public :
     explicit TypedRenderable(const RenderableContext &context) : Renderable<Data>(context) {
         static_assert(
-            std::is_base_of_v<TypedRenderable, Child>,
+            std::is_base_of<TypedRenderable, Child>::value,
             "Child must be a subclass of TypedRenderable"
         );
 
         static_assert(
-            std::is_same_v<decltype(Child::name()), const char *>,
+            std::is_same<decltype(Child::name()), const char *>::value,
             "Child class must implement static const char* name()"
         );
 
         static_assert(
-            std::is_same_v<decltype(std::declval<Child>().operations()), WeightedOperations>,
+            std::is_same<decltype(std::declval<Child>().operations()), WeightedOperations>::value,
             "Child class must implement WeightedOperations operations()"
         );
     };
@@ -98,5 +100,7 @@ public:
     }
     WeightedOperations operations() { return just(RenderableOperation::TRANSITION); }
 };
+
+} // namespace LEDSegments
 
 #endif //EFFECTS_H

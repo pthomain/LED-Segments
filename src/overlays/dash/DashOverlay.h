@@ -21,9 +21,11 @@
 #ifndef DASHOVERLAY_H
 #define DASHOVERLAY_H
 
-#include "engine/render/renderable/TypedRenderable.h"
 #include "engine/render/renderable/BaseRenderableFactory.h"
+#include "engine/render/renderable/TypedRenderable.h"
 #include "engine/utils/Weights.h"
+
+namespace LEDSegments {
 
 class DashOverlay : public Overlay<DashOverlay> {
     uint16_t *headPositionForSegment;
@@ -52,9 +54,9 @@ public:
         memset(isReversedForSegment, 0, context.nbSegments * sizeof(bool));
     }
 
-    void fillArrayInternal(
-        CRGB *renderableArray,
-        uint16_t renderableArraySize,
+    void fillSegmentArray(
+        CRGB *segmentArray,
+        uint16_t segmentSize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
@@ -88,5 +90,7 @@ public:
         };
     }
 };
+
+} // namespace LEDSegments
 
 #endif //DASHOVERLAY_H

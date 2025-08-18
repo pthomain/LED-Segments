@@ -21,17 +21,21 @@
 #include "SlideTransition.h"
 #include "engine/utils/Weights.h"
 
+namespace LEDSegments {
+
 static const SlideTransitionFactory factoryInstance;
 RenderableFactoryRef<uint8_t> SlideTransition::factory = &factoryInstance;
 
-void SlideTransition::fillArrayInternal(
-    uint8_t *renderableArray,
-    uint16_t renderableArraySize,
+void SlideTransition::fillSegmentArray(
+    uint8_t *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    uint16_t limit = constrain(round((float) renderableArraySize * progress), 0, renderableArraySize);
-    memset(renderableArray, CRGB::White, limit * sizeof(uint8_t));
-    memset(renderableArray + limit, CRGB::Black, (renderableArraySize - limit) * sizeof(uint8_t));
+    uint16_t limit = constrain(round((float) segmentSize * progress), 0, segmentSize);
+    memset(segmentArray, CRGB::White, limit * sizeof(uint8_t));
+    memset(segmentArray + limit, CRGB::Black, (segmentSize - limit) * sizeof(uint8_t));
 }
+
+} // namespace LEDSegments

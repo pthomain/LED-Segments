@@ -21,15 +21,15 @@
 #ifndef TYPEID_H
 #define TYPEID_H
 
-// A lightweight, RTTI-free type identification system.
-namespace TypeInfo {
-    using ID = uintptr_t;
+namespace LEDSegments {
 
-    // Returns the next available unique ID.
-    inline ID next() {
-        static ID next_id = 0;
-        return next_id++;
-    }
+// A lightweight, RTTI-free type identification system.
+using ID = uintptr_t;
+
+// Returns the next available unique ID.
+inline ID next() {
+    static ID next_id = 0;
+    return next_id++;
 }
 
 // Template to get a unique, static ID for any given type T.
@@ -42,4 +42,6 @@ public:
     }
 };
 
-#endif //TYPEID_H
+} // namespace LEDSegments
+
+#endif // TYPEID_H

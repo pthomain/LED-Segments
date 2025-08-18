@@ -21,15 +21,19 @@
 #include "NoTransition.h"
 #include "engine/utils/Weights.h"
 
+namespace LEDSegments {
+
 static const NoTransitionFactory factoryInstance;
 RenderableFactoryRef<uint8_t> NoTransition::factory = &factoryInstance;
 
-void NoTransition::fillArrayInternal(
-    uint8_t *renderableArray,
-    uint16_t renderableArraySize,
+void NoTransition::fillSegmentArray(
+    uint8_t *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    memset(renderableArray, progress < 0.5f ? 0 : 255, renderableArraySize * sizeof(uint8_t));
+    memset(segmentArray, progress < 0.5f ? 0 : 255, segmentSize * sizeof(uint8_t));
 }
+
+} // namespace LEDSegments

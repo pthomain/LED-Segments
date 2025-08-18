@@ -9,9 +9,11 @@
 extern "C" {
 #endif
 
+namespace LEDSegments {
 int freeMemory();
+} // namespace LEDSegments
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

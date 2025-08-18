@@ -21,8 +21,10 @@
 #ifndef LED_SEGMENTS_SLIDEEFFECT_H
 #define LED_SEGMENTS_SLIDEEFFECT_H
 
-#include "engine/render/renderable/TypedRenderable.h"
 #include "engine/render/renderable/BaseRenderableFactory.h"
+#include "engine/render/renderable/TypedRenderable.h"
+
+namespace LEDSegments {
 
 class SlideEffect : public Effect<SlideEffect> {
     const uint8_t nbColours;
@@ -49,9 +51,9 @@ public:
         memset(headPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
     }
 
-    void fillArrayInternal(
-        CRGB *renderableArray,
-        uint16_t renderableArraySize,
+    void fillSegmentArray(
+        CRGB *segmentArray,
+        uint16_t segmentSize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
@@ -77,5 +79,7 @@ public:
         };
     }
 };
+
+} // namespace LEDSegments
 
 #endif //LED_SEGMENTS_SLIDEEFFECT_H

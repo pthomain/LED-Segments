@@ -21,14 +21,16 @@
 #ifndef LAYOUTCONFIG_H
 #define LAYOUTCONFIG_H
 
+#include "engine/render/renderable/BaseRenderableFactory.h"
+#include "engine/utils/Utils.h"
+#include <engine/mirror/Mirror.h>
+#include <engine/mirror/MirrorUtils.h>
 #include <map>
 #include <set>
 #include <utility>
 #include <vector>
-#include <engine/mirror/Mirror.h>
-#include <engine/mirror/MirrorUtils.h>
-#include "engine/render/renderable/BaseRenderableFactory.h"
-#include "engine/utils/Utils.h"
+
+namespace LEDSegments {
 
 using LayoutSelector = std::function<WeightedLayouts(RenderableType type)>;
 
@@ -113,4 +115,6 @@ std::map<uint16_t, std::vector<T> > mapLayoutId(
     const std::function<std::vector<T>(uint16_t)> &mapper
 );
 
-#endif //LAYOUTCONFIG_H
+} // namespace LEDSegments
+
+#endif // LAYOUTCONFIG_H

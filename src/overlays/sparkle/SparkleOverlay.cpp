@@ -22,19 +22,23 @@
 #include "crgb.h"
 #include "engine/utils/Utils.h"
 
+namespace LEDSegments {
+
 const uint16_t SparkleOverlay::PARAM_DENSITY;
 
 static const SparkleOverlayFactory factoryInstance;
 RenderableFactoryRef<CRGB> SparkleOverlay::factory = &factoryInstance;
 
-void SparkleOverlay::fillArrayInternal(
-    CRGB *renderableArray,
-    uint16_t renderableArraySize,
+void SparkleOverlay::fillSegmentArray(
+    CRGB *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    for (uint16_t i = 0; i < renderableArraySize; i++) {
-        renderableArray[i] = probability(density) ? CRGB::White : CRGB::Black;
+    for (uint16_t i = 0; i < segmentSize; i++) {
+        segmentArray[i] = probability(density) ? CRGB::White : CRGB::Black;
     }
 }
+
+} // namespace LEDSegments

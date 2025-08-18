@@ -19,19 +19,19 @@
  */
 
 #include "Arduino.h"
-#include "engine/display/Display.h"
-#include "engine/utils/Utils.h"
-#include "specs/umbrella/UmbrellaSpec.h"
+#include <LED-Segments.h>
+#include "spec/MatrixDisplaySpec.h"
+#include "customeffect/CustomEffect.cpp"
+#include "spec/MatrixDisplaySpec.cpp"
 
-using SPEC = UmbrellaSpec; // Change this to your specific DisplaySpec subclass
+using SPEC = MatrixDisplaySpec; // Change this to your specific DisplaySpec subclass
 Display<SPEC> *display;
 
 void setup() {
-    if constexpr (IS_DEBUG) {
-        Serial.begin(9600);
-        delay(2000);
-    }
-    display = new Display<SPEC>(); //must be instantiated in this method
+    Serial.begin(9600);
+    delay(2000);
+
+    display = new Display<SPEC>(); //MUST be instantiated in this method
 }
 
 void loop() {

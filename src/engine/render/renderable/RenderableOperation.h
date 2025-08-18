@@ -21,6 +21,8 @@
 #ifndef RENDERABLE_TYPE_H
 #define RENDERABLE_TYPE_H
 
+namespace LEDSegments {
+
 enum class RenderableType {
     EFFECT,
     OVERLAY,
@@ -48,5 +50,6 @@ inline String renderableTypeName(RenderableType type) {
             return "UNKNOWN";
     }
 }
+} // namespace LEDSegments
 
 #endif //RENDERABLE_TYPE_H

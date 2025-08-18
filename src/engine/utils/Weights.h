@@ -21,10 +21,12 @@
 #ifndef WEIGHTS_H
 #define WEIGHTS_H
 
-#include <cstdint>
-#include <utility>
 #include "Utils.h"
 #include "engine/mirror/Mirror.h"
+#include <cstdint>
+#include <utility>
+
+namespace LEDSegments {
 
 template<typename T>
 using WeightedItem = std::pair<T, uint8_t>;
@@ -78,4 +80,7 @@ static T pickRandomWeightedItem(
 
     return defaultValue;
 }
-#endif //WEIGHTS_H
+
+} //namespace LEDSegments
+
+#endif // WEIGHTS_H

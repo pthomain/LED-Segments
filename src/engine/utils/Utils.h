@@ -23,20 +23,20 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <algorithm>
-#include <Arduino.h>
-#include <vector>
 #include "FastLED.h"
+#include <Arduino.h>
+#include <algorithm>
 #include <functional>
+#include <vector>
+
+namespace LEDSegments {
 
 #define IS_DEBUG true
 
 static const std::vector<uint8_t> PRIMES PROGMEM = std::vector<uint8_t>{
-    43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
-    101, 103, 107, 109, 113, 127, 131, 137, 139, 149,
-    151, 157, 163, 167, 173, 179, 181, 191, 193, 197,
-    199, 211, 223, 227, 229, 233, 239, 241, 251
-};
+    43,  47,  53,  59,  61,  67,  71,  73,  79,  83,  89,  97,  101, 103,
+    107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179,
+    181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251};
 
 static String CRGBToHex(const CRGB &color) {
     char hexColor[7];
@@ -72,15 +72,15 @@ static void mapLedInSnakeDisplay(
 }
 
 inline void fillEffectPalette(
-    CRGB *renderableArray,
-    uint16_t renderableArraySize,
+    CRGB *segmentArray,
+    uint16_t segmentSize,
     const CRGBPalette16 &effectPalette
 ) {
     fill_palette(
-        renderableArray,
-        renderableArraySize,
+        segmentArray,
+        segmentSize,
         0,
-        max(1, 255 / renderableArraySize),
+        max(1, 255 / segmentSize),
         effectPalette,
         255,
         LINEARBLEND
@@ -99,5 +99,7 @@ inline int freeMemoryXiao() {
     char *heap_end = sbrk(0);
     return &stack_dummy - heap_end;
 }
+
+} // namespace LEDSegments
 
 #endif //UTILS_H

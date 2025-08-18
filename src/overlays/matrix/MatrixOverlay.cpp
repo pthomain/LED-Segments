@@ -20,8 +20,10 @@
 
 #include "MatrixOverlay.h"
 #include "crgb.h"
-#include "engine/utils/Utils.h"
 #include "engine/utils/Interpolation.h"
+#include "engine/utils/Utils.h"
+
+namespace LEDSegments {
 
 const uint8_t MatrixOverlay::PARAM_MIN_DENSITY;
 const uint8_t MatrixOverlay::PARAM_MAX_DENSITY;
@@ -47,12 +49,11 @@ MatrixOverlay::MatrixOverlay(const RenderableContext &context)
       streamLength(param(PARAM_STREAM_LENGTH)),
       multiplyOperationWeight(param(PARAM_OPERATION_MULTIPLY_WEIGHT)),
       invertOperationWeight(param(PARAM_OPERATION_INVERT_WEIGHT)),
-      streams(std::vector<std::vector<Stream> >(context.nbSegments)) {
-}
+      streams(std::vector<std::vector<Stream>>(context.nbSegments)) {}
 
-void MatrixOverlay::fillArrayInternal(
-    CRGB *renderableArray,
-    uint16_t renderableArraySize,
+void MatrixOverlay::fillSegmentArray(
+    CRGB *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
@@ -96,18 +97,20 @@ void MatrixOverlay::fillArrayInternal(
             }
 
             float easedProgress = Interpolation::easeOutQuad(stream.progress);
-            stream.position = easedProgress * (renderableArraySize + stream.length);
+            stream.position = easedProgress * (segmentSize + stream.length);
 
             for (int character = 0; character < stream.length; ++character) {
                 int16_t charPos = stream.position - character;
-                if (charPos >= 0 && charPos < renderableArraySize) {
+                if (charPos >= 0 && charPos < segmentSize) {
                     float ageFade = 1.0f - stream.progress;
                     float brightness = ageFade * ageFade;
 
                     CRGB color = CRGB::White;
-                    renderableArray[charPos] = color;//.nscale8(255 * brightness);
+                    segmentArray[charPos] = color;//.nscale8(255 * brightness);
                 }
             }
         }
     }
 }
+
+} // namespace LEDSegments

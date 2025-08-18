@@ -21,9 +21,11 @@
 #ifndef RENDERABLE_H
 #define RENDERABLE_H
 
-#include <utility>
 #include "RenderableContext.h"
 #include "engine/utils/Weights.h"
+#include <utility>
+
+namespace LEDSegments {
 
 template<typename Data>
 class Renderable {
@@ -35,9 +37,9 @@ protected:
         return _frameIndex;
     }
 
-    virtual void fillArrayInternal(
-        Data *renderableArray,
-        uint16_t renderableArraySize,
+    virtual void fillSegmentArray(
+        Data *segmentArray,
+        uint16_t segmentSize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeInMillis
@@ -49,12 +51,12 @@ protected:
 public:
     const RenderableContext context;
 
-    void fillArray(
-        Data *renderableArray,
-        uint16_t renderableArraySize,
+    virtual void fillArray(
+        Data *segmentArray,
+        uint16_t segmentSize,
         uint16_t segmentIndex,
         float progress
-    );
+    ) final;
 
     virtual void beforeFrame(
         float progress,
@@ -88,4 +90,6 @@ public:
 template class Renderable<CRGB>;
 template class Renderable<uint8_t>;
 
-#endif //RENDERABLE_H
+} // namespace LEDSegments
+
+#endif // RENDERABLE_H

@@ -21,18 +21,20 @@
 #ifndef NOEFFECT_H
 #define NOEFFECT_H
 
-#include "engine/render/renderable/TypedRenderable.h"
 #include "engine/render/renderable/BaseRenderableFactory.h"
+#include "engine/render/renderable/TypedRenderable.h"
 #include "engine/utils/Weights.h"
+
+namespace LEDSegments {
 
 class NoEffect : public Effect<NoEffect> {
 public:
     explicit NoEffect(const RenderableContext &context) : Effect(context) {
     }
 
-    void fillArrayInternal(
-        CRGB *renderableArray,
-        uint16_t renderableArraySize,
+    void fillSegmentArray(
+        CRGB *segmentArray,
+        uint16_t segmentSize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
@@ -48,5 +50,7 @@ public:
         return {};
     }
 };
+
+} // namespace LEDSegments
 
 #endif //NOEFFECT_H

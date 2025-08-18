@@ -21,9 +21,11 @@
 #ifndef MOIREOVERLAY_H
 #define MOIREOVERLAY_H
 
-#include "engine/render/renderable/TypedRenderable.h"
 #include "engine/render/renderable/BaseRenderableFactory.h"
+#include "engine/render/renderable/TypedRenderable.h"
 #include "engine/utils/Utils.h"
+
+namespace LEDSegments {
 
 class MoireOverlay : public Overlay<MoireOverlay> {
     const bool isClockwise;
@@ -61,9 +63,9 @@ public:
         memset(headPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
     }
 
-    void fillArrayInternal(
-        CRGB *renderableArray,
-        uint16_t renderableArraySize,
+    void fillSegmentArray(
+        CRGB *segmentArray,
+        uint16_t segmentSize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
@@ -104,5 +106,7 @@ public:
         };
     }
 };
+
+} // namespace LEDSegments
 
 #endif //MOIREOVERLAY_H

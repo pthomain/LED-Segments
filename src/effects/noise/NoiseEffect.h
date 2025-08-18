@@ -25,6 +25,8 @@
 #include "engine/render/renderable/TypedRenderable.h"
 #include "engine/utils/Weights.h"
 
+namespace LEDSegments {
+
 class NoiseEffect : public Effect<NoiseEffect> {
 protected:
     const uint8_t paletteScale;
@@ -46,9 +48,9 @@ public:
           speedDivider(max(1, param(PARAM_SPEED_DIVIDER))) {
     }
 
-    void fillArrayInternal(
-        CRGB *renderableArray,
-        uint16_t renderableArraySize,
+    void fillSegmentArray(
+        CRGB *segmentArray,
+        uint16_t segmentSize,
         uint16_t segmentIndex,
         float progress,
         unsigned long timeElapsedInMillis
@@ -69,5 +71,7 @@ public:
         };
     }
 };
+
+} // namespace LEDSegments
 
 #endif //LED_SEGMENTS_NOISEEFFECT_H

@@ -22,6 +22,8 @@
 #include "crgb.h"
 #include "engine/utils/Utils.h"
 
+namespace LEDSegments {
+
 const uint8_t ChaseOverlay::PARAM_MIN_SPARKS_PER_SEGMENT;
 const uint8_t ChaseOverlay::PARAM_MAX_SPARKS_PER_SEGMENT;
 const uint8_t ChaseOverlay::PARAM_DISTANCE_BETWEEN_SPARKS;
@@ -41,17 +43,17 @@ ChaseOverlay::ChaseOverlay(const RenderableContext &context)
       distanceBetweenSparks(param(PARAM_DISTANCE_BETWEEN_SPARKS)),
       trailLength(param(PARAM_TRAIL_LENGTH)),
       isBouncy(probability(param(PARAM_CHANCE_OF_BOUNCE) / 100.0f)),
-      swirlDistance(
-          probability(param(PARAM_CHANCE_OF_SWIRL) / 100.0f) ? context.maxSegmentSize / context.nbSegments : 0),
+      swirlDistance(probability(param(PARAM_CHANCE_OF_SWIRL) / 100.0f)
+                        ? context.maxSegmentSize / context.nbSegments
+                        : 0),
       multiplyOperationWeight(param(PARAM_OPERATION_MULTIPLY_WEIGHT)),
       invertOperationWeight(param(PARAM_OPERATION_INVERT_WEIGHT)),
-      sparks(std::vector<std::vector<Spark> >(context.nbSegments)),
-      emittedSparkCount(std::vector<uint8_t>(context.nbSegments, 0)) {
-}
+      sparks(std::vector<std::vector<Spark>>(context.nbSegments)),
+      emittedSparkCount(std::vector<uint8_t>(context.nbSegments, 0)) {}
 
-void ChaseOverlay::fillArrayInternal(
-    CRGB *renderableArray,
-    uint16_t renderableArraySize,
+void ChaseOverlay::fillSegmentArray(
+    CRGB *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeElapsedInMillis
@@ -64,7 +66,7 @@ void ChaseOverlay::fillArrayInternal(
             segmentSparks.begin(),
             segmentSparks.end(),
             [=](const Spark &spark) {
-                auto isRemovalNeeded = spark.position >= renderableArraySize || spark.isLessThanZero;
+                auto isRemovalNeeded = spark.position >= segmentSize || spark.isLessThanZero;
                 if (isRemovalNeeded) emittedSparkCount[segmentIndex]--;
                 return isRemovalNeeded;
             }
@@ -88,8 +90,8 @@ void ChaseOverlay::fillArrayInternal(
         //Draw spark
         for (int16_t trailIndex = 0; trailIndex <= trailLength; ++trailIndex) {
             int16_t trailPos = spark.position - trailIndex * (spark.isMovingForward ? 1 : -1);
-            if (trailPos >= 0 && trailPos < renderableArraySize) {
-                renderableArray[trailPos] = CRGB::White;
+            if (trailPos >= 0 && trailPos < segmentSize) {
+                segmentArray[trailPos] = CRGB::White;
             }
         }
 
@@ -107,8 +109,8 @@ void ChaseOverlay::fillArrayInternal(
 
         // Bounce spark if necessary
         if (isBouncy) {
-            if (spark.position >= renderableArraySize) {
-                spark.position = renderableArraySize - 1;
+            if (spark.position >= segmentSize) {
+                spark.position = segmentSize - 1;
                 spark.isMovingForward = false;
             } else if (spark.isLessThanZero) {
                 spark.position = 0;
@@ -128,3 +130,5 @@ void ChaseOverlay::afterFrame(
         frameCounter++;
     }
 }
+
+} // namespace LEDSegments

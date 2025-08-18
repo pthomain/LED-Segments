@@ -20,23 +20,25 @@
 
 #include "Renderer.h"
 #include "engine/utils/Blending.h"
-#include "engine/utils/Utils.h"
 #include "engine/utils/Interpolation.h"
+#include "engine/utils/Utils.h"
+
+namespace LEDSegments {
 
 Renderer::Renderer(
     const std::shared_ptr<DisplaySpec> &displaySpec,
     CRGB *outputArray
 ) : displaySpec(displaySpec),
     outputArray(outputArray) {
-    renderableArray = new CRGB[displaySpec->maxSegmentSize()]();
-    renderableArray8 = new uint8_t[displaySpec->maxSegmentSize()]();
+    segmentArray = new CRGB[displaySpec->maxSegmentSize()]();
+    segmentArray8 = new uint8_t[displaySpec->maxSegmentSize()]();
     pendingOutputArray = new CRGB[displaySpec->nbLeds()]();
 }
 
 template
 void Renderer::applyEffectOrTransition(
     const std::shared_ptr<Renderable<CRGB> > &renderable,
-    CRGB *renderableArray,
+    CRGB *segmentArray,
     CRGB *outputArray,
     std::function<CRGB(uint16_t ledIndex, CRGB existing, CRGB toBeMixed)> mix,
     float progress
@@ -45,7 +47,7 @@ void Renderer::applyEffectOrTransition(
 template
 void Renderer::applyEffectOrTransition(
     const std::shared_ptr<Renderable<uint8_t> > &renderable,
-    uint8_t *renderableArray,
+    uint8_t *segmentArray,
     CRGB *outputArray,
     std::function<CRGB(uint16_t ledIndex, CRGB existing, uint8_t toBeMixed)> mix,
     float progress
@@ -54,7 +56,7 @@ void Renderer::applyEffectOrTransition(
 template<typename C>
 void Renderer::applyEffectOrTransition(
     const std::shared_ptr<Renderable<C> > &renderable,
-    C *renderableArray,
+    C *segmentArray,
     CRGB *outputArray,
     std::function<CRGB(uint16_t ledIndex, CRGB existing, C toBeMixed)> mix,
     float progress
@@ -78,13 +80,13 @@ void Renderer::applyEffectOrTransition(
         uint16_t mirrorSize = getMirrorSize(mirror, segmentSize);
 
         renderable->fillArray(
-            renderableArray,
+            segmentArray,
             mirrorSize,
             segmentIndex,
             progress
         );
 
-        applyMirror(renderable, mirror, renderableArray, segmentSize);
+        applyMirror(renderable, mirror, segmentArray, segmentSize);
 
         for (uint16_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
             displaySpec->mapLeds(
@@ -94,7 +96,7 @@ void Renderer::applyEffectOrTransition(
                 progress,
                 [&](uint16_t ledIndex) {
                     if (ledIndex < displaySpec->nbLeds()) {
-                        outputArray[ledIndex] = mix(ledIndex, outputArray[ledIndex], renderableArray[pixelIndex]);
+                        outputArray[ledIndex] = mix(ledIndex, outputArray[ledIndex], segmentArray[pixelIndex]);
                     } else {
                         Serial.print("Invalid LED index: ");
                         Serial.println(ledIndex);
@@ -106,8 +108,8 @@ void Renderer::applyEffectOrTransition(
 }
 
 Renderer::~Renderer() {
-    delete[] renderableArray;
-    delete[] renderableArray8;
+    delete[] segmentArray;
+    delete[] segmentArray8;
     delete[] pendingOutputArray;
 }
 
@@ -189,7 +191,7 @@ void Renderer::render() {
 
     applyEffectOrTransition<uint8_t>(
         transition,
-        renderableArray8,
+        segmentArray8,
         outputArray,
         [&](uint16_t ledIndex, CRGB _, uint8_t toBeMixed) {
             return blend(
@@ -207,7 +209,7 @@ void Renderer::render() {
         effect = std::move(pendingEffect);
         overlay = std::move(pendingOverlay);
         transition = std::move(pendingTransition);
-        effectFrameIndex = pendingEffectFrameIndex; //TODO check transition duration impact on this
+        effectFrameIndex = pendingEffectFrameIndex;
         pendingEffectFrameIndex = 0;
     }
 }
@@ -220,7 +222,7 @@ void Renderer::flattenEffectAndOverlay(
 ) const {
     applyEffectOrTransition<CRGB>(
         effect,
-        renderableArray,
+        segmentArray,
         effectOutputArray,
         [](uint16_t, CRGB, CRGB toBeMixed) { return toBeMixed; },
         progress
@@ -228,7 +230,7 @@ void Renderer::flattenEffectAndOverlay(
 
     applyEffectOrTransition<CRGB>(
         overlay,
-        renderableArray,
+        segmentArray,
         effectOutputArray,
         [&](uint16_t, CRGB existing, CRGB toBeMixed) {
             return mix(
@@ -240,3 +242,5 @@ void Renderer::flattenEffectAndOverlay(
         progress
     );
 }
+
+} // namespace LEDSegments

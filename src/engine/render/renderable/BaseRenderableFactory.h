@@ -24,6 +24,8 @@
 #include "Renderable.h"
 #include "engine/utils/TypeId.h"
 
+namespace LEDSegments {
+
 using Params = std::map<uint8_t, uint16_t>;
 
 template<typename C>
@@ -101,4 +103,6 @@ using WeightedRenderable = WeightedItem<RenderableFactoryRef<T> >;
 template<typename T>
 using WeightedRenderables = std::vector<WeightedRenderable<T> >;
 
-#endif //RENDERABLEFACTORY_H
+} // namespace LEDSegments
+
+#endif // RENDERABLEFACTORY_H

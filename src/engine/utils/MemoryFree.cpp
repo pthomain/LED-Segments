@@ -7,6 +7,7 @@
 #else
 #include <WProgram.h>
 #endif
+#include "MemoryFree.h"
 
 extern unsigned int __heap_start;
 extern void *__brkval;
@@ -23,7 +24,7 @@ struct __freelist {
 /* The head of the free list structure */
 extern struct __freelist *__flp;
 
-#include "MemoryFree.h"
+namespace LEDSegments {
 
 /* Calculates the size of the free list */
 int freeListSize() {
@@ -46,3 +47,5 @@ int freeMemory() {
     }
     return free_memory;
 }
+
+} // namespace LEDSegments

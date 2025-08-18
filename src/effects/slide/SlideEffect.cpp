@@ -22,15 +22,17 @@
 #include "colorutils.h"
 #include "engine/utils/Weights.h"
 
+namespace LEDSegments {
+
 const uint8_t SlideEffect::PARAM_NB_COLOURS;
 const uint8_t SlideEffect::PARAM_COLOUR_START;
 
 static const SlideEffectFactory factoryInstance;
 RenderableFactoryRef<CRGB> SlideEffect::factory = &factoryInstance;
 
-void SlideEffect::fillArrayInternal(
-    CRGB *renderableArray,
-    uint16_t renderableArraySize,
+void SlideEffect::fillSegmentArray(
+    CRGB *segmentArray,
+    uint16_t segmentSize,
     uint16_t segmentIndex,
     float progress,
     unsigned long timeInMillis
@@ -50,16 +52,16 @@ void SlideEffect::fillArrayInternal(
     auto bottomColourEnd = CHSV(colourStart + 127 + bottomColour * (255 / nbColours), 255, 255);
 
     fill_gradient(
-        renderableArray,
+        segmentArray,
         0,
         bottomColourStart,
-        renderableArraySize - 1,
+        segmentSize - 1,
         bottomColourEnd,
         TGradientDirectionCode::SHORTEST_HUES
     );
 
     fill_gradient(
-        renderableArray,
+        segmentArray,
         0,
         topColourStart,
         headPosition,
@@ -67,11 +69,12 @@ void SlideEffect::fillArrayInternal(
         TGradientDirectionCode::SHORTEST_HUES
     );
 
-    //TODO make reversible
-    if (headPosition == renderableArraySize - 1) {
+    if (headPosition == segmentSize - 1) {
         colourIndexForSegment[bottomColourIndex] = topColour;
         headPositionForSegment[segmentIndex] = 0;
     } else {
-        headPositionForSegment[segmentIndex] = (timeInMillis / speedDivider) % renderableArraySize;
+        headPositionForSegment[segmentIndex] = (timeInMillis / speedDivider) % segmentSize;
     }
 }
+
+} // namespace LEDSegments

@@ -23,17 +23,18 @@
 
 #include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/render/renderable/TypedRenderable.h"
+#include <memory>
 
 namespace LEDSegments {
 
 class SlideEffect : public Effect<SlideEffect> {
     const uint8_t nbColours;
     const uint8_t colourStart;
-    const uint8_t step;
     const uint8_t speedDivider;
+    const uint8_t step;
 
-    uint8_t *colourIndexForSegment;
-    uint16_t *headPositionForSegment;
+    std::unique_ptr<uint8_t[]> colourIndexForSegment;
+    std::unique_ptr<uint16_t[]> headPositionForSegment;
 
 public:
     static const uint8_t PARAM_NB_COLOURS = 0;
@@ -45,10 +46,10 @@ public:
           colourStart(param(PARAM_COLOUR_START)),
           speedDivider(max(1, param(PARAM_SPEED_DIVIDER))),
           step(max(1, 255 / nbColours)),
-          colourIndexForSegment(new uint8_t[nbColours]),
-          headPositionForSegment(new uint16_t[context.nbSegments]) {
-        memset(colourIndexForSegment, 0, nbColours * sizeof(uint8_t));
-        memset(headPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
+          colourIndexForSegment(std::make_unique<uint8_t[]>(nbColours)),
+          headPositionForSegment(std::make_unique<uint16_t[]>(context.nbSegments)) {
+        memset(colourIndexForSegment.get(), 0, nbColours * sizeof(uint8_t));
+        memset(headPositionForSegment.get(), 0, context.nbSegments * sizeof(uint16_t));
     }
 
     void fillSegmentArray(
@@ -59,10 +60,7 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    ~SlideEffect() override {
-        delete[] colourIndexForSegment;
-        delete[] headPositionForSegment;
-    }
+    ~SlideEffect() override = default;
 
     static constexpr const char *name() { return "SlideEffect"; }
     static RenderableFactoryRef<CRGB> factory;

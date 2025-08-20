@@ -28,6 +28,7 @@
 #include "engine/utils/seed/SeedGenerator.h"
 #include "overlays/none/NoOverlay.h"
 #include <type_traits>
+#include <memory>
 
 namespace LEDSegments {
 
@@ -54,7 +55,7 @@ class Display {
     static_assert(has_led_pin<SPEC>::value, "SPEC must provide a static constexpr int LED_PIN");
     static_assert(has_rgb_order<SPEC>::value, "SPEC must provide a static constexpr EOrder RGB_ORDER");
     std::shared_ptr<SPEC> _displaySpec;
-    CRGB *outputArray;
+    std::unique_ptr<CRGB[]> outputArray;
     const std::unique_ptr<Renderer> renderer;
 
 public:
@@ -64,16 +65,16 @@ public:
     explicit Display(
         //change if any of those pins are already in use or unavailable on the board
         std::vector<uint8_t> freePinsForEntropy = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-    ) : _displaySpec(std::unique_ptr<SPEC>(new SPEC())),
-        outputArray(new CRGB[_displaySpec->nbLeds()]),
-        renderer(std::make_unique<Renderer>(_displaySpec, outputArray)) {
+    ) : _displaySpec(std::make_shared<SPEC>()),
+        outputArray(std::make_unique<CRGB[]>(_displaySpec->nbLeds())),
+        renderer(std::make_unique<Renderer>(_displaySpec, outputArray.get())) {
         freePinsForEntropy.erase(
             std::remove(freePinsForEntropy.begin(), freePinsForEntropy.end(), SPEC::LED_PIN),
             freePinsForEntropy.end()
         );
         addEntropy(freePinsForEntropy);
 
-        CFastLED::addLeds<SPEC::LED_TYPE, SPEC::LED_PIN, SPEC::RGB_ORDER>(outputArray, _displaySpec->nbLeds())
+        CFastLED::addLeds<SPEC::LED_TYPE, SPEC::LED_PIN, SPEC::RGB_ORDER>(outputArray.get(), _displaySpec->nbLeds())
                 .setCorrection(TypicalLEDStrip);
 
         FastLED.setBrightness(_displaySpec->brightness);
@@ -94,33 +95,34 @@ public:
         const auto &[transitionLayoutId, transitionFactory, transitionMirror] = config.randomTransition();
         const auto &[overlayLayoutId, overlayFactory, overlayMirror] = config.randomOverlay();
 
-        if constexpr (IS_DEBUG) {
-            Serial.println("---");
-            Serial.print("Palette			");
-            Serial.println(palette.name);
-            Serial.println("-");
-            Serial.print("Effect			");
-            Serial.println(effectFactory->name());
-            Serial.print("Effect layout		");
-            Serial.println(config.layoutName(effectLayoutId));
-            Serial.print("Effect mirror		");
-            Serial.println(getMirrorName(effectMirror));
-            Serial.println("-");
-            Serial.print("Overlay			");
-            Serial.println(overlayFactory->name());
-            Serial.print("Overlay layout		");
-            Serial.println(config.layoutName(overlayLayoutId));
-            Serial.print("Overlay mirror		");
-            Serial.println(getMirrorName(overlayMirror));
-            Serial.println("-");
-            Serial.print("Transition		");
-            Serial.println(transitionFactory->name());
-            Serial.print("Transition layout	");
-            Serial.println(config.layoutName(transitionLayoutId));
-            Serial.print("Transition mirror	");
-            Serial.println(getMirrorName(transitionMirror));
-            Serial.println("---");
-        }
+        #ifdef DEBUG
+        // Debug output - only compiled in debug builds
+        Serial.println("---");
+        Serial.print("Palette			");
+        Serial.println(palette.name);
+        Serial.println("-");
+        Serial.print("Effect			");
+        Serial.println(effectFactory->name());
+        Serial.print("Effect layout		");
+        Serial.println(config.layoutName(effectLayoutId));
+        Serial.print("Effect mirror		");
+        Serial.println(getMirrorName(effectMirror));
+        Serial.println("-");
+        Serial.print("Overlay			");
+        Serial.println(overlayFactory->name());
+        Serial.print("Overlay layout		");
+        Serial.println(config.layoutName(overlayLayoutId));
+        Serial.print("Overlay mirror		");
+        Serial.println(getMirrorName(overlayMirror));
+        Serial.println("-");
+        Serial.print("Transition		");
+        Serial.println(transitionFactory->name());
+        Serial.print("Transition layout	");
+        Serial.println(config.layoutName(transitionLayoutId));
+        Serial.print("Transition mirror	");
+        Serial.println(getMirrorName(transitionMirror));
+        Serial.println("---");
+        #endif
 
         const uint16_t effectDurationInFrames = effectDurationsInSecs * _displaySpec->fps;
         auto transitionDurationInFrames = _displaySpec->fps * _displaySpec->transitionDurationInMillis / 1000;
@@ -210,9 +212,7 @@ public:
         }
     }
 
-    ~Display() {
-        delete[] outputArray;
-    };
+    ~Display() = default;
 };
 
 } // namespace LEDSegments

@@ -52,10 +52,10 @@ using RandomRenderable = std::tuple<uint16_t, RenderableFactoryRef<C>, Mirror>;
 
 class LayoutConfig {
     const std::map<uint16_t, String> _layoutNames;
+    const LayoutSelector _layoutSelector;
     const RenderableSelector<CRGB> _effects;
     const RenderableSelector<CRGB> _overlays;
     const RenderableSelector<uint8_t> _transitions;
-    const LayoutSelector _layoutSelector;
     const RenderableParamSelector _paramSelector;
 
     template<typename T>

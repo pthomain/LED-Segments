@@ -30,8 +30,10 @@ uint16_t MatrixDisplaySpec::nbSegments(uint16_t layoutId) const {
         case GROUP_BY_8: return TOTAL_PIXELS / 8;
         case GROUP_BY_16: return TOTAL_PIXELS / 16;
         default: {
+            #ifdef DEBUG
             Serial.print("MatrixDisplaySpec::nbSegments: Unknown layoutId ");
             Serial.println(layoutId);
+            #endif
             return 0; //This should not happen
         }
     }
@@ -48,8 +50,10 @@ uint16_t MatrixDisplaySpec::segmentSize(uint16_t layoutId, uint16_t segmentIndex
         case GROUP_BY_8: return 8;     // 8 virtual pixels per segment (8x8 LEDs per pixel)
         case GROUP_BY_16: return 16;   // 16 virtual pixels per segment (16x8 LEDs per pixel)
         default: {
+            #ifdef DEBUG
             Serial.print("MatrixDisplaySpec::nbPixels: Unknown layoutId ");
             Serial.println(layoutId);
+            #endif
             return 0; //This should not happen
         }
     }

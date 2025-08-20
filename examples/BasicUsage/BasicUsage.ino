@@ -23,15 +23,16 @@
 #include "spec/MatrixDisplaySpec.h"
 #include "customeffect/CustomEffect.cpp"
 #include "spec/MatrixDisplaySpec.cpp"
+#include <memory>
 
 using SPEC = MatrixDisplaySpec; // Change this to your specific DisplaySpec subclass
-Display<SPEC> *display;
+std::unique_ptr<Display<SPEC>> display;
 
 void setup() {
     Serial.begin(9600);
     delay(2000);
 
-    display = new Display<SPEC>(); //MUST be instantiated in this method
+    display = std::make_unique<Display<SPEC>>(); //MUST be instantiated in this method
 }
 
 void loop() {

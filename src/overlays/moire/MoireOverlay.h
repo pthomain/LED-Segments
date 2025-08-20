@@ -24,6 +24,7 @@
 #include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/render/renderable/TypedRenderable.h"
 #include "engine/utils/Utils.h"
+#include <memory>
 
 namespace LEDSegments {
 
@@ -39,8 +40,8 @@ class MoireOverlay : public Overlay<MoireOverlay> {
     const uint16_t multiplyOperationWeight;
     const uint16_t invertOperationWeight;
 
-    uint16_t *headPositionForSegment;
-    CRGB *reverseArray;
+    std::unique_ptr<CRGB[]> reverseArray;
+    std::unique_ptr<uint16_t[]> headPositionForSegment;
 
 public:
     static const uint16_t PARAM_OPERATION_MULTIPLY_WEIGHT = 0;
@@ -58,9 +59,9 @@ public:
           headLength(param(PARAM_HEAD_LENGTH)),
           multiplyOperationWeight(param(PARAM_OPERATION_MULTIPLY_WEIGHT)),
           invertOperationWeight(param(PARAM_OPERATION_INVERT_WEIGHT)),
-          reverseArray(new CRGB[context.maxSegmentSize]),
-          headPositionForSegment(new uint16_t[context.nbSegments]) {
-        memset(headPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
+          reverseArray(std::make_unique<CRGB[]>(context.maxSegmentSize)),
+          headPositionForSegment(std::make_unique<uint16_t[]>(context.nbSegments)) {
+        memset(headPositionForSegment.get(), 0, context.nbSegments * sizeof(uint16_t));
     }
 
     void fillSegmentArray(
@@ -77,10 +78,7 @@ public:
     // Attempting to copy a MoireOverlay object will result in a compile-time error.
     MoireOverlay(const MoireOverlay &) = delete;
 
-    ~MoireOverlay() override {
-        delete[] headPositionForSegment;
-        delete[] reverseArray;
-    }
+    ~MoireOverlay() override = default;
 
     static constexpr const char *name() { return "MoireOverlay"; }
 

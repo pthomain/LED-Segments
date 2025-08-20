@@ -44,7 +44,7 @@ void MoireOverlay::fillSegmentArray(
     const uint8_t distance = context.nbSegments * headLength;
     const uint8_t start = (isClockwise ? context.nbSegments - segmentIndex : segmentIndex) * headLength;
 
-    auto &headIndex = headPositionForSegment[segmentIndex];
+    auto &headIndex = headPositionForSegment.get()[segmentIndex];
 
     for (int32_t pixelIndex = 0; pixelIndex < segmentSize; pixelIndex++) {
         bool isHead = ((pixelIndex + headIndex) % distance) - start == 0;
@@ -54,13 +54,13 @@ void MoireOverlay::fillSegmentArray(
                 int32_t index = pixelIndex + trailIndex;
                 if (index > 0 && index < segmentSize) {
                     segmentArray[index] = frontColour;
-                    reverseArray[index] = frontColour;
+                    reverseArray.get()[index] = frontColour;
                 }
             }
         }
     }
 
-    headIndex = ++headIndex % distance;
+    headIndex = (headIndex + 1) % distance;
 }
 
 } // namespace LEDSegments

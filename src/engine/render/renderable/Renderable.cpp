@@ -42,7 +42,9 @@ void Renderable<C>::fillArray(
     }
 
     if (segmentSize == 0) {
+        #ifdef DEBUG
         Serial.println("Renderable::fillArray: empty array for segment " + String(segmentIndex));
+        #endif
         return;
     }
 

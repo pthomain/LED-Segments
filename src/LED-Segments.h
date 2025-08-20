@@ -1,8 +1,6 @@
 #ifndef LED_SEGMENTS_H
 #define LED_SEGMENTS_H
 
-namespace LEDSegments {
-
 // Core Engine Includes
 #include "engine/display/Display.h"
 #include "engine/displayspec/DisplaySpec.h"
@@ -39,7 +37,5 @@ namespace LEDSegments {
 #include "transitions/fade/FadeTransition.h"
 #include "transitions/none/NoTransition.h"
 #include "transitions/slide/SlideTransition.h"
-
-} // namespace LEDSegments
 
 #endif // LED_SEGMENTS_H

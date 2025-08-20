@@ -24,17 +24,18 @@
 #include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/render/renderable/TypedRenderable.h"
 #include "engine/utils/Weights.h"
+#include <memory>
 
 namespace LEDSegments {
 
 class DashOverlay : public Overlay<DashOverlay> {
-    uint16_t *headPositionForSegment;
-    uint16_t *tailPositionForSegment;
-    bool *isReversedForSegment;
-
     const uint8_t tailSpeed;
     const uint16_t multiplyOperationWeight;
     const uint16_t invertOperationWeight;
+
+    std::unique_ptr<uint16_t[]> headPositionForSegment;
+    std::unique_ptr<uint16_t[]> tailPositionForSegment;
+    std::unique_ptr<bool[]> isReversedForSegment;
 
 public:
     static const uint8_t PARAM_TAIL_SPEED = 0;
@@ -46,12 +47,12 @@ public:
           tailSpeed(max(1, param(PARAM_TAIL_SPEED))),
           multiplyOperationWeight(param(PARAM_OPERATION_MULTIPLY_WEIGHT)),
           invertOperationWeight(param(PARAM_OPERATION_INVERT_WEIGHT)),
-          headPositionForSegment(new uint16_t[context.nbSegments]),
-          tailPositionForSegment(new uint16_t[context.nbSegments]),
-          isReversedForSegment(new bool[context.nbSegments]) {
-        memset(headPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
-        memset(tailPositionForSegment, 0, context.nbSegments * sizeof(uint16_t));
-        memset(isReversedForSegment, 0, context.nbSegments * sizeof(bool));
+          headPositionForSegment(std::make_unique<uint16_t[]>(context.nbSegments)),
+          tailPositionForSegment(std::make_unique<uint16_t[]>(context.nbSegments)),
+          isReversedForSegment(std::make_unique<bool[]>(context.nbSegments)) {
+        memset(headPositionForSegment.get(), 0, context.nbSegments * sizeof(uint16_t));
+        memset(tailPositionForSegment.get(), 0, context.nbSegments * sizeof(uint16_t));
+        memset(isReversedForSegment.get(), 0, context.nbSegments * sizeof(bool));
     }
 
     void fillSegmentArray(
@@ -62,11 +63,7 @@ public:
         unsigned long timeElapsedInMillis
     ) override;
 
-    ~DashOverlay() override {
-        delete[] headPositionForSegment;
-        delete[] tailPositionForSegment;
-        delete[] isReversedForSegment;
-    }
+    ~DashOverlay() override = default;
 
     static constexpr const char *name() { return "DashOverlay"; }
 

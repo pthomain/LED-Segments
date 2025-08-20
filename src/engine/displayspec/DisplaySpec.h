@@ -26,9 +26,9 @@
 namespace LEDSegments {
 
 class DisplaySpec {
-    uint16_t _maxSegmentSize = 0;
+    mutable uint16_t _maxSegmentSize = 0;
 
-    void calculateMaxSegmentSize() {
+    void calculateMaxSegmentSize() const {
         for (auto layoutId: config.layoutIds) {
             for (uint16_t segmentIndex = 0; segmentIndex < nbSegments(layoutId); segmentIndex++) {
                 _maxSegmentSize = max(_maxSegmentSize, segmentSize(layoutId, segmentIndex));
@@ -41,10 +41,10 @@ public:
     const uint8_t brightness;
     const uint8_t minEffectDurationsInSecs;
     const uint8_t maxEffectDurationsInSecs;
-    const uint8_t fps;
     const int16_t transitionDurationInMillis;
     const uint16_t refreshRateInMillis;
     const float chanceOfRainbow;
+    const uint8_t fps;
     const uint8_t isCircular;
 
     explicit DisplaySpec(
@@ -69,7 +69,7 @@ public:
     virtual uint16_t nbLeds() const = 0;
 
     uint16_t maxSegmentSize() const {
-        if (_maxSegmentSize == 0) const_cast<DisplaySpec *>(this)->calculateMaxSegmentSize();
+        if (_maxSegmentSize == 0) calculateMaxSegmentSize();
         return _maxSegmentSize;
     };
 

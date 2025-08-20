@@ -23,16 +23,17 @@
 
 #include "FastLED.h"
 #include "engine/displayspec/DisplaySpec.h"
+#include <memory>
 
 namespace LEDSegments {
 
 class Renderer {
     std::shared_ptr<DisplaySpec> displaySpec;
 
-    CRGB *outputArray = nullptr;
-    CRGB *segmentArray = nullptr;
-    uint8_t *segmentArray8 = nullptr;
-    CRGB *pendingOutputArray = nullptr;
+    CRGB *outputArray = nullptr;  // Non-owned pointer to external array
+    std::unique_ptr<CRGB[]> segmentArray;
+    std::unique_ptr<uint8_t[]> segmentArray8;
+    std::unique_ptr<CRGB[]> pendingOutputArray;
 
     std::shared_ptr<Renderable<CRGB> > effect = nullptr;
     std::shared_ptr<Renderable<CRGB> > overlay = nullptr;
@@ -80,7 +81,7 @@ public:
 
     void render();
 
-    ~Renderer();
+    ~Renderer() = default;
 };
 
 } // namespace LEDSegments

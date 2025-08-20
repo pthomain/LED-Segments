@@ -35,29 +35,32 @@ static RenderablesAndMirrors<CRGB> effectSelector(uint16_t layoutId) {
         case GROUP_BY_1:
         case GROUP_BY_2:
         case GROUP_BY_4:
-            return RenderablesAndMirrors<CRGB>(
+            return {
                 {
-                    {SwirlEffect::factory, 4},  //the effects being used for GROUP_BY_4 and GROUP_BY_8 (and their weights)
+                    {SwirlEffect::factory, 4},
+                    //the effects being used for GROUP_BY_4 and GROUP_BY_8 (and their weights)
                     {CustomEffect::factory, 2}, //you can provide your own effects this way
                     {NoiseEffect::factory, 3},
                     {SlideEffect::factory, 1},
                     {GradientEffect::factory, 1}
                 },
                 [](RenderableFactoryRef<CRGB> factory) {
-                    //you can use the factory parameter to apply specific mirrors to a given effect, see example in OverlaysConfig.h
-                    return allMirrors<CRGB>(factory); //apply any mirror to all those effects
+                    //you can use the factory parameter to apply specific mirrors to a given effect
+                    if (factory->is<SwirlEffect>()) {
+                        return noMirrors(factory);
+                    }
+
+                    return allMirrors<CRGB>(factory); //apply any mirror to all other effects
                 }
-            );
+            };
 
         case GROUP_BY_8:
         case GROUP_BY_16:
         default:
-            return RenderablesAndMirrors<CRGB>(
+            return {
                 just(SwirlEffect::factory), //only SwirlEffect is used for GROUP_BY_8 and GROUP_BY_16
-                [](RenderableFactoryRef<CRGB> factory) {
-                    return noMirrors<CRGB>(factory); //no mirror applied to SwirlEffect
-                }
-            );
+                noMirrors<CRGB> //no mirror applied to SwirlEffect
+            };
     };
 }
 

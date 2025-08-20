@@ -38,9 +38,9 @@ void DashOverlay::fillSegmentArray(
     float progress,
     unsigned long timeElapsedInMillis
 ) {
-    auto &headPosition = headPositionForSegment[segmentIndex];
-    auto &tailPosition = tailPositionForSegment[segmentIndex];
-    auto &isReversed = isReversedForSegment[segmentIndex];
+    auto &headPosition = headPositionForSegment.get()[segmentIndex];
+    auto &tailPosition = tailPositionForSegment.get()[segmentIndex];
+    auto &isReversed = isReversedForSegment.get()[segmentIndex];
 
     const auto lastIndex = segmentSize - 1;
 

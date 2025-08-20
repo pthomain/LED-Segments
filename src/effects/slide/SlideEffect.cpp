@@ -37,13 +37,13 @@ void SlideEffect::fillSegmentArray(
     float progress,
     unsigned long timeInMillis
 ) {
-    const auto headPosition = headPositionForSegment[segmentIndex];
+    const auto headPosition = headPositionForSegment.get()[segmentIndex];
 
     const uint8_t bottomColourIndex = segmentIndex % nbColours;
     const uint8_t topColourIndex = (bottomColourIndex + 1) % nbColours;
 
-    const auto bottomColour = colourIndexForSegment[bottomColourIndex];
-    const auto topColour = colourIndexForSegment[topColourIndex];
+    const auto bottomColour = colourIndexForSegment.get()[bottomColourIndex];
+    const auto topColour = colourIndexForSegment.get()[topColourIndex];
 
     auto topColourStart = CHSV(colourStart + topColour * (255 / nbColours), 255, 255);
     auto topColourEnd = CHSV(colourStart + 127 + topColour * (255 / nbColours), 255, 255);
@@ -70,10 +70,10 @@ void SlideEffect::fillSegmentArray(
     );
 
     if (headPosition == segmentSize - 1) {
-        colourIndexForSegment[bottomColourIndex] = topColour;
-        headPositionForSegment[segmentIndex] = 0;
+        colourIndexForSegment.get()[bottomColourIndex] = topColour;
+        headPositionForSegment.get()[segmentIndex] = 0;
     } else {
-        headPositionForSegment[segmentIndex] = (timeInMillis / speedDivider) % segmentSize;
+        headPositionForSegment.get()[segmentIndex] = (timeInMillis / speedDivider) % segmentSize;
     }
 }
 

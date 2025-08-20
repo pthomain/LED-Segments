@@ -30,21 +30,22 @@ static RenderablesAndMirrors<uint8_t> transitionSelector(uint16_t layoutId) {
     switch (layoutId) {
         case GROUP_BY_4:
         case GROUP_BY_8:
-            return RenderablesAndMirrors<uint8_t>(
-                { // This is the initializer list for the std::vector
-                    { SlideTransition::factory, 4 }, // 4 times more likely to be selected than FadeTransition
-                    { FadeTransition::factory, 1 }
+            return {
+                {
+                    // This is the initializer list for the std::vector
+                    {SlideTransition::factory, 4}, // 4 times more likely to be selected than FadeTransition
+                    {FadeTransition::factory, 1}
                 },
-                MirrorSelector<uint8_t>(allMirrors<uint8_t>)    //apply any mirror to the selected transitions
-            );
+                allMirrors<uint8_t> //apply any mirror to the selected transitions
+            };
 
         case GROUP_BY_16:
         default:
-            return RenderablesAndMirrors<uint8_t>(
+            return {
                 just(FadeTransition::factory),
-                MirrorSelector<uint8_t>(noMirrors<uint8_t>)    //no mirror applied to the FadeTransition
-            );
-    };
+                MirrorSelector<uint8_t>(noMirrors<uint8_t>) //no mirror applied to the FadeTransition
+            };
+    }
 }
 
 #endif // TEST_TRANSITION_CONFIG_H

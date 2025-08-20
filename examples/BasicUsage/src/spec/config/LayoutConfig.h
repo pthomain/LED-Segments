@@ -66,11 +66,11 @@ static WeightedLayouts layoutSelector(RenderableType type) {
             };
 
         case RenderableType::OVERLAY: //layouts being used for overlays
-            return {{GROUP_BY_2, 1}};
+            return just(uint16_t(GROUP_BY_2));
 
         case RenderableType::TRANSITION: //layouts being used for transitions
         default:
-            return {{GROUP_BY_1, 1}};
+            return just(uint16_t(GROUP_BY_1));
     }
 }
 

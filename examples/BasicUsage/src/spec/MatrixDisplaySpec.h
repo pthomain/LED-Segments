@@ -32,9 +32,7 @@
 // This class defines the display specification (in this case a 8x32 WS2812B LED matrix display).
 class MatrixDisplaySpec : public DisplaySpec {
 public:
-
-    //The 3 fields below are mandatory
-    static constexpr int LED_TYPE = WS2812B; // The type of LEDs on the strip
+    //The 2 fields below are mandatory
     static constexpr int LED_PIN = 9; // Output pin where the LED strip is connected
     static constexpr EOrder RGB_ORDER = GRB; // Color order of the LED strip (see FastLED documentation)
 
@@ -69,7 +67,8 @@ public:
         uint16_t segmentIndex,
         uint16_t pixelIndex,
         float progress,
-        const std::function<void(uint16_t)> &onLedMapped // Callback function to call for each mapped LED with its index as a parameter
+        // Callback function to call for each mapped LED with its index as a parameter
+        const std::function<void(uint16_t)> &onLedMapped
     ) const override;
 
     ~MatrixDisplaySpec() override = default;

@@ -27,14 +27,6 @@ using SPEC = MatrixDisplaySpec;
 
 Display<SPEC> *display;
 
-// For illustration purposes only.
-// This lib uses C++17 and requires PlatformIO to compile.
-//
-// Open the examples/BasicUsage folder in any IDE supporting PlatformIO (VSCode, CLion, ...)
-// See https://platformio.org/ for install steps.
-//
-// For more examples, see: https://github.com/pthomain/LED-Segments-Specs.
-
 void setup() {
     Serial.begin(115200);
     delay(2000);

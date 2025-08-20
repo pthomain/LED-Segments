@@ -23,15 +23,13 @@
 
 #include "LayoutConfig.h"
 #include "engine/displayspec/config/LayoutConfig.h"
+
 //Library-provided overlays below, custom overlays can be created in the same way as effects, see CustomEffect.h for an example
 #include "overlays/none/NoOverlay.h"
 #include "overlays/chase/ChaseOverlay.h"
 #include "overlays/dash/DashOverlay.h"
-#include "overlays/matrix/MatrixOverlay.h"
-#include "overlays/moire/MoireOverlay.h"
 #include "overlays/none/NoOverlay.h"
 #include "overlays/sparkle/SparkleOverlay.h"
-#include "overlays/wave/WaveOverlay.h"
 
 // Defines which overlays are randomly picked for the given layout.
 // Overlays are added on top of effects and applied using an mixing operation
@@ -60,10 +58,10 @@ static RenderablesAndMirrors<CRGB> overlaySelector(uint16_t layoutId) {
             );
 
         default:
-            return RenderablesAndMirrors<CRGB>(
-                just(NoOverlay::factory), //use NoOverlay for remaining layouts
-                MirrorSelector<CRGB>(noMirrors<CRGB>)    //No mirrors applied to NoOverlay
-            );
+            return {
+                just(NoOverlay::factory),  //use NoOverlay for remaining layouts
+                noMirrors<CRGB>         //No mirrors applied to NoOverlay
+            };
     }
 }
 

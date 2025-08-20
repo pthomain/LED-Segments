@@ -49,7 +49,9 @@ public :
     uint16_t param(uint8_t paramKey) const {
         auto parameters = this->context.parameters;
         if (parameters.find(paramKey) == parameters.end()) {
+            #ifdef DEBUG
             Serial.printf("%s: Parameter %d not found\n", Child::name(), paramKey);
+            #endif
             return 0;
         }
 

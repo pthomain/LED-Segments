@@ -25,6 +25,8 @@
 #include "engine/render/renderable/TypedRenderable.h"
 #include "engine/utils/Weights.h"
 
+using namespace LEDSegments;
+
 class CustomEffect : public Effect<CustomEffect> {
 public:
     explicit CustomEffect(const RenderableContext &context): Effect(context){}

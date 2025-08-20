@@ -22,6 +22,7 @@
 #include "engine/utils/Blending.h"
 #include "engine/utils/Interpolation.h"
 #include "engine/utils/Utils.h"
+#include <memory>
 
 namespace LEDSegments {
 
@@ -29,10 +30,14 @@ Renderer::Renderer(
     const std::shared_ptr<DisplaySpec> &displaySpec,
     CRGB *outputArray
 ) : displaySpec(displaySpec),
-    outputArray(outputArray) {
-    segmentArray = new CRGB[displaySpec->maxSegmentSize()]();
-    segmentArray8 = new uint8_t[displaySpec->maxSegmentSize()]();
-    pendingOutputArray = new CRGB[displaySpec->nbLeds()]();
+    outputArray(outputArray),
+    segmentArray(std::make_unique<CRGB[]>(displaySpec->maxSegmentSize())),
+    segmentArray8(std::make_unique<uint8_t[]>(displaySpec->maxSegmentSize())),
+    pendingOutputArray(std::make_unique<CRGB[]>(displaySpec->nbLeds())) {
+    // Initialize arrays to zero
+    std::fill_n(segmentArray.get(), displaySpec->maxSegmentSize(), CRGB::Black);
+    std::fill_n(segmentArray8.get(), displaySpec->maxSegmentSize(), 0);
+    std::fill_n(pendingOutputArray.get(), displaySpec->nbLeds(), CRGB::Black);
 }
 
 template
@@ -70,10 +75,12 @@ void Renderer::applyEffectOrTransition(
     for (auto segmentIndex = 0; segmentIndex < nbSegments; segmentIndex++) {
         auto segmentSize = displaySpec->segmentSize(layoutId, segmentIndex);
         if (segmentSize == 0) {
+            #ifdef DEBUG
             Serial.print("No pixels for layout ");
             Serial.print(displaySpec->config.layoutName(layoutId));
             Serial.print(" at segmentIndex ");
             Serial.println(segmentIndex);
+            #endif
             continue;
         }
 
@@ -98,8 +105,10 @@ void Renderer::applyEffectOrTransition(
                     if (ledIndex < displaySpec->nbLeds()) {
                         outputArray[ledIndex] = mix(ledIndex, outputArray[ledIndex], segmentArray[pixelIndex]);
                     } else {
+                        #ifdef DEBUG
                         Serial.print("Invalid LED index: ");
                         Serial.println(ledIndex);
+                        #endif
                     }
                 }
             );
@@ -107,11 +116,6 @@ void Renderer::applyEffectOrTransition(
     }
 }
 
-Renderer::~Renderer() {
-    delete[] segmentArray;
-    delete[] segmentArray8;
-    delete[] pendingOutputArray;
-}
 
 bool Renderer::validateRenderables(
     const std::shared_ptr<Renderable<CRGB> > &effect,
@@ -153,7 +157,9 @@ void Renderer::changeEffect(
 
 void Renderer::render() {
     if (!validateRenderables(effect, overlay, transition)) {
+        #ifdef DEBUG
         Serial.println("Could not render");
+        #endif
         return;
     }
 
@@ -182,7 +188,7 @@ void Renderer::render() {
         pendingEffect,
         pendingOverlay,
         pendingEffectProgress,
-        pendingOutputArray
+        pendingOutputArray.get()
     );
 
     //Render transition in transitionOutputArray
@@ -191,12 +197,12 @@ void Renderer::render() {
 
     applyEffectOrTransition<uint8_t>(
         transition,
-        segmentArray8,
+        segmentArray8.get(),
         outputArray,
         [&](uint16_t ledIndex, CRGB _, uint8_t toBeMixed) {
             return blend(
                 outputArray[ledIndex],
-                pendingOutputArray[ledIndex],
+                pendingOutputArray.get()[ledIndex],
                 toBeMixed
             );
         },
@@ -222,7 +228,7 @@ void Renderer::flattenEffectAndOverlay(
 ) const {
     applyEffectOrTransition<CRGB>(
         effect,
-        segmentArray,
+        segmentArray.get(),
         effectOutputArray,
         [](uint16_t, CRGB, CRGB toBeMixed) { return toBeMixed; },
         progress
@@ -230,7 +236,7 @@ void Renderer::flattenEffectAndOverlay(
 
     applyEffectOrTransition<CRGB>(
         overlay,
-        segmentArray,
+        segmentArray.get(),
         effectOutputArray,
         [&](uint16_t, CRGB existing, CRGB toBeMixed) {
             return mix(

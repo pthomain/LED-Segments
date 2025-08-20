@@ -62,7 +62,8 @@ static T pickRandomWeightedItem(
 
     // Calculate total weight
     uint16_t totalWeight = 0;
-    for (const auto &[_, weight]: weightedItems) {
+    for (const auto &entry : weightedItems) {
+        auto weight = entry.second;
         totalWeight += weight;
     }
 

@@ -23,14 +23,17 @@
 
 namespace LEDSegments {
 
-// A lightweight, RTTI-free type identification system.
-using ID = uintptr_t;
+class TypeInfo {
+public:
+    // A lightweight, RTTI-free type identification system.
+    using ID = uintptr_t;
 
-// Returns the next available unique ID.
-inline ID next() {
-    static ID next_id = 0;
-    return next_id++;
-}
+    // Returns the next available unique ID.
+    static ID next() {
+        static ID next_id = 0;
+        return next_id++;
+    }
+};
 
 // Template to get a unique, static ID for any given type T.
 template<typename T>

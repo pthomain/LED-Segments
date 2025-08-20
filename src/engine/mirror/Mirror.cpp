@@ -99,8 +99,8 @@ void applyMirror(
     }
 
     auto overlayRepeat = [&](uint16_t x) {
-        C *originalSegmentArray = new C[mirrorSize];
-        std::copy(segmentArray, segmentArray + mirrorSize, originalSegmentArray);
+        auto originalSegmentArray = std::make_unique<C[]>(mirrorSize);
+        std::copy(segmentArray, segmentArray + mirrorSize, originalSegmentArray.get());
 
         for (uint16_t repetition = 0; repetition < x; ++repetition) {
             int repetitionOffset = repetition * mirrorSize / x;
@@ -113,15 +113,13 @@ void applyMirror(
                 );
             }
         }
-
-        delete[] originalSegmentArray;
     };
 
     auto overlayRepeatReverse = [&](uint16_t x) {
         overlayRepeat(x);
 
-        C *forwardSegmentArray = new C[mirrorSize];
-        std::copy(segmentArray, segmentArray + mirrorSize, forwardSegmentArray);
+        auto forwardSegmentArray = std::make_unique<C[]>(mirrorSize);
+        std::copy(segmentArray, segmentArray + mirrorSize, forwardSegmentArray.get());
 
         reverse();
 
@@ -132,8 +130,6 @@ void applyMirror(
                 mixOperation(RenderableOperation::OVERLAY_SCREEN)
             );
         }
-
-        delete[] forwardSegmentArray;
     };
 
     switch (mirror) {

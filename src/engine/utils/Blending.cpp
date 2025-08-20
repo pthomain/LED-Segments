@@ -20,6 +20,8 @@
 
 #include "Blending.h"
 
+namespace LEDSegments {
+
 uint8_t multiply(uint8_t base, uint8_t overlay) {
     return static_cast<uint16_t>(base * overlay) / 255;
 }
@@ -57,3 +59,5 @@ CRGB invert(const CRGB &base, const CRGB &overlay) {
     hsv.h += 128;
     return hsv;
 }
+
+} // namespace LEDSegments

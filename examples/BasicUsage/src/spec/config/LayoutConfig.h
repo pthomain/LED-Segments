@@ -29,48 +29,84 @@ constexpr uint16_t TOTAL_LEDS = TOTAL_PIXELS * PIXEL_SIZE; //Total number of LED
 
 // Define an enum entry for each layout
 enum Layout {
-    GROUP_BY_1,
-    GROUP_BY_2,
-    GROUP_BY_4,
-    GROUP_BY_8,
-    GROUP_BY_16
+    LED_1_ROW_1,
+    LED_2_ROW_1,
+    LED_4_ROW_1,
+    LED_8_ROW_1,
+
+    LED_1_ROW_2,
+    LED_2_ROW_2,
+    LED_4_ROW_2,
+    LED_8_ROW_2,
+
+    LED_1_ROW_4,
+    LED_2_ROW_4,
+    LED_4_ROW_4,
+    LED_8_ROW_4,
 };
 
 // Set of layout IDs being used
 static const std::set<uint16_t> layoutIds = {
-    GROUP_BY_1,
-    GROUP_BY_2,
-    GROUP_BY_4,
-    GROUP_BY_8,
-    GROUP_BY_16
+    LED_1_ROW_1,
+    LED_2_ROW_1,
+    LED_4_ROW_1,
+    LED_8_ROW_1,
+
+    LED_1_ROW_2,
+    LED_2_ROW_2,
+    LED_4_ROW_2,
+    LED_8_ROW_2,
+
+    LED_1_ROW_4,
+    LED_2_ROW_4,
+    LED_4_ROW_4,
+    LED_8_ROW_4,
 };
 
 // Match layout IDs to their names (for console debugging purposes)
 static const std::map<uint16_t, String> layoutNames = {
-    { GROUP_BY_1, "Group pixels by 1" }, //using virtual pixels here, not LEDs
-    { GROUP_BY_2, "Group pixels by 2" },
-    { GROUP_BY_4, "Group pixels by 4" },
-    { GROUP_BY_8, "Group pixels by 8" },
-    { GROUP_BY_16, "Group pixels by 16" }
+    {LED_1_ROW_1, "Pixel = 1 LED; Segment = 1 row = 8 LEDs"}, //using virtual pixels here, not LEDs
+    {LED_2_ROW_1, "Pixel = 2 LEDs; Segment = 1 row = 8 LEDs"},
+    {LED_4_ROW_1, "Pixel = 4 LEDs; Segment = 1 row = 8 LEDs"},
+    {LED_8_ROW_1, "Pixel = 8 LEDs; Segment = 1 row = 8 LEDs"},
+
+    {LED_1_ROW_2, "Pixel = 1 LED; Segment = 2 rows = 16 LEDs"},
+    {LED_2_ROW_2, "Pixel = 2 LEDs; Segment = 2 rows = 16 LEDs"},
+    {LED_4_ROW_2, "Pixel = 4 LEDs; Segment = 2 rows = 16 LEDs"},
+    {LED_8_ROW_2, "Pixel = 8 LEDs; Segment = 2 rows = 16 LEDs"},
+
+    {LED_1_ROW_4, "Pixel = 1 LED; Segment = 4 rows = 32 LEDs"},
+    {LED_2_ROW_4, "Pixel = 2 LEDs; Segment = 4 rows = 32 LEDs"},
+    {LED_4_ROW_4, "Pixel = 4 LEDs; Segment = 4 rows = 32 LEDs"},
+    {LED_8_ROW_4, "Pixel = 8 LEDs; Segment = 4 rows = 32 LEDs"},
 };
 
 static WeightedLayouts layoutSelector(RenderableType type) {
     switch (type) {
         case RenderableType::EFFECT: //layouts being used for effects
             return {
-                {GROUP_BY_1, 8}, //weights influence the probability of each layout being randomly selected
-                {GROUP_BY_2, 6},
-                {GROUP_BY_4, 4},
-                {GROUP_BY_8, 2},
-                {GROUP_BY_16, 1}
+                //weights influence the probability of each layout being randomly selected
+                {LED_1_ROW_1, 1},
+                {LED_2_ROW_1, 1},
+                {LED_4_ROW_1, 1},
+                {LED_8_ROW_1, 1},
+                {LED_1_ROW_2, 1},
+                {LED_2_ROW_2, 1},
+                {LED_4_ROW_2, 1},
+                {LED_8_ROW_2, 1},
+                {LED_1_ROW_4, 1},
+                {LED_2_ROW_4, 1},
+                {LED_4_ROW_4, 1},
+                {LED_8_ROW_4, 1},
             };
 
         case RenderableType::OVERLAY: //layouts being used for overlays
-            return just(uint16_t(GROUP_BY_2));
-
         case RenderableType::TRANSITION: //layouts being used for transitions
         default:
-            return just(uint16_t(GROUP_BY_1));
+            return {
+                {LED_1_ROW_4, 1},
+                {LED_8_ROW_1, 1},
+            };
     }
 }
 

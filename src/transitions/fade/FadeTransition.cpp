@@ -30,7 +30,7 @@ void FadeTransition::fillSegmentArray(
     uint8_t *segmentArray,
     uint16_t segmentSize,
     uint16_t segmentIndex,
-    float progress,
+    fract16 progress,
     unsigned long timeElapsedInMillis
 ) {
     auto alpha = static_cast<uint8_t>(255.0f * progress);

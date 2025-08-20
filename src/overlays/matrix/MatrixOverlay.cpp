@@ -44,7 +44,7 @@ MatrixOverlay::MatrixOverlay(const RenderableContext &context)
           random8(
               min(minDensity, maxDensity) / densityIncrement,
               max(minDensity, maxDensity) / densityIncrement
-          ) * (densityIncrement / 100.0f)
+          ) * densityIncrement * 65535 / 100
       ),
       streamLength(param(PARAM_STREAM_LENGTH)),
       multiplyOperationWeight(param(PARAM_OPERATION_MULTIPLY_WEIGHT)),
@@ -55,7 +55,7 @@ void MatrixOverlay::fillSegmentArray(
     CRGB *segmentArray,
     uint16_t segmentSize,
     uint16_t segmentIndex,
-    float progress,
+    fract16 progress,
     unsigned long timeElapsedInMillis
 ) {
     auto &segmentStreams = streams[segmentIndex];
@@ -79,7 +79,7 @@ void MatrixOverlay::fillSegmentArray(
             segmentStreams.push_back({
                 0,
                 random8(2, streamLength),
-                0.0f,
+                0,
                 (uint16_t) random8(2, 5) * 750,
                 (uint16_t) timeElapsedInMillis,
                 true
@@ -90,14 +90,14 @@ void MatrixOverlay::fillSegmentArray(
     // Draw and update streams
     for (auto &stream: segmentStreams) {
         if (stream.isAlive) {
-            stream.progress = (static_cast<float>(timeElapsedInMillis) - stream.startTime) / stream.duration;
-            if (stream.progress > 1.0f) {
+            stream.progress = min(65535, (uint32_t)((timeElapsedInMillis - stream.startTime) * 65535 / stream.duration));
+            if (stream.progress >= 65535) {
                 stream.isAlive = false;
                 continue;
             }
 
-            float easedProgress = Interpolation::easeOutQuad(stream.progress);
-            stream.position = easedProgress * (segmentSize + stream.length);
+            fract16 easedProgress = Interpolation::easeOutQuad(stream.progress);
+            stream.position = (easedProgress * (segmentSize + stream.length)) / 65535;
 
             for (int character = 0; character < stream.length; ++character) {
                 int16_t charPos = stream.position - character;

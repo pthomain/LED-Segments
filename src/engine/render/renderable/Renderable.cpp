@@ -27,7 +27,7 @@ void Renderable<C>::fillArray(
     C *segmentArray,
     uint16_t segmentSize,
     uint16_t segmentIndex,
-    float progress
+    fract16 progress
 ) {
     unsigned long elapsedMillis;
     if (_frameIndex == 0) {

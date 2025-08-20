@@ -30,10 +30,10 @@ void SlideTransition::fillSegmentArray(
     uint8_t *segmentArray,
     uint16_t segmentSize,
     uint16_t segmentIndex,
-    float progress,
+    fract16 progress,
     unsigned long timeElapsedInMillis
 ) {
-    uint16_t limit = constrain(round((float) segmentSize * progress), 0, segmentSize);
+    uint16_t limit = constrain(round(segmentSize * progress / 65535), 0, segmentSize);
     memset(segmentArray, CRGB::White, limit * sizeof(uint8_t));
     memset(segmentArray + limit, CRGB::Black, (segmentSize - limit) * sizeof(uint8_t));
 }

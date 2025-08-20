@@ -60,13 +60,13 @@ class Renderer {
         C *segmentArray,
         CRGB *outputArray,
         std::function<CRGB(uint16_t ledIndex, CRGB existing, C toBeMixed)> mix,
-        float progress
+        fract16 progress
     ) const;
 
     void flattenEffectAndOverlay(
         const std::shared_ptr<Renderable<CRGB> > &effect,
         const std::shared_ptr<Renderable<CRGB> > &overlay,
-        float progress,
+        fract16 progress,
         CRGB *outputArray
     ) const;
 

@@ -30,7 +30,7 @@ void NoTransition::fillSegmentArray(
     uint8_t *segmentArray,
     uint16_t segmentSize,
     uint16_t segmentIndex,
-    float progress,
+    fract16 progress,
     unsigned long timeElapsedInMillis
 ) {
     memset(segmentArray, progress < 0.5f ? 0 : 255, segmentSize * sizeof(uint8_t));

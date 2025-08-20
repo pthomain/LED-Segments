@@ -29,13 +29,14 @@ using namespace LEDSegments;
 
 class CustomEffect : public Effect<CustomEffect> {
 public:
-    explicit CustomEffect(const RenderableContext &context): Effect(context){}
+    explicit CustomEffect(const RenderableContext &context) : Effect(context) {
+    }
 
     void fillSegmentArray(
         CRGB *segmentArray,
         uint16_t segmentSize,
-    uint16_t segmentIndex,
-        float progress,
+        uint16_t segmentIndex,
+        fract16 progress,
         unsigned long timeInMillis
     ) override;
 

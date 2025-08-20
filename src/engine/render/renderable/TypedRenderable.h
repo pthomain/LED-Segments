@@ -59,13 +59,13 @@ public :
     }
 
     void beforeFrame(
-        float progress,
+        fract16 progress,
         unsigned long timeElapsedInMillis
     ) override {
     }
 
     void afterFrame(
-        float progress,
+        fract16 progress,
         unsigned long timeElapsedInMillis
     ) override {
     }
@@ -84,7 +84,6 @@ class Effect : public TypedRenderable<Child, CRGB> {
 public:
     explicit Effect(const RenderableContext &context) :  TypedRenderable<Child, CRGB>(context) {
     }
-
    WeightedOperations operations() { return just(RenderableOperation::EFFECT); }
 };
 

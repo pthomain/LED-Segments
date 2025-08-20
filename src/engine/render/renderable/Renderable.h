@@ -41,7 +41,7 @@ protected:
         Data *segmentArray,
         uint16_t segmentSize,
         uint16_t segmentIndex,
-        float progress,
+        fract16 progress,
         unsigned long timeInMillis
     ) = 0;
 
@@ -55,16 +55,16 @@ public:
         Data *segmentArray,
         uint16_t segmentSize,
         uint16_t segmentIndex,
-        float progress
+        fract16 progress
     ) final;
 
     virtual void beforeFrame(
-        float progress,
+        fract16 progress,
         unsigned long timeElapsedInMillis
     ) = 0;
 
     virtual void afterFrame(
-        float progress,
+        fract16 progress,
         unsigned long timeElapsedInMillis
     ) = 0;
 

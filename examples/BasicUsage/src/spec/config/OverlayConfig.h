@@ -36,26 +36,26 @@
 // (usually multiply, which affects the alpha value of the effect's pixels)
 static RenderablesAndMirrors<CRGB> overlaySelector(uint16_t layoutId) {
     switch (layoutId) {
-        case GROUP_BY_1:
-        case GROUP_BY_2:
-            return RenderablesAndMirrors<CRGB>(
-                {
-                    // Which overlays to use for the GROUP_BY_1 and GROUP_BY_2 layout (and their weights)
-                    {SparkleOverlay::factory, 5},
-                    {DashOverlay::factory, 4},
-                    {NoOverlay::factory, 2},
-                },
-                MirrorSelector<CRGB>([](RenderableFactoryRef<CRGB> overlayFactory) {
-                    //For DashOverlay, only apply Mirror::NONE and Mirror::REVERSE
-                    if (overlayFactory->is<DashOverlay>()) {
-                        return WeightedMirrors{
-                            {Mirror::NONE, 2},
-                            {Mirror::REVERSE, 1},
-                        };
-                    }
-                    return allMirrors<CRGB>(overlayFactory); //apply any mirror to the other overlays
-                })
-            );
+        // case GROUP_BY_1:
+        // case GROUP_BY_2:
+        //     return RenderablesAndMirrors<CRGB>(
+        //         {
+        //             // Which overlays to use for the GROUP_BY_1 and GROUP_BY_2 layout (and their weights)
+        //             {SparkleOverlay::factory, 5},
+        //             {DashOverlay::factory, 4},
+        //             {NoOverlay::factory, 2},
+        //         },
+        //         MirrorSelector<CRGB>([](RenderableFactoryRef<CRGB> overlayFactory) {
+        //             //For DashOverlay, only apply Mirror::NONE and Mirror::REVERSE
+        //             if (overlayFactory->is<DashOverlay>()) {
+        //                 return WeightedMirrors{
+        //                     {Mirror::NONE, 2},
+        //                     {Mirror::REVERSE, 1},
+        //                 };
+        //             }
+        //             return allMirrors<CRGB>(overlayFactory); //apply any mirror to the other overlays
+        //         })
+        //     );
 
         default:
             return {

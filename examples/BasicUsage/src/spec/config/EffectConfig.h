@@ -23,44 +23,46 @@
 
 #include "../../customeffect/CustomEffect.h" // CustomEffect is an example of a user-defined effect
 #include "LayoutConfig.h"
-#include "effects/noise/NoiseEffect.h" //below are library-provided effects
+#include "effects/fractal/FractalEffect.h" //below are library-provided effects
+#include "effects/noise/NoiseEffect.h"
 #include "effects/slide/SlideEffect.h"
+#include "effects/chaos/ChaosEffect.h"
 #include "effects/swirl/SwirlEffect.h"
+#include "effects/rose/RoseEffect.h"
 #include "engine/render/renderable/TypedRenderable.h"
 
 // Defines which effects are randomly picked for the given layout.
 // Effects only affect pixels' colour (e.g. gradient animations)
 static RenderablesAndMirrors<CRGB> effectSelector(uint16_t layoutId) {
     switch (layoutId) {
-        case GROUP_BY_1:
-        case GROUP_BY_2:
-        case GROUP_BY_4:
+        default:
             return {
                 {
-                    {SwirlEffect::factory, 4},
+                    {FractalEffect::factory, 4},
+                    {RoseEffect::factory, 4},
+                    {ChaosEffect::factory, 4},
+                    // {SwirlEffect::factory, 4},
                     //the effects being used for GROUP_BY_4 and GROUP_BY_8 (and their weights)
-                    {CustomEffect::factory, 2}, //you can provide your own effects this way
-                    {NoiseEffect::factory, 3},
-                    {SlideEffect::factory, 1},
-                    {GradientEffect::factory, 1}
+                    // {CustomEffect::factory, 2}, //you can provide your own effects this way
+                    // {NoiseEffect::factory, 3},
+                    // {SlideEffect::factory, 1}, //TODO fix
+                    // {GradientEffect::factory, 1} //TODO fix
                 },
                 [](RenderableFactoryRef<CRGB> factory) {
                     //you can use the factory parameter to apply specific mirrors to a given effect
-                    if (factory->is<SwirlEffect>()) {
+                    // if (factory->is<SwirlEffect>()) {
                         return noMirrors(factory);
-                    }
+                    // }
 
                     return allMirrors<CRGB>(factory); //apply any mirror to all other effects
                 }
             };
-
-        case GROUP_BY_8:
-        case GROUP_BY_16:
-        default:
-            return {
-                just(SwirlEffect::factory), //only SwirlEffect is used for GROUP_BY_8 and GROUP_BY_16
-                noMirrors<CRGB> //no mirror applied to SwirlEffect
-            };
+        //
+        // default:
+        //     return {
+        //         just(SwirlEffect::factory), //only SwirlEffect is used for GROUP_BY_8 and GROUP_BY_16
+        //         noMirrors<CRGB> //no mirror applied to SwirlEffect
+        //     };
     };
 }
 

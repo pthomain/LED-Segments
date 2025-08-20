@@ -33,7 +33,7 @@ void GradientEffect::fillSegmentArray(
     CRGB *segmentArray,
     uint16_t segmentSize,
     uint16_t segmentIndex,
-    float progress,
+    fract16 progress,
     unsigned long timeInMillis
 ) {
     uint8_t progressOffset = colourStart + static_cast<uint8_t>(progress * 255);

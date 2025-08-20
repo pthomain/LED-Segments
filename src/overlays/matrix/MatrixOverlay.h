@@ -33,7 +33,7 @@ class MatrixOverlay : public Overlay<MatrixOverlay> {
     const uint8_t minDensity;
     const uint8_t maxDensity;
 
-    const float chanceOfNewStream;
+    const fract16 chanceOfNewStream;
     const uint8_t streamLength;
 
     const uint16_t multiplyOperationWeight;
@@ -42,7 +42,7 @@ class MatrixOverlay : public Overlay<MatrixOverlay> {
     struct Stream {
         int16_t position;
         uint8_t length;
-        float progress;
+        fract16 progress;
         uint16_t duration;
         uint16_t startTime;
         bool isAlive;
@@ -64,7 +64,7 @@ public:
         CRGB *segmentArray,
         uint16_t segmentSize,
         uint16_t segmentIndex,
-        float progress,
+        fract16 progress,
         unsigned long timeElapsedInMillis
     ) override;
 

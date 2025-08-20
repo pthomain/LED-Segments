@@ -35,12 +35,8 @@ namespace LEDSegments {
 #define FASTLED_USE_PROGMEM 1
 #define ENTROPY_UPDATE_IN_SECONDS 5
 
-template <typename, typename = void> struct has_led_type : std::false_type {};
 template <typename, typename = void> struct has_led_pin : std::false_type {};
 template <typename, typename = void> struct has_rgb_order : std::false_type {};
-
-template <typename T>
-struct has_led_type<T, std::void_t<decltype(T::LED_TYPE)>> : std::true_type {};
 
 template <typename T>
 struct has_led_pin<T, std::void_t<decltype(T::LED_PIN)>> : std::true_type {};
@@ -51,7 +47,6 @@ struct has_rgb_order<T, std::void_t<decltype(T::RGB_ORDER)>> : std::true_type {}
 template<typename SPEC>
 class Display {
     static_assert(std::is_base_of<DisplaySpec, SPEC>::value, "Template parameter SPEC must be a subclass of DisplaySpec");
-    static_assert(has_led_type<SPEC>::value, "SPEC must provide a static constexpr int LED_TYPE");
     static_assert(has_led_pin<SPEC>::value, "SPEC must provide a static constexpr int LED_PIN");
     static_assert(has_rgb_order<SPEC>::value, "SPEC must provide a static constexpr EOrder RGB_ORDER");
     std::shared_ptr<SPEC> _displaySpec;
@@ -74,7 +69,7 @@ public:
         );
         addEntropy(freePinsForEntropy);
 
-        CFastLED::addLeds<SPEC::LED_TYPE, SPEC::LED_PIN, SPEC::RGB_ORDER>(outputArray.get(), _displaySpec->nbLeds())
+        CFastLED::addLeds<WS2812, SPEC::LED_PIN, SPEC::RGB_ORDER>(outputArray.get(), _displaySpec->nbLeds())
                 .setCorrection(TypicalLEDStrip);
 
         FastLED.setBrightness(_displaySpec->brightness);
@@ -95,7 +90,7 @@ public:
         const auto &[transitionLayoutId, transitionFactory, transitionMirror] = config.randomTransition();
         const auto &[overlayLayoutId, overlayFactory, overlayMirror] = config.randomOverlay();
 
-        #ifdef DEBUG
+        // #ifdef DEBUG
         // Debug output - only compiled in debug builds
         Serial.println("---");
         Serial.print("Palette			");
@@ -122,7 +117,7 @@ public:
         Serial.print("Transition mirror	");
         Serial.println(getMirrorName(transitionMirror));
         Serial.println("---");
-        #endif
+        // #endif
 
         const uint16_t effectDurationInFrames = effectDurationsInSecs * _displaySpec->fps;
         auto transitionDurationInFrames = _displaySpec->fps * _displaySpec->transitionDurationInMillis / 1000;

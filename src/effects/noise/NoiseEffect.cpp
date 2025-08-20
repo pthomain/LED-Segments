@@ -22,34 +22,27 @@
 #include "engine/utils/Utils.h"
 
 namespace LEDSegments {
+    const uint8_t NoiseEffect::PARAM_NOISE_SCALE;
+    const uint8_t NoiseEffect::PARAM_SPEED_DIVIDER;
 
-const uint8_t NoiseEffect::PARAM_NOISE_SCALE;
-const uint8_t NoiseEffect::PARAM_PALETTE_SCALE;
-const uint8_t NoiseEffect::PARAM_NOISE_SPEED;
+    static const NoiseEffectFactory factoryInstance;
+    RenderableFactoryRef<CRGB> NoiseEffect::factory = &factoryInstance;
 
-static const NoiseEffectFactory factoryInstance;
-RenderableFactoryRef<CRGB> NoiseEffect::factory = &factoryInstance;
+    void NoiseEffect::fillSegmentArray(
+        CRGB *segmentArray,
+        uint16_t segmentSize,
+        uint16_t segmentIndex,
+        fract16 progress,
+        unsigned long timeElapsedInMillis
+    ) {
+        const uint8_t increment = max(1, timeElapsedInMillis / speedDivider);
+        const uint8_t noise = inoise8(noiseScale, randomStart, increment);
 
-void NoiseEffect::fillSegmentArray(
-    CRGB *segmentArray,
-    uint16_t segmentSize,
-    uint16_t segmentIndex,
-    float progress,
-    unsigned long timeElapsedInMillis
-) {
-    const uint8_t increment = max(1, timeElapsedInMillis / speedDivider);
-    const uint8_t noise = inoise8(noiseScale, randomStart + increment);
-    const uint8_t step = max(1, 255 / (segmentSize * paletteScale));
-
-    fill_palette(
-        segmentArray,
-        segmentSize,
-        normaliseNoise(noise),
-        step,
-        context.palette.palette,
-        255,
-        LINEARBLEND
-    );
-}
-
+        for (uint16_t i = 0; i < segmentSize; i++) {
+            segmentArray[i] = ColorFromPalette(
+                context.palette.palette,
+                normaliseNoise(noise) + segmentIndex
+            );
+        }
+    }
 } // namespace LEDSegments

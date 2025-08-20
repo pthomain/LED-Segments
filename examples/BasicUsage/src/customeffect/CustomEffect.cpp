@@ -32,7 +32,7 @@ void CustomEffect::fillSegmentArray(
     CRGB *segmentArray,
     uint16_t segmentSize,
     uint16_t segmentIndex,
-    float progress,
+    fract16 progress,
     unsigned long timeInMillis
 ) {
     CRGB colour;

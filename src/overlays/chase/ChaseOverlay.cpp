@@ -55,7 +55,7 @@ void ChaseOverlay::fillSegmentArray(
     CRGB *segmentArray,
     uint16_t segmentSize,
     uint16_t segmentIndex,
-    float progress,
+    fract16 progress,
     unsigned long timeElapsedInMillis
 ) {
     auto &segmentSparks = sparks[segmentIndex];
@@ -121,7 +121,7 @@ void ChaseOverlay::fillSegmentArray(
 }
 
 void ChaseOverlay::afterFrame(
-    float progress,
+    fract16 progress,
     unsigned long timeElapsedInMillis
 ) {
     if (emittedSparkCount[context.nbSegments - 1] == maxSparksPerSegment) {

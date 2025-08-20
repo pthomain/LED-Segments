@@ -45,10 +45,10 @@ static uint8_t normaliseNoise(uint8_t noise) {
     return map(constrain(noise, 50, 190), 50, 190, 0, 255);
 }
 
-inline bool probability(const float probability) {
-    if (probability == 0.0f) return false;
-    if (probability >= 1.0f) return true;
-    return random16() < static_cast<uint32_t>(probability * 65535.0f);
+inline bool probability(const fract16 probability) {
+    if (probability == 0) return false;
+    if (probability >= 65535) return true;
+    return random16() < probability;
 }
 
 static void mapLedInSnakeDisplay(

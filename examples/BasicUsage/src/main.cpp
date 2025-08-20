@@ -26,6 +26,7 @@ using namespace LEDSegments;
 using SPEC = MatrixDisplaySpec;
 
 Display<SPEC> *display;
+#define DEBUG
 
 void setup() {
     Serial.begin(115200);

@@ -29,22 +29,16 @@ namespace LEDSegments {
 
 class NoiseEffect : public Effect<NoiseEffect> {
 protected:
-    const uint8_t paletteScale;
     const uint8_t noiseScale;
-    const uint8_t noiseSpeed;
     const uint8_t randomStart = random8();
     const uint8_t speedDivider;
 
 public:
-    static const uint8_t PARAM_PALETTE_SCALE = 0;
-    static const uint8_t PARAM_NOISE_SCALE = 1;
-    static const uint8_t PARAM_NOISE_SPEED = 2;
-    static const uint8_t PARAM_SPEED_DIVIDER = 3;
+    static const uint8_t PARAM_NOISE_SCALE = 0;
+    static const uint8_t PARAM_SPEED_DIVIDER = 1;
 
     explicit NoiseEffect(const RenderableContext &context): Effect(context),
-          paletteScale(param(PARAM_PALETTE_SCALE)),
           noiseScale(param(PARAM_NOISE_SCALE)),
-          noiseSpeed(param(PARAM_NOISE_SPEED)),
           speedDivider(max(1, param(PARAM_SPEED_DIVIDER))) {
     }
 
@@ -52,7 +46,7 @@ public:
         CRGB *segmentArray,
         uint16_t segmentSize,
         uint16_t segmentIndex,
-        float progress,
+        fract16 progress,
         unsigned long timeElapsedInMillis
     ) override;
 
@@ -64,10 +58,8 @@ class NoiseEffectFactory : public RenderableFactory<NoiseEffectFactory, NoiseEff
 public:
     static Params declareParams() {
         return {
-            {NoiseEffect::PARAM_PALETTE_SCALE, random8(2, 6)},
-            {NoiseEffect::PARAM_NOISE_SCALE, random8(10, 20)},
-            {NoiseEffect::PARAM_NOISE_SPEED, random8(5, 100)},
-            {NoiseEffect::PARAM_SPEED_DIVIDER, 5}
+            {NoiseEffect::PARAM_NOISE_SCALE, random8(40, 80)},
+            {NoiseEffect::PARAM_SPEED_DIVIDER, random(10, 30)}
         };
     }
 };

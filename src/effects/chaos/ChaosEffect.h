@@ -18,55 +18,46 @@
  * along with LED Segments. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SPARKLEOVERLAY_H
-#define SPARKLEOVERLAY_H
+#ifndef LED_SEGMENTS_CHAOSEFFECT_H
+#define LED_SEGMENTS_CHAOSEFFECT_H
 
 #include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/render/renderable/TypedRenderable.h"
-#include "engine/utils/Weights.h"
 
 namespace LEDSegments {
 
-class SparkleOverlay : public Overlay<SparkleOverlay> {
-    const fract16 density;
+class ChaosEffect : public Effect<ChaosEffect> {
+    uint8_t paletteIncrement;
+    std::unique_ptr<uint8_t[]> segmentRotationSpeeds;
+    std::unique_ptr<uint8_t[]> segmentDirections;
+    std::unique_ptr<uint8_t[]> segmentInitialPositions;
 
 public:
-    static const uint16_t PARAM_DENSITY = 0;
+    static const uint8_t PARAM_PALETTE_INCREMENT = 0; // Base palette increment
 
-    explicit SparkleOverlay(const RenderableContext &context)
-        : Overlay(context),
-          density(min(100, param(PARAM_DENSITY)) * 65535 / 100) {
-    }
+    explicit ChaosEffect(const RenderableContext &context);
 
     void fillSegmentArray(
         CRGB *segmentArray,
-        uint16_t segmentSize,
+        uint16_t segmentArraySize,
         uint16_t segmentIndex,
         fract16 progress,
-        unsigned long timeElapsedInMillis
+        unsigned long timeInMillis
     ) override;
 
-    static constexpr const char *name() { return "SparkleOverlay"; }
-
-    WeightedOperations operations() {
-        return {
-            {RenderableOperation::OVERLAY_SCREEN, 1},
-            {RenderableOperation::OVERLAY_MULTIPLY, 1},
-        };
-    }
-
+    static constexpr const char *name() { return "ChaosEffect"; }
     static RenderableFactoryRef<CRGB> factory;
 };
 
-class SparkleOverlayFactory : public RenderableFactory<SparkleOverlayFactory, SparkleOverlay, CRGB> {
+class ChaosEffectFactory : public RenderableFactory<ChaosEffectFactory, ChaosEffect, CRGB> {
 public:
     static Params declareParams() {
         return {
-            {SparkleOverlay::PARAM_DENSITY, 50} // 0-100
+            {ChaosEffect::PARAM_PALETTE_INCREMENT, random8(1, 5)}   // Random palette increment
         };
     }
 };
 
-} // namespace LEDSegments
+} // LEDSegments
 
-#endif //SPARKLEOVERLAY_H
+#endif //LED_SEGMENTS_CHAOSEFFECT_H

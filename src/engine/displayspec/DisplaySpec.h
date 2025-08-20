@@ -43,7 +43,7 @@ public:
     const uint8_t maxEffectDurationsInSecs;
     const int16_t transitionDurationInMillis;
     const uint16_t refreshRateInMillis;
-    const float chanceOfRainbow;
+    const fract16 chanceOfRainbow;
     const uint8_t fps;
     const uint8_t isCircular;
 
@@ -53,7 +53,7 @@ public:
         const uint8_t minEffectDurationsInSecs = 3,
         const uint8_t maxEffectDurationsInSecs = 10,
         const int16_t transitionDurationInMillis = 1000, //use < 1 to disable
-        const float chanceOfRainbow = .75f,
+        const fract16 chanceOfRainbow = 49151, // 0.75 * 65535
         const uint8_t fps = 30,
         const uint8_t isCircular = false
     ): config(config),
@@ -81,7 +81,7 @@ public:
         uint16_t layoutId,
         uint16_t segmentIndex,
         uint16_t pixelIndex,
-        float progress,
+        fract16 progress,
         const std::function<void(uint16_t)> &onLedMapped
     ) const = 0;
 

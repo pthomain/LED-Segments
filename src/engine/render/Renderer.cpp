@@ -46,7 +46,7 @@ void Renderer::applyEffectOrTransition(
     CRGB *segmentArray,
     CRGB *outputArray,
     std::function<CRGB(uint16_t ledIndex, CRGB existing, CRGB toBeMixed)> mix,
-    float progress
+    fract16 progress
 ) const;
 
 template
@@ -55,7 +55,7 @@ void Renderer::applyEffectOrTransition(
     uint8_t *segmentArray,
     CRGB *outputArray,
     std::function<CRGB(uint16_t ledIndex, CRGB existing, uint8_t toBeMixed)> mix,
-    float progress
+    fract16 progress
 ) const;
 
 template<typename C>
@@ -64,7 +64,7 @@ void Renderer::applyEffectOrTransition(
     C *segmentArray,
     CRGB *outputArray,
     std::function<CRGB(uint16_t ledIndex, CRGB existing, C toBeMixed)> mix,
-    float progress
+    fract16 progress
 ) const {
     auto context = renderable->context;
     auto layoutId = context.layoutId;
@@ -165,7 +165,7 @@ void Renderer::render() {
 
     //Render main effect in outputArray
     float effectDurationInFrames = static_cast<float>(effect->context.durationInFrames) + transitionDurationInFrames;
-    float effectProgress = min(1.0f, effectFrameIndex / effectDurationInFrames);
+    fract16 effectProgress = min(65535, (uint32_t)(effectFrameIndex * 65535 / effectDurationInFrames));
     effectFrameIndex++;
 
     flattenEffectAndOverlay(
@@ -181,7 +181,7 @@ void Renderer::render() {
     //Render pending effect in pendingOutputArray if transition is running
     float pendingEffectDurationInFrames = static_cast<float>(pendingEffect->context.durationInFrames) +
                                           transitionDurationInFrames;
-    float pendingEffectProgress = min(1.0f, pendingEffectFrameIndex / pendingEffectDurationInFrames);
+    fract16 pendingEffectProgress = min(65535, (uint32_t)(pendingEffectFrameIndex * 65535 / pendingEffectDurationInFrames));
     pendingEffectFrameIndex++;
 
     flattenEffectAndOverlay(
@@ -192,8 +192,8 @@ void Renderer::render() {
     );
 
     //Render transition in transitionOutputArray
-    const float transitionPercent = 1.0f - (transitionStep / transitionDurationInFrames);
-    const float smoothedTransition = Interpolation::easeInOutQuad(transitionPercent);
+    const fract16 transitionPercent = 65535 - (uint32_t)(transitionStep * 65535 / transitionDurationInFrames);
+    const fract16 smoothedTransition = Interpolation::easeInOutQuad(transitionPercent);
 
     applyEffectOrTransition<uint8_t>(
         transition,
@@ -223,7 +223,7 @@ void Renderer::render() {
 void Renderer::flattenEffectAndOverlay(
     const std::shared_ptr<Renderable<CRGB> > &effect,
     const std::shared_ptr<Renderable<CRGB> > &overlay,
-    float progress,
+    fract16 progress,
     CRGB *effectOutputArray
 ) const {
     applyEffectOrTransition<CRGB>(

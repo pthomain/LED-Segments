@@ -22,6 +22,7 @@
 #define TEST_PARAM_CONFIG_H
 
 #include "effects/gradient/GradientEffect.h"
+#include "effects/noise/NoiseEffect.h"
 #include "engine/displayspec/config/LayoutConfig.h"
 #include "overlays/chase/ChaseOverlay.h"
 
@@ -35,6 +36,16 @@ static std::map<uint8_t, uint16_t> effectParamSelector(
         return GradientEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue)-> uint16_t {
             switch (paramKey) {
                 case GradientEffect::PARAM_DENSITY_VARIATION: return random8(15);
+                default: return defaultValue;
+            }
+        });
+    }
+    // Overrides the default parameters for NoiseEffect
+    if (NoiseEffect::factory->is(renderableId)) {
+        return NoiseEffect::factory->params([](uint8_t paramKey, uint16_t defaultValue)-> uint16_t {
+            switch (paramKey) {
+                case NoiseEffect::PARAM_NOISE_SCALE: random8(40, 80);
+                case NoiseEffect::PARAM_SPEED_DIVIDER: return random(10, 30);
                 default: return defaultValue;
             }
         });
@@ -97,4 +108,3 @@ static std::map<uint8_t, uint16_t> paramSelector(
 }
 
 #endif // TEST_PARAM_CONFIG_H
-

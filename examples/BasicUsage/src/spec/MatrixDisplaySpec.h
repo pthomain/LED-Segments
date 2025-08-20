@@ -47,8 +47,8 @@ public:
             paramSelector
         ),
         50, //brightness
-        3,  //min effect duration
-        6   //max effect duration
+        5,  //min effect duration
+        5   //max effect duration
     ) {
     }
 
@@ -66,7 +66,7 @@ public:
         uint16_t layoutId,
         uint16_t segmentIndex,
         uint16_t pixelIndex,
-        float progress,
+        fract16 progress,
         // Callback function to call for each mapped LED with its index as a parameter
         const std::function<void(uint16_t)> &onLedMapped
     ) const override;

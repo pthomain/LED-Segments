@@ -24,7 +24,7 @@
 #include "engine/mirror/MirrorUtils.h"
 #include "transitions/fade/FadeTransition.h"
 #include "transitions/none/NoTransition.h"
-#include "transitions/slide/SlideTransition.h"
+#include "transitions/linear/slide/SlideTransition.h"
 
 namespace LEDSegments {
 

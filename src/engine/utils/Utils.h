@@ -40,7 +40,7 @@ static uint16_t unsignedModulo(int value, uint16_t modulo) {
     return ((value % modulo) + modulo) % modulo;
 }
 
-//Ensures noise values are between 0 and 255 (they usually are between 50 and 190 by default)
+//Ensures noise values are between 0 and 255 (they are usually between 50 and 190 by default)
 static uint8_t normaliseNoise(uint8_t noise) {
     return map(constrain(noise, 50, 190), 50, 190, 0, 255);
 }

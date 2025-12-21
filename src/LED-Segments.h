@@ -17,25 +17,28 @@
 #include "engine/render/renderable/RenderableOperation.h"
 
 // Effect Includes
-#include "effects/gradient/GradientEffect.h"
-#include "effects/noise/NoiseEffect.h"
 #include "effects/none/NoEffect.h"
-#include "effects/slide/SlideEffect.h"
-#include "effects/swirl/SwirlEffect.h"
+#include "effects/linear/chaos/ChaosEffect.h"
+#include "effects/linear/fractal/FractalEffect.h"
+#include "effects/linear/gradient/GradientEffect.h"
+#include "effects/linear/noise/NoiseEffect.h"
+#include "effects/linear/rose/RoseEffect.h"
+#include "effects/linear/slide/SlideEffect.h"
+#include "effects/linear/swirl/SwirlEffect.h"
 
 // Overlay Includes
-#include "overlays/chase/ChaseOverlay.h"
-#include "overlays/dash/DashOverlay.h"
-#include "overlays/matrix/MatrixOverlay.h"
-#include "overlays/moire/MoireOverlay.h"
 #include "overlays/none/NoOverlay.h"
-#include "overlays/sparkle/SparkleOverlay.h"
-#include "overlays/wave/WaveOverlay.h"
+#include "overlays/linear/chase/ChaseOverlay.h"
+#include "overlays/linear/dash/DashOverlay.h"
+#include "overlays/linear/matrix/MatrixOverlay.h"
+#include "overlays/linear/moire/MoireOverlay.h"
+#include "overlays/linear/sparkle/SparkleOverlay.h"
+#include "overlays/linear/wave/WaveOverlay.h"
 
 // Transition Includes
 #include "transitions/Transition.h"
 #include "transitions/fade/FadeTransition.h"
 #include "transitions/none/NoTransition.h"
-#include "transitions/slide/SlideTransition.h"
+#include "transitions/linear/slide/SlideTransition.h"
 
 #endif // LED_SEGMENTS_H

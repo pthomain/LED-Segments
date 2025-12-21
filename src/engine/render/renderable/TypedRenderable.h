@@ -23,6 +23,7 @@
 #define EFFECTS_H
 
 #include "Renderable.h"
+#include "BaseRenderableFactory.h"
 
 namespace LEDSegments {
 

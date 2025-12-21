@@ -21,7 +21,6 @@
 #ifndef LED_SEGMENTS_NOISEEFFECT_H
 #define LED_SEGMENTS_NOISEEFFECT_H
 
-#include "effects/gradient/GradientEffect.h"
 #include "engine/render/renderable/TypedRenderable.h"
 #include "engine/utils/Weights.h"
 

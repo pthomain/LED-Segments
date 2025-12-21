@@ -90,7 +90,7 @@ public:
         const auto &[transitionLayoutId, transitionFactory, transitionMirror] = config.randomTransition();
         const auto &[overlayLayoutId, overlayFactory, overlayMirror] = config.randomOverlay();
 
-        // #ifdef DEBUG
+        #ifdef DEBUG
         // Debug output - only compiled in debug builds
         Serial.println("---");
         Serial.print("Palette			");
@@ -117,7 +117,7 @@ public:
         Serial.print("Transition mirror	");
         Serial.println(getMirrorName(transitionMirror));
         Serial.println("---");
-        // #endif
+        #endif
 
         const uint16_t effectDurationInFrames = effectDurationsInSecs * _displaySpec->fps;
         auto transitionDurationInFrames = _displaySpec->fps * _displaySpec->transitionDurationInMillis / 1000;

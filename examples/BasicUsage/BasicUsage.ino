@@ -25,7 +25,7 @@
 using namespace LEDSegments;
 using SPEC = MatrixDisplaySpec;
 
-Display<SPEC> *display;
+std::unique_ptr<Display<SPEC>> display;
 
 // For illustration purposes only.
 // This lib uses C++17 and requires PlatformIO to compile.
@@ -39,7 +39,7 @@ void setup() {
     Serial.begin(115200);
     delay(2000);
 
-    display = new Display<SPEC>();
+    display = std::make_unique<Display<SPEC>>(); //MUST be instantiated in this method
 }
 
 void loop() {

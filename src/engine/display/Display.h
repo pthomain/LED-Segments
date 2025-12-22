@@ -55,7 +55,7 @@ class Display {
 
 public:
     uint32_t lastChangeTime = 0;
-    uint8_t currentEffectDurationsInSecs = 0;
+    uint16_t currentEffectDurationsInSecs = 0;
 
     explicit Display(
         //change if any of those pins are already in use or unavailable on the board
@@ -76,11 +76,11 @@ public:
         FastLED.clear(true);
         FastLED.show();
 
-        changeEffect(random8(_displaySpec->minEffectDurationsInSecs, _displaySpec->maxEffectDurationsInSecs));
+        changeEffect(random16(_displaySpec->minEffectDurationsInSecs, _displaySpec->maxEffectDurationsInSecs));
         render();
     }
 
-    void changeEffect(uint8_t effectDurationsInSecs) {
+    void changeEffect(uint16_t effectDurationsInSecs) {
         const auto &config = _displaySpec->config;
         const Palette &palette = probability(_displaySpec->chanceOfRainbow)
                                      ? RAINBOW_PALETTE
@@ -135,7 +135,7 @@ public:
             _displaySpec->maxSegmentSize(),
             _displaySpec->nbSegments(effectLayoutId),
             effectDurationInFrames,
-            _displaySpec->isCircular,
+            _displaySpec->isPolar,
             effectLayoutId,
             palette,
             effectMirror,
@@ -155,7 +155,7 @@ public:
             _displaySpec->maxSegmentSize(),
             _displaySpec->nbSegments(overlayLayoutId),
             effectDurationInFrames,
-            _displaySpec->isCircular,
+            _displaySpec->isPolar,
             overlayLayoutId,
             NO_PALETTE,
             overlayMirror,
@@ -175,7 +175,7 @@ public:
             _displaySpec->maxSegmentSize(),
             _displaySpec->nbSegments(transitionLayoutId),
             transitionDurationInFrames,
-            _displaySpec->isCircular,
+            _displaySpec->isPolar,
             transitionLayoutId,
             NO_PALETTE,
             transitionMirror,

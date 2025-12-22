@@ -32,7 +32,7 @@ public:
     const uint16_t maxSegmentSize;
     const uint16_t nbSegments;
     const uint16_t durationInFrames;
-    const boolean isDisplayCircular;
+    const boolean isPolar;
     const uint16_t layoutId;
     const Palette palette;
     const Mirror mirror;
@@ -42,7 +42,7 @@ public:
         const uint16_t maxSegmentSize,
         const uint16_t nbSegments,
         const uint16_t durationInFrames,
-        const boolean isDisplayCircular,
+        const boolean isPolar,
         const uint16_t layoutId,
         Palette palette,
         const Mirror mirror,
@@ -50,11 +50,11 @@ public:
     ) : maxSegmentSize(maxSegmentSize),
         nbSegments(nbSegments),
         durationInFrames(durationInFrames),
-        isDisplayCircular(isDisplayCircular),
+        isPolar(isPolar),
         layoutId(layoutId),
         palette(std::move(palette)),
         mirror(mirror),
-        parameters(std::move(parameters)) {
+        parameters(parameters) {
     }
 };
 

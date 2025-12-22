@@ -1,9 +1,36 @@
 {
     "name": "LED-Segments",
     "version": "1.0.0",
+    "description": "A library for creating complex, dynamic LED animations on segmented displays.",
+    "keywords": [
+        "led",
+        "animation",
+        "fastled",
+        "effects",
+        "ws2812"
+    ],
+    "authors": {
+        "name": "Pierre Thomain",
+        "url": "https://github.com/pthomain"
+    },
+    "license": "GPL-3.0-or-later",
+    "homepage": "https://github.com/pthomain/LED-Segments",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pthomain/LED-Segments.git"
+    },
+    "frameworks": "arduino",
+    "platforms": [
+        "atmelsam",
+        "atmelavr",
+        "espressif32"
+    ],
     "build": {
         "flags": [
             "-std=c++17"
         ]
+    },
+    "dependencies": {
+        "fastled/FastLED": "^3.10.0"
     }
 }

@@ -39,23 +39,23 @@ class DisplaySpec {
 public:
     const LayoutConfig config;
     const uint8_t brightness;
-    const uint8_t minEffectDurationsInSecs;
-    const uint8_t maxEffectDurationsInSecs;
+    const uint16_t minEffectDurationsInSecs;
+    const uint16_t maxEffectDurationsInSecs;
     const int16_t transitionDurationInMillis;
     const uint16_t refreshRateInMillis;
     const fract16 chanceOfRainbow;
     const uint8_t fps;
-    const uint8_t isCircular;
+    const uint8_t isPolar;
 
     explicit DisplaySpec(
         const LayoutConfig &config,
         const uint8_t brightness = 50,
-        const uint8_t minEffectDurationsInSecs = 3,
-        const uint8_t maxEffectDurationsInSecs = 10,
+        const uint16_t minEffectDurationsInSecs = 3,
+        const uint16_t maxEffectDurationsInSecs = 10,
         const int16_t transitionDurationInMillis = 1000, //use < 1 to disable
         const fract16 chanceOfRainbow = 49151, // 0.75 * 65535
         const uint8_t fps = 30,
-        const uint8_t isCircular = false
+        const uint8_t isPolar = false
     ): config(config),
        brightness(brightness),
        minEffectDurationsInSecs(min(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
@@ -64,7 +64,7 @@ public:
        refreshRateInMillis(1000 / max(1, fps)),
        chanceOfRainbow(chanceOfRainbow),
        fps(max(1, fps)),
-       isCircular(isCircular) {}
+       isPolar(isPolar) {}
 
     virtual uint16_t nbLeds() const = 0;
 

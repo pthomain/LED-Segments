@@ -22,72 +22,72 @@
 #define LED_SEGMENTS_DISPLAYSPEC_H
 
 #include "config/LayoutConfig.h"
+#include "engine/render/renderable/Polar.h"
 
 namespace LEDSegments {
+    class DisplaySpec {
+        mutable uint16_t _maxSegmentSize = 0;
 
-class DisplaySpec {
-    mutable uint16_t _maxSegmentSize = 0;
-
-    void calculateMaxSegmentSize() const {
-        for (auto layoutId: config.layoutIds) {
-            for (uint16_t segmentIndex = 0; segmentIndex < nbSegments(layoutId); segmentIndex++) {
-                _maxSegmentSize = max(_maxSegmentSize, segmentSize(layoutId, segmentIndex));
+        void calculateMaxSegmentSize() const {
+            for (auto layoutId: config.layoutIds) {
+                for (uint16_t segmentIndex = 0; segmentIndex < nbSegments(layoutId); segmentIndex++) {
+                    _maxSegmentSize = max(_maxSegmentSize, segmentSize(layoutId, segmentIndex));
+                }
             }
         }
-    }
 
-public:
-    const LayoutConfig config;
-    const uint8_t brightness;
-    const uint16_t minEffectDurationsInSecs;
-    const uint16_t maxEffectDurationsInSecs;
-    const int16_t transitionDurationInMillis;
-    const uint16_t refreshRateInMillis;
-    const fract16 chanceOfRainbow;
-    const uint8_t fps;
-    const uint8_t isPolar;
+    public:
+        const LayoutConfig config;
+        const uint8_t brightness;
+        const uint16_t minEffectDurationsInSecs;
+        const uint16_t maxEffectDurationsInSecs;
+        const int16_t transitionDurationInMillis;
+        const uint16_t refreshRateInMillis;
+        const fract16 chanceOfRainbow;
+        const uint8_t fps;
 
-    explicit DisplaySpec(
-        const LayoutConfig &config,
-        const uint8_t brightness = 50,
-        const uint16_t minEffectDurationsInSecs = 3,
-        const uint16_t maxEffectDurationsInSecs = 10,
-        const int16_t transitionDurationInMillis = 1000, //use < 1 to disable
-        const fract16 chanceOfRainbow = 49151, // 0.75 * 65535
-        const uint8_t fps = 30,
-        const uint8_t isPolar = false
-    ): config(config),
-       brightness(brightness),
-       minEffectDurationsInSecs(min(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
-       maxEffectDurationsInSecs(max(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
-       transitionDurationInMillis(transitionDurationInMillis),
-       refreshRateInMillis(1000 / max(1, fps)),
-       chanceOfRainbow(chanceOfRainbow),
-       fps(max(1, fps)),
-       isPolar(isPolar) {}
+        explicit DisplaySpec(
+            const LayoutConfig &config,
+            const uint8_t brightness = 50,
+            const uint16_t minEffectDurationsInSecs = 3,
+            const uint16_t maxEffectDurationsInSecs = 10,
+            const int16_t transitionDurationInMillis = 1000, //use < 1 to disable
+            const float chanceOfRainbow = 0.75f,
+            const uint8_t fps = 30
+        ) : config(config),
+            brightness(brightness),
+            minEffectDurationsInSecs(min(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
+            maxEffectDurationsInSecs(max(minEffectDurationsInSecs, maxEffectDurationsInSecs)),
+            transitionDurationInMillis(transitionDurationInMillis),
+            refreshRateInMillis(1000 / max(1, fps)),
+            chanceOfRainbow(chanceOfRainbow * 65535),
+            fps(max(1, fps)) {
+        }
 
-    virtual uint16_t nbLeds() const = 0;
+        virtual uint16_t nbLeds() const =0;
 
-    uint16_t maxSegmentSize() const {
-        if (_maxSegmentSize == 0) calculateMaxSegmentSize();
-        return _maxSegmentSize;
+        uint16_t maxSegmentSize() const {
+            if (_maxSegmentSize == 0) calculateMaxSegmentSize();
+            return _maxSegmentSize;
+        };
+
+        virtual void toPolarCoords(uint16_t pixelIndex, PolarContext &context) const {
+        }
+
+        virtual uint16_t nbSegments(uint16_t layoutId) const = 0;
+
+        virtual uint16_t segmentSize(uint16_t layoutId, uint16_t segmentIndex) const = 0;
+
+        virtual void mapLeds(
+            uint16_t layoutId,
+            uint16_t segmentIndex,
+            uint16_t pixelIndex,
+            fract16 progress,
+            const std::function<void(uint16_t)> &onLedMapped
+        ) const = 0;
+
+        virtual ~DisplaySpec() = default;
     };
-
-    virtual uint16_t nbSegments(uint16_t layoutId) const = 0;
-
-    virtual uint16_t segmentSize(uint16_t layoutId, uint16_t segmentIndex) const = 0;
-
-    virtual void mapLeds(
-        uint16_t layoutId,
-        uint16_t segmentIndex,
-        uint16_t pixelIndex,
-        fract16 progress,
-        const std::function<void(uint16_t)> &onLedMapped
-    ) const = 0;
-
-    virtual ~DisplaySpec() = default;
-};
-
 } // namespace LEDSegments
 
 #endif //LED_SEGMENTS_DISPLAYSPEC_H

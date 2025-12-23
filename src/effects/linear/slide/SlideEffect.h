@@ -73,7 +73,6 @@ public:
             {SlideEffect::PARAM_NB_COLOURS, 4},
             {SlideEffect::PARAM_COLOUR_START, random8()},
             {SlideEffect::PARAM_SPEED_DIVIDER, 50}
-
         };
     }
 };

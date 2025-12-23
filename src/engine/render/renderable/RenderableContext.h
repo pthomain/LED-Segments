@@ -24,40 +24,44 @@
 #include <engine/mirror/Mirror.h>
 #include <engine/palette/Palette.h>
 #include <map>
+#include <functional>
+#include <utility>
+#include "Polar.h"
 
 namespace LEDSegments {
+    class RenderableContext {
+    public:
+        const uint16_t maxSegmentSize;
+        const uint16_t nbSegments;
+        const uint16_t durationInFrames;
+        const uint16_t layoutId;
+        const Palette palette;
+        const Mirror mirror;
+        const std::map<uint8_t, uint16_t> parameters;
+        PolarContext &polarContext;
+        PolarCoords polarCoords;
 
-class RenderableContext {
-public:
-    const uint16_t maxSegmentSize;
-    const uint16_t nbSegments;
-    const uint16_t durationInFrames;
-    const boolean isPolar;
-    const uint16_t layoutId;
-    const Palette palette;
-    const Mirror mirror;
-    const std::map<uint8_t, uint16_t> parameters;
-
-    RenderableContext(
-        const uint16_t maxSegmentSize,
-        const uint16_t nbSegments,
-        const uint16_t durationInFrames,
-        const boolean isPolar,
-        const uint16_t layoutId,
-        Palette palette,
-        const Mirror mirror,
-        const std::map<uint8_t, uint16_t> &parameters
-    ) : maxSegmentSize(maxSegmentSize),
-        nbSegments(nbSegments),
-        durationInFrames(durationInFrames),
-        isPolar(isPolar),
-        layoutId(layoutId),
-        palette(std::move(palette)),
-        mirror(mirror),
-        parameters(parameters) {
-    }
-};
-
+        RenderableContext(
+            const uint16_t maxSegmentSize,
+            const uint16_t nbSegments,
+            const uint16_t durationInFrames,
+            const uint16_t layoutId,
+            Palette palette,
+            const Mirror mirror,
+            const std::map<uint8_t, uint16_t> &parameters,
+            PolarContext &polarContext,
+            PolarCoords &polarCoords
+        ) : maxSegmentSize(maxSegmentSize),
+            nbSegments(nbSegments),
+            durationInFrames(durationInFrames),
+            layoutId(layoutId),
+            palette(std::move(palette)),
+            mirror(mirror),
+            parameters(parameters),
+            polarContext(polarContext),
+            polarCoords(polarCoords) {
+        }
+    };
 } // namespace LEDSegments
 
 #endif // RENDERABLE_CONTEXT_H

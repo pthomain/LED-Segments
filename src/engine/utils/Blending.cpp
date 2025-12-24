@@ -21,43 +21,41 @@
 #include "Blending.h"
 
 namespace LEDSegments {
-
-uint8_t multiply(uint8_t base, uint8_t overlay) {
-    return static_cast<uint16_t>(base * overlay) / 255;
-}
-
-CRGB multiply(const CRGB &base, const CRGB &overlay) {
-    return {
-        multiply(base.r, overlay.r),
-        multiply(base.g, overlay.g),
-        multiply(base.b, overlay.b)
-    };
-}
-
-uint8_t screen(uint8_t base, uint8_t overlay) {
-    return 255 - static_cast<uint16_t>((255 - base) * (255 - overlay)) / 255;
-}
-
-CRGB screen(const CRGB &base, const CRGB &overlay) {
-    return {
-        screen(base.r, overlay.r),
-        screen(base.g, overlay.g),
-        screen(base.b, overlay.b)
-    };
-}
-
-uint8_t invert(uint8_t base, uint8_t overlay) {
-    return overlay == CRGB::Black ? base : base - 128;
-}
-
-CRGB invert(const CRGB &base, const CRGB &overlay) {
-    if (overlay == CRGB::Black) {
-        return base;
+    uint8_t multiply(uint8_t base, uint8_t overlay) {
+        return static_cast<uint16_t>(base * overlay) / 255;
     }
 
-    CHSV hsv = rgb2hsv_approximate(base);
-    hsv.h += 128;
-    return hsv;
-}
+    CRGB multiply(const CRGB &base, const CRGB &overlay) {
+        return {
+            multiply(base.r, overlay.r),
+            multiply(base.g, overlay.g),
+            multiply(base.b, overlay.b)
+        };
+    }
 
+    uint8_t screen(uint8_t base, uint8_t overlay) {
+        return 255 - static_cast<uint16_t>((255 - base) * (255 - overlay)) / 255;
+    }
+
+    CRGB screen(const CRGB &base, const CRGB &overlay) {
+        return {
+            screen(base.r, overlay.r),
+            screen(base.g, overlay.g),
+            screen(base.b, overlay.b)
+        };
+    }
+
+    uint8_t invert(uint8_t base, uint8_t overlay) {
+        return overlay == CRGB::Black ? base : base - 128;
+    }
+
+    CRGB invert(const CRGB &base, const CRGB &overlay) {
+        if (overlay == CRGB::Black) {
+            return base;
+        }
+
+        CHSV hsv = rgb2hsv_approximate(base);
+        hsv.h += 128;
+        return hsv;
+    }
 } // namespace LEDSegments

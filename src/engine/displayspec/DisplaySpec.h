@@ -71,7 +71,8 @@ namespace LEDSegments {
             return _maxSegmentSize;
         };
 
-        virtual void toPolarCoords(uint16_t pixelIndex, PolarContext &context) const {
+        virtual PolarCoords toPolarCoords(uint16_t pixelIndex) const {
+            return PolarCoords();
         }
 
         virtual uint16_t nbSegments(uint16_t layoutId) const = 0;

@@ -59,8 +59,7 @@ namespace LEDSegments {
         std::shared_ptr<SPEC> _displaySpec;
         std::unique_ptr<CRGB[]> outputArray;
         const std::unique_ptr<Renderer> renderer;
-        PolarContext _polarContext = PolarContext();
-        PolarCoords polarCoords;
+        PolarCoordsMapper polarCoordsMapper;
 
     public:
         uint32_t lastChangeTime = 0;
@@ -72,8 +71,8 @@ namespace LEDSegments {
         ) : _displaySpec(std::make_shared<SPEC>()),
             outputArray(std::make_unique<CRGB[]>(_displaySpec->nbLeds())),
             renderer(std::make_unique<Renderer>(_displaySpec, outputArray.get())) {
-            polarCoords = [this](uint16_t pixelIndex, PolarContext &context) {
-                return _displaySpec.get()->toPolarCoords(pixelIndex, context);
+            polarCoordsMapper = [this](uint16_t pixelIndex) {
+                return _displaySpec.get()->toPolarCoords(pixelIndex);
             };
 
             freePinsForEntropy.erase(
@@ -152,8 +151,7 @@ namespace LEDSegments {
                 palette,
                 effectMirror,
                 effectParams,
-                _polarContext,
-                polarCoords
+                polarCoordsMapper
             );
 
             auto overlayParams = config.params(
@@ -173,8 +171,7 @@ namespace LEDSegments {
                 NO_PALETTE,
                 overlayMirror,
                 overlayParams,
-                _polarContext,
-                polarCoords
+                polarCoordsMapper
             );
 
             auto transitionParams = config.params(
@@ -194,8 +191,7 @@ namespace LEDSegments {
                 NO_PALETTE,
                 transitionMirror,
                 transitionParams,
-                _polarContext,
-                polarCoords
+                polarCoordsMapper
             );
 
             auto effect = effectFactory->create(context);

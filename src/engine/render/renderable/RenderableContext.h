@@ -38,8 +38,7 @@ namespace LEDSegments {
         const Palette palette;
         const Mirror mirror;
         const std::map<uint8_t, uint16_t> parameters;
-        PolarContext &polarContext;
-        PolarCoords polarCoords;
+        PolarCoordsMapper polarCoordsMapper;
 
         RenderableContext(
             const uint16_t maxSegmentSize,
@@ -49,8 +48,7 @@ namespace LEDSegments {
             Palette palette,
             const Mirror mirror,
             const std::map<uint8_t, uint16_t> &parameters,
-            PolarContext &polarContext,
-            PolarCoords &polarCoords
+            PolarCoordsMapper &polarCoordsMapper
         ) : maxSegmentSize(maxSegmentSize),
             nbSegments(nbSegments),
             durationInFrames(durationInFrames),
@@ -58,8 +56,7 @@ namespace LEDSegments {
             palette(std::move(palette)),
             mirror(mirror),
             parameters(parameters),
-            polarContext(polarContext),
-            polarCoords(polarCoords) {
+            polarCoordsMapper(polarCoordsMapper) {
         }
     };
 } // namespace LEDSegments

@@ -27,41 +27,41 @@
 #include "engine/render/renderable/RenderableOperation.h"
 
 namespace LEDSegments {
-uint8_t multiply(uint8_t base, uint8_t overlay);
 
-CRGB multiply(const CRGB &base, const CRGB &overlay);
+    uint8_t multiply(uint8_t base, uint8_t overlay);
 
-uint8_t screen(uint8_t base, uint8_t overlay);
+    CRGB multiply(const CRGB &base, const CRGB &overlay);
 
-CRGB screen(const CRGB &base, const CRGB &overlay);
+    uint8_t screen(uint8_t base, uint8_t overlay);
 
-uint8_t invert(uint8_t base, uint8_t overlay);
+    CRGB screen(const CRGB &base, const CRGB &overlay);
 
-CRGB invert(const CRGB &base, const CRGB &overlay);
+    uint8_t invert(uint8_t base, uint8_t overlay);
 
-template<typename T>
-T mix(const T &base, const T &overlay, RenderableOperation operation) {
-    switch (operation) {
-        case RenderableOperation::OVERLAY_SCREEN:
-            return screen(base, overlay);
+    CRGB invert(const CRGB &base, const CRGB &overlay);
 
-        case RenderableOperation::OVERLAY_MULTIPLY:
-            return multiply(base, overlay);
+    template<typename T>
+    T mix(const T &base, const T &overlay, RenderableOperation operation) {
+        switch (operation) {
+            case RenderableOperation::OVERLAY_SCREEN:
+                return screen(base, overlay);
 
-        case RenderableOperation::OVERLAY_INVERT:
-            return invert(base, overlay);
+            case RenderableOperation::OVERLAY_MULTIPLY:
+                return multiply(base, overlay);
 
-        default:
-            return overlay;
+            case RenderableOperation::OVERLAY_INVERT:
+                return invert(base, overlay);
+
+            default:
+                return overlay;
+        }
     }
-}
 
-template
-CRGB mix(const CRGB &base, const CRGB &overlay, RenderableOperation operation);
+    template
+    CRGB mix(const CRGB &base, const CRGB &overlay, RenderableOperation operation);
 
-template
-uint8_t mix(const uint8_t &base, const uint8_t &overlay, RenderableOperation operation);
-
+    template
+    uint8_t mix(const uint8_t &base, const uint8_t &overlay, RenderableOperation operation);
 } // namespace LEDSegments
 
 #endif //BLENDING_H

@@ -1,152 +1,176 @@
-# LED Segments - An Arduino lib to abstract individual LEDs on a strip into virtual Pixels and Segments
+# LED-Segments
 
-This library provides a way to map an LED strip into one or more physical layouts. 
-This is useful for managing effects on LED displays where different sections need to be controlled independently but where the LEDs are addressed by their linear indexes (e.g. a display sign where each letter is a section of the same strip).
+**A modern C++17 library for Arduino that abstracts LED strips into logical Segments and Pixels, enabling complex, layered effects on custom display shapes.**
 
-It provides a simple way to segment a display where the physical location of LEDs has little correlation to their addressable index, e.g. displays with complex shapes.
+## Why LED-Segments?
 
-Multiple layouts can be defined, if required, to allow for the display to be segmented in different ways while making it easy to switch from one layout to another during rendering.
+Directly addressing LEDs by index (e.g., `leds[i] = color`) works for simple strips, but becomes unmanageable for complex shapes (signs, wearables, matrices) or when you want to layer effects.
 
-## Installation & Quick Start
+**LED-Segments** sits on top of **FastLED** to provide:
 
-### Option 1: Arduino IDE (Recommended for Beginners)
+*   **Logical Mapping**: Group non-contiguous physical LEDs into logical "Segments".
+*   **Layered Rendering**: Compose visuals dynamically: **Effect + Overlay + Transition**.
+*   **Geometry Agnostic**: Write an effect once (e.g., a "Chase"), and run it on any layout (Linear, Matrix, Circle) just by changing the mapping.
+*   **Procedural Generation**: The library doesn't just play a playlist. It procedurally generates unique "Scenes" by randomly combining **Layouts**, **Effects**, **Overlays**, **Palettes**, and **Mirrors**. A single "Rainbow" effect can look like a smooth gradient, a mirrored kaleidoscope, or a scattered sparkle explosion depending on the combination chosen by the engine.
 
-**Step 1: Install the Library**
-1. Go to [LED-Segments GitHub](https://github.com/pthomain/LED-Segments)
-2. Click **Code** → **Download ZIP**
-3. In Arduino IDE: **Sketch** → **Include Library** → **Add .ZIP Library**
-4. Select the downloaded ZIP file
-5. Install **FastLED** library: **Tools** → **Manage Libraries** → Search "FastLED" → Install
+## Key Concepts
 
-**Step 2: Run the Example**
-1. **File** → **Examples** → **LED-Segments** → **BasicUsage**
-2. Connect your LED strip to the pin defined in `MatrixDisplaySpec.h` (default: pin 9)
-3. Select your board: **Tools** → **Board**
-4. Select your port: **Tools** → **Port**
-5. Click **Upload** ⬆️
+1.  **DisplaySpec**: You define the hardware (pins) and the topology (how LEDs map to segments).
+2.  **Layouts**: A single physical strip can have multiple logical layouts (e.g., treat a matrix as 8 rows OR as 1 continuous snake).
+3.  **Renderables**:
+    *   **Effects**: Base patterns (Rainbow, Noise, Plasma).
+    *   **Overlays**: Modifiers on top (Sparkles, Glitch).
+    *   **Transitions**: Smooth cross-fades between states.
 
-### Option 2: PlatformIO
+## Quick Start
 
-**Method A: Use as Library Dependency (Recommended)**
-1. Create a new PlatformIO project
-2. Add to your `platformio.ini`:
-```ini
-lib_deps = 
-    https://github.com/pthomain/LED-Segments.git
-    fastled/FastLED@^3.10.0
-build_flags = -std=c++17
-```
-3. Copy the example code from `examples/BasicUsage/` to your `src/main.cpp`
-4. Run: `pio lib install` (installs dependencies)
-5. Run: `pio run -t upload`
+### 1. Define your Display Specification
 
-**Note**: Use `platformio.ini` configuration instead of `pio lib install LED-Segments` since this library is hosted on GitHub, not the PlatformIO Registry.
-
-**Method B: Clone and Deploy Directly**
-```bash
-# Clone and enter directory
-git clone https://github.com/pthomain/LED-Segments.git
-cd LED-Segments
-
-# Deploy to your board (modify platformio.ini to use BasicUsage as src)
-# Note: This method requires manual configuration
-```
-
-## Hardware Setup
-
-### Wiring
-- **LED Strip Data Pin** → Arduino Pin 9 (or modify in `MatrixDisplaySpec.h`)
-- **LED Strip Power** → External 5V power supply (for >30 LEDs)
-- **LED Strip Ground** → Arduino Ground + Power supply Ground
-
-### Supported Boards
-- **Seeed Xiao** (default configuration)
-- **Arduino Uno**
-- **ESP32**
-- Most Arduino-compatible boards with C++17 support
-
-## Dependencies
-- **FastLED** 3.10.0 or later
-- **C++17** compatible compiler
-
-## Usage
-
-Individual LEDs aren't addressed directly but are instead abstracted into Pixels and Segments:
-- Each Layout is composed of at least one Segment and each Segment is composed of at least one Pixel.
-- Each Pixel is itself composed of one or more LEDs.
-- LED indexes do not have to be contiguous in a given Pixel, providing flexibility to displays where you might want to group LEDs that are physically close together but far from each other in terms of their indexes on the strip.
-  
-Custom effects can be applied to any given Layout, where they are repeatedly applied to each Segment, using Pixel as the smallest addressable unit for applying a colour.
-By randomising layouts in the rendering loop, you can achieve a multitude of different ways to render the same effect.
-
-### Complete Working Example
-
-The `examples/BasicUsage/` directory contains a fully functional example. Here's the basic structure:
+Create a class inheriting from `DisplaySpec`. This tells the engine how your LEDs are wired.
+In this example, we define an **8x16 Matrix** (8 rows, 16 columns) wired in a Zig-Zag pattern. We define **two layouts**:
+1.  **Rows**: 8 horizontal segments of 16 pixels.
+2.  **Columns**: 16 vertical segments of 8 pixels.
 
 ```cpp
+// MyDisplaySpec.h
 #include <LED-Segments.h>
-#include "spec/MatrixDisplaySpec.h"
 
 using namespace LEDSegments;
-using SPEC = MatrixDisplaySpec;
 
-std::unique_ptr<Display<SPEC>> display;
+class MyDisplaySpec : public DisplaySpec {
+public:
+    static constexpr int LED_PIN = 2;
+    static constexpr EOrder RGB_ORDER = GRB;
+    
+    // Define Layout IDs for clarity
+    enum Layouts { ROWS = 0, COLUMNS = 1 };
+
+    // Pass your configuration to the base constructor
+    MyDisplaySpec() : DisplaySpec(MyLayoutConfig) {}
+
+    // Total LEDs: 8 rows * 16 columns = 128
+    uint16_t nbLeds() const override { return 128; }
+
+    // Define number of segments per layout
+    uint16_t nbSegments(uint16_t layoutId) const override { 
+        if (layoutId == ROWS) return 8;     // 8 Rows
+        if (layoutId == COLUMNS) return 16; // 16 Columns
+        return 0;
+    }
+
+    // Define size of each segment
+    uint16_t segmentSize(uint16_t layoutId, uint16_t segmentIndex) const override { 
+        if (layoutId == ROWS) return 16;    // Each row is 16 pixels wide
+        if (layoutId == COLUMNS) return 8;  // Each column is 8 pixels tall
+        return 0;
+    }
+
+    // The Core Magic: Map logical (segment, pixel) to physical LED index
+    void mapLeds(
+        uint16_t layoutId, 
+        uint16_t segmentIndex, 
+        uint16_t pixelIndex, 
+        fract16 progress, 
+        const std::function<void(uint16_t)> &onLedMapped
+    ) const override {
+        
+        uint16_t row, col;
+
+        if (layoutId == ROWS) {
+            // Logical: segment=row, pixel=col
+            row = segmentIndex;
+            col = pixelIndex;
+        } else {
+            // Logical: segment=col, pixel=row
+            col = segmentIndex;
+            row = pixelIndex;
+        }
+
+        // Convert (row, col) to physical index (Zig-Zag wiring)
+        uint16_t physicalIndex;
+        if (row % 2 == 0) {
+            // Even rows run Left -> Right
+            physicalIndex = (row * 16) + col;
+        } else {
+            // Odd rows run Right -> Left
+            physicalIndex = (row * 16) + (15 - col);
+        }
+
+        onLedMapped(physicalIndex); 
+    }
+};
+```
+
+### 2. Run the Display
+
+In your main sketch, instantiate the `Display` with your spec.
+
+```cpp
+#include "MyDisplaySpec.h"
+
+// Create the display controller
+std::unique_ptr<Display<MyDisplaySpec>> display;
 
 void setup() {
-    Serial.begin(9600);
-    delay(2000);
-    
-    display = std::make_unique<Display<SPEC>>();
+    // Initialize
+    display = std::make_unique<Display<MyDisplaySpec>>();
 }
 
 void loop() {
+    // The display handles the render loop, effect switching, and transitions
     display->loop();
 }
 ```
 
-**Key Components:**
-- **`MatrixDisplaySpec`**: Defines your LED layout, segments, and configuration
-- **`Display<SPEC>`**: Main controller that handles effects, overlays, and transitions
-- **Automatic Effects**: The display automatically cycles through different visual effects
+## Advanced Features
 
-### Creating Your Own Display Spec
+### Multiple Layouts
+You can define multiple ways to view your LEDs. For the 8x16 matrix above, you could add a second Layout ID that treats the entire matrix as one giant 128-pixel spiral. The engine will randomly switch between "Row Mode" and "Spiral Mode," making the same effects look completely different.
 
-1. **Copy** `examples/BasicUsage/spec/MatrixDisplaySpec.h` to your project
-2. **Modify** the layout configuration for your specific LED setup:
-   - Change `LED_PIN` for your data pin
-   - Adjust `nbLeds()` for your strip length
-   - Customize `segmentSize()` for your layout segments
+### Segment Repetition
+One of the most powerful features of **LED-Segments** is how it handles rendering across multiple segments. When an effect is rendered, the engine iterates through every segment defined in your current layout. It renders the effect for that specific segment and then maps it to the physical LEDs.
 
-## Troubleshooting
+This means a single "Rainbow" effect isn't just stretched across your entire display. Instead, it is **repeated** for each segment.
+*   If your layout defines **1 Segment** (the whole strip), you get one long rainbow.
+*   If your layout defines **8 Segments** (e.g., rows of a matrix), you get 8 identical rainbows running in parallel.
 
-### Common Issues
+By simply changing the Layout ID, you drastically change the visual output without modifying the effect code itself.
 
-**"LED-Segments.h: No such file or directory"**
-- Make sure you installed the library correctly
-- For PlatformIO: Check that `lib_deps` includes the GitHub URL
+### Variable Segment Sizes
+Segments within a single layout do not have to be the same length. This is particularly useful for:
+*   **Concentric Rings**: Outer rings have more LEDs than inner rings.
+*   **Irregular Shapes**: A display might have a long section and a short section.
 
-**"error: 'std::make_unique' was not declared"**
-- Add `build_flags = -std=c++17` to your platformio.ini
-- For Arduino IDE: Use Tools → Board → Board Manager and ensure C++17 support
+The engine automatically adapts the effect rendering to the size of each individual segment.
 
-**LEDs not lighting up**
-- Check wiring connections
-- Verify LED strip type matches `LED_TYPE` in your DisplaySpec
-- Ensure adequate power supply for your LED count
+### Mirrors & Modifiers
+Effects can be automatically mirrored, reversed, or repeated without changing the effect code.
+*   `Mirror::REVERSE`: Runs the effect backwards.
+*   **Combinatorial Power**: An effect like "Slide" combined with `Mirror::CENTRE` creates a "pulse" from the middle. Combined with `Mirror::REPEAT`, it creates multiple moving segments.
 
-**Compilation errors with FastLED**
-- Make sure FastLED version is 3.10.0 or later
-- Check that your board supports the LED strip type you're using
+## Installation
 
-### Getting Help
-- Check the complete working example in `examples/BasicUsage/`
-- Review the `wiki/` directory for detailed documentation
-- Open an issue on GitHub for specific problems
+### PlatformIO (Recommended)
+This library is fully compatible with PlatformIO and includes a `library.json` manifest for easy dependency management.
 
-## Advanced Usage
+Add the following to your `platformio.ini`:
 
-For advanced customization, see:
-- `wiki/DisplaySpec.md` - Creating custom display layouts
-- `wiki/Effects.md` - Available effects and parameters  
-- `wiki/Overlays.md` - Overlay effects for additional visual layers
-- `wiki/Transitions.md` - Smooth transitions between effects
+```ini
+[env:myboard]
+platform = ...
+board = ...
+framework = arduino
+lib_deps = 
+    https://github.com/pthomain/LED-Segments.git
+    fastled/FastLED
+build_flags = -std=c++17
+```
+
+### Arduino IDE
+1.  Download the repository as a ZIP.
+2.  Sketch -> Include Library -> Add .ZIP Library.
+3.  Ensure you have a board package that supports **C++17**.
+
+## Requirements
+*   **C++17** compatible compiler/board (ESP32, Teensy, modern AVR cores).
+*   **FastLED** library.

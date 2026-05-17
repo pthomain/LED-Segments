@@ -48,8 +48,8 @@ public:
           step(max(1, 255 / nbColours)),
           colourIndexForSegment(std::make_unique<uint8_t[]>(nbColours)),
           headPositionForSegment(std::make_unique<uint16_t[]>(context.nbSegments)) {
-        memset(colourIndexForSegment.get(), 0, nbColours * sizeof(uint8_t));
-        memset(headPositionForSegment.get(), 0, context.nbSegments * sizeof(uint16_t));
+        ::memset(colourIndexForSegment.get(), 0, nbColours * sizeof(uint8_t));
+        ::memset(headPositionForSegment.get(), 0, context.nbSegments * sizeof(uint16_t));
     }
 
     void fillSegmentArray(

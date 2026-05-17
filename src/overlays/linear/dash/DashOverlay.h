@@ -50,9 +50,9 @@ public:
           headPositionForSegment(std::make_unique<uint16_t[]>(context.nbSegments)),
           tailPositionForSegment(std::make_unique<uint16_t[]>(context.nbSegments)),
           isReversedForSegment(std::make_unique<bool[]>(context.nbSegments)) {
-        memset(headPositionForSegment.get(), 0, context.nbSegments * sizeof(uint16_t));
-        memset(tailPositionForSegment.get(), 0, context.nbSegments * sizeof(uint16_t));
-        memset(isReversedForSegment.get(), 0, context.nbSegments * sizeof(bool));
+        ::memset(headPositionForSegment.get(), 0, context.nbSegments * sizeof(uint16_t));
+        ::memset(tailPositionForSegment.get(), 0, context.nbSegments * sizeof(uint16_t));
+        ::memset(isReversedForSegment.get(), 0, context.nbSegments * sizeof(bool));
     }
 
     void fillSegmentArray(

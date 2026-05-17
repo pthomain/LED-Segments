@@ -23,6 +23,7 @@
 
 #include "engine/render/renderable/BaseRenderableFactory.h"
 #include "engine/utils/Utils.h"
+#include <cstdio>
 #include <engine/mirror/Mirror.h>
 #include <engine/mirror/MirrorUtils.h>
 #include <map>
@@ -87,7 +88,15 @@ public:
 
     String layoutName(uint16_t layoutId) const {
         if (_layoutNames.find(layoutId) == _layoutNames.end()) {
-            return "UNKNOWN(" + String(layoutId) + ")";
+            // Hand-format via snprintf: Arduino's `String` and FastLED master's
+            // `fl::string` (which `String` aliases under Emscripten) have
+            // disjoint integer-formatting APIs (Arduino has `String(int)`,
+            // fl::string has `append(uint16_t)` but no integer constructor or
+            // operator+=(int)). The common subset is `String(const char*)`.
+            char buf[16];
+            std::snprintf(buf, sizeof(buf), "UNKNOWN(%u)",
+                          static_cast<unsigned>(layoutId));
+            return String(buf);
         }
         return _layoutNames.at(layoutId);
     }

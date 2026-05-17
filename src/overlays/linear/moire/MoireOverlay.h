@@ -61,7 +61,7 @@ public:
           invertOperationWeight(param(PARAM_OPERATION_INVERT_WEIGHT)),
           reverseArray(std::make_unique<CRGB[]>(context.maxSegmentSize)),
           headPositionForSegment(std::make_unique<uint16_t[]>(context.nbSegments)) {
-        memset(headPositionForSegment.get(), 0, context.nbSegments * sizeof(uint16_t));
+        ::memset(headPositionForSegment.get(), 0, context.nbSegments * sizeof(uint16_t));
     }
 
     void fillSegmentArray(

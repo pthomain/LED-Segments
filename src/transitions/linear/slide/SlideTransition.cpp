@@ -33,9 +33,13 @@ void SlideTransition::fillSegmentArray(
     fract16 progress,
     unsigned long timeElapsedInMillis
 ) {
-    uint16_t limit = constrain(round(segmentSize * progress / 65535), 0, segmentSize);
-    memset(segmentArray, CRGB::White, limit * sizeof(uint8_t));
-    memset(segmentArray + limit, CRGB::Black, (segmentSize - limit) * sizeof(uint8_t));
+    // segmentSize * progress / 65535 is integer division, so round() is a
+    // no-op — drop it. The original call was ambiguous on the WASM target
+    // (clang sees both fl::round and std::round, and `round` is a macro
+    // rather than a function on Arduino, which makes qualifying it awkward).
+    uint16_t limit = constrain(segmentSize * progress / 65535, 0, segmentSize);
+    ::memset(segmentArray, CRGB::White, limit * sizeof(uint8_t));
+    ::memset(segmentArray + limit, CRGB::Black, (segmentSize - limit) * sizeof(uint8_t));
 }
 
 } // namespace LEDSegments

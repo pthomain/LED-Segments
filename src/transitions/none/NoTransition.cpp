@@ -33,7 +33,7 @@ void NoTransition::fillSegmentArray(
     fract16 progress,
     unsigned long timeElapsedInMillis
 ) {
-    memset(segmentArray, progress < 0.5f ? 0 : 255, segmentSize * sizeof(uint8_t));
+    ::memset(segmentArray, progress < 0.5f ? 0 : 255, segmentSize * sizeof(uint8_t));
 }
 
 } // namespace LEDSegments

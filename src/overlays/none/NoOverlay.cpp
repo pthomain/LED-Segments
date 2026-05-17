@@ -33,7 +33,7 @@ void NoOverlay::fillSegmentArray(
     fract16 progress,
     unsigned long timeElapsedInMillis
 ) {
-    memset(segmentArray, CRGB::White, segmentSize * sizeof(CRGB));
+    ::memset(segmentArray, CRGB::White, segmentSize * sizeof(CRGB));
 };
 
 } // namespace LEDSegments

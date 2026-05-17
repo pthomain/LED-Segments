@@ -48,7 +48,7 @@ void Renderable<C>::fillArray(
         return;
     }
 
-    memset(segmentArray, 0, segmentSize * sizeof(C));
+    ::memset(segmentArray, 0, segmentSize * sizeof(C));
 
     fillSegmentArray(
         segmentArray,

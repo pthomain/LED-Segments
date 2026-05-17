@@ -80,7 +80,10 @@ void MatrixOverlay::fillSegmentArray(
                 0,
                 random8(2, streamLength),
                 0,
-                (uint16_t) random8(2, 5) * 750,
+                // C-style cast bound the random8() call only, so the *750
+                // multiplication promoted back to int and tripped narrowing
+                // in the brace-init list. Cast the whole expression.
+                static_cast<uint16_t>(random8(2, 5) * 750),
                 (uint16_t) timeElapsedInMillis,
                 true
             });

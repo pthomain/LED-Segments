@@ -34,7 +34,7 @@ void FadeTransition::fillSegmentArray(
     unsigned long timeElapsedInMillis
 ) {
     auto alpha = static_cast<uint8_t>(255.0f * progress);
-    memset(segmentArray, alpha, segmentSize * sizeof(uint8_t));
+    ::memset(segmentArray, alpha, segmentSize * sizeof(uint8_t));
 }
 
 } // namespace LEDSegments

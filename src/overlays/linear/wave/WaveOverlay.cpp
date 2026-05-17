@@ -36,7 +36,7 @@ void WaveOverlay::fillSegmentArray(
     fract16 progress,
     unsigned long timeElapsedInMillis
 ) {
-    memset(segmentArray, CRGB::White, segmentSize * sizeof(CRGB));
+    ::memset(segmentArray, CRGB::White, segmentSize * sizeof(CRGB));
 
     uint8_t amplitude = beatsin16(
         bpm,
@@ -52,7 +52,7 @@ void WaveOverlay::fillSegmentArray(
     //Sine value in range -32768 to +32767
     int16_t sineVal = map(sin16(x), -32768, 32767, 0, amplitude);
 
-    memset(segmentArray, CRGB::Black, sineVal * sizeof(CRGB));
+    ::memset(segmentArray, CRGB::Black, sineVal * sizeof(CRGB));
 }
 
 } // namespace LEDSegments
